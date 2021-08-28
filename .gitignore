@@ -1,0 +1,6 @@
+.vscode
+*.o
+*.a
+bin/stage1
+bin/stage2
+bin/chub
