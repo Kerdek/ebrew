@@ -3,7 +3,7 @@
 #include "chub.hb"
 
 // Initial hash bucket size
-#define INIT_SIZE 16
+#define INIT_SIZE 16->unsigned long
 
 // Rehash if the usage exceeds 70%.
 #define HIGH_WATERMARK 70
@@ -39,7 +39,7 @@ rehash(map@ HashMap)  =
 
   // Create a new hashmap and copy all key-values.
   let map2 = (let HashMap){;;
-  map2.buckets = calloc(cap sizeof HashEntry);
+  map2.buckets = calloc(cap->unsigned long sizeof HashEntry);
   map2.capacity = cap;
 
   for (let i int = 0; i < map@.capacity; i++) {
@@ -54,13 +54,13 @@ rehash(map@ HashMap)  =
 ;
 
 match(ent@ HashEntry key@ char keylen int) bool =
-  return ent@.key && ent@.key != TOMBSTONE &&
-         ent@.keylen == keylen && memcmp(ent@.key key keylen) == 0;
+  return (ent@.key && ent@.key != TOMBSTONE &&
+         ent@.keylen == keylen && !memcmp(ent@.key->@ key->@ keylen->unsigned long))->bool;
 ;
 
 get_entry(map@ HashMap key@ char keylen int)@ HashEntry =
   if !map@.buckets
-    return NULL;
+    return 0->@HashEntry;
 
   let hash = fnv_hash(key keylen);
 
@@ -68,8 +68,7 @@ get_entry(map@ HashMap key@ char keylen int)@ HashEntry =
     let ent = &map@.buckets[(hash + i) % map@.capacity];
     if match(ent key keylen)
       return ent;
-    if ent@.key == NULL
-      return NULL;
+    if !ent@.key return 0->@HashEntry;
   ;
   unreachable();
 ;
@@ -96,7 +95,7 @@ get_or_insert_entry(map@ HashMap key@ char keylen int)@ HashEntry =
       return ent;
     ;
 
-    if ent@.key == NULL {
+    if !ent@.key {
       ent@.key = key;
       ent@.keylen = keylen;
       map@.used++;
@@ -107,16 +106,16 @@ get_or_insert_entry(map@ HashMap key@ char keylen int)@ HashEntry =
 ;
 
 export hashmap_get(map@ HashMap key@ char)@ =
-  return hashmap_get2(map key strlen(key));
+  return hashmap_get2(map key strlen(key)->int);
 ;
 
 export hashmap_get2(map@ HashMap key@ char keylen int)@ =
   let ent = get_entry(map key keylen);
-  return ent ? ent@.val : NULL;
+  return ent ? ent@.val : 0->@;
 ;
 
 export hashmap_put(map@ HashMap key@ char val@) =
-   hashmap_put2(map key strlen(key) val);
+   hashmap_put2(map key strlen(key)->int val);
 ;
 
 export hashmap_put2(map@HashMap key@ char keylen int val@) =
@@ -125,7 +124,7 @@ export hashmap_put2(map@HashMap key@ char keylen int val@) =
 ;
 
 export hashmap_delete(map@HashMap key@ char) =
-  hashmap_delete2(map key strlen(key));
+  hashmap_delete2(map key strlen(key)->int);
 ;
 
 export hashmap_delete2(map@HashMap key@ char keylen int) =
@@ -134,32 +133,32 @@ export hashmap_delete2(map@HashMap key@ char keylen int) =
 ;
 
 export hashmap_test(void) =
-  let map = calloc(1 sizeof HashMap)->@HashMap;
+  let map = calloc(1->unsigned long sizeof HashMap)->@HashMap;
 
   for (let i int = 0; i < 5000; i++)
-    hashmap_put(map format("key %d" i) i->size_t->@);
+    hashmap_put(map format("key %d"->@char i) i->size_t->@);
   for (let i int = 1000; i < 2000; i++)
-    hashmap_delete(map format("key %d" i));
+    hashmap_delete(map format("key %d"->@char i));
   for (let i int = 1500; i < 1600; i++)
-    hashmap_put(map format("key %d" i) i->size_t->@);
+    hashmap_put(map format("key %d"->@char i) i->size_t->@);
   for (let i int = 6000; i < 7000; i++)
-    hashmap_put(map format("key %d" i) i->size_t->@);
+    hashmap_put(map format("key %d"->@char i) i->size_t->@);
 
   for (let i int = 0; i < 1000; i++)
-    assert(hashmap_get(map format("key %d" i))->size_t == i);
+    assert(hashmap_get(map format("key %d"->@char i))->size_t == i);
   for (let i int = 1000; i < 1500; i++)
-    assert(hashmap_get(map "no such key") == NULL);
+    assert(!hashmap_get(map "no such key"->@char));
   for (let i int = 1500; i < 1600; i++)
-    assert(hashmap_get(map format("key %d" i))->size_t == i);
+    assert(hashmap_get(map format("key %d"->@char i))->size_t == i);
   for (let i int = 1600; i < 2000; i++)
-    assert(hashmap_get(map "no such key") == NULL);
+    assert(!hashmap_get(map "no such key"->@char));
   for (let i int = 2000; i < 5000; i++)
-    assert(hashmap_get(map format("key %d" i))->size_t == i);
+    assert(hashmap_get(map format("key %d"->@char i))->size_t == i);
   for (let i int = 5000; i < 6000; i++)
-    assert(hashmap_get(map "no such key") == NULL);
+    assert(!hashmap_get(map "no such key"->@char));
   for (let i int = 6000; i < 7000; i++)
-    hashmap_put(map format("key %d" i) i->size_t->@);
+    hashmap_put(map format("key %d"->@char i) i->size_t->@);
 
-  assert(hashmap_get(map "no such key") == NULL);
-  printf("OK\n");
+  assert(!hashmap_get(map "no such key"->@char));
+  printf("OK\n"->@char);
 ;

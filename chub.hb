@@ -85,12 +85,12 @@ type
     TY_FLOAT
     TY_DOUBLE
     TY_LDOUBLE
-    TY_ENUM
-    TY_PTR
     TY_FUNC
     TY_ARRAY
+    TY_ENUM
     TY_STRUCT
     TY_UNION
+    TY_PTR
   ;
 
   StringArray struct {
@@ -274,7 +274,7 @@ export tokenize(file@ File)@ Token;
 export tokenize_file(filename@ char)@ Token;
 
 #define unreachable() \
-  error("internal error at %s:%d" __FILE__ __LINE__)
+  error("internal error at %s:%d"->@char __FILE__ __LINE__)
 
 export search_include_paths(filename@ char include_paths @StringArray)@ char;
 export init_macros(void);
@@ -304,6 +304,8 @@ export extern
 export is_integer(ty@ Type)bool;
 export is_flonum(ty@ Type)bool;
 export is_numeric(ty@ Type)bool;
+export format_type(t @Type s@char);
+export is_type_equal(t @Type u @Type)bool;
 export is_compatible(ty1@ Type ty2@ Type)bool;
 export copy_type(ty@ Type)@ Type;
 export pointer_to(base@ Type)@ Type;

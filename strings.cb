@@ -2,12 +2,12 @@
 
 export strarray_push(arr@ StringArray s@ char)  =
   if !arr@.data {
-    arr@.data = calloc(8 sizeof@ char);
+    arr@.data = calloc(8->unsigned long sizeof@ char);
     arr@.capacity = 8;
   ;
 
   if arr@.capacity == arr@.len {
-    arr@.data = realloc(arr@.data sizeof@ char * arr@.capacity * 2);
+    arr@.data = realloc(arr@.data->@ sizeof@ char * arr@.capacity * 2);
     arr@.capacity *= 2;
     for (let i int = arr@.len; i < arr@.capacity; i++)
       arr@.data[i] = NULL;
