@@ -564,7 +564,7 @@ export extern execl (__path@const char __arg@const char ...)int
 
 /*FILE  Execute, searching in the `PATH'slashes  environment variable if it contains
    no, with arguments ARGV and environment from `environ'.  */
-export extern execvp (__file@const char __argv const[]@char)int
+export extern execvp (__file@const char __argv const@@char)int
      __THROW __nonnull ((1, 2));
 
 /*FILE  Execute, searching in the `PATH'slashes  environment variable if
@@ -576,7 +576,7 @@ export extern execlp (__file@const char __arg@const char ...)int
 #ifdef __USE_GNU
 /*FILE  Execute, searching in the `PATH'slashes  environment variable if it contains
    no, with arguments ARGV and environment from `environ'.  */
-export extern execvpe (__file@const char __argv const[]@char
+export extern execvpe (__file@const char __argv const@@char
 		    char *const __envp[])int
      __THROW __nonnull ((1, 2));
 #endif

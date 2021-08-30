@@ -13,10 +13,10 @@ type
 
 output_file@FILE
 depth int
-argreg8 []@char = {"%dil"->@char, "%sil"->@char, "%dl"->@char , "%cl"->@char , "%r8b"->@char, "%r9b"->@char;
-argreg16[]@char = {"%di"->@char , "%si"->@char , "%dx"->@char , "%cx"->@char , "%r8w"->@char, "%r9w"->@char;
-argreg32[]@char = {"%edi"->@char, "%esi"->@char, "%edx"->@char, "%ecx"->@char, "%r8d"->@char, "%r9d"->@char;
-argreg64[]@char = {"%rdi"->@char, "%rsi"->@char, "%rdx"->@char, "%rcx"->@char, "%r8"->@char , "%r9"->@char ;
+argreg8 []@char = {"%dil"->@char "%sil"->@char "%dl"->@char  "%cl"->@char  "%r8b"->@char "%r9b"->@char;
+argreg16[]@char = {"%di"->@char  "%si"->@char  "%dx"->@char  "%cx"->@char  "%r8w"->@char "%r9w"->@char;
+argreg32[]@char = {"%edi"->@char "%esi"->@char "%edx"->@char "%ecx"->@char "%r8d"->@char "%r9d"->@char;
+argreg64[]@char = {"%rdi"->@char "%rsi"->@char "%rdx"->@char "%rcx"->@char "%r8"->@char  "%r9"->@char ;
 current_fn@Obj;
 
 gen_expr(node@Node opt_fpic bool);
@@ -325,17 +325,17 @@ f80f64[]char = "fstpl -8(%rsp); movsd -8(%rsp), %xmm0";
 
 cast_table[][11]@char = {
   // i8   i16     i32     i64     u8     u16     u32     u64     f32     f64     f80
-  { 0    ->@char ,0     ->@char, 0     ->@char, i32i64->@char, i32u8->@char, i32u16->@char, 0     ->@char, i32i64->@char, i32f32->@char, i32f64->@char, i32f80->@char ;, // i8
-  { i32i8->@char, 0     ->@char, 0     ->@char, i32i64->@char, i32u8->@char, i32u16->@char, 0     ->@char, i32i64->@char, i32f32->@char, i32f64->@char, i32f80->@char ;, // i16
-  { i32i8->@char, i32i16->@char, 0     ->@char, i32i64->@char, i32u8->@char, i32u16->@char, 0     ->@char, i32i64->@char, i32f32->@char, i32f64->@char, i32f80->@char ;, // i32
-  { i32i8->@char, i32i16->@char, 0     ->@char, 0     ->@char, i32u8->@char, i32u16->@char, 0     ->@char, 0     ->@char, i64f32->@char, i64f64->@char, i64f80->@char ;, // i64
-  { i32i8->@char, 0     ->@char, 0     ->@char, i32i64->@char, 0    ->@char ,0     ->@char, 0     ->@char, i32i64->@char, i32f32->@char, i32f64->@char, i32f80->@char ;, // u8
-  { i32i8->@char, i32i16->@char, 0     ->@char, i32i64->@char, i32u8->@char, 0     ->@char, 0     ->@char, i32i64->@char, i32f32->@char, i32f64->@char, i32f80->@char ;, // u16
-  { i32i8->@char, i32i16->@char, 0     ->@char, u32i64->@char, i32u8->@char, i32u16->@char, 0     ->@char, u32i64->@char, u32f32->@char, u32f64->@char, u32f80->@char ;, // u32
-  { i32i8->@char, i32i16->@char, 0     ->@char, 0     ->@char, i32u8->@char, i32u16->@char, 0     ->@char, 0     ->@char, u64f32->@char, u64f64->@char, u64f80->@char ;, // u64
-  { f32i8->@char, f32i16->@char, f32i32->@char, f32i64->@char, f32u8->@char, f32u16->@char, f32u32->@char, f32u64->@char, 0     ->@char, f32f64->@char, f32f80->@char ;, // f32
-  { f64i8->@char, f64i16->@char, f64i32->@char, f64i64->@char, f64u8->@char, f64u16->@char, f64u32->@char, f64u64->@char, f64f32->@char, 0     ->@char, f64f80->@char ;, // f64
-  { f80i8->@char, f80i16->@char, f80i32->@char, f80i64->@char, f80u8->@char, f80u16->@char, f80u32->@char, f80u64->@char, f80f32->@char, f80f64->@char, 0     ->@char ;  // f80
+  { 0    ->@char 0     ->@char 0     ->@char i32i64->@char i32u8->@char i32u16->@char 0     ->@char i32i64->@char i32f32->@char i32f64->@char i32f80->@char ; // i8
+  { i32i8->@char 0     ->@char 0     ->@char i32i64->@char i32u8->@char i32u16->@char 0     ->@char i32i64->@char i32f32->@char i32f64->@char i32f80->@char ; // i16
+  { i32i8->@char i32i16->@char 0     ->@char i32i64->@char i32u8->@char i32u16->@char 0     ->@char i32i64->@char i32f32->@char i32f64->@char i32f80->@char ; // i32
+  { i32i8->@char i32i16->@char 0     ->@char 0     ->@char i32u8->@char i32u16->@char 0     ->@char 0     ->@char i64f32->@char i64f64->@char i64f80->@char ; // i64
+  { i32i8->@char 0     ->@char 0     ->@char i32i64->@char 0    ->@char 0     ->@char 0     ->@char i32i64->@char i32f32->@char i32f64->@char i32f80->@char ; // u8
+  { i32i8->@char i32i16->@char 0     ->@char i32i64->@char i32u8->@char 0     ->@char 0     ->@char i32i64->@char i32f32->@char i32f64->@char i32f80->@char ; // u16
+  { i32i8->@char i32i16->@char 0     ->@char u32i64->@char i32u8->@char i32u16->@char 0     ->@char u32i64->@char u32f32->@char u32f64->@char u32f80->@char ; // u32
+  { i32i8->@char i32i16->@char 0     ->@char 0     ->@char i32u8->@char i32u16->@char 0     ->@char 0     ->@char u64f32->@char u64f64->@char u64f80->@char ; // u64
+  { f32i8->@char f32i16->@char f32i32->@char f32i64->@char f32u8->@char f32u16->@char f32u32->@char f32u64->@char 0     ->@char f32f64->@char f32f80->@char ; // f32
+  { f64i8->@char f64i16->@char f64i32->@char f64i64->@char f64u8->@char f64u16->@char f64u32->@char f64u64->@char f64f32->@char 0     ->@char f64f80->@char ; // f64
+  { f80i8->@char f80i16->@char f80i32->@char f80i64->@char f80u8->@char f80u16->@char f80u32->@char f80u64->@char f80f32->@char f80f64->@char 0     ->@char ;  // f80
 ;;
 
 cast(from@Type to@Type) =
@@ -365,25 +365,25 @@ cast(from@Type to@Type) =
 // If a struct/union is larger than 8 bytes, the same rule is
 // applied to the the next 8 byte chunk.
 //
-// This function returns true->bool if `ty` has only floating-point
+// This function returns true if `ty` has only floating-point
 // members in its byte range [lo, hi).
 has_flonum(ty@Type lo int hi int offset int)bool =
   if ty@.kind == TY_STRUCT || ty@.kind == TY_UNION{
     for (let mem@Member = ty@.members; mem; mem = mem@.next) {
       let d = offset + mem@.offset;
       if !has_flonum(mem@.ty->@Type lo hi d)
-        return false->bool;
+        return false;
     ;
-    return true->bool;
+    return true;
   ;
 
   if ty@.kind == TY_ARRAY{
     for (let i int = 0; i < ty@.array_len; i++) {
       let d = offset + ty@.base@.size * i;
       if !has_flonum(ty@.base lo hi d)
-        return false->bool;
+        return false;
     ;
-    return true->bool;
+    return true;
   ;
 
   return (offset < lo || hi <= offset || ty@.kind == TY_FLOAT || ty@.kind == TY_DOUBLE)->bool;
@@ -472,7 +472,7 @@ push_args(node@Node opt_fpic bool)int =
     case TY_STRUCT:
     case TY_UNION:
       if ty@.size > 16{
-        arg@.pass_by_stack = true->bool;
+        arg@.pass_by_stack = true;
         stack += align_to(ty@.size 8) / 8;
       ; else {
         let fp1 = has_flonum1(ty);
@@ -482,7 +482,7 @@ push_args(node@Node opt_fpic bool)int =
           fp = fp + fp1 + fp2;
           gp = gp + !fp1 + !fp2;
         ; else {
-          arg@.pass_by_stack = true->bool;
+          arg@.pass_by_stack = true;
           stack += align_to(ty@.size 8) / 8;
         ;
       ;
@@ -490,17 +490,17 @@ push_args(node@Node opt_fpic bool)int =
     case TY_FLOAT:
     case TY_DOUBLE:
       if fp++ >= FP_MAX{
-        arg@.pass_by_stack = true->bool;
+        arg@.pass_by_stack = true;
         stack++;
       ;
       break;
     case TY_LDOUBLE:
-      arg@.pass_by_stack = true->bool;
+      arg@.pass_by_stack = true;
       stack += 2;
       break;
     default:
       if gp++ >= GP_MAX{
-        arg@.pass_by_stack = true->bool;
+        arg@.pass_by_stack = true;
         stack++;
       ;
     ;
@@ -512,8 +512,8 @@ push_args(node@Node opt_fpic bool)int =
     stack++;
   ;
 
-  push_args2(node@.args true->bool opt_fpic);
-  push_args2(node@.args false->bool opt_fpic);
+  push_args2(node@.args true opt_fpic);
+  push_args2(node@.args false opt_fpic);
 
   // If the return type is a large struct/union, the caller passes
   // a pointer to a buffer as if it were the first argument.
@@ -802,14 +802,8 @@ gen_expr(node@Node opt_fpic bool) =
     let c = count();
     gen_expr(node@.lhs opt_fpic);
     cmp_zero(node@.lhs@.ty);
-    println("  je .L.false.%d"->@char c);
+    println("  je .L.end.%d"->@char c);
     gen_expr(node@.rhs opt_fpic);
-    cmp_zero(node@.rhs@.ty);
-    println("  je .L.false.%d"->@char c);
-    println("  mov $1, %%rax"->@char);
-    println("  jmp .L.end.%d"->@char c);
-    println(".L.false.%d:"->@char c);
-    println("  mov $0, %%rax"->@char);
     println(".L.end.%d:"->@char c);
     return;
   ;
@@ -817,14 +811,8 @@ gen_expr(node@Node opt_fpic bool) =
     let c = count();
     gen_expr(node@.lhs opt_fpic);
     cmp_zero(node@.lhs@.ty);
-    println("  jne .L.true.%d"->@char c);
+    println("  jne .L.end.%d"->@char c);
     gen_expr(node@.rhs opt_fpic);
-    cmp_zero(node@.rhs@.ty);
-    println("  jne .L.true.%d"->@char c);
-    println("  mov $0, %%rax"->@char);
-    println("  jmp .L.end.%d"->@char c);
-    println(".L.true.%d:"->@char c);
-    println("  mov $1, %%rax"->@char);
     println(".L.end.%d:"->@char c);
     return;
   ;

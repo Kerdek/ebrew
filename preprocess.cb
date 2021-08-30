@@ -45,7 +45,7 @@ preprocess2(tok@Token include_paths@StringArray)@Token
 find_macro(tok@Token)@Macro;
 
 is_hash(tok@Token)bool =
-  return tok@.at_bol && equal(tok "#"->@char);
+  return (tok@.at_bol && equal(tok "#"->@char))->bool;
 ;
 
 // Some preprocessor directives such as #include allow extraneous
@@ -93,8 +93,8 @@ hideset_union(hs1@Hideset hs2@Hideset)@Hideset =
 hideset_contains(hs@Hideset s@char len int)bool =
   for (; hs; hs = hs@.next)
     if strlen(hs@.name) == len && !strncmp(hs@.name->@ s len->unsigned long)
-      return true->bool;
-  return false->bool;
+      return true;
+  return false;
 ;
 
 hideset_intersection(hs1@Hideset hs2@Hideset)@Hideset =
@@ -355,12 +355,12 @@ read_macro_definition(rest@@Token tok@Token)  =
     let b = &va_args_name;
     let params = read_macro_params(&tok tok@.next b);
 
-    let m = add_macro(name false->bool copy_line(rest tok));
+    let m = add_macro(name false copy_line(rest tok));
     m@.params = params;
     m@.va_args_name = va_args_name;
   ; else {
     // Object-like macro
-    add_macro(name true->bool copy_line(rest tok));
+    add_macro(name true copy_line(rest tok));
   ;
 ;
 
@@ -408,7 +408,7 @@ read_macro_args(rest@@Token tok@Token params @MacroParam va_args_name@char)@Macr
   for (; pp; pp = pp@.next) {
     if cur != &head
       expect(&tok ","->@char);
-    cur = cur@.next = read_macro_arg_one(&tok tok false->bool);
+    cur = cur@.next = read_macro_arg_one(&tok tok false);
     cur@.name = pp@.name;
   ;
 
@@ -420,10 +420,10 @@ read_macro_args(rest@@Token tok@Token params @MacroParam va_args_name@char)@Macr
     ; else {
       if pp != params
         tok = skip(tok ","->@char);
-      arg = read_macro_arg_one(&tok tok true->bool);
+      arg = read_macro_arg_one(&tok tok true);
     ;
     arg@.name = va_args_name;
-    arg@.is_va_args = true->bool;
+    arg@.is_va_args = true;
     cur = cur@.next = arg;
   ; else if pp {
     error_tok(start "too many arguments"->@char);
@@ -490,7 +490,7 @@ has_varargs(args @MacroArg) bool =
   for (let ap @MacroArg = args; ap; ap = ap@.next)
     if !strcmp(ap@.name->@ "__VA_ARGS__"->@char)
       return (ap@.tok@.kind != TK_EOF)->bool;
-  return false->bool;
+  return false;
 ;
 
 // Replace func-like macro parameters with given arguments.
@@ -575,7 +575,7 @@ subst(tok@Token args @MacroArg include_paths@StringArray)@ Token =
     // If __VA_ARG__ is empty, __VA_OPT__(x) is expanded to the
     // empty token list. Otherwise, __VA_OPT__(x) is expanded to x.
     if equal(tok "__VA_OPT__"->@char) && equal(tok@.next "("->@char) {
-      let arg = read_macro_arg_one(&tok tok@.next@.next true->bool);
+      let arg = read_macro_arg_one(&tok tok@.next@.next true);
       if has_varargs(args)
         for (let t @Token= arg@.tok; t@.kind != TK_EOF; t = t@.next)
           cur = cur@.next = t;
@@ -605,21 +605,21 @@ subst(tok@Token args @MacroArg include_paths@StringArray)@ Token =
   return head.next;
 ;
 
-// If tok is a macro, expand it and return true->bool.
-// Otherwise, do nothing and return false->bool.
+// If tok is a macro, expand it and return true.
+// Otherwise, do nothing and return false.
 expand_macro(rest@@Token tok@Token include_paths@StringArray)bool =
   if hideset_contains(tok@.hideset->@Hideset tok@.loc tok@.len)
-    return false->bool;
+    return false;
 
   let m = find_macro(tok);
   if !m
-    return false->bool;
+    return false;
 
   // Built-in dynamic macro application such as __LINE__
   if m@.handler {
     rest@ = m@.handler(tok);
     rest@@.next = tok@.next;
-    return true->bool;
+    return true;
   ;
 
   // Object-like macro application
@@ -631,13 +631,13 @@ expand_macro(rest@@Token tok@Token include_paths@StringArray)bool =
     rest@ = append(body tok@.next);
     rest@@.at_bol = tok@.at_bol;
     rest@@.has_space = tok@.has_space;
-    return true->bool;
+    return true;
   ;
 
   // If a funclike macro token is not followed by an argument list,
   // treat it as a normal identifier.
   if !equal(tok@.next "("->@char)
-    return false->bool;
+    return false;
 
   // Function-like macro application
   let macro_token = tok;
@@ -659,7 +659,7 @@ expand_macro(rest@@Token tok@Token include_paths@StringArray)bool =
   rest@ = append(body tok@.next);
   rest@@.at_bol = macro_token@.at_bol;
   rest@@.has_space = macro_token@.has_space;
-  return true->bool;
+  return true;
 ;
 
 sipcache HashMap;
@@ -701,10 +701,10 @@ read_include_filename(rest@@Token tok@Token is_dquote@bool include_paths @String
     // For example, "\f" in "C:\foo" is not a formfeed character but
     // just two non-control characters, backslash and f.
     // So we don't want to use token@.str.
-    is_dquote@ = true->bool;
+    is_dquote@ = true;
     rest@ = skip_line(tok@.next);
     let a = tok@.loc + 1 b = tok@.len - 2;
-    return strndup(a->@char b->unsigned long);
+    return strndup(a b->unsigned long);
   ;
 
   // Pattern 2: #include <foo.h>
@@ -718,7 +718,7 @@ read_include_filename(rest@@Token tok@Token is_dquote@bool include_paths @String
       if tok@.at_bol || tok@.kind == TK_EOF
         error_tok(tok "expected '>'"->@char);
 
-    is_dquote@ = false->bool;
+    is_dquote@ = false;
     rest@ = skip_line(tok@.next);
     return join_tokens(start@.next tok);
   ;
@@ -750,7 +750,7 @@ detect_include_guard(tok@Token)@char =
   if tok@.kind != TK_IDENT
     return 0->@char;
 
-  let macro = strndup(tok@.loc->@char tok@.len->unsigned long);
+  let macro = strndup(tok@.loc tok@.len->unsigned long);
   tok = tok@.next;
 
   if !is_hash(tok) || !equal(tok@.next "define"->@char) || !equal(tok@.next@.next macro)
@@ -837,7 +837,7 @@ preprocess2(tok@Token include_paths@StringArray)@Token =
     tok = tok@.next;
 
     if equal(tok "include"->@char) {
-      let is_dquote  = false->bool;
+      let is_dquote  = false;
       let c = &is_dquote;
       let filename = read_include_filename(&tok tok@.next c include_paths);
 
@@ -855,7 +855,7 @@ preprocess2(tok@Token include_paths@StringArray)@Token =
     ;
 
     if equal(tok "include_next"->@char) {
-      let ignore = false->bool;
+      let ignore = false;
       let c = &ignore;
       let filename = read_include_filename(&tok tok@.next c include_paths);
       let path = search_include_next(filename include_paths);
@@ -908,7 +908,7 @@ preprocess2(tok@Token include_paths@StringArray)@Token =
       cond_incl@.ctx = IN_ELIF;
 
       if !cond_incl@.included && eval_const_expr(&tok tok include_paths)
-        cond_incl@.included = true->bool;
+        cond_incl@.included = true;
       else
         tok = skip_cond_incl(tok);
       continue;
@@ -972,7 +972,7 @@ preprocess2(tok@Token include_paths@StringArray)@Token =
 
 export define_macro(name@char buf@char)  =
   let tok = tokenize(new_file("<built-in>"->@char 1 buf));
-  add_macro(name true->bool tok);
+  add_macro(name true tok);
 ;
 
 export undef_macro(name@char)  =
@@ -980,7 +980,7 @@ export undef_macro(name@char)  =
 ;
 
 add_builtin(name@char fn@macro_handler_fn)@Macro =
-  let m = add_macro(name true->bool 0->@Token);
+  let m = add_macro(name true 0->@Token);
   m@.handler = fn;
   return m;
 ;
@@ -1016,8 +1016,8 @@ timestamp_macro(tmpl@Token)@Token =
 ;
 
 fmmon[][4]char = {
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+  "Jan" "Feb" "Mar" "Apr" "May" "Jun"
+  "Jul" "Aug" "Sep" "Oct" "Nov" "Dec"
 ;;
 format_date(tm@ struct tm)@ char =
   return format("\"%s %2d %d\""->@char fmmon[tm@.tm_mon] tm@.tm_mday tm@.tm_year + 1900);

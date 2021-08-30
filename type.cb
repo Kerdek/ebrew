@@ -1,19 +1,19 @@
 #include "chub.hb"
 
 export 
-  ty_void     @ Type = &(let Type){ TY_VOID   ->TypeKind,  1,  1;
-  ty_bool     @ Type = &(let Type){ TY_BOOL   ->TypeKind,  1,  1;
-  ty_char     @ Type = &(let Type){ TY_CHAR   ->TypeKind,  1,  1;
-  ty_short    @ Type = &(let Type){ TY_SHORT  ->TypeKind,  2,  2;
-  ty_int      @ Type = &(let Type){ TY_INT    ->TypeKind,  4,  4;
-  ty_long     @ Type = &(let Type){ TY_LONG   ->TypeKind,  8,  8;
-  ty_uchar    @ Type = &(let Type){ TY_CHAR   ->TypeKind,  1,  1, true->bool;
-  ty_ushort   @ Type = &(let Type){ TY_SHORT  ->TypeKind,  2,  2, true->bool;
-  ty_uint     @ Type = &(let Type){ TY_INT    ->TypeKind,  4,  4, true->bool;
-  ty_ulong    @ Type = &(let Type){ TY_LONG   ->TypeKind,  8,  8, true->bool;
-  ty_float    @ Type = &(let Type){ TY_FLOAT  ->TypeKind,  4,  4;
-  ty_double   @ Type = &(let Type){ TY_DOUBLE ->TypeKind,  8,  8;
-  ty_ldouble  @ Type = &(let Type){ TY_LDOUBLE->TypeKind, 16, 16;
+  ty_void     @ Type = &(let Type){ TY_VOID   ->TypeKind  1  1;
+  ty_bool     @ Type = &(let Type){ TY_BOOL   ->TypeKind  1  1;
+  ty_char     @ Type = &(let Type){ TY_CHAR   ->TypeKind  1  1;
+  ty_short    @ Type = &(let Type){ TY_SHORT  ->TypeKind  2  2;
+  ty_int      @ Type = &(let Type){ TY_INT    ->TypeKind  4  4;
+  ty_long     @ Type = &(let Type){ TY_LONG   ->TypeKind  8  8;
+  ty_uchar    @ Type = &(let Type){ TY_CHAR   ->TypeKind  1  1 true;
+  ty_ushort   @ Type = &(let Type){ TY_SHORT  ->TypeKind  2  2 true;
+  ty_uint     @ Type = &(let Type){ TY_INT    ->TypeKind  4  4 true;
+  ty_ulong    @ Type = &(let Type){ TY_LONG   ->TypeKind  8  8 true;
+  ty_float    @ Type = &(let Type){ TY_FLOAT  ->TypeKind  4  4;
+  ty_double   @ Type = &(let Type){ TY_DOUBLE ->TypeKind  8  8;
+  ty_ldouble  @ Type = &(let Type){ TY_LDOUBLE->TypeKind 16 16;
 ;
 
 new_type(kind TypeKind size int alignment int) @Type =
@@ -36,12 +36,12 @@ export is_flonum(ty@ Type) bool =
 ;
 
 export is_numeric(ty@ Type) bool =
-  return is_integer(ty) || is_flonum(ty);
+  return (is_integer(ty) || is_flonum(ty))->bool;
 ;
 
 export format_type(t @Type s @char) =
   switch (t@.kind) {
-  case TY_VOID: return;
+  case TY_VOID: strcat(s "void"->@char); return;
   case TY_BOOL: strcat(s "bool"->@char); return;
   case TY_FLOAT: strcat(s "void"->@char); return;
   case TY_DOUBLE: strcat(s "double"->@char); return;
@@ -81,41 +81,41 @@ export format_type(t @Type s @char) =
 ;
 
 export is_type_equal(t @Type u @Type) bool =
-  if t == u return true->bool;
+  if t == u return true;
   if t@.origin return is_type_equal(t@.origin u);
   if u@.origin return is_type_equal(t u@.origin);
-  if t@.kind != u@.kind return false->bool;
+  if t@.kind != u@.kind return false;
   switch (t@.kind) {
   case TY_VOID:
   case TY_FLOAT:
   case TY_DOUBLE:
   case TY_LDOUBLE:
-    return true->bool;
+    return true;
   case TY_CHAR:
   case TY_SHORT:
   case TY_INT:
   case TY_LONG:
     return (t@.is_unsigned == u@.is_unsigned)->bool;
   case TY_FUNC: {
-    if !is_type_equal(t@.return_ty u@.return_ty) return false->bool;
-    if t@.is_variadic != u@.is_variadic return false->bool;
+    if !is_type_equal(t@.return_ty u@.return_ty) return false;
+    if t@.is_variadic != u@.is_variadic return false;
     let p = t@.params;
     let q = u@.params;
-    for (; p && q; p = p@.next, q = q@.next) if !is_type_equal(p q) return false->bool;
+    for (; p && q;) { if !is_type_equal(p q) return false; p = p@.next; q = q@.next;;
     return (p == q)->bool;
   ;
   case TY_ARRAY:
-    if !is_type_equal(t@.base u@.base) return false->bool;
+    if !is_type_equal(t@.base u@.base) return false;
     return (t@.array_len == u@.array_len)->bool;
   case TY_PTR:
     return is_type_equal(t@.base u@.base);
   ;
-  return false->bool;
+  return false;
 ;
 
 export is_compatible(t1@ Type t2@ Type) bool =
   if t1 == t2
-    return true->bool;
+    return true;
 
   if t1@.origin
     return is_compatible(t1@.origin t2);
@@ -124,7 +124,7 @@ export is_compatible(t1@ Type t2@ Type) bool =
     return is_compatible(t1 t2@.origin);
 
   if t1@.kind != t2@.kind
-    return false->bool;
+    return false;
 
   switch (t1@.kind) {
   case TY_CHAR:
@@ -135,29 +135,30 @@ export is_compatible(t1@ Type t2@ Type) bool =
   case TY_FLOAT:
   case TY_DOUBLE:
   case TY_LDOUBLE:
-    return true->bool;
+    return true;
   case TY_PTR:
-    return false->bool;
+    return false;
   case TY_FUNC: {
     if !is_compatible(t1@.return_ty t2@.return_ty)
-      return false->bool;
+      return false;
     if t1@.is_variadic != t2@.is_variadic
-      return false->bool;
+      return false;
 
     let p1 = t1@.params;
     let p2 = t2@.params;
-    for (; p1 && p2; p1 = p1@.next, p2 = p2@.next)
+    for (; p1 && p2;) {
       if !is_compatible(p1 p2)
-        return false->bool;
+        return false;
+      p1 = p1@.next; p2 = p2@.next;;
     return (!p1 && !p2)->bool;
   ;
   case TY_ARRAY:
     if !is_compatible(t1@.base t2@.base)
-      return false->bool;
+      return false;
     return (t1@.array_len < 0 && t2@.array_len < 0 &&
            t1@.array_len == t2@.array_len)->bool;
   ;
-  return false->bool;
+  return false;
 ;
 
 export copy_type(t @Type) @Type =
@@ -232,8 +233,8 @@ get_common_type(ty1@ Type ty2@ Type)@ Type =
 // This operation is called the "usual arithmetic conversion".
 usual_arith_conv(lhs@@ Node rhs@@ Node) =
   let ty = get_common_type(lhs@@.ty rhs@@.ty);
-  lhs@ = new_cast(lhs@ ty);
-  rhs@ = new_cast(rhs@ ty);
+  if !is_type_equal(lhs@@.ty ty) lhs@ = new_cast(lhs@ ty);
+  if !is_type_equal(rhs@@.ty ty) rhs@ = new_cast(rhs@ ty);
 ;
 
 export add_type(node@ Node) =
@@ -271,15 +272,13 @@ export add_type(node@ Node) =
     return;
   case ND_NEG: {
     let ty = get_common_type(ty_int node@.lhs@.ty);
-    node@.lhs = new_cast(node@.lhs ty);
+    if !is_type_equal(node@.lhs@.ty ty) node@.lhs = new_cast(node@.lhs ty);
     node@.ty = ty;
     return;
   ;
   case ND_ASSIGN:
-    if node@.lhs@.ty@.kind == TY_ARRAY
-      error_tok(node@.lhs@.tok "not an lvalue"->@char);
-    if node@.lhs@.ty@.kind != TY_STRUCT
-      node@.rhs = new_cast(node@.rhs node@.lhs@.ty);
+    if node@.lhs@.ty@.kind == TY_ARRAY error_tok(node@.lhs@.tok "not an lvalue"->@char);
+    if node@.lhs@.ty@.kind != TY_STRUCT && !is_type_equal(node@.rhs@.ty node@.lhs@.ty) node@.rhs = new_cast(node@.rhs node@.lhs@.ty);
     node@.ty = node@.lhs@.ty;
     return;
   case ND_EQ:
@@ -287,11 +286,15 @@ export add_type(node@ Node) =
   case ND_LT:
   case ND_LE:
   case ND_GT:
-  case ND_GE:;
+  case ND_GE:
+    node@.ty = ty_int;
+    return;
+  case ND_LOGOR:
+  case ND_LOGAND:;
     let a = &node@.lhs;
     let b = &node@.rhs;
     usual_arith_conv(a b);
-    node@.ty = ty_int;
+    node@.ty = a@@.ty;
     return;
   case ND_FUNCALL:
     node@.ty = node@.func_ty@.return_ty;
@@ -299,8 +302,6 @@ export add_type(node@ Node) =
   case ND_NOT:
     node@.ty = ty_int;
     return;
-  case ND_LOGOR:
-  case ND_LOGAND:
     node@.ty = node@.lhs@.ty;
     return;
   case ND_BITNOT:
@@ -321,6 +322,7 @@ export add_type(node@ Node) =
     ;
     return;
   case ND_COMMA:
+    //if node@.lhs@.ty/*@.kind != TY_VOID*/ error_tok(node@.tok "value may not be discarded by comma expression without a cast to void"->@char);
     node@.ty = node@.rhs@.ty;
     return;
   case ND_MEMBER:

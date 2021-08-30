@@ -103,10 +103,10 @@ export skip(tok@ Token op@ char)@ Token =
 export consume(rest@@ Token tok@ Token str@ char) bool =
   if equal(tok str) {
     rest@ = tok@.next;
-    return true->bool;
+    return true;
   ;
   rest@ = tok;
-  return false->bool;
+  return false;
 ;
 
 // Create a new token.
@@ -120,7 +120,7 @@ new_token(kind typeof 0->@Token@.kind start@ char end@ char)@ Token =
   tok@.at_bol = at_bol;
   tok@.has_space = has_space;
 
-  at_bol = has_space = false->bool;
+  at_bol = has_space = false;
   return tok;
 ;
 
@@ -154,12 +154,12 @@ from_hex(c char) int =
 ;
 
 rpkw[]@ char = {
-  "<<="->@char, ">>="->@char, "..."->@char, "=="->@char,
-  "!=" ->@char, "<=" ->@char, ">=" ->@char, "->"->@char,
-  "+=" ->@char, "-=" ->@char, "*=" ->@char, "/="->@char,
-  "++" ->@char, "--" ->@char, "%=" ->@char, "&="->@char,
-  "|=" ->@char, "^=" ->@char, "&&" ->@char, "||"->@char,
-  "<<" ->@char, ">>" ->@char, "##" ->@char
+  "<<="->@char ">>="->@char "..."->@char "=="->@char
+  "!=" ->@char "<=" ->@char ">=" ->@char "->"->@char
+  "+=" ->@char "-=" ->@char "*=" ->@char "/="->@char
+  "++" ->@char "--" ->@char "%=" ->@char "&="->@char
+  "|=" ->@char "^=" ->@char "&&" ->@char "||"->@char
+  "<<" ->@char ">>" ->@char "##" ->@char
 ;;
 read_punct(p@ char) int =
   for (let i  int= 0; i < (sizeof typeof rpkw) / (sizeof typeof rpkw@); i++)
@@ -171,11 +171,12 @@ read_punct(p@ char) int =
 
 ikmap HashMap
 ikkw[]@ char = {
-  "let"       ->@char, "return"      ->@char, "if"           ->@char, "else"    ->@char, "for"          ->@char, "while"   ->@char, "int"     ->@char, "sizeof"       ->@char, "same"        ->@char, "char"     ->@char,
-  "struct"    ->@char, "union"       ->@char, "short"        ->@char, "long"    ->@char, "void"         ->@char, "typedef" ->@char, "_Bool"   ->@char, "enum"         ->@char, "static"      ->@char, "export"   ->@char,
-  "goto"      ->@char, "break"       ->@char, "continue"     ->@char, "switch"  ->@char, "case"         ->@char, "default" ->@char, "extern"  ->@char, "alignof"      ->@char, "align"       ->@char, "do"       ->@char,
-  "signed"    ->@char, "unsigned"    ->@char, "const"        ->@char, "volatile"->@char, "auto"         ->@char, "register"->@char, "restrict"->@char, "__restrict"   ->@char, "__restrict__"->@char, "_Noreturn"->@char,
-  "float"     ->@char, "double"      ->@char, "typeof"       ->@char, "asm"     ->@char, "_Thread_local"->@char, "__thread"->@char, "_Atomic" ->@char, "__attribute__"->@char
+  "let"       ->@char "return"      ->@char "if"           ->@char "else"    ->@char "for"          ->@char "while"   ->@char "int"     ->@char "sizeof"       ->@char "same"        ->@char "char"     ->@char
+  "struct"    ->@char "union"       ->@char "short"        ->@char "long"    ->@char "void"         ->@char "typedef" ->@char "_Bool"   ->@char "enum"         ->@char "static"      ->@char "export"   ->@char
+  "goto"      ->@char "break"       ->@char "continue"     ->@char "switch"  ->@char "case"         ->@char "default" ->@char "extern"  ->@char "alignof"      ->@char "align"       ->@char "do"       ->@char
+  "signed"    ->@char "unsigned"    ->@char "const"        ->@char "volatile"->@char "auto"         ->@char "register"->@char "restrict"->@char "__restrict"   ->@char "__restrict__"->@char "_Noreturn"->@char
+  "float"     ->@char "double"      ->@char "typeof"       ->@char "asm"     ->@char "_Thread_local"->@char "__thread"->@char "_Atomic" ->@char "__attribute__"->@char "bool"        ->@char "true"     ->@char
+  "false"     ->@char
 ;;
 is_keyword(tok@ Token) bool =
   if ikmap.capacity == 0 {
@@ -372,31 +373,31 @@ convert_pp_int(tok@ Token) bool =
   let val = strtoul(p q base);
 
   // Read U, L or LL suffixes.
-  let l = false->bool;
-  let u = false->bool;
+  let l = false;
+  let u = false;
 
   if startswith(p "LLU"->@char) || startswith(p "LLu"->@char) ||
       startswith(p "llU"->@char) || startswith(p "llu"->@char) ||
       startswith(p "ULL"->@char) || startswith(p "Ull"->@char) ||
       startswith(p "uLL"->@char) || startswith(p "ull"->@char) {
     p += 3;
-    l = u = true->bool;
+    l = u = true;
   ; else if !strncasecmp(p "lu"->@char 2->unsigned long) || !strncasecmp(p "ul"->@char 2->unsigned long) {
     p += 2;
-    l = u = true->bool;
+    l = u = true;
   ; else if startswith(p "LL"->@char) || startswith(p "ll"->@char) {
     p += 2;
-    l = true->bool;
+    l = true;
   ; else if p@ == 'L' || p@ == 'l' {
     p++;
-    l = true->bool;
+    l = true;
   ; else if p@ == 'U' || p@ == 'u' {
     p++;
-    u = true->bool;
+    u = true;
   ;
 
   if p != tok@.loc + tok@.len
-    return false->bool;
+    return false;
 
   // Infer a type.
   let ty = 0->@Type;
@@ -429,7 +430,7 @@ convert_pp_int(tok@ Token) bool =
   tok@.kind = TK_NUM;
   tok@.val = val;
   tok@.ty = ty;
-  return true->bool;
+  return true;
 ;
 
 // The definition of the numeric literal at the preprocessing stage
@@ -509,8 +510,8 @@ export tokenize(file@ File)@ Token =
     head = (let Token){;
     cur = &head;
 
-  at_bol = true->bool;
-  has_space = false->bool;
+  at_bol = true;
+  has_space = false;
 
   while p@ {
     // Skip line comments.
@@ -518,7 +519,7 @@ export tokenize(file@ File)@ Token =
       p += 2;
       while p@ != '\n'
         p++;
-      has_space = true->bool;
+      has_space = true;
       continue;
     ;
 
@@ -528,22 +529,22 @@ export tokenize(file@ File)@ Token =
       if !q
         error_at(p "unclosed block comment"->@char);
       p = q + 2;
-      has_space = true->bool;
+      has_space = true;
       continue;
     ;
 
     // Skip newline.
     if p@ == '\n' {
       p++;
-      at_bol = true->bool;
-      has_space = false->bool;
+      at_bol = true;
+      has_space = false;
       continue;
     ;
 
     // Skip whitespace characters.
     if isspace(p@) {
       p++;
-      has_space = true->bool;
+      has_space = true;
       continue;
     ;
 

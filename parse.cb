@@ -1,90 +1,63 @@
 #include "chub.hb"
 
 type
-  Scope       struct Scope
-  Initializer struct Initializer
-  InitDesg    struct InitDesg
-  VarScope    struct VarScope
-  VarAttr     struct VarAttr
+  VarScope struct {
+    var      @Obj
+    type_def @Type
+    enum_ty  @Type
+    enum_val  int;
+  }
+  Scope struct {
+    next @same
+    vars  HashMap
+    tags  HashMap;
+  }
+  VarAttr struct {
+    is_type    bool
+    is_static  bool
+    is_extern  bool
+    is_export  bool
+    is_inline  bool
+    is_tls     bool
+    alignment  int;
+  }
+  Initializer struct {
+    next        @same
+    ty          @Type
+    tok         @Token
+    is_flexible  bool
+    expr        @Node
+    children   @@same
+    mem         @Member;
+  }
+  InitDesg struct {
+    next     @same
+    idx       int
+    member   @Member
+    var      @Obj;
+  }
 ;
 
-_ struct VarScope {
-  var@ Obj
-  type_def@ Type
-  enum_ty@ Type
-  enum_val int;
-}
-
-_ struct Scope {
-  next@ Scope
-  vars HashMap
-  tags HashMap;
-}
-
-_ struct VarAttr {
-  is_type   bool
-  is_static bool
-  is_extern bool
-  is_export bool
-  is_inline bool
-  is_tls    bool
-  alignment  int;
-}
-
-_ struct Initializer {
-  next@       Initializer
-  ty@                Type
-  tok@              Token
-  is_flexible        bool
-  expr@              Node
-  children@@  Initializer
-  mem@             Member;
-}
-
-_ struct InitDesg {
-  next@   InitDesg
-  idx          int
-  member@   Member
-  var@         Obj;
-};
-
-
-// All local variable instances created during parsing are
-// accumulated to this list.
-locals@ Obj
-// Likewise, global variables are accumulated to this list.
-globals@ Obj
-scope@ Scope = &(let Scope){;
-
-current_type @Type
-
-// Points to the function object the parser is currently parsing.
-current_fn@ Obj
-
-// Lists of all goto statements and labels in the curent function.
-gotos@ Node
-labels@ Node
-
-// Current "goto"->@char and "continue"->@char jump targets.
-brk_label@ char
-cont_label@ char
-
-// Points to a node representing a switch if we are parsing
-// a switch statement. Otherwise, NULL.
-current_switch@ Node
-
-builtin_alloca@ Obj
+locals         @Obj
+globals        @Obj
+scope          @Scope = &(let Scope){;
+current_type   @Type
+current_fn     @Obj
+gotos          @Node
+labels         @Node
+brk_label      @char
+cont_label     @char
+current_switch @Node
+builtin_alloca @Obj
 
 add                (k @@Token) @Node
 compound_stmt      (k @@Token) @Node
 expr_stmt          (k @@Token) @Node
-expr               (k @@Token) @Node
 assign             (k @@Token) @Node
 conditional        (k @@Token) @Node
 postfix            (k @@Token) @Node
-unary              (k @@Token) @Node
+prefix             (k @@Token) @Node
 primary            (k @@Token) @Node
-cast               (k @@Token) @Node
 
 enum_specifier     (k @@Token) @Type
 typeof_specifier   (k @@Token) @Type
@@ -119,245 +92,158 @@ new_add            (lhs   @Node   rhs @Node  tok@ Token                       ) 
 new_sub            (lhs   @Node   rhs @Node  tok@ Token                       ) @Node
 get_struct_member  (ty    @Type   tok @Token                                  ) @Member;
 
-align_down(n int alignment int) int = return align_to(
-  n - alignment + 1
-  alignment);;
-
-enter_scope(void) = let sc = calloc(1->unsigned long sizeof Scope)->@Scope; sc@.next = scope; scope = sc;;
-
+align_down(n int alignment int) int = let a = n - alignment + 1; return align_to(a alignment);;
+enter_scope(void) = let sc = calloc(1ul sizeof Scope)->@Scope; sc@.next = scope; scope = sc;;
 leave_scope(void) = scope = scope@.next;;
-
-search_scope(tok @Token which(_@ Scope)@HashMap)@ = for (let sc@ Scope = scope; sc; sc = sc@.next) { let sc2 = hashmap_get2(which(sc)->@HashMap tok@.loc tok@.len); if sc2 return sc2; ; return 0->@; ;
-
+search_scope(tok @Token which(_@ Scope)@HashMap)@ = for (let sc@ Scope = scope; sc; sc = sc@.next) { let sc2 = hashmap_get2(which(sc) tok@.loc tok@.len); if sc2 return sc2; ; return 0->@; ;
 scope_vars(s @Scope) @HashMap = return &s@.vars;;
 scope_tags(s @Scope) @HashMap = return &s@.tags;;
-
-new_node(kind NodeKind tok @Token) @Node =
-  let node = calloc(1->unsigned long sizeof Node)->@Node;
-  node@.kind = kind;
-  node@.tok = tok;
-  return node;
-;
-
-new_binary(kind NodeKind lhs @Node rhs @Node tok @Token) @Node =
-  let node = new_node(kind tok);
-  node@.lhs = lhs;
-  node@.rhs = rhs;
-  return node;
-;
-
-new_unary(kind NodeKind expr @Node tok @Token) @Node =
-  let node = new_node(kind tok);
-  node@.lhs = expr;
-  return node;
-;
-
-new_num(val int64_t tok @Token) @Node =
-  let node = new_node(ND_NUM->NodeKind tok);
-  node@.val = val;
-  return node;
-;
-
-new_long(val int64_t tok @Token) @Node =
-  let node = new_node(ND_NUM->NodeKind tok);
-  node@.val = val;
-  node@.ty = ty_long;
-  return node;
-;
-
-new_ulong(val long tok @Token) @Node =
-  let node = new_node(ND_NUM->NodeKind tok);
-  node@.val = val;
-  node@.ty = ty_ulong;
-  return node;
-;
-
-new_var_node(var @Obj tok @Token) @Node =
-  let node = new_node(ND_VAR->NodeKind tok);
-  node@.var = var;
-  return node;
-;
-
-export new_cast(expr@ Node ty@ Type)@ Node =
-  add_type(expr);
-
-  let node = calloc(1->unsigned long sizeof Node)->@Node;
-  node@.kind = ND_CAST->NodeKind;
-  node@.tok = expr@.tok;
-  node@.lhs = expr;
-  node@.ty = copy_type(ty);
-  return node;
-;
-
-push_scope(name@ char)@ VarScope =
-  let sc = calloc(1->unsigned long sizeof VarScope)->@VarScope;
-  hashmap_put(&scope@.vars name sc->@);
-  return sc;
-;
-
-new_initializer(ty@ Type is_flexible bool)@ Initializer =
-  let init = calloc(1->unsigned long sizeof Initializer)->@Initializer;
-  init@.ty = ty;
-
-  if ty@.kind == TY_ARRAY {
-    if is_flexible && ty@.size < 0 {
-      init@.is_flexible = true->bool;
-      return init;
-    ;
-
-    init@.children = calloc(ty@.array_len->unsigned long sizeof@ Initializer);
-    for (let i int = 0; i < ty@.array_len; i++)
-      init@.children[i] = new_initializer(ty@.base false->bool);
-    return init;
+new_node(c NodeKind k @Token) @Node =
+  let e = calloc(1ul sizeof Node)->@Node;
+  e@.kind = c; e@.tok = k;
+  return e;;
+new_binary(c NodeKind a @Node b @Node k @Token) @Node =
+  let e = new_node(c k);
+  e@.lhs = a; e@.rhs = b;
+  return e;;
+new_prefix(c NodeKind a @Node k @Token) @Node =
+  let e = new_node(c k);
+  e@.lhs = a;
+  return e;;
+new_num(l long k @Token) @Node =
+  let e = new_node(ND_NUM->NodeKind k);
+  e@.val = l;
+  return e;;
+new_long(l long k @Token) @Node =
+  let e = new_node(ND_NUM->NodeKind k);
+  e@.val = l; e@.ty = ty_long;
+  return e;;
+new_ulong(l long k @Token) @Node =
+  let e = new_node(ND_NUM->NodeKind k);
+  e@.val = l;
+  e@.ty = ty_ulong;
+  return e;;
+new_bool(l long k @Token) @Node =
+  let e = new_node(ND_NUM->NodeKind k);
+  e@.val = l;
+  e@.ty = ty_bool;
+  return e;;
+new_var_node(o @Obj k @Token) @Node =
+  let e = new_node(ND_VAR->NodeKind k);
+  e@.var = o;
+  return e;;
+s1 [1024]char s2 [1024]char;
+export new_cast(a @Node t @Type) @Node =
+  add_type(a);
+  let e = new_prefix(ND_CAST->NodeKind a a@.tok);
+  e@.ty = copy_type(t);
+  if is_type_equal(a@.ty e@.ty) {
+    s1[0] = 0; s2[0] = 0;
+    format_type(a@.ty s1->@char);
+    format_type(e@.ty s2->@char);
+    warn_tok(a@.tok "needless cast from %s to %s"->@char s1 s2);
   ;
-
-  if ty@.kind == TY_STRUCT || ty@.kind == TY_UNION {
-    // Count the number of struct members.
+  return e;;
+push_scope(name@ char) @VarScope =
+  let sc = calloc(1ul sizeof VarScope)->@VarScope;
+  let a = &scope@.vars;
+  hashmap_put(a name sc->@);
+  return sc;;
+new_initializer(t @Type is_flexible bool) @Initializer =
+  let e = calloc(1ul sizeof Initializer)->@Initializer;
+  e@.ty = t;
+  if t@.kind == TY_ARRAY {
+    if is_flexible && t@.size < 0 {
+      e@.is_flexible = true;
+      return e;;
+    e@.children = calloc(t@.array_len->unsigned long sizeof @Initializer);
+    for (let i int = 0; i < t@.array_len; i++) e@.children[i] = new_initializer(t@.base false);
+    return e;;
+  if t@.kind == TY_STRUCT || t@.kind == TY_UNION {
     let len = 0;
-    for (let mem@ Member = ty@.members; mem; mem = mem@.next)
-      len++;
-
-    init@.children = calloc(len->unsigned long sizeof@ Initializer);
-
-    for (let mem@ Member = ty@.members; mem; mem = mem@.next) {
-      if is_flexible && ty@.is_flexible && !mem@.next {
-        let child = calloc(1->unsigned long sizeof Initializer)->@ Initializer;
+    for (let mem@ Member = t@.members; mem; mem = mem@.next) len++;
+    e@.children = calloc(len->unsigned long sizeof @);
+    for (let mem@ Member = t@.members; mem; mem = mem@.next) {
+      if is_flexible && t@.is_flexible && !mem@.next {
+        let child = calloc(1ul sizeof Initializer)->@Initializer;
         child@.ty = mem@.ty;
-        child@.is_flexible = true->bool;
-        init@.children[mem@.idx] = child;
-      ; else {
-        init@.children[mem@.idx] = new_initializer(mem@.ty->@Type false->bool);
-      ;
-    ;
-    return init;
-  ;
-
-  return init;
-;
-
-new_var(name@ char ty@ Type)@ Obj =
-  let var = calloc(1->unsigned long sizeof Obj)->@Obj;
-  var@.name = name;
-  var@.ty = ty;
-  var@.alignment = ty@.alignment;
-  push_scope(name)@.var = var;
-  return var;
-;
-
-new_lvar(name@ char ty@ Type)@ Obj =
-  let var = new_var(name ty);
-  var@.is_local = true->bool;
-  var@.next = locals;
-  locals = var;
-  return var;
-;
-
-new_gvar(name@ char ty@ Type)@ Obj =
-  let var = new_var(name ty);
-  var@.next = globals;
-  var@.is_export = false->bool;
-  var@.is_definition = true->bool;
-  globals = var;
-  return var;
-;
-
+        child@.is_flexible = true;
+        e@.children[mem@.idx] = child;;
+      else e@.children[mem@.idx] = new_initializer(mem@.ty->@Type false);    ;
+    return e;  ;
+  return e;;
+new_var(name @char t @Type) @Obj =
+  let o = calloc(1ul sizeof Obj)->@Obj;
+  o@.name = name;
+  o@.ty = t;
+  o@.alignment = t@.alignment;
+  push_scope(name)@.var = o;
+  return o;;
+new_lvar(name @char t @Type) @Obj =
+  let o = new_var(name t);
+  o@.is_local = true;
+  o@.next = locals;
+  locals = o;
+  return o;;
+new_gvar(name @char t @Type) @Obj =
+  let o = new_var(name t);
+  o@.next = globals;
+  o@.is_export = false;
+  o@.is_definition = true;
+  globals = o;
+  return o;;
 nunid int = 0;
-new_unique_name(void)@ char =
-  return format(".L..%d"->@char nunid++);
-;
-
-new_anon_gvar(ty@ Type)@ Obj =
-  return new_gvar(new_unique_name() ty);
-;
-
-new_string_literal(p@ char ty@ Type)@ Obj =
-  let var = new_anon_gvar(ty);
-  var@.init_data = p;
-  return var;
-;
-
-get_ident(tok@ Token)@ char =
-  if tok@.kind != TK_IDENT error_tok(tok "expected an identifier"->@char);
-  return strndup(tok@.loc tok@.len->unsigned long);
-;
-
-find_type(tok@ Token)@ Type =
-  if tok@.kind == TK_IDENT {
-    let sc = search_scope(tok scope_vars->@(sc@Scope)@HashMap)->@VarScope;
-    if sc return sc@.type_def;
-  ;
-  return 0->@Type;
-;
-
-push_tag_scope(tok@ Token ty@ Type)  =
-  hashmap_put2(&scope@.tags tok@.loc tok@.len ty->@);
-;
-
-declspec(rest @@Token attr@ VarAttr)  =
-  let tok = rest@;
+new_unique_name(void) @char = return format(".L..%d"->@char nunid++);;
+new_anon_gvar(t @Type) @Obj = return new_gvar(new_unique_name() t);;
+new_string_literal(p @char t @Type) @Obj =
+  let o = new_anon_gvar(t);
+  o@.init_data = p;
+  return o;;
+get_ident(k@ Token) @char =
+  if k@.kind != TK_IDENT error_tok(k "expected an identifier"->@char);
+  return strndup(k@.loc k@.len->unsigned long);;
+find_type(k @Token) @Type =
+  if k@.kind == TK_IDENT {
+    let sc = search_scope(k scope_vars->@(sc@Scope)@HashMap)->@VarScope;
+    if sc return sc@.type_def;;
+  return 0->@Type;;
+push_tag_scope(k@ Token t@ Type)  =
+  let a = &scope@.tags;
+  hashmap_put2(a k@.loc k@.len t->@);;
+declspec(k @@Token v@ VarAttr)  =
   for (;;) {
-    if equal(tok "type"->@char) || equal(tok "static"->@char) || equal(tok "export"->@char) || equal(tok "extern"->@char) ||
-        equal(tok "inline"->@char) || equal(tok "_Thread_local"->@char) || equal(tok "__thread"->@char) {
-      if !attr
-        error_tok(tok "storage class specifier is not allowed in this context"->@char);
-
-      (
-        equal(tok "type"->@char  ) ? &attr@.is_type   :
-        equal(tok "export"->@char) ? &attr@.is_export :
-        equal(tok "static"->@char) ? &attr@.is_static :
-        equal(tok "extern"->@char) ? &attr@.is_extern :
-        equal(tok "inline"->@char) ? &attr@.is_inline :
-        &attr@.is_tls
-      )@ = true->bool;
-
-      if (attr@.is_type &&
-          attr@.is_static + attr@.is_export + attr@.is_extern + attr@.is_inline + attr@.is_tls > 1)
-        error_tok(tok "type may not be used together with export, static, extern, inline, __thread or _Thread_local"->@char);
-      tok = tok@.next;
-      continue;
-    ;
-
-    if equal(tok "align"->@char) {
-      if !attr
-        error_tok(tok "align is not allowed in this context"->@char);
-      tok = tok@.next;
-      attr@.alignment = const_expr(&tok tok);
-      continue;
-    ;
-
-    if consume(&tok tok "restrict"->@char) continue;
-
-    rest@ = tok;
-    return;
+    if equal(k@ "type"->@char) || equal(k@ "static"->@char) || equal(k@ "export"->@char) || equal(k@ "extern"->@char) || equal(k@ "inline"->@char) || equal(k@ "_Thread_local"->@char) || equal(k@ "__thread"->@char) {
+      if !v error_tok(k@ "storage class specifier is not allowed in this context"->@char);
+      ( equal(k@ "type"  ->@char) ? &v@.is_type   :
+        equal(k@ "export"->@char) ? &v@.is_export :
+        equal(k@ "static"->@char) ? &v@.is_static :
+        equal(k@ "extern"->@char) ? &v@.is_extern :
+        equal(k@ "inline"->@char) ? &v@.is_inline :
+                             &v@.is_tls      )@ = true;
+      if (v@.is_type && v@.is_static + v@.is_export + v@.is_extern + v@.is_inline + v@.is_tls > 1)
+        error_tok(k@ "type may not be used together with export, static, extern, inline, __thread or _Thread_local"->@char);
+      k@ = k@@.next;
+    ; else if equal(k@ "align"->@char) {
+      if !v error_tok(k@ "align is not allowed in this context"->@char);
+      k@ = k@@.next;
+      v@.alignment = const_expr(k k@);
+    ; else if consume(k k@ "restrict"->@char)
+    ; else return;
   ;
 ;
-
-type_specifier(tok @@Token)@ Type =
-  if equal(tok@ "struct"->@char) {
-    tok@ = tok@@.next;
-    return struct_decl(tok);
-  ;
-  else if equal(tok@ "union"->@char) {
-    tok@ = tok@@.next;
-    return union_decl(tok);
-  ;
-  else if equal(tok@ "enum"->@char) {
-    tok@ = tok@@.next;
-    return enum_specifier(tok);
-  ;
-  else if equal(tok@ "typeof"->@char) {
-    tok@ = tok@@.next;
-    return typeof_specifier(tok);
-  ;
-  else if equal(tok@ "same"->@char) {
-    tok@ = tok@@.next;
-    if !current_type error_tok(tok@ "`same` may not be used outside struct/union definition"->@char);
+type_specifier(k @@Token)@ Type =
+  if consume(k k@ "struct"->@char) return struct_decl     (k); else
+  if consume(k k@ "union" ->@char) return union_decl      (k); else
+  if consume(k k@ "enum"  ->@char) return enum_specifier  (k); else
+  if consume(k k@ "typeof"->@char) return typeof_specifier(k); else
+  if consume(k k@ "same"  ->@char) {
+    if !current_type error_tok(k@ "`same` may not be used outside struct/union definition"->@char);
     return current_type;
   ;
   else {
-    let ty2 = find_type(tok@);
+    let ty2 = find_type(k@);
     if ty2{
-      tok@ = tok@@.next;
+      k@ = k@@.next;
       return ty2;
     ;
     else {
@@ -371,281 +257,171 @@ type_specifier(tok @@Token)@ Type =
         DOUBLE   = 1 << 14
         SIGNED   = 1 << 17
         UNSIGNED = 1 << 18;;
-
       for (;;) {
-        if equal(tok@ "_Bool"->@char)
-          counter += BOOL;
-        else if equal(tok@ "char"->@char)
-          counter += CHAR;
-        else if equal(tok@ "short"->@char)
-          counter += SHORT;
-        else if equal(tok@ "int"->@char)
-          counter += INT;
-        else if equal(tok@ "long"->@char)
-          counter += LONG;
-        else if equal(tok@ "float"->@char)
-          counter += FLOAT;
-        else if equal(tok@ "double"->@char)
-          counter += DOUBLE;
-        else if equal(tok@ "signed"->@char)
-          counter |= SIGNED;
-        else if equal(tok@ "unsigned"->@char)
-          counter |= UNSIGNED;
-        else
+        if equal(k@ "bool"    ->@char) counter += BOOL    ; else
+        if equal(k@ "char"    ->@char) counter += CHAR    ; else
+        if equal(k@ "short"   ->@char) counter += SHORT   ; else
+        if equal(k@ "int"     ->@char) counter += INT     ; else
+        if equal(k@ "long"    ->@char) counter += LONG    ; else
+        if equal(k@ "float"   ->@char) counter += FLOAT   ; else
+        if equal(k@ "double"  ->@char) counter += DOUBLE  ; else
+        if equal(k@ "signed"  ->@char) counter |= SIGNED  ; else
+        if equal(k@ "unsigned"->@char) counter |= UNSIGNED; else
           break;
-        tok@ = tok@@.next;
+        k@ = k@@.next;
       ;
       switch (counter) {
-      case 0:
-        return ty_void;
-      case BOOL:
-        return ty_bool;
-      case CHAR:
-      case SIGNED + CHAR:
-        return ty_char;
-      case UNSIGNED + CHAR:
-        return ty_uchar;
-      case SHORT:
-      case SHORT + INT:
-      case SIGNED + SHORT:
-      case SIGNED + SHORT + INT:
-        return ty_short;
-      case UNSIGNED + SHORT:
-      case UNSIGNED + SHORT + INT:
-        return ty_ushort;
-      case INT:
-      case SIGNED:
-      case SIGNED + INT:
-        return ty_int;
-      case UNSIGNED:
-      case UNSIGNED + INT:
-        return ty_uint;
-      case LONG:
-      case LONG + INT:
-      case LONG + LONG:
-      case LONG + LONG + INT:
-      case SIGNED + LONG:
-      case SIGNED + LONG + INT:
-      case SIGNED + LONG + LONG:
-      case SIGNED + LONG + LONG + INT:
-        return ty_long;
-      case UNSIGNED + LONG:
-      case UNSIGNED + LONG + INT:
-      case UNSIGNED + LONG + LONG:
-      case UNSIGNED + LONG + LONG + INT:
-        return ty_ulong;
-      case FLOAT:
-        return ty_float;
-      case DOUBLE:
-        return ty_double;
-      case LONG + DOUBLE:
-        return ty_ldouble;
-      default:
-        error_tok(tok@ "invalid type"->@char);
+      case 0                            : return ty_void;
+      case BOOL                         : return ty_bool;
+      case CHAR                         :
+      case SIGNED + CHAR                : return ty_char;
+      case UNSIGNED + CHAR              : return ty_uchar;
+      case SHORT                        :
+      case SHORT + INT                  :
+      case SIGNED + SHORT               :
+      case SIGNED + SHORT + INT         : return ty_short;
+      case UNSIGNED + SHORT             :
+      case UNSIGNED + SHORT + INT       : return ty_ushort;
+      case INT                          :
+      case SIGNED                       :
+      case SIGNED + INT                 : return ty_int;
+      case UNSIGNED                     :
+      case UNSIGNED + INT               : return ty_uint;
+      case LONG                         :
+      case LONG + INT                   :
+      case LONG + LONG                  :
+      case LONG + LONG + INT            :
+      case SIGNED + LONG                :
+      case SIGNED + LONG + INT          :
+      case SIGNED + LONG + LONG         :
+      case SIGNED + LONG + LONG + INT   : return ty_long;
+      case UNSIGNED + LONG              :
+      case UNSIGNED + LONG + INT        :
+      case UNSIGNED + LONG + LONG       :
+      case UNSIGNED + LONG + LONG + INT : return ty_ulong;
+      case FLOAT                        : return ty_float;
+      case DOUBLE                       : return ty_double;
+      case LONG + DOUBLE                : return ty_ldouble;
+      default                           : error_tok(k@ "invalid type"->@char);
       ;
     ;
   ;
 ;
-
-func_params(rest @@Token tok@ Token)@ Type =
-  if equal(tok "void"->@char) && consume(&tok tok@.next ")"->@char) {
-    rest@ = tok;
-    return func_type(type_suffix(rest));
-  ;
-
+func_params(k @@Token) @Type =
+  if equal(k@ "void"->@char) && consume(k k@@.next ")"->@char) return func_type(type_suffix(k));
   let
     head = (let Type){;
     cur = &head
-    is_variadic = false->bool;
-
-  while !equal(tok ")"->@char) {
-
-    if consume(&tok tok "..."->@char) {
-      is_variadic = true->bool;
+    is_variadic = false;
+  while !equal(k@ ")"->@char) {
+    if consume(k k@ "..."->@char) {
+      is_variadic = true;
       break;
     ;
-
-    declspec(&tok 0->@VarAttr);
-    let ty2 = declarator(&tok);
-
-    let name = ty2@.name;
-
-    if ty2@.kind == TY_ARRAY {
-      // "array of T"->@char is converted to "pointer to T"->@char only in the parameter
-      // context. For example, argv[]@ is converted to argv@@ by this.
-      ty2 = pointer_to(ty2@.base);
-      ty2@.name = name;
-    ; else if ty2@.kind == TY_FUNC {
-      // Likewise, a function is converted to a pointer to a function
-      // only in the parameter context.
-      ty2 = pointer_to(ty2);
-      ty2@.name = name;
+    declspec(k 0->@VarAttr);
+    let t = declarator(k);
+    let name = t@.name;
+   if t@.kind == TY_FUNC {
+      t = pointer_to(t);
+      t@.name = name;
     ;
-
-    cur = cur@.next = copy_type(ty2);
+    cur = cur@.next = copy_type(t);
   ;
-
-  if cur == &head
-    is_variadic = true->bool;
-
-  rest@ = tok@.next;
-  let ty = func_type(type_suffix(rest));
-  ty@.params = head.next;
-  ty@.is_variadic = is_variadic;
-  return ty;
+  if cur == &head is_variadic = true;
+  k@ = k@@.next;
+  let t = func_type(type_suffix(k));
+  t@.params = head.next;
+  t@.is_variadic = is_variadic;
+  return t;
 ;
-
-array_dimensions(rest @@Token tok@ Token)@ Type =
-  while equal(tok "static"->@char) || equal(tok "restrict"->@char)
-    tok = tok@.next;
-
-  if consume(&tok tok "]"->@char) {
-    rest@ = tok;
-    let ty = type_suffix(rest);
-    return array_of(ty 0-1);
+array_dimensions(k @@Token)@ Type =
+  while equal(k@ "static"->@char) || equal(k@ "restrict"->@char) k@ = k@@.next;
+  if consume(k k@ "]"->@char) {
+    let t = type_suffix(k);
+    let b = -1;
+    return array_of(t b);
   ;
-
-  let expr = conditional(&tok);
-  expect(&tok "]"->@char);
-  rest@ = tok;
-  let ty = type_suffix(rest);
-
-  return array_of(ty eval(expr)->int);
+  let e = conditional(k);
+  expect(k "]"->@char);
+  let t = type_suffix(k);
+  return array_of(t eval(e)->int);
 ;
-
-type_suffix(rest @@Token)@ Type =
-  let tok = rest@;
-  while consume(&tok tok "const"->@char) || consume(&tok tok "volatile"->@char);
-
-  if consume(&tok tok "("->@char)
-    return func_params(rest tok);
-
-  if consume(&tok tok "["->@char)
-    return array_dimensions(rest tok);
-
-  if consume(&tok tok "@"->@char) {
-    rest@ = tok;
-    return pointer_to(type_suffix(rest));
-  ;
-
-  rest@ = tok;
-  return type_specifier(rest);
+type_suffix(k @@Token)@ Type =
+  while consume(k k@ "const"   ->@char) ||
+        consume(k k@ "volatile"->@char);
+     if consume(k k@ "("       ->@char) return func_params           (k) ;
+     if consume(k k@ "["       ->@char) return array_dimensions      (k) ;
+     if consume(k k@ "@"       ->@char) return pointer_to(type_suffix(k));
+  return type_specifier(k);
 ;
-
-declarator(rest @@Token)@ Type =
-  let tok = rest@;
-  let name = tok;
-  rest@ = tok@.next;
-  let ty = type_suffix(rest);
-  ty@.name = name;
-  ty@.name_pos = name;
-  return ty;
+declarator(k @@Token)@ Type =
+  let name = k@;
+  k@ = k@@.next;
+  let t = type_suffix(k);
+  t@.name = name;
+  t@.name_pos = name;
+  return t;
 ;
-
-is_end(tok@ Token) bool =
-  equal(tok ";"->@char);
-;
-
-consume_end(rest @@Token tok@ Token) bool =
-  if equal(tok ";"->@char) {
-    rest@ = tok@.next;
-    return true->bool;
-  ;
-
-  return false->bool;
-;
-
 enum_specifier(k @@Token) @Type =
-  let ty = enum_type();
-  let val = 0;
-  while !consume_end(k k@) {
-    let name = get_ident(k@);
+  let t = enum_type();
+  let l = 0;
+  while !consume(k k@ ";"->@char) {
+    let p = get_ident(k@);
     k@ = k@@.next;
     if equal(k@ "="->@char) {
       k@ = k@@.next;
-      val = const_expr(k k@);
+      l = const_expr(k k@);
     ;
-    let sc = push_scope(name)->@VarScope;
-    sc@.enum_ty = ty;
-    sc@.enum_val = val++;
+    let sc = push_scope(p);
+    sc@.enum_ty = t;
+    sc@.enum_val = l++;
   ;
-  return ty;
+  return t;
 ;
-
-// typeof-specifier = "(" (expr | typename) ")"
-typeof_specifier(rest @@Token)@ Type =
-  let tok = rest@;
-  let ty = 0->@Type;
-  let node = expr(&tok);
-  add_type(node);
-  ty = node@.ty;
-  rest@ = tok;
-  return ty;
+typeof_specifier(k @@Token)@ Type =
+  let t = 0->@Type;
+  let e = prefix(k);
+  add_type(e);
+  t = e@.ty;
+  return t;
 ;
-
-new_alloca(sz@ Node)@ Node =
-  let node = new_unary(ND_FUNCALL->NodeKind new_var_node(builtin_alloca sz@.tok) sz@.tok);
-  node@.func_ty = builtin_alloca@.ty;
-  node@.ty = builtin_alloca@.ty@.return_ty;
-  node@.args = sz;
-  add_type(sz);
-  return node;
-;
-
-declaration(rest @@Token attr@ VarAttr)@ Node =
-  let tok = rest@;
+declaration(k @@Token v @VarAttr) @Node =
   let
     head = (let Node){;
     cur = &head;
-  while !equal(tok ";"->@char) {
-    let ty = declarator(&tok);
-    if ty@.kind == TY_VOID error_tok(tok "variable declared void"->@char);
-    if !ty@.name error_tok(ty@.name_pos "variable name omitted"->@char);
-    if equal(ty@.name "_"->@char) continue;
-
-    if attr && attr@.is_static {
-      // static local variable
-      let var = new_anon_gvar(ty);
-      push_scope(get_ident(ty@.name))@.var = var;
-      if equal(tok "="->@char)
-        gvar_initializer(&tok tok@.next var);
+  while !equal(k@ ";"->@char) {
+    let t = declarator(k);
+    if t@.kind == TY_VOID error_tok(k@ "variable declared void"->@char);
+    if !t@.name error_tok(t@.name_pos "variable name omitted"->@char);
+    if equal(t@.name "_"->@char) continue;
+    if v && v@.is_static {
+      let o = new_anon_gvar(t);
+      push_scope(get_ident(t@.name))@.var = o;
+      if equal(k@ "="->@char) {
+        k@ = k@@.next;
+        gvar_initializer(k k@ o);
+      ;
       continue;
     ;
-
-    let var = new_lvar(get_ident(ty@.name) ty);
-    if attr && attr@.alignment
-      var@.alignment = attr@.alignment;
-
-    if equal(tok "="->@char) {
-      let expr = lvar_initializer(&tok tok@.next var);
-      cur = cur@.next = new_unary(ND_EXPR_STMT->NodeKind expr tok);
+    let o = new_lvar(get_ident(t@.name) t);
+    if v && v@.alignment o@.alignment = v@.alignment;
+    if equal(k@ "="->@char) {
+      k@ = k@@.next;
+      let e = lvar_initializer(k k@ o);
+      cur = cur@.next = new_prefix(ND_EXPR_STMT->NodeKind e k@);
     ;
-
-    if var@.ty@.size < 0
-      error_tok(ty@.name "variable has incomplete type"->@char);
-    if var@.ty@.kind == TY_VOID
-      error_tok(ty@.name "variable declared void"->@char);
+    if o@.ty@.size < 0 error_tok(t@.name "variable has incomplete type"->@char);
+    if o@.ty@.kind == TY_VOID error_tok(t@.name "variable declared void"->@char);
   ;
-
-  let node = new_node(ND_BLOCK->NodeKind tok);
-  node@.body = head.next;
-  rest@ = tok@.next;
-  return node;
-;
-
-skip_excess_element(tok@ Token)@ Token =
-  if equal(tok "{"->@char) {
-    tok = skip_excess_element(tok@.next);
-    return skip(tok ";"->@char);
-  ;
-
-  assign(&tok);
-  return tok;
+  let e = new_node(ND_BLOCK->NodeKind k@);
+  e@.body = head.next;
+  k@ = k@@.next;
+  return e;
 ;
 
 string_initializer(rest @@Token tok@ Token init@ Initializer)  =
   if init@.is_flexible
-    init@ = new_initializer(array_of(init@.ty@.base tok@.ty->@Type@.array_len) false->bool)@;
+    init@ = new_initializer(array_of(init@.ty@.base tok@.ty->@Type@.array_len) false)@;
 
   let len = minl(init@.ty@.array_len->long tok@.ty->@Type@.array_len->long);
 
@@ -768,15 +544,11 @@ designation(rest @@Token tok@ Token init@ Initializer)  =
 // of initializer elements.
 count_array_init_elements(tok@ Token ty@ Type) int =
   let
-    first = true
-    dummy = new_initializer(ty@.base true->bool)
+    dummy = new_initializer(ty@.base true)
     i = 0
     max = 0;
 
-  while !consume_end(&tok tok) {
-    if !first
-      expect(&tok ","->@char);
-    first = false->bool;
+  while !consume(&tok tok ";"->@char) {
 
     if equal(tok "["->@char) {
       i = const_expr(&tok tok@.next);
@@ -800,21 +572,15 @@ array_initializer1(rest @@Token tok@ Token init@ Initializer)  =
 
   if init@.is_flexible {
     let len = count_array_init_elements(tok init@.ty);
-    init@ = new_initializer(array_of(init@.ty@.base len) false->bool)@;
+    init@ = new_initializer(array_of(init@.ty@.base len) false)@;
   ;
-
-  let first = true->bool;
 
   if init@.is_flexible {
     let len = count_array_init_elements(tok init@.ty);
-    init@ = new_initializer(array_of(init@.ty@.base len) false->bool)@;
+    init@ = new_initializer(array_of(init@.ty@.base len) false)@;
   ;
 
-  for (let i int = 0; !consume_end(rest tok); i++) {
-    if !first
-      expect(&tok ","->@char);
-    first = false->bool;
-
+  for (let i int = 0; !consume(rest tok ";"->@char); i++) {
     if equal(tok "["->@char) {
       let
         begin = 0
@@ -831,10 +597,7 @@ array_initializer1(rest @@Token tok@ Token init@ Initializer)  =
       continue;
     ;
 
-    if i < init@.ty@.array_len
-      initializer2(&tok tok init@.children[i]);
-    else
-      tok = skip_excess_element(tok);
+    if i < init@.ty@.array_len initializer2(&tok tok init@.children[i]);
   ;
 ;
 
@@ -842,13 +605,11 @@ array_initializer1(rest @@Token tok@ Token init@ Initializer)  =
 array_initializer2(rest @@Token tok@ Token init@ Initializer i int)  =
   if init@.is_flexible {
     let len = count_array_init_elements(tok init@.ty);
-    init@ = new_initializer(array_of(init@.ty@.base len) false->bool)@;
+    init@ = new_initializer(array_of(init@.ty@.base len) false)@;
   ;
 
-  for (; i < init@.ty@.array_len && !is_end(tok); i++) {
+  for (; i < init@.ty@.array_len && !equal(tok ";"->@char); i++) {
     let start = tok;
-    if i > 0
-      expect(&tok ","->@char);
 
     if equal(tok "["->@char) || equal(tok "."->@char) {
       rest@ = start;
@@ -865,14 +626,9 @@ struct_initializer1(rest @@Token tok@ Token init@ Initializer)  =
   expect(&tok "{"->@char);
 
   let
-    mem = init@.ty@.members
-    first = true->bool;
+    mem = init@.ty@.members;
 
-  while !consume_end(rest tok) {
-    if !first
-      expect(&tok ","->@char);
-    first = false->bool;
-
+  while !consume(rest tok ";"->@char) {
     if equal(tok "."->@char) {
       mem = struct_designator(&tok tok init@.ty);
       designation(&tok tok init@.children[mem@.idx]);
@@ -882,24 +638,14 @@ struct_initializer1(rest @@Token tok@ Token init@ Initializer)  =
 
     if mem {
       initializer2(&tok tok init@.children[mem@.idx]);
-      mem = mem@.next;
-    ; else {
-      tok = skip_excess_element(tok);
-    ;
+      mem = mem@.next;;
   ;
 ;
 
 // struct-initializer2 = initializer (","->@char initializer)*
 struct_initializer2(rest @@Token tok@ Token init@ Initializer mem@ Member)  =
-  let first = true->bool;
-
-  for (; mem && !is_end(tok); mem = mem@.next) {
+  for (; mem && !equal(tok ";"->@char); mem = mem@.next) {
     let start = tok;
-
-    if !first
-      expect(&tok ","->@char);
-    first = false->bool;
-
     if equal(tok "["->@char) || equal(tok "."->@char) {
       rest@ = start;
       return;
@@ -937,10 +683,10 @@ initializer2(rest @@Token tok@ Token init@ Initializer)  =
     if equal(tok "{"->@char) struct_initializer1(rest tok init);
     else {
       rest@ = tok;
-      let expr = assign(rest);
-      add_type(expr);
-      if expr@.ty@.kind == TY_STRUCT {
-        init@.expr = expr;
+      let e = prefix(rest);
+      add_type(e);
+      if e@.ty@.kind == TY_STRUCT {
+        init@.expr = e;
       ; else struct_initializer2(rest tok init init@.ty@.members);
     ;
   ; else if init@.ty@.kind == TY_UNION {
@@ -972,7 +718,7 @@ copy_struct_type(ty@ Type)@ Type =
 ;
 
 initializer(rest @@Token tok@ Token ty@ Type new_ty @@Type)@ Initializer =
-  let init = new_initializer(ty true->bool);
+  let init = new_initializer(ty true);
   initializer2(rest tok init);
 
   if ((ty@.kind == TY_STRUCT || ty@.kind == TY_UNION) && ty@.is_flexible) {
@@ -997,23 +743,22 @@ init_desg_expr(desg@ InitDesg tok@ Token)@ Node =
     return new_var_node(desg@.var tok);
 
   if desg@.member {
-    let node = new_unary(ND_MEMBER->NodeKind init_desg_expr(desg@.next tok) tok);
+    let node = new_prefix(ND_MEMBER->NodeKind init_desg_expr(desg@.next tok) tok);
     node@.member = desg@.member;
     return node;
   ;
 
   let lhs = init_desg_expr(desg@.next tok);
   let rhs = new_num(desg@.idx->long tok);
-  return new_unary(ND_DEREF->NodeKind new_add(lhs rhs tok) tok);
+  return new_prefix(ND_DEREF->NodeKind new_add(lhs rhs tok) tok);
 ;
 
-s1 [1024]char s2 [1024]char;
 create_lvar_init(init@ Initializer ty@ Type desg@ InitDesg tok@ Token)@ Node =
   if ty@.kind == TY_ARRAY {
     let node = new_node(ND_NULL_EXPR->NodeKind tok);
     for (let i int = 0; i < ty@.array_len; i++) {
       let
-        desg2 = (let InitDesg){desg, i;
+        desg2 = (let InitDesg){desg i;
         c = &desg2
         rhs = create_lvar_init(init@.children[i] ty@.base c tok);
       node = new_binary(ND_COMMA->NodeKind node rhs tok);
@@ -1026,7 +771,7 @@ create_lvar_init(init@ Initializer ty@ Type desg@ InitDesg tok@ Token)@ Node =
 
     for (let mem @Member = ty@.members; mem; mem = mem@.next) {
       let
-        desg2 = (let InitDesg){desg, 0, mem;
+        desg2 = (let InitDesg){desg 0 mem;
         c = &desg2
         rhs = create_lvar_init(init@.children[mem@.idx] mem@.ty->@Type c tok);
       node = new_binary(ND_COMMA->NodeKind node rhs tok);
@@ -1037,7 +782,7 @@ create_lvar_init(init@ Initializer ty@ Type desg@ InitDesg tok@ Token)@ Node =
   if ty@.kind == TY_UNION {
     let
       mem = init@.mem ? init@.mem : ty@.members
-      desg2 = (let InitDesg){desg, 0, mem;
+      desg2 = (let InitDesg){desg 0 mem;
       c = &desg2;
     return create_lvar_init(init@.children[mem@.idx] mem@.ty->@Type c tok);
   ;
@@ -1051,7 +796,7 @@ create_lvar_init(init@ Initializer ty@ Type desg@ InitDesg tok@ Token)@ Node =
     s1[0] = 0; s2[0] = 0;
     format_type(init@.expr@.ty s1->@char);
     format_type(lhs@.ty s2->@char);
-    warn_tok(init@.expr@.tok "asymmetric init from %s to %s"->@char s1 s2);
+    error_tok(init@.expr@.tok "asymmetric init from %s to %s"->@char s1 s2);
   ;
   return new_binary(ND_ASSIGN->NodeKind lhs init@.expr tok);
 ;
@@ -1070,7 +815,7 @@ lvar_initializer(rest @@Token tok@ Token var@ Obj)@ Node =
   let
     d = &var@.ty
     init = initializer(rest tok var@.ty d)
-    desg = (let InitDesg){0->@InitDesg, 0, 0->@Member, var;
+    desg = (let InitDesg){ 0->@InitDesg 0 0->@Member var;
 
   // If a partial initializer list is given, the standard requires
   // that unspecified elements are set to 0. Here, we simply
@@ -1084,20 +829,20 @@ lvar_initializer(rest @@Token tok@ Token var@ Obj)@ Node =
   return new_binary(ND_COMMA->NodeKind lhs rhs tok);
 ;
 
-read_buf(buf@ char sz int) uint64_t = return 
-  (sz == 1 ? buf@             :
-  sz == 2 ? buf->@ uint16_t@ :
-  sz == 4 ? buf->@ uint32_t@ :
-  sz == 8 ? buf->@ uint64_t@ :
-  (unreachable() && 0))->unsigned long;
+read_buf(buf@ char sz int) unsigned long = 
+  if sz == 1 return buf            @->unsigned long ;
+  if sz == 2 return buf->@ uint16_t@->unsigned long ;
+  if sz == 4 return buf->@ uint32_t@->unsigned long ;
+  if sz == 8 return buf->@ uint64_t@                ;
+  unreachable();
 ;
 
-write_buf(buf@ char val uint64_t sz int)  =
-  (sz == 1 ? buf@             = val :
-  sz == 2 ? buf->@ uint16_t@ = val :
-  sz == 4 ? buf->@ uint32_t@ = val :
-  sz == 8 ? buf->@ uint64_t@ = val :
-  (unreachable() && 0))->unsigned long;
+write_buf(buf@ char val uint64_t sz int) =
+  if sz == 1 buf@             = val ; else
+  if sz == 2 buf->@ uint16_t@ = val ; else
+  if sz == 4 buf->@ uint32_t@ = val ; else
+  if sz == 8 buf->@ uint64_t@ = val ; else
+  unreachable();
 ;
 
 write_gvar_data(cur@ Relocation init@ Initializer ty@ Type buf@ char offset int)@ Relocation =
@@ -1158,7 +903,7 @@ write_gvar_data(cur@ Relocation init@ Initializer ty@ Type buf@ char offset int)
     return cur;
   ;
 
-  let rel = calloc(1->unsigned long sizeof Relocation)->@Relocation;
+  let rel = calloc(1ul sizeof Relocation)->@Relocation;
   rel@.offset = offset;
   rel@.label = label;
   rel@.addend = val;
@@ -1203,10 +948,9 @@ stmt(tok @@Token)@ Node =
     let node = new_node(ND_RETURN->NodeKind tok@);
     tok@ = tok@@.next;
     if consume(tok tok@ ";"->@char) return node;
-    let exp = expr(tok);
+    let exp = assign(tok);
     expect(tok ";"->@char);
     add_type(exp);
-    let ty = current_fn@.ty@.return_ty;
     if !is_type_equal(current_fn@.ty@.return_ty exp@.ty) {
       s1[0] = 0; s2[0] = 0;
       format_type(exp@.ty s1->@char);
@@ -1220,7 +964,7 @@ stmt(tok @@Token)@ Node =
   if equal(tok@ "if"->@char) {
     let node = new_node(ND_IF->NodeKind tok@);
     tok@ = tok@@.next;
-    node@.cond = expr(tok);
+    node@.cond = conditional(tok);
     node@.then = stmt(tok);
     if consume(tok tok@ "else"->@char) node@.els = stmt(tok);
     return node;
@@ -1229,9 +973,7 @@ stmt(tok @@Token)@ Node =
   if equal(tok@ "switch"->@char) {
     let node = new_node(ND_SWITCH->NodeKind tok@);
     tok@ = tok@@.next;
-    expect(tok "("->@char);
-    node@.cond = expr(tok);
-    expect(tok ")"->@char);
+    node@.cond = conditional(tok);
     let sw = current_switch;
     current_switch = node;
     let brk = brk_label;
@@ -1283,8 +1025,8 @@ stmt(tok @@Token)@ Node =
       node@.init = declaration(tok 0->@VarAttr);
     ;
     else node@.init = expr_stmt(tok);
-    if !equal(tok@ ";"->@char) node@.cond = expr(tok); expect(tok ";"->@char);
-    if !equal(tok@ ")"->@char) node@.inc = expr(tok); expect(tok ")"->@char);
+    if !equal(tok@ ";"->@char) node@.cond = assign(tok); expect(tok ";"->@char);
+    if !equal(tok@ ")"->@char) node@.inc = assign(tok); expect(tok ")"->@char);
     node@.then = stmt(tok);
     leave_scope();
     brk_label = brk;
@@ -1295,7 +1037,7 @@ stmt(tok @@Token)@ Node =
   if equal(tok@ "while"->@char) {
     let node = new_node(ND_FOR->NodeKind tok@);
     tok@ = tok@@.next;
-    node@.cond = expr(tok);
+    node@.cond = conditional(tok);
     let brk = brk_label;
     let cont = cont_label;
     brk_label = node@.brk_label = new_unique_name();
@@ -1317,26 +1059,13 @@ stmt(tok @@Token)@ Node =
     brk_label = brk;
     cont_label = cont;
     expect(tok "while"->@char);
-    expect(tok "("->@char);
-    node@.cond = expr(tok);
-    expect(tok ")"->@char);
+    node@.cond = conditional(tok);
     tok@ = skip(tok@ ";"->@char);
     return node;
   ;
 
   if equal(tok@ "asm"->@char)
     return asm_stmt(tok tok@);
-
-  if equal(tok@ "goto"->@char) {
-    let node = new_node(ND_GOTO->NodeKind tok@);
-    tok@ = tok@@.next;
-    node@.label = get_ident(tok@); 
-    tok@ = tok@@.next@.next;
-    node@.goto_next = gotos;
-    gotos = node;
-    expect(tok ";"->@char);
-    return node;
-  ;
 
   if equal(tok@ "break"->@char) {
     if !brk_label error_tok(tok@ "stray break"->@char);
@@ -1353,17 +1082,6 @@ stmt(tok @@Token)@ Node =
     node@.unique_label = cont_label;
     tok@ = tok@@.next;
     tok@ = skip(tok@ ";"->@char);
-    return node;
-  ;
-
-  if tok@@.kind == TK_IDENT && equal(tok@@.next ":"->@char) {
-    let node = new_node(ND_LABEL->NodeKind tok@);
-    node@.label = strndup(tok@@.loc tok@@.len->unsigned long);
-    node@.unique_label = new_unique_name();
-    tok@ = tok@@.next@.next;
-    node@.lhs = stmt(tok);
-    node@.goto_next = labels;
-    labels = node;
     return node;
   ;
 
@@ -1385,11 +1103,11 @@ decl_stmt(rest @@Token) @Node =
       if tok@.kind != TK_IDENT || equal(tok "_"->@char) error_tok(tok "expected identifer"->@char);
       let name = tok;
       tok = tok@.next@.next;
-      let e = expr(&tok);
+      let e = assign(&tok);
       add_type(e);
       if e@.ty@.kind == TY_VOID error_tok(tok "variable declared void"->@char);
       let var = new_lvar(get_ident(name) e@.ty);
-      cur = cur@.next = new_unary(ND_EXPR_STMT->NodeKind new_binary(ND_ASSIGN->NodeKind new_var_node(var tok) e tok) tok);
+      cur = cur@.next = new_prefix(ND_EXPR_STMT->NodeKind new_binary(ND_ASSIGN->NodeKind new_var_node(var tok) e tok) tok);
       continue;
     ;
     //warn_tok(tok "deprecated initializer"->@char);
@@ -1402,7 +1120,7 @@ decl_stmt(rest @@Token) @Node =
 
     if equal(tok "="->@char) {
       let expr = lvar_initializer(&tok tok@.next var);
-      cur = cur@.next = new_unary(ND_EXPR_STMT->NodeKind expr tok);
+      cur = cur@.next = new_prefix(ND_EXPR_STMT->NodeKind expr tok);
     ;
 
     if var@.ty@.size < 0
@@ -1446,21 +1164,9 @@ expr_stmt(tok @@Token)@ Node =
   ;
 
   let node = new_node(ND_EXPR_STMT->NodeKind tok@);
-  node@.lhs = expr(tok);
+  node@.lhs = assign(tok);
   expect(tok ";"->@char);
   return node;
-;
-
-expr(tok@@ Token)@ Node =
-  let lhs = assign(tok);
-  if equal(tok@ ","->@char) {
-    let node = new_node(ND_COMMA->NodeKind tok@);
-    tok@ = tok@@.next;
-    node@.lhs = lhs;
-    node@.rhs = expr(tok);
-    return node;
-  ;
-  return lhs;
 ;
 
 eval(node@ Node) int64_t = return
@@ -1530,8 +1236,6 @@ eval2(node@ Node label @@@char) int64_t =
     return (eval(node@.lhs) >= eval(node@.rhs))->long;
   case ND_COND->NodeKind:
     return eval(node@.cond) ? eval2(node@.then label) : eval2(node@.els label);
-  case ND_COMMA->NodeKind:
-    return eval2(node@.rhs label);
   case ND_NOT->NodeKind:
     return (!eval(node@.lhs))->long;
   case ND_BITNOT->NodeKind:
@@ -1613,23 +1317,23 @@ is_const_expr(node@ Node) bool =
   case ND_GE->NodeKind:
   case ND_LOGAND->NodeKind:
   case ND_LOGOR->NodeKind:
-    return is_const_expr(node@.lhs) && is_const_expr(node@.rhs);
+    return (is_const_expr(node@.lhs) && is_const_expr(node@.rhs))->bool;
   case ND_COND->NodeKind:
     if !is_const_expr(node@.cond)
-      return false->bool;
+      return false;
     return is_const_expr(eval(node@.cond) ? node@.then : node@.els);
   case ND_COMMA->NodeKind:
-    return is_const_expr(node@.rhs);
+    return false;
   case ND_NEG->NodeKind:
   case ND_NOT->NodeKind:
   case ND_BITNOT->NodeKind:
   case ND_CAST->NodeKind:
     return is_const_expr(node@.lhs);
   case ND_NUM->NodeKind:
-    return true->bool;
+    return true;
   ;
 
-  return false->bool;
+  return false;
 ;
 
 export const_expr(rest@@ Token tok@ Token) int64_t  =
@@ -1660,8 +1364,6 @@ eval_double(node@ Node) double =
     return -eval_double(node@.lhs);
   case ND_COND->NodeKind:
     return eval_double(node@.cond) ? eval_double(node@.then) : eval_double(node@.els);
-  case ND_COMMA->NodeKind:
-    return eval_double(node@.rhs);
   case ND_CAST->NodeKind:
     if is_flonum(node@.lhs@.ty)
       return eval_double(node@.lhs);
@@ -1723,10 +1425,10 @@ ab(tok@@ Token n int next@(tok@@ Token)@ Node a@ StrNodeKind lhs@@ Node) bool =
       e@.lhs = lhs@;
       e@.rhs = next(tok);
       lhs@ = e;
-      return true->bool;
+      return true;
     ;
   ;
-  return false->bool;
+  return false;
 ;
 
 left_binary(tok@@ Token n int next@(tok@@ Token)@ Node a@ StrNodeKind)@ Node =
@@ -1736,15 +1438,16 @@ left_binary(tok@@ Token n int next@(tok@@ Token)@ Node a@ StrNodeKind)@ Node =
   return lhs;
 ;
 
-mul       (l@@ Token)@ Node = let d []StrNodeKind = { {  "*"->@char, ND_MUL->NodeKind    ;, { "/" ->@char, ND_DIV->NodeKind ;, { "%"->@char , ND_MOD->NodeKind ;                                   ;; return left_binary(l 3 cast      ->@(k@@Token)@Node d->@StrNodeKind);;
-shift     (l@@ Token)@ Node = let d []StrNodeKind = { { "<<"->@char, ND_SHL->NodeKind    ;, { ">>"->@char, ND_SHR->NodeKind ;                                                                      ;; return left_binary(l 2 add       ->@(k@@Token)@Node d->@StrNodeKind);;
-relational(l@@ Token)@ Node = let d []StrNodeKind = { {  "<"->@char, ND_LT->NodeKind     ;, { ">" ->@char, ND_GT->NodeKind  ;, { "<="->@char, ND_LE->NodeKind  ;, { ">="->@char, ND_GE->NodeKind ; ;; return left_binary(l 4 shift     ->@(k@@Token)@Node d->@StrNodeKind);;
-equality  (l@@ Token)@ Node = let d []StrNodeKind = { { "=="->@char, ND_EQ->NodeKind     ;, { "!="->@char, ND_NE->NodeKind  ;                                                                      ;; return left_binary(l 2 relational->@(k@@Token)@Node d->@StrNodeKind);;
-bitand    (l@@ Token)@ Node = let d []StrNodeKind = { {  "&"->@char, ND_BITAND->NodeKind ;                                                                                                         ;; return left_binary(l 1 equality  ->@(k@@Token)@Node d->@StrNodeKind);;
-bitxor    (l@@ Token)@ Node = let d []StrNodeKind = { {  "^"->@char, ND_BITXOR->NodeKind ;                                                                                                         ;; return left_binary(l 1 bitand    ->@(k@@Token)@Node d->@StrNodeKind);;
-bitor     (l@@ Token)@ Node = let d []StrNodeKind = { {  "|"->@char, ND_BITOR->NodeKind  ;                                                                                                         ;; return left_binary(l 1 bitxor    ->@(k@@Token)@Node d->@StrNodeKind);;
-logand    (l@@ Token)@ Node = let d []StrNodeKind = { { "&&"->@char, ND_LOGAND->NodeKind ;                                                                                                         ;; return left_binary(l 1 bitor     ->@(k@@Token)@Node d->@StrNodeKind);;
-logor     (l@@ Token)@ Node = let d []StrNodeKind = { { "||"->@char, ND_LOGOR->NodeKind  ;                                                                                                         ;; return left_binary(l 1 logand    ->@(k@@Token)@Node d->@StrNodeKind);;
+comma     (l@@ Token)@ Node = let d []StrNodeKind = { {  ","->@char ND_COMMA->NodeKind  ;                                                                                                   ;; return left_binary(l 1 prefix      ->@(k@@Token)@Node d->@StrNodeKind);;
+mul       (l@@ Token)@ Node = let d []StrNodeKind = { {  "*"->@char ND_MUL->NodeKind    ; { "/" ->@char ND_DIV->NodeKind ; { "%"->@char  ND_MOD->NodeKind ;                                 ;; return left_binary(l 3 comma     ->@(k@@Token)@Node d->@StrNodeKind);;
+shift     (l@@ Token)@ Node = let d []StrNodeKind = { { "<<"->@char ND_SHL->NodeKind    ; { ">>"->@char ND_SHR->NodeKind ;                                                                  ;; return left_binary(l 2 add       ->@(k@@Token)@Node d->@StrNodeKind);;
+relational(l@@ Token)@ Node = let d []StrNodeKind = { {  "<"->@char ND_LT->NodeKind     ; { ">" ->@char ND_GT->NodeKind  ; { "<="->@char ND_LE->NodeKind  ; { ">="->@char ND_GE->NodeKind ; ;; return left_binary(l 4 shift     ->@(k@@Token)@Node d->@StrNodeKind);;
+equality  (l@@ Token)@ Node = let d []StrNodeKind = { { "=="->@char ND_EQ->NodeKind     ; { "!="->@char ND_NE->NodeKind  ;                                                                  ;; return left_binary(l 2 relational->@(k@@Token)@Node d->@StrNodeKind);;
+bitand    (l@@ Token)@ Node = let d []StrNodeKind = { {  "&"->@char ND_BITAND->NodeKind ;                                                                                                   ;; return left_binary(l 1 equality  ->@(k@@Token)@Node d->@StrNodeKind);;
+bitxor    (l@@ Token)@ Node = let d []StrNodeKind = { {  "^"->@char ND_BITXOR->NodeKind ;                                                                                                   ;; return left_binary(l 1 bitand    ->@(k@@Token)@Node d->@StrNodeKind);;
+bitor     (l@@ Token)@ Node = let d []StrNodeKind = { {  "|"->@char ND_BITOR->NodeKind  ;                                                                                                   ;; return left_binary(l 1 bitxor    ->@(k@@Token)@Node d->@StrNodeKind);;
+logand    (l@@ Token)@ Node = let d []StrNodeKind = { { "&&"->@char ND_LOGAND->NodeKind ;                                                                                                   ;; return left_binary(l 1 bitor     ->@(k@@Token)@Node d->@StrNodeKind);;
+logor     (l@@ Token)@ Node = let d []StrNodeKind = { { "||"->@char ND_LOGOR->NodeKind  ;                                                                                                   ;; return left_binary(l 1 logand    ->@(k@@Token)@Node d->@StrNodeKind);;
 
 // conditional = logor ("?" expr? ":" conditional)?
 conditional(rest @@Token)@ Node =
@@ -1756,23 +1459,10 @@ conditional(rest @@Token)@ Node =
     return cond;
   ;
 
-  if equal(tok@.next ":"->@char) {
-    // [GNU] Compile `a ?: b` as `tmp = a, tmp ? tmp : b`.
-    add_type(cond);
-    let var = new_lvar(""->@char cond@.ty);
-    let lhs = new_binary(ND_ASSIGN->NodeKind new_var_node(var tok) cond tok);
-    let rhs = new_node(ND_COND->NodeKind tok);
-    rhs@.cond = new_var_node(var tok);
-    rhs@.then = new_var_node(var tok);
-    rest@ = tok@.next@.next;
-    rhs@.els = conditional(rest);
-    return new_binary(ND_COMMA->NodeKind lhs rhs tok);
-  ;
-
   let node = new_node(ND_COND->NodeKind tok);
   node@.cond = cond;
   tok = tok@.next;
-  node@.then = expr(&tok);
+  node@.then = assign(&tok);
   expect(&tok ":"->@char);
   rest@ = tok;
   node@.els = conditional(rest);
@@ -1859,80 +1549,47 @@ add(rest @@Token)@ Node =
   ;
 ;
 
-cast(rest @@Token)@ Node =
-  let tok = rest@;
-  let start = tok;
-  if equal(tok "("->@char) && equal(tok@.next "let"->@char) {
-    tok = tok@.next@.next;
-    let ty = type_suffix(&tok);
-    expect(&tok ")"->@char);
-
-    // compound literal
-    if equal(tok "{"->@char) {
-      //warn_tok(tok "deprecated someshit"->@char);
-      rest@ = start;
-      return unary(rest);
-    ;
-    error_tok(tok "disallowed cast syntax"->@char);
-  ;
-
-  rest@ = tok;
-  return unary(rest);
-;
-
-unary(rest @@Token)@ Node =
+prefix(rest @@Token)@ Node =
   let tok = rest@;
   if equal(tok "+"->@char) {
     rest@ = tok@.next;
-    return cast(rest);
+    return prefix(rest);
   ;
 
   if equal(tok "-"->@char) {
     rest@ = tok@.next;
-    return new_unary(ND_NEG->NodeKind cast(rest) tok);
+    return new_prefix(ND_NEG->NodeKind prefix(rest) tok);
   ;
 
   if equal(tok "&"->@char) {
     rest@ = tok@.next;
-    let lhs = cast(rest);
-    let k = lhs;
-    lhs = k;
+    let lhs = prefix(rest);
     add_type(lhs);
     if lhs@.kind == ND_MEMBER->NodeKind && lhs@.member@.is_bitfield
       error_tok(tok "cannot take address of bitfield"->@char);
-    return new_unary(ND_ADDR->NodeKind lhs tok);
+    return new_prefix(ND_ADDR->NodeKind lhs tok);
   ;
 
   if equal(tok "!"->@char) {
     rest@ = tok@.next;
-    return new_unary(ND_NOT->NodeKind cast(rest) tok);
+    return new_prefix(ND_NOT->NodeKind prefix(rest) tok);
   ;
 
   if equal(tok "~"->@char) {
     rest@ = tok@.next;
-    return new_unary(ND_BITNOT->NodeKind cast(rest) tok);
+    return new_prefix(ND_BITNOT->NodeKind prefix(rest) tok);
   ;
 
   // Read ++i as i+=1
   if equal(tok "++"->@char) {
     rest@ = tok@.next;
-    return to_assign(new_add(unary(rest) new_num(1->long tok) tok));
+    return to_assign(new_add(prefix(rest) new_num(1->long tok) tok));
   ;
 
   // Read --i as i-=1
   if equal(tok "--"->@char) {
     rest@ = tok@.next;
-    return to_assign(new_sub(unary(rest) new_num(1->long tok) tok));
-  ;
-
-  // [GNU] labels-as-values
-  if equal(tok "&&"->@char) {
-    let node = new_node(ND_LABEL_VAL->NodeKind tok);
-    node@.label = get_ident(tok@.next);
-    node@.goto_next = gotos;
-    gotos = node;
-    rest@ = tok@.next@.next;
-    return node;
+    return to_assign(new_sub(prefix(rest) new_num(1->long tok) tok));
   ;
 
   rest@ = tok;
@@ -1958,7 +1615,7 @@ struct_members(rest @@Token tok@ Token ty@ Type)  =
       mem@.alignment = attr.alignment ? attr.alignment : mem@.ty->@Type@.alignment;
 
       if consume(&tok tok ":"->@char) {
-        mem@.is_bitfield = true->bool;
+        mem@.is_bitfield = true;
         mem@.bit_width = const_expr(&tok tok);
       ;
 
@@ -1971,7 +1628,7 @@ struct_members(rest @@Token tok@ Token ty@ Type)  =
   // if were a zero-sized array.
   if cur != &head && cur@.ty->@Type@.kind == TY_ARRAY && cur@.ty->@Type@.array_len < 0 {
     cur@.ty = array_of(cur@.ty->@Type@.base 0);
-    ty@.is_flexible = true->bool;
+    ty@.is_flexible = true;
   ;
 
   rest@ = tok@.next;
@@ -1986,7 +1643,7 @@ attribute_list(tok@ Token ty@ Type)@ Token =
 
     while !consume(&tok tok ")"->@char) {
       if consume(&tok tok "packed"->@char) {
-        ty@.is_packed = true->bool;
+        ty@.is_packed = true;
         continue;
       ;
 
@@ -2155,7 +1812,7 @@ struct_ref(node@ Node tok@ Token)@ Node =
     let mem = get_struct_member(ty tok);
     if !mem
       error_tok(tok "no such member"->@char);
-    node = new_unary(ND_MEMBER->NodeKind node tok);
+    node = new_prefix(ND_MEMBER->NodeKind node tok);
     node@.member = mem;
     if mem@.name
       break;
@@ -2168,9 +1825,11 @@ struct_ref(node@ Node tok@ Token)@ Node =
 new_inc_dec(node@ Node tok@ Token addend int)@ Node =
   add_type(node);
   let a = -addend;
-  return new_cast(new_add(to_assign(new_add(node new_num(addend->long tok) tok))
-                          new_num(a->long tok) tok)
-                  node@.ty);
+  let e = new_add(to_assign(new_add(node new_num(addend->long tok) tok)) new_num(a->long tok) tok);
+  add_type(e);
+  return is_type_equal(node@.ty e@.ty)
+    ? e
+    : new_cast(e node@.ty);
 ;
 
 postfix(rest @@Token)@ Node =
@@ -2206,9 +1865,9 @@ postfix(rest @@Token)@ Node =
     if equal(tok "["->@char) {
       let start = tok;
       tok = tok@.next;
-      let idx = expr(&tok);
+      let idx = assign(&tok);
       expect(&tok "]"->@char);
-      node = new_unary(ND_DEREF->NodeKind new_add(node idx start) start);
+      node = new_prefix(ND_DEREF->NodeKind new_add(node idx start) start);
       continue;
     ;
 
@@ -2219,7 +1878,7 @@ postfix(rest @@Token)@ Node =
     ;
 
     if equal(tok "@"->@char) {
-      node = new_unary(ND_DEREF->NodeKind node tok);
+      node = new_prefix(ND_DEREF->NodeKind node tok);
       tok = tok@.next;
       continue;
     ;
@@ -2265,7 +1924,7 @@ funcall(rest @@Token fn@ Node)@ Node =
 
   while !equal(tok ")"->@char) {
     let start = tok;
-    let arg = assign(&tok);
+    let arg = conditional(&tok);
     add_type(arg);
 
     if !param_ty && !ty@.is_variadic
@@ -2288,7 +1947,7 @@ funcall(rest @@Token fn@ Node)@ Node =
 
   rest@ = skip(tok ")"->@char);
 
-  let node = new_unary(ND_FUNCALL->NodeKind fn tok);
+  let node = new_prefix(ND_FUNCALL->NodeKind fn tok);
   node@.func_ty = ty;
   node@.ty = ty@.return_ty;
   node@.args = head.next;
@@ -2303,13 +1962,15 @@ funcall(rest @@Token fn@ Node)@ Node =
 primary(k @@Token)@ Node =
   if equal(k@ "("->@char) { // ambiguity: looked ahead to by preceding expressions for function calls
     k@ = k@@.next;
-    let node = expr(k); // may or may not lookahead to ')'
+    let node = assign(k); // may or may not lookahead to ')'
     expect(k ")"->@char);
     return node;
   ;
 
-  if equal(k@ "sizeof"->@char ) { k@ = k@@.next; return new_ulong(type_suffix(k)@.size     ->long k@);;
+  if equal(k@ "sizeof" ->@char) { k@ = k@@.next; return new_ulong(type_suffix(k)@.size     ->long k@);;
   if equal(k@ "alignof"->@char) { k@ = k@@.next; return new_ulong(type_suffix(k)@.alignment->long k@);;
+  if equal(k@ "true"   ->@char) { k@ = k@@.next; return new_bool(1l k@);;
+  if equal(k@ "false"  ->@char) { k@ = k@@.next; return new_bool(0l k@);;
 
   if k@@.kind == TK_IDENT {
     let sc = search_scope(k@ scope_vars->@(sc@Scope)@HashMap)->@VarScope;
@@ -2320,7 +1981,7 @@ primary(k @@Token)@ Node =
       if current_fn
         strarray_push(&current_fn@.refs sc@.var@.name);
       else
-        sc@.var@.is_root = true->bool;
+        sc@.var@.is_root = true;
     ;
 
     if sc {
@@ -2412,7 +2073,7 @@ find_func(name@ char)@ Obj =
 mark_live(var@ Obj)  =
   if !var@.is_function || var@.is_live
     return;
-  var@.is_live = true->bool;
+  var@.is_live = true;
 
   for (let i int = 0; i < var@.refs.len; i++) {
     let fn = find_func(var@.refs.data[i]);
@@ -2439,7 +2100,7 @@ function(tok@ Token attr@ VarAttr)@ Token =
     fn@.is_definition = fn@.is_definition || equal(tok "="->@char);
   ; else {
     fn = new_gvar(name_str ty);
-    fn@.is_function = true->bool;
+    fn@.is_function = true;
     fn@.is_definition = equal(tok "="->@char);
     fn@.is_export = attr@.is_export;
     fn@.is_inline = attr@.is_inline;
@@ -2477,10 +2138,10 @@ function(tok@ Token attr@ VarAttr)@ Token =
 ;
 
 global_variable(tok@ Token attr@ VarAttr)@ Token =
-  let first = true->bool;
+  let first = true;
 
   while !consume(&tok tok ";"->@char) {
-    first = false->bool;
+    first = false;
 
     let ty = declarator(&tok);
     if !ty@.name || equal(ty@.name "_"->@char)
@@ -2497,16 +2158,16 @@ global_variable(tok@ Token attr@ VarAttr)@ Token =
     if equal(tok "="->@char)
       gvar_initializer(&tok tok@.next var);
     else if !attr@.is_extern && !attr@.is_tls
-      var@.is_tentative = true->bool;
+      var@.is_tentative = true;
   ;
   return tok;
 ;
 
-// Lookahead tokens and returns true->bool if a given token is a start
+// Lookahead tokens and returns true if a given token is a start
 // of a function definition or declaration.
 is_function(tok@ Token) bool =
   if equal(tok ";"->@char)
-    return false->bool;
+    return false;
 
   let ty = declarator(&tok);
   return (ty@.kind == TY_FUNC)->bool;
@@ -2544,7 +2205,7 @@ declare_builtin_functions(void) =
   let ty = func_type(pointer_to(ty_void));
   ty@.params = copy_type(ty_int);
   builtin_alloca = new_gvar("alloca"->@char ty);
-  builtin_alloca@.is_definition = false->bool;
+  builtin_alloca@.is_definition = false;
 ;
 
 export parse(tok@ Token)@ Obj =
