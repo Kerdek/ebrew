@@ -27,7 +27,7 @@ export error(fmt@ char ...) =
 //
 // foo.c:10: x = y + 1;
 //               ^ <error message here>
-verror_at(filename@ char input@ char line_no int loc@ char locb @char fmt@ char ap @va_list)  =
+verror_at(filename@ char input@ char line_no int loc@ char fmt@ char ap @va_list)  =
   // Find a line containing `loc`.
   let line = loc;
   while input < line && line[-1] != '\n'
@@ -37,7 +37,7 @@ verror_at(filename@ char input@ char line_no int loc@ char locb @char fmt@ char 
   while end@ && end@ != '\n'
     end++;
 
-  let indent = fprintf(stderr "./%s:(%d,%d)::./%s:(%d,%d): "->@char filename line_no loc - line + 1 filename line_no locb - line + 1);
+  let indent = fprintf(stderr "./%s:(%d,%d): "->@char filename line_no loc - line + 1);
 
   fprintf(stderr "%.*s\n"->@char end - line line);
 
@@ -51,7 +51,7 @@ verror_at(filename@ char input@ char line_no int loc@ char locb @char fmt@ char 
   fprintf(stderr "\n"->@char);
 ;
 
-export error_at(loc@ char locb @char fmt@ char ...)  =
+export error_at(loc@ char fmt@ char ...) =
   let line_no = 1;
   for (let p @ char= current_file@.contents; p < loc; p++)
     if p@ == '\n'
@@ -60,7 +60,7 @@ export error_at(loc@ char locb @char fmt@ char ...)  =
   let ap = (let va_list){;;
   va_start(ap, fmt);
   let pap = &ap;
-  verror_at(current_file@.name current_file@.contents line_no loc locb fmt pap);
+  verror_at(current_file@.name current_file@.contents line_no loc fmt pap);
   raise(SIGTRAP);
   exit(1);
 ;
@@ -69,7 +69,7 @@ export error_tok(tok@ Token fmt@ char ...)  =
   let ap = (let va_list){;;
   va_start(ap, fmt);
   let pap = &ap;
-  verror_at(tok@.file@.name tok@.file@.contents tok@.line_no tok@.loc tok@.loc + tok@.len fmt pap);
+  verror_at(tok@.file@.name tok@.file@.contents tok@.line_no tok@.loc fmt pap);
   raise(SIGTRAP);
   exit(1);
 ;
@@ -78,7 +78,7 @@ export warn_tok(tok@ Token fmt@ char ...) =
   let ap = (let va_list){;;
   va_start(ap, fmt);
   let pap = &ap;
-  verror_at(tok@.file@.name tok@.file@.contents tok@.line_no tok@.loc tok@.loc + tok@.len fmt pap);
+  verror_at(tok@.file@.name tok@.file@.contents tok@.line_no tok@.loc fmt pap);
   va_end(ap)
 ;
 
@@ -288,21 +288,14 @@ read_utf16_string_literal(start@ char quote@ char)@ Token =
 
   for (let p @char = quote + 1; p < end;) {
     if p@ == '\\' {
-      buf[len++] = read_escaped_char(&p p + 1);
-      continue;
-    ;
-
-    let c = decode_utf8(&p p);
-    if c < 0x10000 {
-      // Encode a code poin  int2 bytes.
-      buf[len++] = c;
-    ; else {
-      // Encode a code poin  int4 bytes.
-      c -= 0x10000;
-      buf[len++] = 0xd800 + ((c >> 10) & 0x3ff);
-      buf[len++] = 0xdc00 + (c & 0x3ff);
-    ;
-  ;
+      buf[len++] = read_escaped_char(&p p + 1);;
+    else {
+      let c = decode_utf8(&p p);
+      if c < 0x10000 buf[len++] = c;
+      else {
+        c -= 0x10000;
+        buf[len++] = 0xd800 + ((c >> 10) & 0x3ff);
+        buf[len++] = 0xdc00 + (c & 0x3ff);;;;
 
   let tok = new_token(TK_STR->typeof 0->@ Token@.kind start end + 1);
   tok@.ty = array_of(ty_ushort len + 1);
@@ -514,143 +507,72 @@ export tokenize(file@ File)@ Token =
   has_space = false;
 
   while p@ {
-    // Skip line comments.
     if startswith(p "//"->@char) {
       p += 2;
-      while p@ != '\n'
-        p++;
-      has_space = true;
-      continue;
-    ;
-
-    // Skip block comments.
-    if startswith(p "/*"->@char) {
+      while p@ != '\n' p++;
+      has_space = true;;
+    else if startswith(p "/*"->@char) {
       let q = strstr(p + 2 "*/"->@char);
-      if !q
-        error_at(p "unclosed block comment"->@char);
+      if !q error_at(p "unclosed block comment"->@char);
       p = q + 2;
-      has_space = true;
-      continue;
-    ;
-
-    // Skip newline.
-    if p@ == '\n' {
+      has_space = true;;
+    else if p@ == '\n' {
       p++;
       at_bol = true;
-      has_space = false;
-      continue;
-    ;
-
-    // Skip whitespace characters.
-    if isspace(p@) {
+      has_space = false;;
+    else if isspace(p@) {
       p++;
-      has_space = true;
-      continue;
-    ;
-
-    // Numeric literal
-    if (isdigit(p@) || (p@ == '.' && isdigit(p[1]))) {
+      has_space = true;;
+    else if (isdigit(p@) || (p@ == '.' && isdigit(p[1]))) {
       let q = p++;
-      for (;;) {
-        if p[0] && p[1] && strchr("eEpP"->@char p[0]->int) && strchr("+-"->@char p[1]->int)
-          p += 2;
-        else if (isalnum(p@) || p@ == '.')
-          p++;
-        else
-          break;
-      ;
-      cur = cur@.next = new_token(TK_PP_NUM->typeof 0->@ Token@.kind q p);
-      continue;
-    ;
-
-    // String literal
-    if p@ == '"' {
+      while
+        p[0] && p[1] && strchr("eEpP"->@char p[0]->int) && strchr("+-"->@char p[1]->int) ? (p += 2), true :
+        (isalnum(p@) || p@ == '.')                                                       ? p++     , true :
+                                                                                                     false;
+      cur = cur@.next = new_token(TK_PP_NUM->typeof 0->@ Token@.kind q p);;
+    else if p@ == '"' {
       cur = cur@.next = read_string_literal(p p);
-      p += cur@.len;
-      continue;
-    ;
-
-    // UTF-8 string literal
-    if startswith(p "u8\""->@char) {
+      p += cur@.len;;
+    else if startswith(p "u8\""->@char) {
       cur = cur@.next = read_string_literal(p p + 2);
-      p += cur@.len;
-      continue;
-    ;
-
-    // UTF-16 string literal
-    if startswith(p "u\""->@char) {
+      p += cur@.len;;
+    else if startswith(p "u\""->@char) {
       cur = cur@.next = read_utf16_string_literal(p p + 1);
-      p += cur@.len;
-      continue;
-    ;
-
-    // Wide string literal
-    if startswith(p "L\""->@char) {
+      p += cur@.len;;
+    else if startswith(p "L\""->@char) {
       cur = cur@.next = read_utf32_string_literal(p p + 1 ty_int);
-      p += cur@.len;
-      continue;
-    ;
-
-    // UTF-32 string literal
-    if startswith(p "U\""->@char) {
+      p += cur@.len;;
+    else if startswith(p "U\""->@char) {
       cur = cur@.next = read_utf32_string_literal(p p + 1 ty_uint);
-      p += cur@.len;
-      continue;
-    ;
-
-    // Character literal
-    if p@ == '\'' {
+      p += cur@.len;;
+    else if p@ == '\'' {
       cur = cur@.next = read_char_literal(p p ty_int);
       cur@.val = cur@.val->char;
-      p += cur@.len;
-      continue;
-    ;
-
-    // UTF-16 character literal
-    if startswith(p "u'"->@char) {
+      p += cur@.len;;
+    else if startswith(p "u'"->@char) {
       cur = cur@.next = read_char_literal(p p + 1 ty_ushort);
       cur@.val &= 0xffff;
-      p += cur@.len;
-      continue;
-    ;
-
-    // Wide character literal
-    if startswith(p "L'"->@char) {
+      p += cur@.len;;
+    else if startswith(p "L'"->@char) {
       cur = cur@.next = read_char_literal(p p + 1 ty_int);
-      p += cur@.len;
-      continue;
-    ;
-
-    // UTF-32 character literal
-    if startswith(p "U'"->@char) {
+      p += cur@.len;;
+    else if startswith(p "U'"->@char) {
       cur = cur@.next = read_char_literal(p p + 1 ty_uint);
-      p += cur@.len;
-      continue;
-    ;
-
-    // Identifier or keyword
-    let ident_len = read_ident(p);
-    if ident_len {
-      cur = cur@.next = new_token(TK_IDENT->typeof 0->@ Token@.kind p p + ident_len);
-      p += cur@.len;
-      continue;
-    ;
-
-    // Punctuators
-    let punct_len = read_punct(p);
-    if punct_len {
-      cur = cur@.next = new_token(TK_PUNCT->typeof 0->@ Token@.kind p p + punct_len);
-      p += cur@.len;
-      continue;
-    ;
-
-    error_at(p "invalid token"->@char);
-  ;
-
+      p += cur@.len;;
+    else {
+      let ident_len = read_ident(p);
+      if ident_len {
+        cur = cur@.next = new_token(TK_IDENT->typeof 0->@ Token@.kind p p + ident_len);
+        p += cur@.len;;
+      else {
+        let punct_len = read_punct(p);
+        if punct_len {
+          cur = cur@.next = new_token(TK_PUNCT->typeof 0->@ Token@.kind p p + punct_len);
+          p += cur@.len;;
+        else error_at(p "invalid token"->@char);;;;
   cur = cur@.next = new_token(TK_EOF->typeof 0->@ Token@.kind p p);
   add_line_numbers(head.next);
-  return head.next;
-;
+  return head.next;;
 
 rfbuf2[4096]char;
 read_file(path@ char)@ char =
@@ -670,12 +592,12 @@ read_file(path@ char)@ char =
   let b = &buflen;
   let out = open_memstream(&buf b);
 
-  for (;;) {
+  for (let k bool = true;k;) {
     let
       m = (sizeof typeof rfbuf2)
       n = fread(rfbuf2->@ 1->unsigned long m fp);
-    if n == 0 break;
-    fwrite(rfbuf2->@ 1->unsigned long n out);
+    if n == 0 k = false;
+    else fwrite(rfbuf2->@ 1->unsigned long n out);
   ;
 
   if fp != stdin fclose(fp);

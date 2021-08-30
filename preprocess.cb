@@ -121,54 +121,26 @@ add_hideset(tok@Token hs@Hideset)@Token =
   return head.next;
 ;
 
-// Append tok2 to the end of tok1.
 append(tok1@Token tok2@Token)@Token =
   if tok1@.kind == TK_EOF return tok2;
-
   let
     head = (let Token){;
     cur = &head;
-
-  for (; tok1@.kind != TK_EOF; tok1 = tok1@.next)
-    cur = cur@.next = copy_token(tok1);
+  for (; tok1@.kind != TK_EOF; tok1 = tok1@.next) cur = cur@.next = copy_token(tok1);
   cur@.next = tok2;
-  return head.next;
-;
-
+  return head.next;;
 skip_cond_incl2(tok@Token)@Token =
   while tok@.kind != TK_EOF {
-    if is_hash(tok) &&
-        (equal(tok@.next "if"->@char) || equal(tok@.next "ifdef"->@char) ||
-         equal(tok@.next "ifndef"->@char)) {
-      tok = skip_cond_incl2(tok@.next@.next);
-      continue;
-    ;
-    if is_hash(tok) && equal(tok@.next "endif"->@char)
-      return tok@.next@.next;
-    tok = tok@.next;
-  ;
-  return tok;
-;
-
-// Skip until next `#else`, `#elif` or `#endif`.
-// Nested `#if` and `#endif` are skipped.
+    if is_hash(tok) && (equal(tok@.next "if"->@char) || equal(tok@.next "ifdef"->@char) || equal(tok@.next "ifndef"->@char)) tok = skip_cond_incl2(tok@.next@.next);
+    else if is_hash(tok) && equal(tok@.next "endif"->@char) return tok@.next@.next;
+    else tok = tok@.next;;
+  return tok;;
 skip_cond_incl(tok@Token)@Token =
   while tok@.kind != TK_EOF {
-    if is_hash(tok) &&
-        (equal(tok@.next "if"->@char) || equal(tok@.next "ifdef"->@char) ||
-         equal(tok@.next "ifndef"->@char)) {
-      tok = skip_cond_incl2(tok@.next@.next);
-      continue;
-    ;
-
-    if is_hash(tok) &&
-        (equal(tok@.next "elif"->@char) || equal(tok@.next "else"->@char) ||
-         equal(tok@.next "endif"->@char))
-      break;
-    tok = tok@.next;
-  ;
-  return tok;
-;
+    if is_hash(tok) && (equal(tok@.next "if"->@char) || equal(tok@.next "ifdef"->@char) || equal(tok@.next "ifndef"->@char)) tok = skip_cond_incl2(tok@.next@.next);
+    else if is_hash(tok) && (equal(tok@.next "elif"->@char) || equal(tok@.next "else"->@char) || equal(tok@.next "endif"->@char)) break;
+    else tok = tok@.next;;
+  return tok;;
 
 // Double-quote a given string and returns it.
 quote_string(str@char)@char =
@@ -221,37 +193,23 @@ new_num_token(val int tmpl@Token)@Token =
 
 read_const_expr(rest@@Token tok@Token)@Token =
   tok = copy_line(rest tok);
-
   let
     head = (let Token){;
     cur = &head;
-
   while tok@.kind != TK_EOF {
-    // "defined(foo)" or "defined foo" becomes "1" if macro "foo"
-    // is defined. Otherwise "0".
     if equal(tok "defined"->@char) {
       let start = tok;
       let has_paren = consume(&tok tok@.next "("->@char);
-
-      if tok@.kind != TK_IDENT
-        error_tok(start "macro name must be an identifier"->@char);
+      if tok@.kind != TK_IDENT error_tok(start "macro name must be an identifier"->@char);
       let m = find_macro(tok);
       tok = tok@.next;
-
-      if has_paren
-        tok = skip(tok ")"->@char);
-
-      cur = cur@.next = new_num_token(m ? 1 : 0 start);
-      continue;
-    ;
-
-    cur = cur@.next = tok;
-    tok = tok@.next;
-  ;
-
+      if has_paren tok = skip(tok ")"->@char);
+      cur = cur@.next = new_num_token(m ? 1 : 0 start);;
+    else {
+      cur = cur@.next = tok;
+      tok = tok@.next;;;
   cur@.next = tok;
-  return head.next;
-;
+  return head.next;;
 
 // Read and evaluate a constant expression.
 eval_const_expr(rest@@Token tok@Token include_paths@StringArray) long =
@@ -369,32 +327,17 @@ read_macro_arg_one(rest@@Token tok@Token read_rest bool) @MacroArg =
     head = (let Token){;
     cur = &head
     level = 0;
-
-  for (;;) {
-    if level == 0 && equal(tok ")"->@char)
-      break;
-    if level == 0 && !read_rest && equal(tok ","->@char)
-      break;
-
-    if tok@.kind == TK_EOF
-      error_tok(tok "premature end of input"->@char);
-
-    if equal(tok "("->@char)
-      level++;
-    else if equal(tok ")"->@char)
-      level--;
-
+  while level || !equal(tok ")"->@char) && (read_rest || !equal(tok ","->@char)) {
+    if tok@.kind == TK_EOF error_tok(tok "premature end of input"->@char);
+    else if equal(tok "("->@char) level++;
+    else if equal(tok ")"->@char) level--;
     cur = cur@.next = copy_token(tok);
-    tok = tok@.next;
-  ;
-
+    tok = tok@.next;;
   cur@.next = new_eof(tok);
-
   let arg = calloc(1->unsigned long sizeof MacroArg)->@MacroArg;
   arg@.tok = head.next;
   rest@ = tok;
-  return arg;
-;
+  return arg;;
 
 read_macro_args(rest@@Token tok@Token params @MacroParam va_args_name@char)@MacroArg =
   let start = tok;
@@ -493,117 +436,55 @@ has_varargs(args @MacroArg) bool =
   return false;
 ;
 
-// Replace func-like macro parameters with given arguments.
 subst(tok@Token args @MacroArg include_paths@StringArray)@ Token =
   let
     head = (let Token){;
     cur = &head;
-
   while tok@.kind != TK_EOF {
-    // "#" followed by a parameter is replaced with stringized actuals.
     if equal(tok "#"->@char) {
       let arg = find_arg(args tok@.next);
-      if !arg
-        error_tok(tok@.next "'#' is not followed by a macro parameter"->@char);
+      if !arg error_tok(tok@.next "'#' is not followed by a macro parameter"->@char);
       cur = cur@.next = stringize(tok arg@.tok);
-      tok = tok@.next@.next;
-      continue;
-    ;
-
-    // [GNU] If __VA_ARG__ is empty, `,##__VA_ARGS__` is expanded
-    // to the empty token list. Otherwise, its expaned to `,` and
-    // __VA_ARGS__.
-    if equal(tok ","->@char) && equal(tok@.next "##"->@char) {
-      let arg = find_arg(args tok@.next@.next);
-      if arg && arg@.is_va_args {
-        if arg@.tok@.kind == TK_EOF {
-          tok = tok@.next@.next@.next;
-        ; else {
-          cur = cur@.next = copy_token(tok);
-          tok = tok@.next@.next;
-        ;
-        continue;
-      ;
-    ;
-
-    if equal(tok "##"->@char) {
-      if cur == &head
-        error_tok(tok "'##' cannot appear at start of macro expansion"->@char);
-
-      if tok@.next@.kind == TK_EOF
-        error_tok(tok "'##' cannot appear at end of macro expansion"->@char);
-
+      tok = tok@.next@.next;;
+    else if equal(tok "##"->@char) {
+      if cur == &head error_tok(tok "'##' cannot appear at start of macro expansion"->@char);
+      if tok@.next@.kind == TK_EOF error_tok(tok "'##' cannot appear at end of macro expansion"->@char);
       let arg = find_arg(args tok@.next);
       if arg {
         if arg@.tok@.kind != TK_EOF {
           cur@ = paste(cur arg@.tok)@;
-          for (let t @Token= arg@.tok@.next; t@.kind != TK_EOF; t = t@.next)
-            cur = cur@.next = copy_token(t);
-        ;
-        tok = tok@.next@.next;
-        continue;
-      ;
-
-      cur@ = paste(cur tok@.next)@;
-      tok = tok@.next@.next;
-      continue;
-    ;
-
-    let arg = find_arg(args tok);
-
-    if arg && equal(tok@.next "##"->@char) {
-      let rhs = tok@.next@.next;
-
-      if arg@.tok@.kind == TK_EOF {
-        let arg2 = find_arg(args rhs);
-        if arg2 {
-          for (let t @Token= arg2@.tok; t@.kind != TK_EOF; t = t@.next)
-            cur = cur@.next = copy_token(t);
-        ; else {
-          cur = cur@.next = copy_token(rhs);
-        ;
-        tok = rhs@.next;
-        continue;
-      ;
-
-      for (let t @Token= arg@.tok; t@.kind != TK_EOF; t = t@.next)
-        cur = cur@.next = copy_token(t);
-      tok = tok@.next;
-      continue;
-    ;
-
-    // If __VA_ARG__ is empty, __VA_OPT__(x) is expanded to the
-    // empty token list. Otherwise, __VA_OPT__(x) is expanded to x.
-    if equal(tok "__VA_OPT__"->@char) && equal(tok@.next "("->@char) {
-      let arg = read_macro_arg_one(&tok tok@.next@.next true);
-      if has_varargs(args)
-        for (let t @Token= arg@.tok; t@.kind != TK_EOF; t = t@.next)
-          cur = cur@.next = t;
-      tok = skip(tok ")"->@char);
-      continue;
-    ;
-
-    // Handle a macro token. arguments Macroare completely macro-expanded
-    // before they are substituted into a macro body.
-    if arg {
-      let t = preprocess2(arg@.tok include_paths);
-      t@.at_bol = tok@.at_bol;
-      t@.has_space = tok@.has_space;
-      for (; t@.kind != TK_EOF; t = t@.next)
-        cur = cur@.next = copy_token(t);
-      tok = tok@.next;
-      continue;
-    ;
-
-    // Handle a non-macro token.
-    cur = cur@.next = copy_token(tok);
-    tok = tok@.next;
-    continue;
-  ;
-
+          for (let t @Token= arg@.tok@.next; t@.kind != TK_EOF; t = t@.next) cur = cur@.next = copy_token(t);;
+        tok = tok@.next@.next;;
+      else {
+        cur@ = paste(cur tok@.next)@;
+        tok = tok@.next@.next;;;
+    else {
+      let arg = find_arg(args tok);
+      if arg && equal(tok@.next "##"->@char) {
+        let rhs = tok@.next@.next;
+        if arg@.tok@.kind == TK_EOF {
+          let arg2 = find_arg(args rhs);
+          if arg2 for (let t @Token= arg2@.tok; t@.kind != TK_EOF; t = t@.next) cur = cur@.next = copy_token(t);
+          else cur = cur@.next = copy_token(rhs);
+          tok = rhs@.next;;
+        else {
+          for (let t @Token= arg@.tok; t@.kind != TK_EOF; t = t@.next)cur = cur@.next = copy_token(t);
+          tok = tok@.next;;;
+      else if equal(tok "__VA_OPT__"->@char) && equal(tok@.next "("->@char) {
+        let arg = read_macro_arg_one(&tok tok@.next@.next true);
+        if has_varargs(args) for (let t @Token= arg@.tok; t@.kind != TK_EOF; t = t@.next) cur = cur@.next = t;
+        tok = skip(tok ")"->@char);;
+      else if arg {
+        let t = preprocess2(arg@.tok include_paths);
+        t@.at_bol = tok@.at_bol;
+        t@.has_space = tok@.has_space;
+        for (; t@.kind != TK_EOF; t = t@.next) cur = cur@.next = copy_token(t);
+        tok = tok@.next;;
+      else {
+        cur = cur@.next = copy_token(tok);
+        tok = tok@.next;;;;
   cur@.next = tok;
-  return head.next;
-;
+  return head.next;;
 
 // If tok is a macro, expand it and return true.
 // Otherwise, do nothing and return false.
@@ -674,11 +555,10 @@ export search_include_paths(filename@char include_paths@StringArray)@char =
   // Search a file from the include paths.
   for (let i int= 0; i < include_paths@.len; i++) {
     let path = format("%s/%s"->@char include_paths@.data[i] filename);
-    if !file_exists(path)
-      continue;
-    hashmap_put(&sipcache filename path->@);
-    include_next_idx = i + 1;
-    return path;
+    if file_exists(path) {
+      hashmap_put(&sipcache filename path->@);
+      include_next_idx = i + 1;
+      return path;;
   ;
   return 0->@char;
 ;
@@ -758,18 +638,10 @@ detect_include_guard(tok@Token)@char =
 
   // Read until the end of the file.
   while tok@.kind != TK_EOF {
-    if !is_hash(tok) {
-      tok = tok@.next;
-      continue;
-    ;
-
-    if equal(tok@.next "endif"->@char) && tok@.next@.next@.kind == TK_EOF
-      return macro;
-
-    if equal(tok "if"->@char) || equal(tok "ifdef"->@char) || equal(tok "ifndef"->@char)
-      tok = skip_cond_incl(tok@.next);
-    else
-      tok = tok@.next;
+    if !is_hash(tok) tok = tok@.next;
+    else if equal(tok@.next "endif"->@char) && tok@.next@.next@.kind == TK_EOF return macro;
+    else if equal(tok "if"->@char) || equal(tok "ifdef"->@char) || equal(tok "ifndef"->@char) tok = skip_cond_incl(tok@.next);
+    else tok = tok@.next;
   ;
   return 0->@char;
 ;
@@ -818,154 +690,77 @@ read_line_marker(rest@@Token tok@Token include_paths@StringArray)  =
 preprocess2(tok@Token include_paths@StringArray)@Token =
   let
     head = (let Token){;
-    cur = &head
-  ;
-
+    cur = &head;
   while tok@.kind != TK_EOF {
-    if expand_macro(&tok tok include_paths)
-      continue;
-
-    if !is_hash(tok) {
-      tok@.line_delta = tok@.file@.line_delta;
-      tok@.filename = tok@.file@.display_name;
-      cur = cur@.next = tok;
-      tok = tok@.next;
-      continue;
-    ;
-
     let start = tok;
     tok = tok@.next;
-
-    if equal(tok "include"->@char) {
+    if expand_macro(&tok start include_paths);
+    else if !is_hash(start) {
+      start@.line_delta = start@.file@.line_delta;
+      start@.filename = start@.file@.display_name;
+      cur = cur@.next = start;
+      start = start@.next;;
+    else if equal(tok "include"->@char) {
       let is_dquote  = false;
       let c = &is_dquote;
       let filename = read_include_filename(&tok tok@.next c include_paths);
-
       if filename[0] != '/' && is_dquote {
         let path = format("%s/%s"->@char dirname(strdup(start@.file@.name)) filename);
-        if file_exists(path) {
-          tok = include_file(tok path start@.next@.next);
-          continue;
-        ;
-      ;
-
-      let path = search_include_paths(filename include_paths);
-      tok = include_file(tok path ? path : filename start@.next@.next);
-      continue;
-    ;
-
-    if equal(tok "include_next"->@char) {
+        if file_exists(path) tok = include_file(tok path start@.next@.next);
+        else {
+          let path = search_include_paths(filename include_paths);
+          tok = include_file(tok path ? path : filename start@.next@.next);;;
+      else {
+        let path = search_include_paths(filename include_paths);
+        tok = include_file(tok path ? path : filename start@.next@.next);;;
+    else if equal(tok "include_next"->@char) {
       let ignore = false;
       let c = &ignore;
       let filename = read_include_filename(&tok tok@.next c include_paths);
       let path = search_include_next(filename include_paths);
-      tok = include_file(tok path ? path : filename start@.next@.next);
-      continue;
-    ;
-
-    if equal(tok "define"->@char) {
-      read_macro_definition(&tok tok@.next);
-      continue;
-    ;
-
-    if equal(tok "undef"->@char) {
+      tok = include_file(tok path ? path : filename start@.next@.next);;
+    else if equal(tok "define"->@char) read_macro_definition(&tok tok@.next);
+    else if equal(tok "undef"->@char) {
       tok = tok@.next;
-      if tok@.kind != TK_IDENT
-        error_tok(tok "macro name must be an identifier"->@char);
+      if tok@.kind != TK_IDENT error_tok(tok "macro name must be an identifier"->@char);
       undef_macro(strndup(tok@.loc tok@.len->unsigned long));
-      tok = skip_line(tok@.next);
-      continue;
-    ;
-
-    if equal(tok "if"->@char) {
+      tok = skip_line(tok@.next);;
+    else if equal(tok "if"->@char) {
       let val = eval_const_expr(&tok tok include_paths);
       push_cond_incl(start val->bool);
-      if !val
-        tok = skip_cond_incl(tok);
-      continue;
-    ;
-
-    if equal(tok "ifdef"->@char) {
+      if !val tok = skip_cond_incl(tok);;
+    else if equal(tok "ifdef"->@char) {
       let defined = find_macro(tok@.next);
       push_cond_incl(tok defined->bool);
       tok = skip_line(tok@.next@.next);
-      if !defined
-        tok = skip_cond_incl(tok);
-      continue;
-    ;
-
-    if equal(tok "ifndef"->@char) {
+      if !defined tok = skip_cond_incl(tok);;
+    else if equal(tok "ifndef"->@char) {
       let ndefined = !find_macro(tok@.next);
       push_cond_incl(tok ndefined->bool);
       tok = skip_line(tok@.next@.next);
-      if !ndefined tok = skip_cond_incl(tok);
-      continue;
-    ;
-
-    if equal(tok "elif"->@char) {
-      if !cond_incl || cond_incl@.ctx == IN_ELSE
-        error_tok(start "stray #elif"->@char);
+      if !ndefined tok = skip_cond_incl(tok);;
+    else if equal(tok "elif"->@char) {
+      if !cond_incl || cond_incl@.ctx == IN_ELSE error_tok(start "stray #elif"->@char);
       cond_incl@.ctx = IN_ELIF;
-
-      if !cond_incl@.included && eval_const_expr(&tok tok include_paths)
-        cond_incl@.included = true;
-      else
-        tok = skip_cond_incl(tok);
-      continue;
-    ;
-
-    if equal(tok "else"->@char) {
-      if !cond_incl || cond_incl@.ctx == IN_ELSE
-        error_tok(start "stray #else"->@char);
+      if !cond_incl@.included && eval_const_expr(&tok tok include_paths) cond_incl@.included = true;
+      else tok = skip_cond_incl(tok);;
+    else if equal(tok "else"->@char) {
+      if !cond_incl || cond_incl@.ctx == IN_ELSE error_tok(start "stray #else"->@char);
       cond_incl@.ctx = IN_ELSE;
       tok = skip_line(tok@.next);
-
-      if cond_incl@.included
-        tok = skip_cond_incl(tok);
-      continue;
-    ;
-
-    if equal(tok "endif"->@char) {
-      if !cond_incl
-        error_tok(start "stray #endif"->@char);
+      if cond_incl@.included tok = skip_cond_incl(tok);;
+    else if equal(tok "endif"->@char) {
+      if !cond_incl error_tok(start "stray #endif"->@char);
       cond_incl = cond_incl@.next;
-      tok = skip_line(tok@.next);
-      continue;
-    ;
-
-    if equal(tok "line"->@char) {
-      read_line_marker(&tok tok@.next include_paths);
-      continue;
-    ;
-
-    if tok@.kind == TK_PP_NUM {
-      read_line_marker(&tok tok include_paths);
-      continue;
-    ;
-
-    if equal(tok "pragma"->@char) && equal(tok@.next "once"->@char) {
+      tok = skip_line(tok@.next);;
+    else if equal(tok "line"->@char) read_line_marker(&tok tok@.next include_paths);
+    else if tok@.kind == TK_PP_NUM read_line_marker(&tok tok include_paths);
+    else if equal(tok "pragma"->@char) && equal(tok@.next "once"->@char) {
       hashmap_put(&pragma_once tok@.file@.name 1->@ );
-      tok = skip_line(tok@.next@.next);
-      continue;
-    ;
-
-    if equal(tok "pragma"->@char) {
-      do {
-        tok = tok@.next;
-      ; while (!tok@.at_bol);
-      continue;
-    ;
-
-    if equal(tok "error"->@char)
-      error_tok(tok "error"->@char);
-
-    // `#`-only line is legal. It's called a null directive.
-    if tok@.at_bol
-      continue;
-
-    error_tok(tok "invalid preprocessor directive"->@char);
-  ;
-
+      tok = skip_line(tok@.next@.next);;
+    else if equal(tok "pragma"->@char) do tok = tok@.next; while (!tok@.at_bol);
+    else if equal(tok "error"->@char) error_tok(tok "error"->@char);
+    else if !tok@.at_bol error_tok(tok "invalid preprocessor directive"->@char);;
   cur@.next = tok;
   return head.next;
 ;

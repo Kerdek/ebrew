@@ -1537,7 +1537,7 @@ emit_text(prog@Obj opt_fpic bool) =
   ;
 ;
 
-export codegen(prog@Obj out@FILE  opt_fpic) =
+export codegen(prog@Obj out@FILE opt_fpic bool) =
   output_file = out;
 
   let files = get_input_files();
@@ -1545,6 +1545,6 @@ export codegen(prog@Obj out@FILE  opt_fpic) =
     println("  .file %d \"%s\""->@char files[i]@.file_no files[i]@.name);
 
   assign_lvar_offsets(prog);
-  emit_data(prog opt_fpic->bool);
-  emit_text(prog opt_fpic->bool);
+  emit_data(prog opt_fpic);
+  emit_text(prog opt_fpic);
 ;
