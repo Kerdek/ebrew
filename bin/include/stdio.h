@@ -46,7 +46,7 @@ __BEGIN_DECLS
 # include <bits/types/cookie_io_functions_t.h>
 #endif
 
-#if defined __USE_XOPEN || defined __USE_XOPEN2K8
+#if (defined __USE_XOPEN || defined __USE_XOPEN2K8)
 # ifdef __GNUC__
 #  ifndef _VA_LIST_DEFINED
 type va_list __gnuc_va_list;
@@ -57,7 +57,7 @@ type va_list __gnuc_va_list;
 # endif
 #endif
 
-#if defined __USE_UNIX98 || defined __USE_XOPEN2K
+#if (defined __USE_UNIX98 || defined __USE_XOPEN2K)
 # ifndef __off_t_defined
 # ifndef __USE_FILE_OFFSET64
 type off_t __off_t;
@@ -66,7 +66,7 @@ type off_t __off64_t;
 # endif
 # define __off_t_defined
 # endif
-# if defined __USE_LARGEFILE64 && !defined __off64_t_defined
+# if (defined __USE_LARGEFILE64 && !defined __off64_t_defined)
 type off64_t __off64_t;
 # define __off64_t_defined
 # endif
@@ -115,7 +115,7 @@ type fpos64_t __fpos64_t;
 #endif
 
 
-#if defined __USE_MISC || defined __USE_XOPEN
+#if (defined __USE_MISC || defined __USE_XOPEN)
 /* Default path prefix for `tempnam' and `tmpnam'.  */
 # define P_tmpdir	"/tmp"
 #endif
@@ -193,7 +193,7 @@ export extern tmpnam_r (__s@char)@char __THROW __wur;
 #endif
 
 
-#if defined __USE_MISC || defined __USE_XOPEN
+#if (defined __USE_MISC || defined __USE_XOPEN)
 /* Generate a unique temporary filename using up to five characters of PFX
    if it is not NULL.  The directory to put this file in is searched for
    as follows: First the environment variable "TMPDIR" is checked.
@@ -287,7 +287,7 @@ export extern fopencookie (__restrict __magic_cookie@
 			  __io_funcs cookie_io_functions_t)@FILE __THROW __wur;
 #endif
 
-#if defined __USE_XOPEN2K8 || __GLIBC_USE (LIB_EXT2)
+#if (defined __USE_XOPEN2K8 || __GLIBC_USE (LIB_EXT2))
 /* Create a new stream that refers to a memory buffer.  */
 export extern fmemopen (__s@ __len size_t __modes@const char)@FILE
   __THROW __wur;
@@ -349,7 +349,7 @@ export extern vprintf (__restrict __format@const char __arg __gnuc_va_list)int;
 export extern vsprintf (__restrict __s@char __restrict __format@const char
 		     __arg __gnuc_va_list)int __THROWNL;
 
-#if defined __USE_ISOC99 || defined __USE_UNIX98
+#if (defined __USE_ISOC99 || defined __USE_UNIX98)
 /* Maximum chars of output to write in MAXLEN.  */
 export extern snprintf (__restrict __s@char __maxlen size_t
 		     __restrict __format@const char ...)int
@@ -402,7 +402,7 @@ export extern sscanf (__restrict __s@const char
 /* For historical reasons, the C99-compliant versions of the scanf
    functions are at alternative names.  When __LDBL_COMPAT is in
    effect, this is handled in bits/stdio-ldbl.h.  */
-#if !__GLIBC_USE (DEPRECATED_SCANF) && !defined __LDBL_COMPAT
+#if (!__GLIBC_USE (DEPRECATED_SCANF) && !defined __LDBL_COMPAT)
 # ifdef __REDIRECT
 export extern __REDIRECT (fscanf (__restrict __stream@FILE
 				__restrict __format@const char ...)
@@ -447,7 +447,7 @@ export extern vsscanf (__restrict __s@const char
 
 /* Same redirection as above for the v*scanf family.  */
 # if !__GLIBC_USE (DEPRECATED_SCANF)
-#  if defined __REDIRECT && !defined __LDBL_COMPAT
+#  if (defined __REDIRECT && !defined __LDBL_COMPAT)
 export extern __REDIRECT (vfscanf
 		       (__restrict __s@FILE
 			__restrict __format@const char __arg __gnuc_va_list)
@@ -547,8 +547,8 @@ export extern putchar_unlocked (__c int)int;
 #endif /* Use POSIX.  */
 
 
-#if defined __USE_MISC \
-    || (defined __USE_XOPEN && !defined __USE_XOPEN2K)
+#if (defined __USE_MISC \
+    || (defined __USE_XOPEN && !defined __USE_XOPEN2K))
 /* Get a word (int) from STREAM.  */
 export extern getw (__stream@FILE)int;
 
@@ -589,7 +589,7 @@ export extern fgets_unlocked (__restrict __s@char __n int
 #endif
 
 
-#if defined __USE_XOPEN2K8 || __GLIBC_USE (LIB_EXT2)
+#if (defined __USE_XOPEN2K8 || __GLIBC_USE (LIB_EXT2))
 /* Read up to (and including) a DELIMITER from STREAM into *LINEPTR
    (and null-terminate it). *LINEPTR is a pointer returned from malloc (or
    NULL), pointing to *N characters of space.  It is realloc'd as
@@ -698,7 +698,7 @@ export extern rewind (__stream@FILE);
    file offset.  `long int' is not the right type.  These definitions
    are originally defined in the Large File Support API.  */
 
-#if defined __USE_LARGEFILE || defined __USE_XOPEN2K
+#if (defined __USE_LARGEFILE || defined __USE_XOPEN2K)
 # ifndef __USE_FILE_OFFSET64
 /* Seek to a certain position on STREAM.
 
@@ -813,7 +813,7 @@ export extern ctermid (__s@char)@char __THROW;
 #endif /* Use POSIX.  */
 
 
-#if (defined __USE_XOPEN && !defined __USE_XOPEN2K) || defined __USE_GNU
+#if (defined __USE_XOPEN && !defined __USE_XOPEN2K || defined __USE_GNU)
 /* Return the name of the current user.  */
 export extern cuserid (__s@char)@char;
 #endif /* Use X/Open, but not issue 6.  */
@@ -847,7 +847,7 @@ export extern ftrylockfile (__stream@FILE)int __THROW __wur;
 export extern funlockfile (__stream@FILE) __THROW;
 #endif /* POSIX */
 
-#if defined __USE_XOPEN && !defined __USE_XOPEN2K && !defined __USE_GNU
+#if (defined __USE_XOPEN && !defined __USE_XOPEN2K && !defined __USE_GNU)
 /*  X/Open Issues 1-5 required getopt to be declared in this
    header.  It was removed in Issue 6.  GNU follows Issue 6.  */
 # include <bits/getopt_posix.h>
@@ -863,7 +863,7 @@ export extern __overflow (_@FILE _ int)int;
 #ifdef __USE_EXTERN_INLINES
 # include <bits/stdio.h>
 #endif
-#if __USE_FORTIFY_LEVEL > 0 && defined __fortify_function
+#if (__USE_FORTIFY_LEVEL > 0 && defined __fortify_function)
 # include <bits/stdio2.h>
 #endif
 #ifdef __LDBL_COMPAT

@@ -9,7 +9,7 @@
    arguments.  That name should not be used in new code.  */
 type __fpos64_t struct _G_fpos64_t
 {
-  __pos __off64_t;
+  __pos __off64_t
   __state __mbstate_t;
 };
 

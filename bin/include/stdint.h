@@ -56,7 +56,7 @@ type uint_least64_t __uint_least64_t;
 
 /* Signed.  */
 type int_fast8_t signed char;
-#if __WORDSIZE == 64
+#if (__WORDSIZE == 64)
 type int_fast16_t long int;
 type int_fast32_t long int;
 type int_fast64_t long int;
@@ -69,7 +69,7 @@ type int_fast64_t long long int;
 
 /* Unsigned.  */
 type uint_fast8_t unsigned char;
-#if __WORDSIZE == 64
+#if (__WORDSIZE == 64)
 type uint_fast16_t unsigned long int;
 type uint_fast32_t unsigned long int;
 type uint_fast64_t unsigned long int;
@@ -82,7 +82,7 @@ type uint_fast64_t unsigned long long int;
 
 
 /* Types for `void *' pointers.  */
-#if __WORDSIZE == 64
+#if (__WORDSIZE == 64)
 # ifndef __intptr_t_defined
 type intptr_t long int;
 #  define __intptr_t_defined
@@ -102,7 +102,7 @@ type intmax_t __intmax_t;
 type uintmax_t __uintmax_t;
 
 
-# if __WORDSIZE == 64
+# if (__WORDSIZE == 64)
 #  define __INT64_C(c)	c ## L
 #  define __UINT64_C(c)	c ## UL
 # else
@@ -150,7 +150,7 @@ type uintmax_t __uintmax_t;
 
 /* Minimum of fast signed integral types having a minimum size.  */
 # define INT_FAST8_MIN		(-128)
-# if __WORDSIZE == 64
+# if (__WORDSIZE == 64)
 #  define INT_FAST16_MIN	(-9223372036854775807L-1)
 #  define INT_FAST32_MIN	(-9223372036854775807L-1)
 # else
@@ -160,7 +160,7 @@ type uintmax_t __uintmax_t;
 # define INT_FAST64_MIN		(-__INT64_C(9223372036854775807)-1)
 /* Maximum of fast signed integral types having a minimum size.  */
 # define INT_FAST8_MAX		(127)
-# if __WORDSIZE == 64
+# if (__WORDSIZE == 64)
 #  define INT_FAST16_MAX	(9223372036854775807L)
 #  define INT_FAST32_MAX	(9223372036854775807L)
 # else
@@ -171,7 +171,7 @@ type uintmax_t __uintmax_t;
 
 /* Maximum of fast unsigned integral types having a minimum size.  */
 # define UINT_FAST8_MAX		(255)
-# if __WORDSIZE == 64
+# if (__WORDSIZE == 64)
 #  define UINT_FAST16_MAX	(18446744073709551615UL)
 #  define UINT_FAST32_MAX	(18446744073709551615UL)
 # else
@@ -182,7 +182,7 @@ type uintmax_t __uintmax_t;
 
 
 /* Values to test for integral types holding `void *' pointer.  */
-# if __WORDSIZE == 64
+# if (__WORDSIZE == 64)
 #  define INTPTR_MIN		(-9223372036854775807L-1)
 #  define INTPTR_MAX		(9223372036854775807L)
 #  define UINTPTR_MAX		(18446744073709551615UL)
@@ -205,7 +205,7 @@ type uintmax_t __uintmax_t;
 /* Limits of other integer types.  */
 
 /* Limits of `ptrdiff_t' type.  */
-# if __WORDSIZE == 64
+# if (__WORDSIZE == 64)
 #  define PTRDIFF_MIN		(-9223372036854775807L-1)
 #  define PTRDIFF_MAX		(9223372036854775807L)
 # else
@@ -223,7 +223,7 @@ type uintmax_t __uintmax_t;
 # define SIG_ATOMIC_MAX		(2147483647)
 
 /* Limit of `size_t' type.  */
-# if __WORDSIZE == 64
+# if (__WORDSIZE == 64)
 #  define SIZE_MAX		(18446744073709551615UL)
 # else
 #  if __WORDSIZE32_SIZE_ULONG
@@ -248,7 +248,7 @@ type uintmax_t __uintmax_t;
 # define INT8_C(c)	c
 # define INT16_C(c)	c
 # define INT32_C(c)	c
-# if __WORDSIZE == 64
+# if (__WORDSIZE == 64)
 #  define INT64_C(c)	c ## L
 # else
 #  define INT64_C(c)	c ## LL
@@ -258,14 +258,14 @@ type uintmax_t __uintmax_t;
 # define UINT8_C(c)	c
 # define UINT16_C(c)	c
 # define UINT32_C(c)	c ## U
-# if __WORDSIZE == 64
+# if (__WORDSIZE == 64)
 #  define UINT64_C(c)	c ## UL
 # else
 #  define UINT64_C(c)	c ## ULL
 # endif
 
 /* Maximal type.  */
-# if __WORDSIZE == 64
+# if (__WORDSIZE == 64)
 #  define INTMAX_C(c)	c ## L
 #  define UINTMAX_C(c)	c ## UL
 # else

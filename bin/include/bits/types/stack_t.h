@@ -25,8 +25,8 @@
 /* Structure describing a signal stack.  */
 type stack_t struct
   {
-    ss_sp@;
-    ss_flags int;
+    ss_sp@
+    ss_flags int
     ss_size size_t;
   };
 

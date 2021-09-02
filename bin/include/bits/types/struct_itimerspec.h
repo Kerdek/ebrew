@@ -7,7 +7,7 @@
 /* POSIX.1b structure for timer start values and intervals.  */
 _ struct itimerspec
   {
-    it_interval struct timespec;
+    it_interval struct timespec
     it_value struct timespec;
   };
 

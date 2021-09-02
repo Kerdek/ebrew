@@ -157,7 +157,7 @@
    #endif
    Note: only works for GCC 2.0 and later, because __GNUC_MINOR__ was
    added in 2.0.  */
-#if defined __GNUC__ && defined __GNUC_MINOR__
+#if (defined __GNUC__ && defined __GNUC_MINOR__)
 # define __GNUC_PREREQ(maj, min) \
 	((__GNUC__ << 16) + __GNUC_MINOR__ >= ((maj) << 16) + (min))
 #else
@@ -168,7 +168,7 @@
    or may not also be available in clang, and clang's definitions of
    __GNUC(_MINOR)__ are fixed at 4 and 2 respectively.  Not all such
    features can be queried via __has_extension/__has_feature.  */
-#if defined __clang_major__ && defined __clang_minor__
+#if (defined __clang_major__ && defined __clang_minor__)
 # define __glibc_clang_prereq(maj, min) \
   ((__clang_major__ << 16) + __clang_minor__ >= ((maj) << 16) + (min))
 #else
@@ -182,8 +182,8 @@
    _DEFAULT_SOURCE.  If _DEFAULT_SOURCE is present we do not
    issue a warning; the expectation is that the source is being
    transitioned to use the new macro.  */
-#if (defined _BSD_SOURCE || defined _SVID_SOURCE) \
-    && !defined _DEFAULT_SOURCE
+#if ((defined _BSD_SOURCE || defined _SVID_SOURCE) \
+    && !defined _DEFAULT_SOURCE)
 # warning "_BSD_SOURCE and _SVID_SOURCE are deprecated, use _DEFAULT_SOURCE"
 # undef  _DEFAULT_SOURCE
 # define _DEFAULT_SOURCE	1
@@ -316,19 +316,19 @@
 # define __USE_POSIX	1
 #endif
 
-#if defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 2 || defined _XOPEN_SOURCE
+#if (defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 2 || defined _XOPEN_SOURCE)
 # define __USE_POSIX2	1
 #endif
 
-#if defined _POSIX_C_SOURCE && (_POSIX_C_SOURCE - 0) >= 199309L
+#if (defined _POSIX_C_SOURCE && (_POSIX_C_SOURCE - 0) >= 199309L)
 # define __USE_POSIX199309	1
 #endif
 
-#if defined _POSIX_C_SOURCE && (_POSIX_C_SOURCE - 0) >= 199506L
+#if (defined _POSIX_C_SOURCE && (_POSIX_C_SOURCE - 0) >= 199506L)
 # define __USE_POSIX199506	1
 #endif
 
-#if defined _POSIX_C_SOURCE && (_POSIX_C_SOURCE - 0) >= 200112L
+#if (defined _POSIX_C_SOURCE && (_POSIX_C_SOURCE - 0) >= 200112L)
 # define __USE_XOPEN2K		1
 # undef __USE_ISOC95
 # define __USE_ISOC95		1
@@ -336,7 +336,7 @@
 # define __USE_ISOC99		1
 #endif
 
-#if defined _POSIX_C_SOURCE && (_POSIX_C_SOURCE - 0) >= 200809L
+#if (defined _POSIX_C_SOURCE && (_POSIX_C_SOURCE - 0) >= 200809L)
 # define __USE_XOPEN2K8		1
 # undef  _ATFILE_SOURCE
 # define _ATFILE_SOURCE	1
@@ -344,13 +344,13 @@
 
 #ifdef	_XOPEN_SOURCE
 # define __USE_XOPEN	1
-# if (_XOPEN_SOURCE - 0) >= 500
+# if ((_XOPEN_SOURCE - 0) >= 500)
 #  define __USE_XOPEN_EXTENDED	1
 #  define __USE_UNIX98	1
 #  undef _LARGEFILE_SOURCE
 #  define _LARGEFILE_SOURCE	1
-#  if (_XOPEN_SOURCE - 0) >= 600
-#   if (_XOPEN_SOURCE - 0) >= 700
+#  if ((_XOPEN_SOURCE - 0) >= 600)
+#   if ((_XOPEN_SOURCE - 0) >= 700)
 #    define __USE_XOPEN2K8	1
 #    define __USE_XOPEN2K8XSI	1
 #   endif
@@ -376,7 +376,7 @@
 # define __USE_LARGEFILE64	1
 #endif
 
-#if defined _FILE_OFFSET_BITS && _FILE_OFFSET_BITS == 64
+#if (defined _FILE_OFFSET_BITS && _FILE_OFFSET_BITS == 64)
 # define __USE_FILE_OFFSET64	1
 #endif
 
@@ -392,8 +392,8 @@
 # define __USE_GNU	1
 #endif
 
-#if defined _FORTIFY_SOURCE && _FORTIFY_SOURCE > 0 \
-    && __GNUC_PREREQ (4, 1) && defined __OPTIMIZE__ && __OPTIMIZE__ > 0
+#if (defined _FORTIFY_SOURCE && _FORTIFY_SOURCE > 0 \
+    && __GNUC_PREREQ (4, 1) && defined __OPTIMIZE__ && __OPTIMIZE__ > 0)
 # if _FORTIFY_SOURCE > 1
 #  define __USE_FORTIFY_LEVEL 2
 # else
@@ -407,7 +407,7 @@
    safely.  It has been removed from ISO C11 and ISO C++14.  Note: for
    compatibility with various implementations of <cstdio>, this test
    must consider only the value of __cplusplus when compiling C++.  */
-#if defined __cplusplus ? __cplusplus >= 201402L : defined __USE_ISOC11
+#if (defined __cplusplus ? __cplusplus >= 201402L : defined __USE_ISOC11)
 # define __GLIBC_USE_DEPRECATED_GETS 0
 #else
 # define __GLIBC_USE_DEPRECATED_GETS 1
@@ -463,7 +463,7 @@
 
 /* If we don't have __REDIRECT, prototypes will be missing if
    __USE_FILE_OFFSET64 but not __USE_LARGEFILE[64]. */
-# if defined __USE_FILE_OFFSET64 && !defined __REDIRECT
+# if (defined __USE_FILE_OFFSET64 && !defined __REDIRECT)
 #  define __USE_LARGEFILE	1
 #  define __USE_LARGEFILE64	1
 # endif
@@ -471,9 +471,9 @@
 #endif	/* !ASSEMBLER */
 
 /* Decide whether we can define 'extern inline' functions in headers.  */
-#if __GNUC_PREREQ (2, 7) && defined __OPTIMIZE__ \
+#if (__GNUC_PREREQ (2, 7) && defined __OPTIMIZE__ \
     && !defined __OPTIMIZE_SIZE__ && !defined __NO_INLINE__ \
-    && defined __extern_inline
+    && defined __extern_inline)
 # define __USE_EXTERN_INLINES	1
 #endif
 

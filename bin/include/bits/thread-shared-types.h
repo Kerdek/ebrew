@@ -48,7 +48,7 @@
 
 type __pthread_list_t struct __pthread_internal_list
 {
-  __prev@struct __pthread_internal_list;
+  __prev@struct __pthread_internal_list
   __next@struct __pthread_internal_list;
 };
 
@@ -93,26 +93,26 @@ _ struct __pthread_cond_s
 {
   __extension__ _ union
   {
-    __extension__ __wseq unsigned long long int;
+    __extension__ __wseq unsigned long long intyy
     __wseq32 struct
     {
-      __low unsigned int;
+      __low unsigned int
       __high unsigned int;
     };
-  };
+  }
   __extension__ _ union
   {
-    __extension__ __g1_start unsigned long long int;
+    __extension__ __g1_start unsigned long long int
     __g1_start32 struct
     {
-      __low unsigned int;
+      __low unsigned int
       __high unsigned int;
     };
-  };
-  __g_refs[2]unsigned int __LOCK_ALIGNMENT;
-  __g_size[2]unsigned int;
-  __g1_orig_sizeunsigned int;
-  __wrefsunsigned int;
+  }
+  __g_refs[2]unsigned int __LOCK_ALIGNMENT
+  __g_size[2]unsigned int
+  __g1_orig_sizeunsigned int
+  __wrefsunsigned int
   __g_signals[2]unsigned int;
 };
 

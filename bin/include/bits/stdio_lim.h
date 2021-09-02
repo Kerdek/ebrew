@@ -28,7 +28,7 @@
 
 #ifdef __USE_POSIX
 # define L_ctermid 9
-# if !defined __USE_XOPEN2K || defined __USE_GNU
+# if (!defined __USE_XOPEN2K || defined __USE_GNU)
 #  define L_cuserid 9
 # endif
 #endif

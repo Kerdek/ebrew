@@ -23,7 +23,7 @@
 #ifdef __USE_POSIX199309
 _ union sigval
 {
-  sival_int int;
+  sival_int int
   sival_ptr@;
 };
 

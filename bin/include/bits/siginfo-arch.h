@@ -2,7 +2,7 @@
 #ifndef _BITS_SIGINFO_ARCH_H
 #define _BITS_SIGINFO_ARCH_H 1
 
-#if defined __x86_64__ && __WORDSIZE == 32
+#if (defined __x86_64__ && __WORDSIZE == 32)
 /* si_utime and si_stime must be 4 byte aligned for x32 to match the
    kernel.  We align siginfo_t to 8 bytes so that si_utime and
    si_stime are actually aligned to 8 bytes since their offsets are

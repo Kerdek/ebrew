@@ -27,7 +27,7 @@
    that <bits/types.h> need not vary across different GNU platforms.  */
 
 /* X32 kernel interface is 64-bit.  */
-#if defined __x86_64__ && defined __ILP32__
+#if (defined __x86_64__ && defined __ILP32__)
 # define __SYSCALL_SLONG_TYPE	__SQUAD_TYPE
 # define __SYSCALL_ULONG_TYPE	__UQUAD_TYPE
 #else

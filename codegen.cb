@@ -26,9 +26,9 @@ __attribute__((format(printf, 1, 2)))
 println(fmt@char ...) =
   let ap = &(let va_list){;;
   va_start(ap@, fmt);
-  vfprintf(output_file fmt ap);
+  vfprintf output_file fmt ap;
   va_end(ap@)
-  fprintf(output_file "\n"->@char);
+  fprintf output_file "\n"->@char;
 ;
 
 i counti int = 1;
@@ -37,24 +37,24 @@ count(void)int =
 ;
 
 push(void) =
-  println("  push %%rax"->@char);
+  println "  push %%rax"->@char;
   depth++;
 ;
 
 pop(arg@char) =
-  println("  pop %s"->@char arg);
+  println "  pop %s"->@char arg;
   depth--;
 ;
 
 pushf(void) =
-  println("  sub $8, %%rsp"->@char);
-  println("  movsd %%xmm0, (%%rsp)"->@char);
+  println "  sub $8, %%rsp"->@char;
+  println "  movsd %%xmm0, (%%rsp)"->@char;
   depth++;
 ;
 
 popf(reg int) =
-  println("  movsd (%%rsp), %%xmm%d"->@char reg);
-  println("  add $8, %%rsp"->@char);
+  println "  movsd (%%rsp), %%xmm%d"->@char reg;
+  println "  add $8, %%rsp"->@char;
   depth--;
 ;
 
@@ -64,191 +64,185 @@ export align_to(n int alignment int) int =
   return (n + alignment - 1) / alignment * alignment;
 ;
 
-reg_dx(sz int)@char =
-  switch (sz) {
-  case 1: return "%dl"->@char;
-  case 2: return "%dx"->@char;
-  case 4: return "%edx"->@char;
-  case 8: return "%rdx"->@char;
-  ;
-  unreachable();
-;
+reg_dx(sz int)@char = return
+  sz == 1 ? "%dl" ->@char :
+  sz == 2 ? "%dx" ->@char :
+  sz == 4 ? "%edx"->@char :
+  sz == 8 ? "%rdx"->@char :
+            0->@char ;;
 
-reg_ax(sz int)@char =
-  switch (sz) {
-  case 1: return "%al"->@char;
-  case 2: return "%ax"->@char;
-  case 4: return "%eax"->@char;
-  case 8: return "%rax"->@char;
-  ;
-  unreachable();
-;
+reg_ax(sz int)@char =return
+  sz == 1 ? "%al" ->@char :
+  sz == 2 ? "%ax" ->@char :
+  sz == 4 ? "%eax"->@char :
+  sz == 8 ? "%rax"->@char :
+            0->@char ;;
 
 gen_addr(node@Node opt_fpic bool) =
-  switch (node@.kind) {
+  switch node@.kind {
   case ND_VAR:
     // Local variable
     if node@.var@.is_local{
-      println("  lea %d(%%rbp), %%rax"->@char node@.var@.offset);
+      println "  lea %d(%%rbp), %%rax"->@char node@.var@.offset;
       return;
     ;
 
     if opt_fpic{
       // Thread-local variable
       if node@.var@.is_tls{
-        println("  data16 lea %s@tlsgd(%%rip), %%rdi"->@char node@.var@.name);
-        println("  .value 0x6666"->@char);
-        println("  rex64"->@char);
-        println("  call __tls_get_addr@PLT"->@char);
+        println "  data16 lea %s@tlsgd(%%rip), %%rdi"->@char node@.var@.name;
+        println "  .value 0x6666"->@char;
+        println "  rex64"->@char;
+        println "  call __tls_get_addr@PLT"->@char;
         return;
       ;
 
       // Function or global variable
-      println("  mov %s@GOTPCREL(%%rip), %%rax"->@char node@.var@.name);
+      println "  mov %s@GOTPCREL(%%rip), %%rax"->@char node@.var@.name;
       return;
     ;
 
     // Thread-local variable
     if node@.var@.is_tls{
-      println("  mov %%fs:0, %%rax"->@char);
-      println("  add $%s@tpoff, %%rax"->@char node@.var@.name);
+      println "  mov %%fs:0, %%rax"->@char;
+      println "  add $%s@tpoff, %%rax"->@char node@.var@.name;
       return;
     ;
-    if node@.ty@.kind == TY_FUNC{
+    if (node@.ty@.kind == TY_FUNC) {
       if node@.var@.is_definition
-        println("  lea %s(%%rip), %%rax"->@char node@.var@.name);
+        println "  lea %s(%%rip), %%rax"->@char node@.var@.name;
       else
-        println("  mov %s@GOTPCREL(%%rip), %%rax"->@char node@.var@.name);
+        println "  mov %s@GOTPCREL(%%rip), %%rax"->@char node@.var@.name;
       return;
     ;
 
     // Global variable
-    println("  lea %s(%%rip), %%rax"->@char node@.var@.name);
+    println "  lea %s(%%rip), %%rax"->@char node@.var@.name;
     return;
   case ND_DEREF:
     //warn_tok(node@.tok, "address of deref"->@char);
-    gen_expr(node@.lhs opt_fpic);
+    gen_expr node@.lhs opt_fpic;
     return;
   case ND_COMMA:
-    gen_expr(node@.lhs opt_fpic);
-    gen_addr(node@.rhs opt_fpic);
+    gen_expr node@.lhs opt_fpic;
+    gen_addr node@.rhs opt_fpic;
     return;
   case ND_MEMBER:
-    gen_addr(node@.lhs opt_fpic);
-    println("  add $%d, %%rax"->@char node@.member@.offset);
+    gen_addr node@.lhs opt_fpic;
+    println "  add $%d, %%rax"->@char node@.member@.offset;
     return;
   case ND_FUNCALL:
     if node@.ret_buffer{
-      gen_expr(node opt_fpic);
+      gen_expr node opt_fpic;
       return;
     ;
     break;
   case ND_ASSIGN:
   case ND_COND:
-    if node@.ty@.kind == TY_STRUCT || node@.ty@.kind == TY_UNION{
-      gen_expr(node opt_fpic);
+    if (node@.ty@.kind == TY_STRUCT || node@.ty@.kind == TY_UNION) {
+      gen_expr node opt_fpic;
       return;
     ;
     break;
   ;
 
-  error_tok(node@.tok "not an lvalue"->@char);
+  error_tok node@.tok "not an lvalue"->@char;
 ;
 
 // Load a value from where %rax is pointing to.
 load(ty@Type) =
-  switch (ty@.kind) {
+  switch  ty@.kind {
   case TY_ARRAY:
   case TY_STRUCT:
   case TY_UNION:
   case TY_FUNC:
     return;
   case TY_FLOAT:
-    println("  movss (%%rax), %%xmm0"->@char);
+    println "  movss (%%rax), %%xmm0"->@char;
     return;
   case TY_DOUBLE:
-    println("  movsd (%%rax), %%xmm0"->@char);
+    println "  movsd (%%rax), %%xmm0"->@char;
     return;
   case TY_LDOUBLE:
-    println("  fldt (%%rax)"->@char);
+    println "  fldt (%%rax)"->@char;
     return;
   ;
 
-  let insn = ty@.is_unsigned ? "movz"->@char : "movs"->@char;
+  let insn = (ty@.is_unsigned ? "movz"->@char : "movs"->@char);
 
   // When we load a char or a short value to a register, we always
   // extend them to the size of int, so we can assume the lower half of
   // a register always contains a valid value. The upper half of a
   // register for char, short and int may contain garbage. When we load
   // a long value to a register, it simply occupies the entire register.
-  if ty@.size == 1
-    println("  %sbl (%%rax), %%eax"->@char insn);
-  else if ty@.size == 2
-    println("  %swl (%%rax), %%eax"->@char insn);
-  else if ty@.size == 4
-    println("  movsxd (%%rax), %%rax"->@char);
+       if (ty@.size == 1)
+    println "  %sbl (%%rax), %%eax"->@char insn;
+  else if (ty@.size == 2)
+    println "  %swl (%%rax), %%eax"->@char insn;
+  else if (ty@.size == 4)
+    println "  movsxd (%%rax), %%rax"->@char;
   else
-    println("  mov (%%rax), %%rax"->@char);
+    println "  mov (%%rax), %%rax"->@char;
 ;
 
 // Store %rax to an address that the stack top is pointing to.
 store(ty@Type) =
-  pop("%rdi"->@char);
+  pop "%rdi"->@char;
 
-  switch (ty@.kind) {
+  switch  ty@.kind {
   case TY_STRUCT:
   case TY_UNION:
     for (let i int = 0; i < ty@.size; i++) {
-      println("  mov %d(%%rax), %%r8b"->@char i);
-      println("  mov %%r8b, %d(%%rdi)"->@char i);
+      println "  mov %d(%%rax), %%r8b"->@char i;
+      println "  mov %%r8b, %d(%%rdi)"->@char i;
     ;
     return;
   case TY_FLOAT:
-    println("  movss %%xmm0, (%%rdi)"->@char);
+    println "  movss %%xmm0, (%%rdi)"->@char;
     return;
   case TY_DOUBLE:
-    println("  movsd %%xmm0, (%%rdi)"->@char);
+    println "  movsd %%xmm0, (%%rdi)"->@char;
     return;
   case TY_LDOUBLE:
-    println("  fstpt (%%rdi)"->@char);
+    println "  fstpt (%%rdi)"->@char;
     return;
   ;
 
-  if ty@.size == 1
-    println("  mov %%al, (%%rdi)"->@char);
-  else if ty@.size == 2
-    println("  mov %%ax, (%%rdi)"->@char);
-  else if ty@.size == 4
-    println("  mov %%eax, (%%rdi)"->@char);
+       if (ty@.size == 1)
+    println "  mov %%al, (%%rdi)"->@char;
+  else if (ty@.size == 2)
+    println "  mov %%ax, (%%rdi)"->@char;
+  else if (ty@.size == 4)
+    println "  mov %%eax, (%%rdi)"->@char;
   else
-    println("  mov %%rax, (%%rdi)"->@char);
+    println "  mov %%rax, (%%rdi)"->@char;
 ;
 
 cmp_zero(ty@Type) =
-  switch (ty@.kind) {
+  switch  ty@.kind {
   case TY_FLOAT:
-    println("  xorps %%xmm1, %%xmm1"->@char);
-    println("  ucomiss %%xmm1, %%xmm0"->@char);
+    println "  xorps %%xmm1, %%xmm1"->@char;
+    println "  ucomiss %%xmm1, %%xmm0"->@char;
     return;
   case TY_DOUBLE:
-    println("  xorpd %%xmm1, %%xmm1"->@char);
-    println("  ucomisd %%xmm1, %%xmm0"->@char);
+    println "  xorpd %%xmm1, %%xmm1"->@char;
+    println "  ucomisd %%xmm1, %%xmm0"->@char;
     return;
   case TY_LDOUBLE:
-    println("  fldz"->@char);
-    println("  fucomip"->@char);
-    println("  fstp %%st(0)"->@char);
+    println "  fldz"->@char;
+    println "  fucomip"->@char;
+    println "  fstp %%st(0)"->@char;
     return;
   ;
 
-  if is_integer(ty) && ty@.size <= 4
-    println("  cmp $0, %%eax"->@char);
+  if (is_integer ty && ty@.size <= 4)
+    println "  cmp $0, %%eax"->@char;
   else
-    println("  cmp $0, %%rax"->@char);
+    println "  cmp $0, %%rax"->@char;
 ;
 
 getTypeId(ty@Type)TypeID =
-  switch (ty@.kind) {
+  switch  ty@.kind {
   case TY_CHAR:
     return ty@.is_unsigned ? U8->TypeID : I8->TypeID;
   case TY_SHORT:
@@ -339,20 +333,20 @@ cast_table[][11]@char = {
 ;;
 
 cast(from@Type to@Type) =
-  if to@.kind == TY_VOID
+  if (to@.kind == TY_VOID)
     return;
 
-  if to@.kind == TY_BOOL{
-    cmp_zero(from);
-    println("  setne %%al"->@char);
-    println("  movzx %%al, %%eax"->@char);
+  if (to@.kind == TY_BOOL) {
+    cmp_zero from;
+    println "  setne %%al"->@char;
+    println "  movzx %%al, %%eax"->@char;
     return;
   ;
 
-  let t1 = getTypeId(from);
-  let t2 = getTypeId(to);
+  let t1 = getTypeId from;
+  let t2 = getTypeId to;
   if cast_table[t1][t2]
-    println("  %s"->@char cast_table[t1][t2]);
+    println "  %s"->@char cast_table[t1][t2];
 ;
 
 // Structs or unions equal or smaller than 16 bytes are passed
@@ -368,72 +362,70 @@ cast(from@Type to@Type) =
 // This function returns true if `ty` has only floating-point
 // members in its byte range [lo, hi).
 has_flonum(ty@Type lo int hi int offset int)bool =
-  if ty@.kind == TY_STRUCT || ty@.kind == TY_UNION{
+  if (ty@.kind == TY_STRUCT || ty@.kind == TY_UNION) {
     for (let mem@Member = ty@.members; mem; mem = mem@.next) {
-      let d = offset + mem@.offset;
-      if !has_flonum(mem@.ty->@Type lo hi d)
+      if !has_flonum mem@.ty->@Type lo hi (offset + mem@.offset)
         return false;
     ;
     return true;
   ;
 
-  if ty@.kind == TY_ARRAY{
+  if (ty@.kind == TY_ARRAY) {
     for (let i int = 0; i < ty@.array_len; i++) {
-      let d = offset + ty@.base@.size * i;
-      if !has_flonum(ty@.base lo hi d)
+      if !has_flonum ty@.base lo hi (offset + ty@.base@.size * i)
         return false;
     ;
     return true;
   ;
 
-  return (offset < lo || hi <= offset || ty@.kind == TY_FLOAT || ty@.kind == TY_DOUBLE)->bool;
+  return offset < lo || hi <= offset || ty@.kind == TY_FLOAT || ty@.kind == TY_DOUBLE;
 ;
 
 has_flonum1(ty@Type)bool =
-  return has_flonum(ty 0 8 0);
+  return has_flonum ty 0 8 0;
 ;
 
 has_flonum2(ty@Type)bool =
-  return has_flonum(ty 8 16 0);
+  return has_flonum ty 8 16 0;
 ;
 
 push_struct(ty@Type) =
-  let sz = align_to(ty@.size 8);
-  println("  sub $%d, %%rsp"->@char sz);
+  let sz = align_to ty@.size 8;
+  println "  sub $%d, %%rsp"->@char sz;
   depth += sz / 8;
 
   for (let i int = 0; i < ty@.size; i++) {
-    println("  mov %d(%%rax), %%r10b"->@char i);
-    println("  mov %%r10b, %d(%%rsp)"->@char i);
+    println "  mov %d(%%rax), %%r10b"->@char i;
+    println "  mov %%r10b, %d(%%rsp)"->@char i;
   ;
 ;
 
 push_args2(args@Node first_pass bool opt_fpic bool) =
   if !args
     return;
-  push_args2(args@.next first_pass opt_fpic);
+  push_args2 args@.next first_pass opt_fpic;
 
   if ((first_pass && !args@.pass_by_stack) || (!first_pass && args@.pass_by_stack))
     return;
 
-  gen_expr(args opt_fpic);
+  gen_expr args opt_fpic;
 
-  switch (args@.ty@.kind) {
+  switch  args@.ty@.kind {
   case TY_STRUCT:
   case TY_UNION:
-    push_struct(args@.ty);
+    push_struct args@.ty;
     break;
   case TY_FLOAT:
   case TY_DOUBLE:
-    pushf();
+    pushf ;
     break;
   case TY_LDOUBLE:
-    println("  sub $16, %%rsp"->@char);
-    println("  fstpt (%%rsp)"->@char);
+    println "  sub $16, %%rsp"->@char;
+    println "  fstpt (%%rsp)"->@char;
     depth += 2;
     break;
   default:
-    push();
+    push ;
   ;
 ;
 
@@ -461,35 +453,34 @@ push_args(node@Node opt_fpic bool)int =
 
   // If the return type is a large struct/union, the caller passes
   // a pointer to a buffer as if it were the first argument.
-  if node@.ret_buffer && node@.ty@.size > 16
-    gp++;
+  if (node@.ret_buffer && node@.ty@.size > 16) gp++;
 
   // Load as many arguments to the registers as possible.
   for (let arg@Node = node@.args; arg; arg = arg@.next) {
     let ty = arg@.ty;
 
-    switch (ty@.kind) {
+    switch  ty@.kind {
     case TY_STRUCT:
     case TY_UNION:
-      if ty@.size > 16{
+      if (ty@.size > 16) {
         arg@.pass_by_stack = true;
-        stack += align_to(ty@.size 8) / 8;
+        stack += align_to ty@.size 8 / 8;
       ; else {
-        let fp1 = has_flonum1(ty);
-        let fp2 = has_flonum2(ty);
+        let fp1 = has_flonum1 ty;
+        let fp2 = has_flonum2 ty;
 
-        if fp + fp1 + fp2 < FP_MAX && gp + !fp1 + !fp2 < GP_MAX{
+        if (fp + fp1 + fp2 < FP_MAX && gp + !fp1 + !fp2 < GP_MAX) {
           fp = fp + fp1 + fp2;
           gp = gp + !fp1 + !fp2;
         ; else {
           arg@.pass_by_stack = true;
-          stack += align_to(ty@.size 8) / 8;
+          stack += align_to ty@.size 8 / 8;
         ;
       ;
       break;
     case TY_FLOAT:
     case TY_DOUBLE:
-      if fp++ >= FP_MAX{
+      if (fp++ >= FP_MAX) {
         arg@.pass_by_stack = true;
         stack++;
       ;
@@ -499,7 +490,7 @@ push_args(node@Node opt_fpic bool)int =
       stack += 2;
       break;
     default:
-      if gp++ >= GP_MAX{
+      if (gp++ >= GP_MAX) {
         arg@.pass_by_stack = true;
         stack++;
       ;
@@ -507,19 +498,19 @@ push_args(node@Node opt_fpic bool)int =
   ;
 
   if ((depth + stack) % 2 == 1) {
-    println("  sub $8, %%rsp"->@char);
+    println "  sub $8, %%rsp"->@char;
     depth++;
     stack++;
   ;
 
-  push_args2(node@.args true opt_fpic);
-  push_args2(node@.args false opt_fpic);
+  push_args2 node@.args true opt_fpic;
+  push_args2 node@.args false opt_fpic;
 
   // If the return type is a large struct/union, the caller passes
   // a pointer to a buffer as if it were the first argument.
-  if node@.ret_buffer && node@.ty@.size > 16{
-    println("  lea %d(%%rbp), %%rax"->@char node@.ret_buffer@.offset);
-    push();
+  if (node@.ret_buffer && node@.ty@.size > 16) {
+    println "  lea %d(%%rbp), %%rax"->@char node@.ret_buffer@.offset;
+    push ;
   ;
 
   return stack;
@@ -528,35 +519,30 @@ push_args(node@Node opt_fpic bool)int =
 copy_ret_buffer(var@Obj) =
   let ty = var@.ty gp = 0 fp = 0;
 
-  if has_flonum1(ty) {
+  if has_flonum1 ty {
     assert(ty@.size == 4 || 8 <= ty@.size);
-    if ty@.size == 4
-      println("  movss %%xmm0, %d(%%rbp)"->@char var@.offset);
-    else
-      println("  movsd %%xmm0, %d(%%rbp)"->@char var@.offset);
+    if (ty@.size == 4) println "  movss %%xmm0, %d(%%rbp)"->@char var@.offset;
+    else println "  movsd %%xmm0, %d(%%rbp)"->@char var@.offset;
     fp++;
   ; else {
-    for (let i int = 0; i < minl(8->long ty@.size->long); i++) {
-      let b = var@.offset + i;
-      println("  mov %%al, %d(%%rbp)"->@char b);
-      println("  shr $8, %%rax"->@char);
+    for (let i int = 0; i < minl 8->long ty@.size->long; i++) {
+      println "  mov %%al, %d(%%rbp)"->@char (var@.offset + i);
+      println "  shr $8, %%rax"->@char;
     ;
     gp++;
   ;
 
-  if ty@.size > 8{
-    if has_flonum2(ty) {
+  if (ty@.size > 8) {
+    if has_flonum2 ty {
       assert(ty@.size == 12 || ty@.size == 16);
-      let b = var@.offset + 8;
-      if ty@.size == 12 println("  movss %%xmm%d, %d(%%rbp)"->@char fp b);
-      else println("  movsd %%xmm%d, %d(%%rbp)"->@char fp b);
+      if (ty@.size == 12) println "  movss %%xmm%d, %d(%%rbp)"->@char fp (var@.offset + 8);
+      else println "  movsd %%xmm%d, %d(%%rbp)"->@char fp (var@.offset + 8);
     ; else {
-      let reg1 = (gp == 0) ? "%al"->@char : "%dl"->@char;
-      let reg2 = (gp == 0) ? "%rax"->@char : "%rdx"->@char;
-      for (let i int = 8; i < minl(16->long ty@.size->long); i++) {
-        let b = var@.offset + i;
-        println("  mov %s, %d(%%rbp)"->@char reg1 b);
-        println("  shr $8, %s"->@char reg2);
+      let reg1 = (!gp ? "%al"->@char : "%dl"->@char);
+      let reg2 = (!gp ? "%rax"->@char : "%rdx"->@char);
+      for (let i int = 8; i < minl 16->long ty@.size->long; i++) {
+        println "  mov %s, %d(%%rbp)"->@char reg1 (var@.offset + i);
+        println "  shr $8, %s"->@char reg2;
       ;
     ;
   ;
@@ -565,38 +551,34 @@ copy_ret_buffer(var@Obj) =
 copy_struct_reg(void) =
   let ty = current_fn@.ty@.return_ty gp = 0 fp = 0;
 
-  println("  mov %%rax, %%rdi"->@char);
+  println "  mov %%rax, %%rdi"->@char;
 
-  if has_flonum(ty 0 8 0) {
+  if has_flonum ty 0 8 0 {
     assert(ty@.size == 4 || 8 <= ty@.size);
-    if ty@.size == 4
-      println("  movss (%%rdi), %%xmm0"->@char);
-    else
-      println("  movsd (%%rdi), %%xmm0"->@char);
+    if (ty@.size == 4) println "  movss (%%rdi), %%xmm0"->@char;
+    else println "  movsd (%%rdi), %%xmm0"->@char;
     fp++;
   ; else {
-    println("  mov $0, %%rax"->@char);
-    for (let i int = (minl(8->long ty@.size->long) - 1)->int; i >= 0; i--) {
-      println("  shl $8, %%rax"->@char);
-      println("  mov %d(%%rdi), %%al"->@char i);
+    println "  mov $0, %%rax"->@char;
+    for (let i int = (minl 8->long ty@.size->long - 1)->int; i >= 0; i--) {
+      println "  shl $8, %%rax"->@char;
+      println "  mov %d(%%rdi), %%al"->@char i;
     ;
     gp++;
   ;
 
-  if ty@.size > 8{
-    if has_flonum(ty 8 16 0) {
+  if (ty@.size > 8) {
+    if has_flonum ty 8 16 0 {
       assert(ty@.size == 12 || ty@.size == 16);
-      if ty@.size == 4
-        println("  movss 8(%%rdi), %%xmm%d"->@char fp);
-      else
-        println("  movsd 8(%%rdi), %%xmm%d"->@char fp);
+      if (ty@.size == 4) println "  movss 8(%%rdi), %%xmm%d"->@char fp;
+      else println "  movsd 8(%%rdi), %%xmm%d"->@char fp;
     ; else {
-      let reg1 = (gp == 0) ? "%al"->@char : "%dl"->@char;
-      let reg2 = (gp == 0) ? "%rax"->@char : "%rdx"->@char;
-      println("  mov $0, %s"->@char reg2);
-      for (let i int = (minl(16->long ty@.size->long) - 1)->int; i >= 8; i--) {
-        println("  shl $8, %s"->@char reg2);
-        println("  mov %d(%%rdi), %s"->@char i reg1);
+      let reg1 = (!gp ? "%al"->@char : "%dl"->@char);
+      let reg2 = (!gp ? "%rax"->@char : "%rdx"->@char);
+      println "  mov $0, %s"->@char reg2;
+      for (let i int = (minl 16->long ty@.size->long - 1)->int; i >= 8; i--) {
+        println "  shl $8, %s"->@char reg2;
+        println "  mov %d(%%rdi), %s"->@char i reg1;
       ;
     ;
   ;
@@ -605,369 +587,351 @@ copy_struct_reg(void) =
 copy_struct_mem(void) =
   let ty = current_fn@.ty@.return_ty var = current_fn@.params;
 
-  println("  mov %d(%%rbp), %%rdi"->@char var@.offset);
+  println "  mov %d(%%rbp), %%rdi"->@char var@.offset;
 
   for (let i int = 0; i < ty@.size; i++) {
-    println("  mov %d(%%rax), %%dl"->@char i);
-    println("  mov %%dl, %d(%%rdi)"->@char i);
+    println "  mov %d(%%rax), %%dl"->@char i;
+    println "  mov %%dl, %d(%%rdi)"->@char i;
   ;
 ;
 
 builtin_alloca(void) =
   // Align size to 16 bytes.
-  println("  add $15, %%rdi"->@char);
-  println("  and $0xfffffff0, %%edi"->@char);
+  println "  add $15, %%rdi"->@char;
+  println "  and $0xfffffff0, %%edi"->@char;
 
   // Shift the temporary area by %rdi.
-  println("  mov %d(%%rbp), %%rcx"->@char current_fn@.alloca_bottom@.offset);
-  println("  sub %%rsp, %%rcx"->@char);
-  println("  mov %%rsp, %%rax"->@char);
-  println("  sub %%rdi, %%rsp"->@char);
-  println("  mov %%rsp, %%rdx"->@char);
-  println("1:"->@char);
-  println("  cmp $0, %%rcx"->@char);
-  println("  je 2f"->@char);
-  println("  mov (%%rax), %%r8b"->@char);
-  println("  mov %%r8b, (%%rdx)"->@char);
-  println("  inc %%rdx"->@char);
-  println("  inc %%rax"->@char);
-  println("  dec %%rcx"->@char);
-  println("  jmp 1b"->@char);
-  println("2:"->@char);
+  println "  mov %d(%%rbp), %%rcx"->@char current_fn@.alloca_bottom@.offset;
+  println "  sub %%rsp, %%rcx"->@char;
+  println "  mov %%rsp, %%rax"->@char;
+  println "  sub %%rdi, %%rsp"->@char;
+  println "  mov %%rsp, %%rdx"->@char;
+  println "1:"->@char;
+  println "  cmp $0, %%rcx"->@char;
+  println "  je 2f"->@char;
+  println "  mov (%%rax), %%r8b"->@char;
+  println "  mov %%r8b, (%%rdx)"->@char;
+  println "  inc %%rdx"->@char;
+  println "  inc %%rax"->@char;
+  println "  dec %%rcx"->@char;
+  println "  jmp 1b"->@char;
+  println "2:"->@char;
 
   // Move alloca_bottom pointer.
-  println("  mov %d(%%rbp), %%rax"->@char current_fn@.alloca_bottom@.offset);
-  println("  sub %%rdi, %%rax"->@char);
-  println("  mov %%rax, %d(%%rbp)"->@char current_fn@.alloca_bottom@.offset);
+  println "  mov %d(%%rbp), %%rax"->@char current_fn@.alloca_bottom@.offset;
+  println "  sub %%rdi, %%rax"->@char;
+  println "  mov %%rax, %d(%%rbp)"->@char current_fn@.alloca_bottom@.offset;
 ;
 
 // Generate code for a given node.
 gen_expr(node@Node opt_fpic bool) =
-  println("  .loc %d %d"->@char node@.tok@.file@.file_no node@.tok@.line_no);
+  println "  .loc %d %d"->@char node@.tok@.file@.file_no node@.tok@.line_no;
 
-  switch (node@.kind) {
+  switch  node@.kind {
   case ND_NULL_EXPR:
     return;
   case ND_NUM: {
-    switch (node@.ty@.kind) {
+    switch  node@.ty@.kind {
     case TY_FLOAT: {
       let u union { f32 float; u32 uint32_t; } = { node@.fval->float ;
-      println("  mov $%u, %%eax  # float %Lf"->@char u.u32 node@.fval);
-      println("  movq %%rax, %%xmm0"->@char);
+      println "  mov $%u, %%eax  # float %Lf"->@char u.u32 node@.fval;
+      println "  movq %%rax, %%xmm0"->@char;
       return;
     ;
     case TY_DOUBLE: {
       let u union { f64 double u64 uint64_t; } = { node@.fval->double ;
-      println("  mov $%lu, %%rax  # double %Lf"->@char u.u64 node@.fval);
-      println("  movq %%rax, %%xmm0"->@char);
+      println "  mov $%lu, %%rax  # double %Lf"->@char u.u64 node@.fval;
+      println "  movq %%rax, %%xmm0"->@char;
       return;
     ;
     case TY_LDOUBLE: {
       let u union { f80 long double; u64[2]uint64_t; };
-      let a = &u;
-      memset(a->@ 0 sizeof typeof u);
+      memset (&u)->@ 0 sizeof typeof u;
       u.f80 = node@.fval;
-      println("  mov $%lu, %%rax  # long double %Lf"->@char u.u64[0] node@.fval);
-      println("  mov %%rax, -16(%%rsp)"->@char);
-      println("  mov $%lu, %%rax"->@char u.u64[1]);
-      println("  mov %%rax, -8(%%rsp)"->@char);
-      println("  fldt -16(%%rsp)"->@char);
+      println "  mov $%lu, %%rax  # long double %Lf"->@char u.u64[0] node@.fval;
+      println "  mov %%rax, -16(%%rsp)"->@char;
+      println "  mov $%lu, %%rax"->@char u.u64[1];
+      println "  mov %%rax, -8(%%rsp)"->@char;
+      println "  fldt -16(%%rsp)"->@char;
       return;
     ;
     ;
 
-    println("  mov $%ld, %%rax"->@char node@.val);
+    println "  mov $%ld, %%rax"->@char node@.val;
     return;
   ;
   case ND_NEG:
-    gen_expr(node@.lhs opt_fpic);
+    gen_expr node@.lhs opt_fpic;
 
-    switch (node@.ty@.kind) {
+    switch  node@.ty@.kind {
     case TY_FLOAT:
-      println("  mov $1, %%rax"->@char);
-      println("  shl $31, %%rax"->@char);
-      println("  movq %%rax, %%xmm1"->@char);
-      println("  xorps %%xmm1, %%xmm0"->@char);
+      println "  mov $1, %%rax"->@char;
+      println "  shl $31, %%rax"->@char;
+      println "  movq %%rax, %%xmm1"->@char;
+      println "  xorps %%xmm1, %%xmm0"->@char;
       return;
     case TY_DOUBLE:
-      println("  mov $1, %%rax"->@char);
-      println("  shl $63, %%rax"->@char);
-      println("  movq %%rax, %%xmm1"->@char);
-      println("  xorpd %%xmm1, %%xmm0"->@char);
+      println "  mov $1, %%rax"->@char;
+      println "  shl $63, %%rax"->@char;
+      println "  movq %%rax, %%xmm1"->@char;
+      println "  xorpd %%xmm1, %%xmm0"->@char;
       return;
     case TY_LDOUBLE:
-      println("  fchs"->@char);
+      println "  fchs"->@char;
       return;
     ;
 
-    println("  neg %%rax"->@char);
+    println "  neg %%rax"->@char;
     return;
   case ND_VAR:
-    gen_addr(node opt_fpic);
-    load(node@.ty);
+    gen_addr node opt_fpic;
+    load node@.ty;
     return;
   case ND_MEMBER: {
-    gen_addr(node opt_fpic);
-    load(node@.ty);
+    gen_addr node opt_fpic;
+    load node@.ty;
 
     let mem = node@.member;
     if mem@.is_bitfield{
-      let b = 64 - mem@.bit_width - mem@.bit_offset;
-      println("  shl $%d, %%rax"->@char b);
-      b = 64 - mem@.bit_width;
-      if mem@.ty->@Type@.is_unsigned println("  shr $%d, %%rax"->@char b);
-      else println("  sar $%d, %%rax"->@char b);
+      println "  shl $%d, %%rax"->@char (64 - mem@.bit_width - mem@.bit_offset);
+      if mem@.ty->@Type@.is_unsigned println "  shr $%d, %%rax"->@char (64 - mem@.bit_width);
+      else println "  sar $%d, %%rax"->@char (64 - mem@.bit_width);
     ;
     return;
   ;
   case ND_DEREF:
-    gen_expr(node@.lhs opt_fpic);
-    load(node@.ty);
+    gen_expr node@.lhs opt_fpic;
+    load node@.ty;
     return;
   case ND_ADDR:
-    gen_addr(node@.lhs opt_fpic);
+    gen_addr node@.lhs opt_fpic;
     return;
   case ND_ASSIGN:
-    gen_addr(node@.lhs opt_fpic);
-    push();
-    gen_expr(node@.rhs opt_fpic);
+    gen_addr node@.lhs opt_fpic;
+    push ;
+    gen_expr node@.rhs opt_fpic;
 
-    if node@.lhs@.kind == ND_MEMBER && node@.lhs@.member@.is_bitfield{
-      println("  mov %%rax, %%r8"->@char);
+    if (node@.lhs@.kind == ND_MEMBER && node@.lhs@.member@.is_bitfield) {
+      println "  mov %%rax, %%r8"->@char;
 
       // If the lhs is a bitfield, we need to read the current value
       // from memory and merge it with a new value.
       let mem = node@.lhs@.member;
-      let mask = (1L << mem@.bit_width) - 1;
-      println("  mov %%rax, %%rdi"->@char);
-      println("  and $%ld, %%rdi"->@char mask);
-      println("  shl $%d, %%rdi"->@char mem@.bit_offset);
+      println "  mov %%rax, %%rdi"->@char;
+      println "  and $%ld, %%rdi"->@char ((1L << mem@.bit_width) - 1);
+      println "  shl $%d, %%rdi"->@char mem@.bit_offset;
 
-      println("  mov (%%rsp), %%rax"->@char);
-      load(mem@.ty->@Type);
+      println "  mov (%%rsp), %%rax"->@char;
+      load mem@.ty->@Type;
 
-      mask = ~(mask << mem@.bit_offset);
-      println("  mov $%ld, %%r9"->@char mask);
-      println("  and %%r9, %%rax"->@char);
-      println("  or %%rdi, %%rax"->@char);
-      store(node@.ty);
-      println("  mov %%r8, %%rax"->@char);
+      println "  mov $%ld, %%r9"->@char ~(((1L << mem@.bit_width) - 1) << mem@.bit_offset);
+      println "  and %%r9, %%rax"->@char;
+      println "  or %%rdi, %%rax"->@char;
+      store node@.ty;
+      println "  mov %%r8, %%rax"->@char;
       return;
     ;
 
-    store(node@.ty);
+    store node@.ty;
     return;
   case ND_STMT_EXPR:
     for (let n @Node = node@.body; n; n = n@.next)
-      gen_stmt(n opt_fpic);
+      gen_stmt n opt_fpic;
     return;
   case ND_COMMA:
-    gen_expr(node@.lhs opt_fpic);
-    gen_expr(node@.rhs opt_fpic);
+    gen_expr node@.lhs opt_fpic;
+    gen_expr node@.rhs opt_fpic;
     return;
   case ND_CAST:
-    gen_expr(node@.lhs opt_fpic);
-    cast(node@.lhs@.ty node@.ty);
+    gen_expr node@.lhs opt_fpic;
+    cast node@.lhs@.ty node@.ty;
     return;
   case ND_MEMZERO:
-    // `rep stosb` is equivalent to `memset(%rdi, %al, %rcx)`.
-    println("  mov $%d, %%rcx"->@char node@.var@.ty@.size);
-    println("  lea %d(%%rbp), %%rdi"->@char node@.var@.offset);
-    println("  mov $0, %%al"->@char);
-    println("  rep stosb"->@char);
+    // `rep stosb` is equivalent to `memset %rdi, %al, %rcx`.
+    println "  mov $%d, %%rcx"->@char node@.var@.ty@.size;
+    println "  lea %d(%%rbp), %%rdi"->@char node@.var@.offset;
+    println "  mov $0, %%al"->@char;
+    println "  rep stosb"->@char;
     return;
   case ND_COND: {
-    let c = count();
-    gen_expr(node@.cond opt_fpic);
-    cmp_zero(node@.cond@.ty);
-    println("  je .L.else.%d"->@char c);
-    gen_expr(node@.then opt_fpic);
-    println("  jmp .L.end.%d"->@char c);
-    println(".L.else.%d:"->@char c);
-    gen_expr(node@.els opt_fpic);
-    println(".L.end.%d:"->@char c);
+    let c = count ;
+    gen_expr node@.cond opt_fpic;
+    cmp_zero node@.cond@.ty;
+    println "  je .L.else.%d"->@char c;
+    gen_expr node@.then opt_fpic;
+    println "  jmp .L.end.%d"->@char c;
+    println ".L.else.%d:"->@char c;
+    gen_expr node@.els opt_fpic;
+    println ".L.end.%d:"->@char c;
     return;
   ;
   case ND_NOT:
-    gen_expr(node@.lhs opt_fpic);
-    cmp_zero(node@.lhs@.ty);
-    println("  sete %%al"->@char);
-    println("  movzx %%al, %%rax"->@char);
+    gen_expr node@.lhs opt_fpic;
+    cmp_zero node@.lhs@.ty;
+    println "  sete %%al"->@char;
+    println "  movzx %%al, %%rax"->@char;
     return;
   case ND_BITNOT:
-    gen_expr(node@.lhs opt_fpic);
-    println("  not %%rax"->@char);
+    gen_expr node@.lhs opt_fpic;
+    println "  not %%rax"->@char;
     return;
   case ND_LOGAND: {
-    let c = count();
-    gen_expr(node@.lhs opt_fpic);
-    cmp_zero(node@.lhs@.ty);
-    println("  je .L.end.%d"->@char c);
-    gen_expr(node@.rhs opt_fpic);
-    println(".L.end.%d:"->@char c);
+    let c = count ;
+    gen_expr node@.lhs opt_fpic;
+    cmp_zero node@.lhs@.ty;
+    println "  je .L.end.%d"->@char c;
+    gen_expr node@.rhs opt_fpic;
+    println ".L.end.%d:"->@char c;
     return;
   ;
   case ND_LOGOR: {
-    let c = count();
-    gen_expr(node@.lhs opt_fpic);
-    cmp_zero(node@.lhs@.ty);
-    println("  jne .L.end.%d"->@char c);
-    gen_expr(node@.rhs opt_fpic);
-    println(".L.end.%d:"->@char c);
+    let c = count ;
+    gen_expr node@.lhs opt_fpic;
+    cmp_zero node@.lhs@.ty;
+    println "  jne .L.end.%d"->@char c;
+    gen_expr node@.rhs opt_fpic;
+    println ".L.end.%d:"->@char c;
     return;
   ;
   case ND_FUNCALL: {
-    if node@.lhs@.kind == ND_VAR && !strcmp(node@.lhs@.var@.name->@ "alloca"->@char) {
-      gen_expr(node@.args opt_fpic);
-      println("  mov %%rax, %%rdi"->@char);
-      builtin_alloca();
+    if (node@.lhs@.kind == ND_VAR && !strcmp node@.lhs@.var@.name->@ "alloca"->@char) {
+      gen_expr node@.args opt_fpic;
+      println "  mov %%rax, %%rdi"->@char;
+      builtin_alloca ;
       return;
     ;
 
-    let stack_args = push_args(node opt_fpic);
-    gen_expr(node@.lhs opt_fpic);
+    let stack_args = push_args node opt_fpic;
+    gen_expr node@.lhs opt_fpic;
 
     let gp = 0 fp = 0;
 
     // If the return type is a large struct/union, the caller passes
     // a pointer to a buffer as if it were the first argument.
-    if node@.ret_buffer && node@.ty@.size > 16
-      pop(argreg64[gp++]);
+    if (node@.ret_buffer && node@.ty@.size > 16) pop argreg64[gp++];
 
     for (let arg @Node = node@.args; arg; arg = arg@.next) {
       let ty = arg@.ty;
 
-      switch (ty@.kind) {
+      switch  ty@.kind {
       case TY_STRUCT:
       case TY_UNION:
-        if ty@.size > 16
-          continue;
+        if (ty@.size > 16) continue;
 
-        let fp1 = has_flonum1(ty);
-        let fp2 = has_flonum2(ty);
+        let fp1 = has_flonum1 ty;
+        let fp2 = has_flonum2 ty;
 
-        if fp + fp1 + fp2 < FP_MAX && gp + !fp1 + !fp2 < GP_MAX{
-          if fp1
-            popf(fp++);
-          else
-            pop(argreg64[gp++]);
+        if (fp + fp1 + fp2 < FP_MAX && gp + !fp1 + !fp2 < GP_MAX) {
+          if fp1 popf fp++;
+          else pop argreg64[gp++];
 
-          if ty@.size > 8{
-            if fp2
-              popf(fp++);
-            else
-              pop(argreg64[gp++]);
+          if (ty@.size > 8) {
+            if fp2 popf fp++;
+            else pop argreg64[gp++];
           ;
         ;
         break;
       case TY_FLOAT:
-      case TY_DOUBLE:
-        if fp < FP_MAX
-          popf(fp++);
-        break;
-      case TY_LDOUBLE:
-        break;
-      default:
-        if gp < GP_MAX
-          pop(argreg64[gp++]);
+      case TY_DOUBLE: if (fp < FP_MAX) popf fp++;
+      case TY_LDOUBLE: break;
+      default: if (gp < GP_MAX) pop argreg64[gp++];
       ;
     ;
 
-    println("  mov %%rax, %%r10"->@char);
-    println("  mov $%d, %%rax"->@char fp);
-    println("  call *%%r10"->@char);
-    let b = stack_args * 8;
-    println("  add $%d, %%rsp"->@char b);
+    println "  mov %%rax, %%r10"->@char;
+    println "  mov $%d, %%rax"->@char fp;
+    println "  call *%%r10"->@char;
+    println "  add $%d, %%rsp"->@char (stack_args * 8);
 
     depth -= stack_args;
 
     // It looks like the most significant 48 or 56 bits in RAX may
     // contain garbage if a function return type is short or bool/char,
     // respectively. We clear the upper bits here.
-    switch (node@.ty@.kind) {
+    switch  node@.ty@.kind {
     case TY_BOOL:
-      println("  movzx %%al, %%eax"->@char);
+      println "  movzx %%al, %%eax"->@char;
       return;
     case TY_CHAR:
       if node@.ty@.is_unsigned
-        println("  movzbl %%al, %%eax"->@char);
+        println "  movzbl %%al, %%eax"->@char;
       else
-        println("  movsbl %%al, %%eax"->@char);
+        println "  movsbl %%al, %%eax"->@char;
       return;
     case TY_SHORT:
       if node@.ty@.is_unsigned
-        println("  movzwl %%ax, %%eax"->@char);
+        println "  movzwl %%ax, %%eax"->@char;
       else
-        println("  movswl %%ax, %%eax"->@char);
+        println "  movswl %%ax, %%eax"->@char;
       return;
     ;
 
     // If the return type is a small struct, a value is returned
     // using up to two registers.
-    if node@.ret_buffer && node@.ty@.size <= 16{
-      copy_ret_buffer(node@.ret_buffer);
-      println("  lea %d(%%rbp), %%rax"->@char node@.ret_buffer@.offset);
+    if (node@.ret_buffer && node@.ty@.size <= 16) {
+      copy_ret_buffer node@.ret_buffer;
+      println "  lea %d(%%rbp), %%rax"->@char node@.ret_buffer@.offset;
     ;
 
     return;
   ;
   case ND_LABEL_VAL:
-    println("  lea %s(%%rip), %%rax"->@char node@.unique_label);
+    println "  lea %s(%%rip), %%rax"->@char node@.unique_label;
     return;
   case ND_CAS: {
-    gen_expr(node@.cas_addr opt_fpic);
-    push();
-    gen_expr(node@.cas_new opt_fpic);
-    push();
-    gen_expr(node@.cas_old opt_fpic);
-    println("  mov %%rax, %%r8"->@char);
-    load(node@.cas_old@.ty@.base);
-    pop("%rdx"->@char); // new
-    pop("%rdi"->@char); // addr
+    gen_expr node@.cas_addr opt_fpic;
+    push ;
+    gen_expr node@.cas_new opt_fpic;
+    push ;
+    gen_expr node@.cas_old opt_fpic;
+    println "  mov %%rax, %%r8"->@char;
+    load node@.cas_old@.ty@.base;
+    pop "%rdx"->@char; // new
+    pop "%rdi"->@char; // addr
 
     let sz = node@.cas_addr@.ty@.base@.size;
-    println("  lock cmpxchg %s, (%%rdi)"->@char reg_dx(sz));
-    println("  sete %%cl"->@char);
-    println("  je 1f"->@char);
-    println("  mov %s, (%%r8)"->@char reg_ax(sz));
-    println("1:"->@char);
-    println("  movzbl %%cl, %%eax"->@char);
+    println "  lock cmpxchg %s,  %%(rdi)"->@char reg_dx sz;
+    println "  sete %%cl"->@char;
+    println "  je 1f"->@char;
+    println "  mov %s,  %%(r8)"->@char reg_ax sz;
+    println "1:"->@char;
+    println "  movzbl %%cl, %%eax"->@char;
     return;
   ;
   case ND_EXCH: {
-    gen_expr(node@.lhs opt_fpic);
-    push();
-    gen_expr(node@.rhs opt_fpic);
-    pop("%rdi"->@char);
+    gen_expr node@.lhs opt_fpic;
+    push ;
+    gen_expr node@.rhs opt_fpic;
+    pop "%rdi"->@char;
 
     let sz = node@.lhs@.ty@.base@.size;
-    println("  xchg %s, (%%rdi)"->@char reg_ax(sz));
+    println "  xchg %s, (%%rdi)"->@char reg_ax sz;
     return;
   ;
   ;
 
-  switch (node@.lhs@.ty@.kind) {
+  switch  node@.lhs@.ty@.kind {
   case TY_FLOAT:
   case TY_DOUBLE: {
-    gen_expr(node@.rhs opt_fpic);
-    pushf();
-    gen_expr(node@.lhs opt_fpic);
-    popf(1);
+    gen_expr node@.rhs opt_fpic;
+    pushf ;
+    gen_expr node@.lhs opt_fpic;
+    popf 1;
 
-    let sz = (node@.lhs@.ty@.kind == TY_FLOAT) ? "ss"->@char : "sd"->@char;
+    let sz = (node@.lhs@.ty@.kind == TY_FLOAT ? "ss"->@char : "sd"->@char);
 
-    switch (node@.kind) {
+    switch  node@.kind {
     case ND_ADD:
-      println("  add%s %%xmm1, %%xmm0"->@char sz);
+      println "  add%s %%xmm1, %%xmm0"->@char sz;
       return;
     case ND_SUB:
-      println("  sub%s %%xmm1, %%xmm0"->@char sz);
+      println "  sub%s %%xmm1, %%xmm0"->@char sz;
       return;
     case ND_MUL:
-      println("  mul%s %%xmm1, %%xmm0"->@char sz);
+      println "  mul%s %%xmm1, %%xmm0"->@char sz;
       return;
     case ND_DIV:
-      println("  div%s %%xmm1, %%xmm0"->@char sz);
+      println "  div%s %%xmm1, %%xmm0"->@char sz;
       return;
     case ND_EQ:
     case ND_NE:
@@ -975,46 +939,46 @@ gen_expr(node@Node opt_fpic bool) =
     case ND_LE:
     case ND_GT:
     case ND_GE:
-      println("  ucomi%s %%xmm0, %%xmm1"->@char sz);
+      println "  ucomi%s %%xmm0, %%xmm1"->@char sz;
 
-      if node@.kind == ND_EQ{
-        println("  sete %%al"->@char);
-        println("  setnp %%dl"->@char);
-        println("  and %%dl, %%al"->@char);
-      ; else if node@.kind == ND_NE{
-        println("  setne %%al"->@char);
-        println("  setp %%dl"->@char);
-        println("  or %%dl, %%al"->@char);
+      if (node@.kind == ND_EQ) {
+        println "  sete %%al"->@char;
+        println "  setnp %%dl"->@char;
+        println "  and %%dl, %%al"->@char;
+      ; else if (node@.kind == ND_NE) {
+        println "  setne %%al"->@char;
+        println "  setp %%dl"->@char;
+        println "  or %%dl, %%al"->@char;
       ;
-      else if node@.kind == ND_LT println("  seta %%al"->@char);
-      else if node@.kind == ND_LE println("  setae %%al"->@char);
-      else if node@.kind == ND_GT println("  setb %%al"->@char);
-      else if node@.kind == ND_GE println("  setbe %%al"->@char);
+      else if (node@.kind == ND_LT) println "  seta %%al"->@char;
+      else if (node@.kind == ND_LE) println "  setae %%al"->@char;
+      else if (node@.kind == ND_GT) println "  setb %%al"->@char;
+      else if (node@.kind == ND_GE) println "  setbe %%al"->@char;
 
 
-      println("  and $1, %%al"->@char);
-      println("  movzb %%al, %%rax"->@char);
+      println "  and $1, %%al"->@char;
+      println "  movzb %%al, %%rax"->@char;
       return;
     ;
 
-    error_tok(node@.tok "invalid expression"->@char);
+    error_tok node@.tok "invalid expression"->@char;
   ;
   case TY_LDOUBLE: {
-    gen_expr(node@.lhs opt_fpic);
-    gen_expr(node@.rhs opt_fpic);
+    gen_expr node@.lhs opt_fpic;
+    gen_expr node@.rhs opt_fpic;
 
-    switch (node@.kind) {
+    switch  node@.kind {
     case ND_ADD:
-      println("  faddp"->@char);
+      println "  faddp"->@char;
       return;
     case ND_SUB:
-      println("  fsubrp"->@char);
+      println "  fsubrp"->@char;
       return;
     case ND_MUL:
-      println("  fmulp"->@char);
+      println "  fmulp"->@char;
       return;
     case ND_DIV:
-      println("  fdivrp"->@char);
+      println "  fdivrp"->@char;
       return;
     case ND_EQ:
     case ND_NE:
@@ -1022,34 +986,34 @@ gen_expr(node@Node opt_fpic bool) =
     case ND_LE:
     case ND_GT:
     case ND_GE:
-      println("  fcomip"->@char);
-      println("  fstp %%st(0)"->@char);
+      println "  fcomip"->@char;
+      println "  fstp %%st(0)"->@char;
 
-      if node@.kind == ND_EQ
-        println("  sete %%al"->@char);
-      else if node@.kind == ND_NE
-        println("  setne %%al"->@char);
+      if (node@.kind == ND_EQ)
+        println "  sete %%al"->@char;
+      else if (node@.kind == ND_NE)
+        println "  setne %%al"->@char;
 
-      else if node@.kind == ND_LT println("  seta %%al"->@char);
-      else if node@.kind == ND_LE println("  setae %%al"->@char);
-      else if node@.kind == ND_GT println("  setb %%al"->@char);
-      else if node@.kind == ND_GE println("  setbe %%al"->@char);
+      else if (node@.kind == ND_LT) println "  seta %%al"->@char;
+      else if (node@.kind == ND_LE) println "  setae %%al"->@char;
+      else if (node@.kind == ND_GT) println "  setb %%al"->@char;
+      else if (node@.kind == ND_GE) println "  setbe %%al"->@char;
 
-      println("  movzb %%al, %%rax"->@char);
+      println "  movzb %%al, %%rax"->@char;
       return;
     ;
 
-    error_tok(node@.tok "invalid expression"->@char);
+    error_tok node@.tok "invalid expression"->@char;
   ;;
 
-  gen_expr(node@.rhs opt_fpic);
-  push();
-  gen_expr(node@.lhs opt_fpic);
-  pop("%rdi"->@char);
+  gen_expr node@.rhs opt_fpic;
+  push ;
+  gen_expr node@.lhs opt_fpic;
+  pop "%rdi"->@char;
 
   let ax = 0->@ char di = 0->@char dx = 0->@char;
 
-  if node@.lhs@.ty@.kind == TY_LONG || node@.lhs@.ty@.base{
+  if (node@.lhs@.ty@.kind == TY_LONG || node@.lhs@.ty@.base) {
     ax = "%rax"->@char;
     di = "%rdi"->@char;
     dx = "%rdx"->@char;
@@ -1059,40 +1023,37 @@ gen_expr(node@Node opt_fpic bool) =
     dx = "%edx"->@char;
   ;
 
-  switch (node@.kind) {
+  switch  node@.kind {
   case ND_ADD:
-    println("  add %s, %s"->@char di ax);
+    println "  add %s, %s"->@char di ax;
     return;
   case ND_SUB:
-    println("  sub %s, %s"->@char di ax);
+    println "  sub %s, %s"->@char di ax;
     return;
   case ND_MUL:
-    println("  imul %s, %s"->@char di ax);
+    println "  imul %s, %s"->@char di ax;
     return;
   case ND_DIV:
   case ND_MOD:
     if node@.ty@.is_unsigned{
-      println("  mov $0, %s"->@char dx);
-      println("  div %s"->@char di);
+      println "  mov $0, %s"->@char dx;
+      println "  div %s"->@char di;
     ; else {
-      if node@.lhs@.ty@.size == 8
-        println("  cqo"->@char);
-      else
-        println("  cdq"->@char);
-      println("  idiv %s"->@char di);
+      if (node@.lhs@.ty@.size == 8) println "  cqo"->@char;
+      else println "  cdq"->@char;
+      println "  idiv %s"->@char di;
     ;
 
-    if node@.kind == ND_MOD
-      println("  mov %%rdx, %%rax"->@char);
+    if (node@.kind == ND_MOD) println "  mov %%rdx, %%rax"->@char;
     return;
   case ND_BITAND:
-    println("  and %s, %s"->@char di ax);
+    println "  and %s, %s"->@char di ax;
     return;
   case ND_BITOR:
-    println("  or %s, %s"->@char di ax);
+    println "  or %s, %s"->@char di ax;
     return;
   case ND_BITXOR:
-    println("  xor %s, %s"->@char di ax);
+    println "  xor %s, %s"->@char di ax;
     return;
   case ND_EQ:
   case ND_NE:
@@ -1100,162 +1061,153 @@ gen_expr(node@Node opt_fpic bool) =
   case ND_LE:
   case ND_GT:
   case ND_GE:
-    println("  cmp %s, %s"->@char di ax);
+    println "  cmp %s, %s"->@char di ax;
 
-    if node@.kind == ND_EQ{
-      println("  sete %%al"->@char);
-    ; else if node@.kind == ND_NE{
-      println("  setne %%al"->@char);
-    ; else if node@.kind == ND_LT{
+    if (node@.kind == ND_EQ) {
+      println "  sete %%al"->@char;
+    ; else if (node@.kind == ND_NE) {
+      println "  setne %%al"->@char;
+    ; else if (node@.kind == ND_LT) {
       if node@.lhs@.ty@.is_unsigned
-        println("  setb %%al"->@char);
+        println "  setb %%al"->@char;
       else
-        println("  setl %%al"->@char);
-    ; else if node@.kind == ND_LE{
+        println "  setl %%al"->@char;
+    ; else if (node@.kind == ND_LE){
       if node@.lhs@.ty@.is_unsigned
-        println("  setbe %%al"->@char);
+        println "  setbe %%al"->@char;
       else
-        println("  setle %%al"->@char);
-    ; else if node@.kind == ND_GT{
+        println "  setle %%al"->@char;
+    ; else if (node@.kind == ND_GT){
       if node@.lhs@.ty@.is_unsigned
-        println("  seta %%al"->@char);
+        println "  seta %%al"->@char;
       else
-        println("  setg %%al"->@char);
-    ; else if node@.kind == ND_GE{
+        println "  setg %%al"->@char;
+    ; else if (node@.kind == ND_GE){
       if node@.lhs@.ty@.is_unsigned
-        println("  setae %%al"->@char);
+        println "  setae %%al"->@char;
       else
-        println("  setge %%al"->@char);
+        println "  setge %%al"->@char;
     ;
 
-    println("  movzb %%al, %%rax"->@char);
+    println "  movzb %%al, %%rax"->@char;
     return;
   case ND_SHL:
-    println("  mov %%rdi, %%rcx"->@char);
-    println("  shl %%cl, %s"->@char ax);
+    println "  mov %%rdi, %%rcx"->@char;
+    println "  shl %%cl, %s"->@char ax;
     return;
   case ND_SHR:
-    println("  mov %%rdi, %%rcx"->@char);
+    println "  mov %%rdi, %%rcx"->@char;
     if node@.lhs@.ty@.is_unsigned
-      println("  shr %%cl, %s"->@char ax);
+      println "  shr %%cl, %s"->@char ax;
     else
-      println("  sar %%cl, %s"->@char ax);
+      println "  sar %%cl, %s"->@char ax;
     return;
   ;
 
-  error_tok(node@.tok "invalid expression"->@char);
+  error_tok node@.tok "invalid expression"->@char;
 ;
 
 gen_stmt(node@Node opt_fpic bool) =
-  println("  .loc %d %d"->@char node@.tok@.file@.file_no node@.tok@.line_no);
+  println "  .loc %d %d"->@char node@.tok@.file@.file_no node@.tok@.line_no;
 
-  switch (node@.kind) {
+  switch  node@.kind {
   case ND_IF: {
-    let c = count();
-    gen_expr(node@.cond opt_fpic);
-    cmp_zero(node@.cond@.ty);
-    println("  je  .L.else.%d"->@char c);
-    gen_stmt(node@.then opt_fpic);
-    println("  jmp .L.end.%d"->@char c);
-    println(".L.else.%d:"->@char c);
-    if node@.els
-      gen_stmt(node@.els opt_fpic);
-    println(".L.end.%d:"->@char c);
+    let c = count ;
+    gen_expr node@.cond opt_fpic;
+    cmp_zero node@.cond@.ty;
+    println "  je  .L.else.%d"->@char c;
+    gen_stmt node@.then opt_fpic;
+    println "  jmp .L.end.%d"->@char c;
+    println ".L.else.%d:"->@char c;
+    if node@.els gen_stmt node@.els opt_fpic;
+    println ".L.end.%d:"->@char c;
     return;
   ;
   case ND_FOR: {
-    let c = count();
-    if node@.init
-      gen_stmt(node@.init opt_fpic);
-    println(".L.begin.%d:"->@char c);
+    let c = count ;
+    if node@.init gen_stmt node@.init opt_fpic;
+    println ".L.begin.%d:"->@char c;
     if node@.cond{
-      gen_expr(node@.cond opt_fpic);
-      cmp_zero(node@.cond@.ty);
-      println("  je %s"->@char node@.brk_label);
+      gen_expr node@.cond opt_fpic;
+      cmp_zero node@.cond@.ty;
+      println "  je %s"->@char node@.brk_label;
     ;
-    gen_stmt(node@.then opt_fpic);
-    println("%s:"->@char node@.cont_label);
-    if node@.inc
-      gen_expr(node@.inc opt_fpic);
-    println("  jmp .L.begin.%d"->@char c);
-    println("%s:"->@char node@.brk_label);
+    gen_stmt node@.then opt_fpic;
+    println "%s:"->@char node@.cont_label;
+    if node@.inc gen_expr node@.inc opt_fpic;
+    println "  jmp .L.begin.%d"->@char c;
+    println "%s:"->@char node@.brk_label;
     return;
   ;
   case ND_DO: {
-    let c = count();
-    println(".L.begin.%d:"->@char c);
-    gen_stmt(node@.then opt_fpic);
-    println("%s:"->@char node@.cont_label);
-    gen_expr(node@.cond opt_fpic);
-    cmp_zero(node@.cond@.ty);
-    println("  jne .L.begin.%d"->@char c);
-    println("%s:"->@char node@.brk_label);
+    let c = count ;
+    println ".L.begin.%d:"->@char c;
+    gen_stmt node@.then opt_fpic;
+    println "%s:"->@char node@.cont_label;
+    gen_expr node@.cond opt_fpic;
+    cmp_zero node@.cond@.ty;
+    println "  jne .L.begin.%d"->@char c;
+    println "%s:"->@char node@.brk_label;
     return;
   ;
   case ND_SWITCH:
-    gen_expr(node@.cond opt_fpic);
+    gen_expr node@.cond opt_fpic;
 
     for (let n@Node = node@.case_next; n; n = n@.case_next) {
-      let ax = (node@.cond@.ty@.size == 8) ? "%rax"->@char : "%eax"->@char;
-      let di = (node@.cond@.ty@.size == 8) ? "%rdi"->@char : "%edi"->@char;
+      let ax = (node@.cond@.ty@.size == 8 ? "%rax"->@char : "%eax"->@char);
+      let di = (node@.cond@.ty@.size == 8 ? "%rdi"->@char : "%edi"->@char);
 
-      println("  cmp $%ld, %s"->@char n@.begin ax);
-      println("  je %s"->@char n@.label);
+      println "  cmp $%ld, %s"->@char n@.begin ax;
+      println "  je %s"->@char n@.label;
     ;
 
-    if node@.default_case
-      println("  jmp %s"->@char node@.default_case@.label);
-
-    println("  jmp %s"->@char node@.brk_label);
-    gen_stmt(node@.then opt_fpic);
-    println("%s:"->@char node@.brk_label);
+    if node@.default_case println "  jmp %s"->@char node@.default_case@.label;
+    println "  jmp %s"->@char node@.brk_label;
+    gen_stmt node@.then opt_fpic;
+    println "%s:"->@char node@.brk_label;
     return;
   case ND_CASE:
-    println("%s:"->@char node@.label);
-    gen_stmt(node@.lhs opt_fpic);
+    println "%s:"->@char node@.label;
+    gen_stmt node@.lhs opt_fpic;
     return;
   case ND_BLOCK:
-    for (let n@Node = node@.body; n; n = n@.next)
-      gen_stmt(n opt_fpic);
+    for (let n@Node = node@.body; n; n = n@.next) gen_stmt n opt_fpic;
     return;
   case ND_GOTO:
-    println("  jmp %s"->@char node@.unique_label);
+    println "  jmp %s"->@char node@.unique_label;
     return;
   case ND_GOTO_EXPR:
-    gen_expr(node@.lhs opt_fpic);
-    println("  jmp *%%rax"->@char);
+    gen_expr node@.lhs opt_fpic;
+    println "  jmp *%%rax"->@char;
     return;
   case ND_LABEL:
-    println("%s:"->@char node@.unique_label);
-    gen_stmt(node@.lhs opt_fpic);
+    println "%s:"->@char node@.unique_label;
+    gen_stmt node@.lhs opt_fpic;
     return;
   case ND_RETURN:
     if node@.lhs{
-      gen_expr(node@.lhs opt_fpic);
+      gen_expr node@.lhs opt_fpic;
       let ty = node@.lhs@.ty;
-
-      switch (ty@.kind) {
+      switch  ty@.kind {
       case TY_STRUCT:
       case TY_UNION:
-        if ty@.size <= 16
-          copy_struct_reg();
-        else
-          copy_struct_mem();
+        if (ty@.size <= 16) copy_struct_reg ;
+        else copy_struct_mem ;
         break;
       ;
     ;
 
-    println("  jmp .L.return.%s"->@char current_fn@.name);
+    println "  jmp .L.return.%s"->@char current_fn@.name;
     return;
   case ND_EXPR_STMT:
-    gen_expr(node@.lhs opt_fpic);
+    gen_expr node@.lhs opt_fpic;
     return;
   case ND_ASM:
-    println("  %s"->@char node@.asm_str);
+    println "  %s"->@char node@.asm_str;
     return;
   ;
 
-  error_tok(node@.tok "invalid statement"->@char);
+  error_tok node@.tok "invalid statement"->@char;
 ;
 
 // Assign offsets to local variables.
@@ -1273,13 +1225,13 @@ assign_lvar_offsets(prog@Obj) =
     for (let var@Obj = fn@.params; var; var = var@.next) {
       let ty = var@.ty;
 
-      switch (ty@.kind) {
+      switch  ty@.kind {
       case TY_STRUCT:
       case TY_UNION:
-        if ty@.size <= 16{
-          let fp1 = has_flonum(ty 0 8 0);
-          let fp2 = has_flonum(ty 8 16 8);
-          if fp + fp1 + fp2 < FP_MAX && gp + !fp1 + !fp2 < GP_MAX{
+        if (ty@.size <= 16) {
+          let fp1 = has_flonum ty 0 8 0;
+          let fp2 = has_flonum ty 8 16 8;
+          if (fp + fp1 + fp2 < FP_MAX && gp + !fp1 + !fp2 < GP_MAX) {
             fp = fp + fp1 + fp2;
             gp = gp + !fp1 + !fp2;
             continue;
@@ -1288,17 +1240,14 @@ assign_lvar_offsets(prog@Obj) =
         break;
       case TY_FLOAT:
       case TY_DOUBLE:
-        if fp++ < FP_MAX
-          continue;
-        break;
+        if (fp++ < FP_MAX) continue;
       case TY_LDOUBLE:
         break;
       default:
-        if gp++ < GP_MAX
-          continue;
+        if (gp++ < GP_MAX) continue;
       ;
 
-      top = align_to(top 8);
+      top = align_to top 8;
       var@.offset = top;
       top += var@.ty@.size;
     ;
@@ -1312,53 +1261,49 @@ assign_lvar_offsets(prog@Obj) =
       // length at least 16 bytes. We need to align such array to at least
       // 16-byte boundaries. See p.14 of
       // https://github.com/hjl-tools/x86-psABI/wiki/x86-64-psABI-draft.pdf.
-      let alignment = (var@.ty@.kind == TY_ARRAY && var@.ty@.size >= 16)
-        ? maxl(16->long var@.alignment->long) : var@.alignment;
+      let alignment = (var@.ty@.kind == TY_ARRAY && var@.ty@.size >= 16
+        ? maxl 16->long var@.alignment->long : var@.alignment);
 
       bottom += var@.ty@.size;
-      bottom = align_to(bottom alignment->int);
+      bottom = align_to bottom alignment->int;
       var@.offset = -bottom;
     ;
 
-    fn@.stack_size = align_to(bottom 16);
+    fn@.stack_size = align_to bottom 16;
   ;
 ;
 
 emit_data(prog@Obj opt_fpic bool) =
   for (let var@Obj = prog; var; var = var@.next) {
-    if var@.is_function || !var@.is_definition
-      continue;
+    if (var@.is_function || !var@.is_definition) continue;
+    if !var@.is_export println "  .local %s"->@char var@.name;
+    else println "  .globl %s"->@char var@.name;
 
-    if !var@.is_export
-      println("  .local %s"->@char var@.name);
-    else
-      println("  .globl %s"->@char var@.name);
-
-    let alignment = (var@.ty@.kind == TY_ARRAY && var@.ty@.size >= 16)
-      ? maxl(16->long var@.alignment->long) : var@.alignment;
+    let alignment = (var@.ty@.kind == TY_ARRAY && var@.ty@.size >= 16
+      ? maxl 16->long var@.alignment->long : var@.alignment);
 
     // .data or .tdata
     if var@.init_data{
       if var@.is_tls
-        println("  .section .tdata,\"->@charawT\",@progbits"->@char);
+        println "  .section .tdata,\"->@charawT\",@progbits"->@char;
       else
-        println("  .data"->@char);
+        println "  .data"->@char;
 
-      println("  .type %s, @object"->@char var@.name);
-      println("  .size %s, %d"->@char var@.name var@.ty@.size);
-      println("  .align %d"->@char alignment);
-      println("%s:"->@char var@.name);
+      println "  .type %s, @object"->@char var@.name;
+      println "  .size %s, %d"->@char var@.name var@.ty@.size;
+      println "  .align %d"->@char alignment;
+      println "%s:"->@char var@.name;
 
       let
         rel = var@.rel
         pos = 0;
-      while pos < var@.ty@.size {
-        if rel && rel@.offset == pos{
-          println("  .quad %s%+ld"->@char rel@.label@ rel@.addend);
+      while (pos < var@.ty@.size) {
+        if (rel && rel@.offset == pos) {
+          println "  .quad %s%+ld"->@char rel@.label@ rel@.addend;
           rel = rel@.next;
           pos += 8;
         ; else {
-          println("  .byte %d"->@char var@.init_data[pos++]);
+          println "  .byte %d"->@char var@.init_data[pos++];
         ;
       ;
       continue;
@@ -1366,47 +1311,39 @@ emit_data(prog@Obj opt_fpic bool) =
 
     // .bss or .tbss
     if var@.is_tls
-      println("  .section .tbss,\"->@charawT\",@nobits"->@char);
+      println "  .section .tbss,\"->@charawT\",@nobits"->@char;
     else
-      println("  .bss"->@char);
+      println "  .bss"->@char;
 
-    println("  .align %d"->@char alignment);
-    println("%s:"->@char var@.name);
-    println("  .zero %d"->@char var@.ty@.size);
+    println "  .align %d"->@char alignment;
+    println "%s:"->@char var@.name;
+    println "  .zero %d"->@char var@.ty@.size;
   ;
 ;
 
-store_fp(r int offset int sz int) =
-  switch (sz) {
-  case 4:
-    println("  movss %%xmm%d, %d(%%rbp)"->@char r offset);
-    return;
-  case 8:
-    println("  movsd %%xmm%d, %d(%%rbp)"->@char r offset);
-    return;
-  ;
-  unreachable();
-;
+store_fp(r int offset int sz int) = 
+  sz == 4 ? println "  movss %%xmm%d, %d(%%rbp)"->@char r offset :
+  sz == 8 ? println "  movsd %%xmm%d, %d(%%rbp)"->@char r offset :
+            unreachable;;
 
 store_gp(r int offset int sz int) =
-  switch (sz) {
+  switch  sz {
   case 1:
-    println("  mov %s, %d(%%rbp)"->@char argreg8[r] offset);
+    println "  mov %s, %d(%%rbp)"->@char argreg8[r] offset;
     return;
   case 2:
-    println("  mov %s, %d(%%rbp)"->@char argreg16[r] offset);
+    println "  mov %s, %d(%%rbp)"->@char argreg16[r] offset;
     return;
   case 4:
-    println("  mov %s, %d(%%rbp)"->@char argreg32[r] offset);
+    println "  mov %s, %d(%%rbp)"->@char argreg32[r] offset;
     return;
   case 8:
-    println("  mov %s, %d(%%rbp)"->@char argreg64[r] offset);
+    println "  mov %s, %d(%%rbp)"->@char argreg64[r] offset;
     return;
   default:
     for (let i int = 0; i < sz; i++) {
-      let c = offset + i;
-      println("  mov %s, %d(%%rbp)"->@char argreg8[r] c);
-      println("  shr $8, %s"->@char argreg64[r]);
+      println "  mov %s, %d(%%rbp)"->@char argreg8[r] (offset + i);
+      println "  shr $8, %s"->@char argreg64[r];
     ;
     return;
   ;
@@ -1414,29 +1351,27 @@ store_gp(r int offset int sz int) =
 
 emit_text(prog@Obj opt_fpic bool) =
   for (let fn@Obj = prog; fn; fn = fn@.next) {
-    if !fn@.is_function || !fn@.is_definition
-      continue;
+    if (!fn@.is_function || !fn@.is_definition) continue;
 
     // No code is emitted for "static inline"->@char functions
     // if no one is referencing them.
-    if !fn@.is_live
-      continue;
+    if !fn@.is_live continue;
 
     if !fn@.is_export
-      println("  .local %s"->@char fn@.name);
+      println "  .local %s"->@char fn@.name;
     else
-      println("  .globl %s"->@char fn@.name);
+      println "  .globl %s"->@char fn@.name;
 
-    println("  .text"->@char);
-    println("  .type %s, @function"->@char fn@.name);
-    println("%s:"->@char fn@.name);
+    println "  .text"->@char;
+    println "  .type %s, @function"->@char fn@.name;
+    println "%s:"->@char fn@.name;
     current_fn = fn;
 
     // Prologue
-    println("  push %%rbp"->@char);
-    println("  mov %%rsp, %%rbp"->@char);
-    println("  sub $%d, %%rsp"->@char fn@.stack_size);
-    println("  mov %%rsp, %d(%%rbp)"->@char fn@.alloca_bottom@.offset);
+    println "  push %%rbp"->@char;
+    println "  mov %%rsp, %%rbp"->@char;
+    println "  sub $%d, %%rsp"->@char fn@.stack_size;
+    println "  mov %%rsp, %d(%%rbp)"->@char fn@.alloca_bottom@.offset;
 
     // Save arg registers if function is variadic
     if fn@.va_area {
@@ -1444,7 +1379,7 @@ emit_text(prog@Obj opt_fpic bool) =
         gp = 0
         fp = 0;
       for (let var@Obj = fn@.params; var; var = var@.next) {
-        if is_flonum(var@.ty)
+        if is_flonum var@.ty
           fp++;
         else
           gp++;
@@ -1453,98 +1388,75 @@ emit_text(prog@Obj opt_fpic bool) =
       let off = fn@.va_area@.offset;
 
       // va_elem
-      let b = gp * 8;
-      println("  movl $%d, %d(%%rbp)"->@char b off);          // gp_offset
-      b = fp * 8 + 48;
-      let c = off + 4;
-      println("  movl $%d, %d(%%rbp)"->@char b c); // fp_offset
-      b = off + 8;
-      println("  movq %%rbp, %d(%%rbp)"->@char b);            // overflow_arg_area
-      println("  addq $16, %d(%%rbp)"->@char b);
-      b = off + 16;
-      println("  movq %%rbp, %d(%%rbp)"->@char b);           // reg_save_area
-      b = off + 24; c = off + 16;
-      println("  addq $%d, %d(%%rbp)"->@char b c);
+      println "  movl $%d, %d(%%rbp)"->@char (gp * 8) off;          // gp_offset
+      println "  movl $%d, %d(%%rbp)"->@char (fp * 8 + 48) (off + 4); // fp_offset
+      println "  movq %%rbp, %d(%%rbp)"->@char (off + 8);            // overflow_arg_area
+      println "  addq $16, %d(%%rbp)"->@char (off + 8);
+      println "  movq %%rbp, %d(%%rbp)"->@char (off + 16);           // reg_save_area
+      println "  addq $%d, %d(%%rbp)"->@char (off + 24) (off + 16);
 
+      let b = (off + 24);
       // __reg_save_area__
-      println("  movq %%rdi, %d(%%rbp)"->@char   b);
-      b += 8; println("  movq %%rsi, %d(%%rbp)"->@char   b);
-      b += 8; println("  movq %%rdx, %d(%%rbp)"->@char   b);
-      b += 8; println("  movq %%rcx, %d(%%rbp)"->@char   b);
-      b += 8; println("  movq %%r8, %d(%%rbp)"->@char    b);
-      b += 8; println("  movq %%r9, %d(%%rbp)"->@char    b);
-      b += 8; println("  movsd %%xmm0, %d(%%rbp)"->@char b);
-      b += 8; println("  movsd %%xmm1, %d(%%rbp)"->@char b);
-      b += 8; println("  movsd %%xmm2, %d(%%rbp)"->@char b);
-      b += 8; println("  movsd %%xmm3, %d(%%rbp)"->@char b);
-      b += 8; println("  movsd %%xmm4, %d(%%rbp)"->@char b);
-      b += 8; println("  movsd %%xmm5, %d(%%rbp)"->@char b);
-      b += 8; println("  movsd %%xmm6, %d(%%rbp)"->@char b);
-      b += 8; println("  movsd %%xmm7, %d(%%rbp)"->@char b);
+      println "  movq %%rdi, %d(%%rbp)"->@char   b;
+      b += 8; println "  movq %%rsi, %d(%%rbp)"->@char   b;
+      b += 8; println "  movq %%rdx, %d(%%rbp)"->@char   b;
+      b += 8; println "  movq %%rcx, %d(%%rbp)"->@char   b;
+      b += 8; println "  movq %%r8, %d(%%rbp)"->@char    b;
+      b += 8; println "  movq %%r9, %d(%%rbp)"->@char    b;
+      b += 8; println "  movsd %%xmm0, %d(%%rbp)"->@char b;
+      b += 8; println "  movsd %%xmm1, %d(%%rbp)"->@char b;
+      b += 8; println "  movsd %%xmm2, %d(%%rbp)"->@char b;
+      b += 8; println "  movsd %%xmm3, %d(%%rbp)"->@char b;
+      b += 8; println "  movsd %%xmm4, %d(%%rbp)"->@char b;
+      b += 8; println "  movsd %%xmm5, %d(%%rbp)"->@char b;
+      b += 8; println "  movsd %%xmm6, %d(%%rbp)"->@char b;
+      b += 8; println "  movsd %%xmm7, %d(%%rbp)"->@char b;
     ;
 
     // Save passed-by-register arguments to the stack
     let gp = 0 fp = 0;
     for (let var@Obj = fn@.params; var; var = var@.next) {
-      if var@.offset > 0
-        continue;
+      if (var@.offset > 0) continue;
 
       let ty = var@.ty;
 
-      switch (ty@.kind) {
+      switch  ty@.kind {
       case TY_STRUCT:
       case TY_UNION:
         assert(ty@.size <= 16);
-        let b = ty@.size < 8 ? ty@.size : 8;
-        if has_flonum(ty 0 8 0)
-          store_fp(fp++ var@.offset b);
+        let b = (ty@.size < 8 ? ty@.size : 8);
+        if has_flonum ty 0 8 0
+          store_fp fp++ var@.offset b;
         else
-          store_gp(gp++ var@.offset b);
+          store_gp gp++ var@.offset b;
 
-        if ty@.size > 8 {
-          let b = var@.offset + 8 c = ty@.size - 8;
-          if has_flonum(ty 8 16 0)
-            store_fp(fp++ b c);
+        if (ty@.size > 8) {
+          let b = (var@.offset + 8) c = (ty@.size - 8);
+          if has_flonum ty 8 16 0
+            store_fp fp++ b c;
           else
-            store_gp(gp++ b c);
+            store_gp gp++ b c;
         ;
         break;
       case TY_FLOAT:
       case TY_DOUBLE:
-        store_fp(fp++ var@.offset ty@.size);
+        store_fp fp++ var@.offset ty@.size;
         break;
       default:
-        store_gp(gp++ var@.offset ty@.size);
-      ;
-    ;
-
-    // Emit code
-    gen_stmt(fn@.body->@Node opt_fpic);
+        store_gp gp++ var@.offset ty@.size;;;
+    gen_stmt fn@.body->@Node opt_fpic;
     assert(depth == 0);
-
-    // [https://www.sigbus.info/n1570#5.1.2.2.3p1] The C spec defines
-    // a special rule for the main function. Reaching the end of the
-    // main function is equivalent to returning 0, even though the
-    // behavior is undefined for the other functions.
-    if strcmp(fn@.name->@ "main"->@char) == 0
-      println("  mov $0, %%rax"->@char);
-
-    // Epilogue
-    println(".L.return.%s:"->@char fn@.name);
-    println("  mov %%rbp, %%rsp"->@char);
-    println("  pop %%rbp"->@char);
-    println("  ret"->@char);
-  ;
-;
+    if ! strcmp fn@.name->@ "main"->@char println "  mov $0, %%rax"->@char;
+    println ".L.return.%s:"->@char fn@.name;
+    println "  mov %%rbp, %%rsp"->@char;
+    println "  pop %%rbp"->@char;
+    println "  ret"->@char;;;
 
 export codegen(prog@Obj out@FILE opt_fpic bool) =
   output_file = out;
-
-  let files = get_input_files();
-  for (let i int = 0; files[i]; i++)
-    println("  .file %d \"%s\""->@char files[i]@.file_no files[i]@.name);
-
-  assign_lvar_offsets(prog);
-  emit_data(prog opt_fpic);
-  emit_text(prog opt_fpic);
+  let files = get_input_files;
+  for (let i int = 0; files[i]; i++)println "  .file %d \"%s\""->@char files[i]@.file_no files[i]@.name;
+  assign_lvar_offsets prog;
+  emit_data prog opt_fpic;
+  emit_text prog opt_fpic;
 ;

@@ -19,7 +19,7 @@
 #ifndef _BITS_SIGEVENT_CONSTS_H
 #define _BITS_SIGEVENT_CONSTS_H 1
 
-#if !defined _SIGNAL_H && !defined _AIO_H
+#if (!defined _SIGNAL_H && !defined _AIO_H)
 #error "Don't include <bits/sigevent-consts.h> directly; use <signal.h> instead."
 #endif
 

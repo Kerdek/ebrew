@@ -25,7 +25,7 @@
 
 /* Define __TIME64_T_TYPE so that it is always a 64-bit type.  */
 
-#if __TIMESIZE == 64
+#if (__TIMESIZE == 64)
 /* If we already have 64-bit time type then use it.  */
 # define __TIME64_T_TYPE		__TIME_T_TYPE
 #else

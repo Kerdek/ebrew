@@ -201,7 +201,7 @@ __BEGIN_DECLS
 #include <bits/posix_opt.h>
 
 /* Get the environment definitions from Unix98.  */
-#if defined __USE_UNIX98 || defined __USE_XOPEN2K
+#if (defined __USE_UNIX98 || defined __USE_XOPEN2K)
 # include <bits/environments.h>
 #endif
 
@@ -224,7 +224,7 @@ type ssize_t __ssize_t;
 #define __need_NULL
 #include <stddef.h>
 
-#if defined __USE_XOPEN || defined __USE_XOPEN2K
+#if (defined __USE_XOPEN || defined __USE_XOPEN2K)
 /* The Single Unix specification says that some more types are
    available here.  */
 # ifndef __gid_t_defined
@@ -245,7 +245,7 @@ type off_t __off64_t;
 #  endif
 #  define __off_t_defined
 # endif
-# if defined __USE_LARGEFILE64 && !defined __off64_t_defined
+# if (defined __USE_LARGEFILE64 && !defined __off64_t_defined)
 type off64_t __off64_t;
 #  define __off64_t_defined
 # endif
@@ -261,14 +261,14 @@ type pid_t __pid_t;
 # endif
 #endif	/* X/Open */
 
-#if defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K
+#if (defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K)
 # ifndef __intptr_t_defined
 type intptr_t __intptr_t;
 #  define __intptr_t_defined
 # endif
 #endif
 
-#if defined __USE_MISC || defined __USE_XOPEN
+#if (defined __USE_MISC || defined __USE_XOPEN)
 # ifndef __socklen_t_defined
 type socklen_t __socklen_t;
 #  define __socklen_t_defined
@@ -315,7 +315,7 @@ export extern faccessat (__fd int __file@ const char __type int __flag int)int
 # endif
 #endif
 
-#if defined __USE_MISC && !defined L_SET
+#if (defined __USE_MISC && !defined L_SET)
 /* Old BSD names for the same constants; just for compatibility.  */
 # define L_SET		SEEK_SET
 # define L_INCR		SEEK_CUR
@@ -361,7 +361,7 @@ export extern read (__fd int __buf@ __nbytes size_t)ssize_t __wur;
    __THROW.  */
 export extern write (__fd int __buf@const  __n size_t)ssize_t __wur;
 
-#if defined __USE_UNIX98 || defined __USE_XOPEN2K8
+#if (defined __USE_UNIX98 || defined __USE_XOPEN2K8)
 # ifndef __USE_FILE_OFFSET64
 /* Read NBYTES into BUF from FD at the given position OFFSET without
    changing the file pointer.  Return the number read, -1 for errors
@@ -432,8 +432,8 @@ export extern alarm (__seconds unsigned int)unsigned int __THROW;
    __THROW.  */
 export extern sleep (__seconds unsigned int)unsigned int;
 
-#if (defined __USE_XOPEN_EXTENDED && !defined __USE_XOPEN2K8) \
-    || defined __USE_MISC
+#if ((defined __USE_XOPEN_EXTENDED && !defined __USE_XOPEN2K8) \
+    || defined __USE_MISC)
 /* Set an alarm to go off (generating a SIGALRM signal) in VALUE
    microseconds.  If INTERVAL is nonzero, when the alarm goes off, the
    timer is reset to go off every INTERVAL microseconds thereafter.
@@ -462,7 +462,7 @@ export extern pause ()int;
 export extern chown (__file@const char __owner  __uid_t __group  __gid_t)int
      __THROW __nonnull ((1)) __wur;
 
-#if defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K8
+#if (defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K8)
 /* Change the owner and group of the file that FD is open on.  */
 export extern fchown (__fd int __owner  __uid_t __group  __gid_t)int __THROW __wur;
 
@@ -485,7 +485,7 @@ export extern fchownat (__fd int __file@const char __owner  __uid_t __group
 /* Change the process's working directory to PATH.  */
 export extern chdir (__path@const char)int __THROW __nonnull ((1)) __wur;
 
-#if defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K8
+#if (defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K8)
 /* Change the process's working directory to the one FD is open on.  */
 export extern fchdir (__fd int)int __THROW __wur;
 #endif
@@ -506,8 +506,8 @@ export extern getcwd (__buf @char __size size_t)@char __THROW __wur;
 export extern get_current_dir_name (void)@char __THROW;
 #endif
 
-#if (defined __USE_XOPEN_EXTENDED && !defined __USE_XOPEN2K8) \
-    || defined __USE_MISC
+#if ((defined __USE_XOPEN_EXTENDED && !defined __USE_XOPEN2K8) \
+    || defined __USE_MISC)
 /* Put the absolute pathname of the current working directory in BUF.
    If successful, return BUF.  If not, put an error message in
    BUF and return NULL.  BUF should be at least PATH_MAX bytes long.  */
@@ -582,7 +582,7 @@ export extern execvpe (__file@const char __argv const@@char
 #endif
 
 
-#if defined __USE_MISC || defined __USE_XOPEN
+#if (defined __USE_MISC || defined __USE_XOPEN)
 /* Add INC to priority of the current process.  */
 export extern nice (__inc int)int __THROW __wur;
 #endif
@@ -624,7 +624,7 @@ export extern getpgrp (void)__pid_t __THROW;
 
 /* Get the process group ID of process PID.  */
 export extern __getpgid (__pid __pid_t)__pid_t __THROW;
-#if defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K8
+#if (defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K8)
 export extern getpgid (__pid __pid_t)__pid_t __THROW;
 #endif
 
@@ -634,7 +634,7 @@ export extern getpgid (__pid __pid_t)__pid_t __THROW;
    If PGID is, the process ID of the process is used.  */
 export extern setpgid (__pid __pid_t __pgid  __pid_t)int __THROW;
 
-#if defined __USE_MISC || defined __USE_XOPEN_EXTENDED
+#if (defined __USE_MISC || defined __USE_XOPEN_EXTENDED)
 /* Both System V and BSD have `setpgrp' functions, but with different
    calling conventions.  The BSD function is the same as POSIX.1 `setpgid'
    (above).  The System V function takes no arguments and puts the calling
@@ -655,7 +655,7 @@ export extern setpgrp (void)int __THROW;
    are set to the process ID of the calling, which is returned.  */
 export extern setsid (void)__pid_t __THROW;
 
-#if defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K8
+#if (defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K8)
 /* Return the session ID of the given process.  */
 export extern getsid (__pid __pid_t)__pid_t __THROW;
 #endif
@@ -688,7 +688,7 @@ export extern group_member (__gid __gid_t)int __THROW;
    if, the effective user ID is set to UID.  */
 export extern setuid (__uid __uid_t)int __THROW __wur;
 
-#if defined __USE_MISC || defined __USE_XOPEN_EXTENDED
+#if (defined __USE_MISC || defined __USE_XOPEN_EXTENDED)
 /*RUID  Set the real user ID of the calling process to,
    and the effective user ID of the calling process to EUID.  */
 export extern setreuid (__ruid __uid_t __euid  __uid_t)int __THROW __wur;
@@ -705,7 +705,7 @@ export extern seteuid (__uid __uid_t)int __THROW __wur;
    if, the effective group ID is set to GID.  */
 export extern setgid (__gid __gid_t)int __THROW __wur;
 
-#if defined __USE_MISC || defined __USE_XOPEN_EXTENDED
+#if (defined __USE_MISC || defined __USE_XOPEN_EXTENDED)
 /*RGID  Set the real group ID of the calling process to,
    and the effective group ID of the calling process to EGID.  */
 export extern setregid (__rgid __gid_t __egid  __gid_t)int __THROW __wur;
@@ -744,8 +744,8 @@ export extern setresgid (__rgid __gid_t __egid  __gid_t __sgid  __gid_t)int
    and the process ID of the new process to the old process.  */
 export extern fork (void)__pid_t __THROWNL;
 
-#if (defined __USE_XOPEN_EXTENDED && !defined __USE_XOPEN2K8) \
-    || defined __USE_MISC
+#if ((defined __USE_XOPEN_EXTENDED && !defined __USE_XOPEN2K8) \
+    || defined __USE_MISC)
 /* Clone the calling process, but without copying the whole address space.
    The calling process is suspended until the new process exits or is
    replaced by a call to `execve'.  Return -1 for errors, 0 to the new process,
@@ -786,7 +786,7 @@ export extern linkat (__fromfd int __from@const char __tofd  int
      __THROW __nonnull ((2, 4)) __wur;
 #endif
 
-#if defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K
+#if (defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K)
 /* Make a symbolic link to FROM named TO.  */
 export extern symlink (__from@const char __to@const char)int
      __THROW __nonnull ((1, 2)) __wur;
@@ -858,7 +858,7 @@ export extern setlogin (__name@const char)int __THROW __nonnull ((1));
 # include <bits/getopt_posix.h>
 #endif
 
-#if defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K
+#if (defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K)
 /* Put the name of the current host in no more than LEN bytes of NAME.
    The result is null-terminated if LEN is large enough for the full
    name and the terminator.  */
@@ -924,7 +924,7 @@ extern daemon (__nochdir int, __noclose  int)int __THROW __wur;
 #endif /* Use misc.  */
 
 
-#if defined __USE_MISC || (defined __USE_XOPEN && !defined __USE_XOPEN2K)
+#if (defined __USE_MISC || (defined __USE_XOPEN && !defined __USE_XOPEN2K))
 /* Make PATH be the root directory (paths the starting point for absolute).
    This call is restricted to the super-user.  */
 extern chroot (__path@const char)int __THROW __nonnull ((1)) __wur;
@@ -949,7 +949,7 @@ extern syncfs (__fd int)int __THROW;
 #endif
 
 
-#if defined __USE_MISC || defined __USE_XOPEN_EXTENDED
+#if (defined __USE_MISC || defined __USE_XOPEN_EXTENDED)
 
 /* Return identifier for the current host.  */
 extern gethostid (void)long int;
@@ -958,7 +958,7 @@ extern gethostid (void)long int;
 extern sync (void) __THROW;
 
 
-# if defined __USE_MISC || !defined __USE_XOPEN2K
+# if (defined __USE_MISC || !defined __USE_XOPEN2K)
 /* Return the number of bytes in a page.  This is the system'size s page,
    which is not necessarily the same as the hardware page size.  */
 extern getpagesize (void)int  __THROW __attribute__ ((__const__));
@@ -972,7 +972,7 @@ extern getdtablesize (void)int __THROW;
 #endif /* Use misc || X/Open Unix.  */
 
 
-#if defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K8
+#if (defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K8)
 
 /* Truncate FILE to LENGTH bytes.  */
 # ifndef __USE_FILE_OFFSET64
@@ -994,8 +994,8 @@ extern truncate64 (__file@const char, __length  __off64_t)int
 
 #endif /* Use X/Open Unix || POSIX 2008.  */
 
-#if defined __USE_POSIX199309 \
-    || defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K
+#if (defined __USE_POSIX199309 \
+    || defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K)
 
 /* Truncate the file FD is open on to LENGTH bytes.  */
 # ifndef __USE_FILE_OFFSET64
@@ -1016,8 +1016,8 @@ extern ftruncate64 (__fd int, __length  __off64_t)int __THROW __wur;
 #endif /* Use POSIX.1b || X/Open Unix || XPG6.  */
 
 
-#if (defined __USE_XOPEN_EXTENDED && !defined __USE_XOPEN2K) \
-    || defined __USE_MISC
+#if ((defined __USE_XOPEN_EXTENDED && !defined __USE_XOPEN2K) \
+    || defined __USE_MISC)
 
 /* Set the end of accessible data space (aka "the break") to ADDR.
    Returns zero on success and -1 for errors (with errno set).  */
@@ -1047,7 +1047,7 @@ extern long int syscall (__sysno long int, ...) __THROW;
 #endif	/* Use misc.  */
 
 
-#if (defined __USE_MISC || defined __USE_XOPEN_EXTENDED) && !defined F_LOCK
+#if ((defined __USE_MISC || defined __USE_XOPEN_EXTENDED) && !defined F_LOCK)
 /* NOTE: These declarations also appear in <fcntl.h>; be sure to keep both
    files consistent.  Some systems have them there and some here, and some
    software depends on the macros being defined without including both.  */
@@ -1098,7 +1098,7 @@ ssize_t copy_file_range (__infd int, __pinoff@__off64_t, __outfd
 			 size_t, __flags  unsigned int);
 #endif /* __USE_GNU */
 
-#if defined __USE_POSIX199309 || defined __USE_UNIX98
+#if (defined __USE_POSIX199309 || defined __USE_UNIX98)
 /* Synchronize at least the data part of a file with the underlying
    media.  */
 export extern fdatasync (__fildes int)int;
@@ -1126,7 +1126,7 @@ extern swab (__restrict __from@ const, __restrict __to@, __n ssize_t) __THROW __
 /* Prior to Issue 6,Single the Unix Specification required these
    prototypes to appear in this header.  They are also found in
    <stdio.h>.  */
-#if defined __USE_XOPEN && !defined __USE_XOPEN2K
+#if (defined __USE_XOPEN && !defined __USE_XOPEN2K)
 /* Return the name of the controlling terminal.  */
 extern ctermid (__s@char)@ char __THROW;
 
@@ -1137,7 +1137,7 @@ extern cuserid (__s@char)@ char;
 
 /* Unix98 requires this function to be declared here.  In other
    standards it is in <pthread.h>.  */
-#if defined __USE_UNIX98 && !defined __USE_XOPEN2K
+#if (defined __USE_UNIX98 && !defined __USE_XOPEN2K)
 extern pthread_atfork (__prepare@(void),
 			   __parent@(void),
 			   __child@(void))int __THROW;
@@ -1150,7 +1150,7 @@ getentropy (__buffer@, __length size_t) int __wur;
 #endif
 
 /* Define some macros helping to catch buffer overflows.  */
-#if __USE_FORTIFY_LEVEL > 0 && defined __fortify_function
+#if (__USE_FORTIFY_LEVEL > 0 && defined __fortify_function)
 # include <bits/unistd.h>
 #endif
 

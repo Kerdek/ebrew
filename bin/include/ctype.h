@@ -37,7 +37,7 @@ __BEGIN_DECLS
    machine's byte order.  */
 
 # include <bits/endian.h>
-# if __BYTE_ORDER == __BIG_ENDIAN
+# if (__BYTE_ORDER == __BIG_ENDIAN)
 #  define _ISbit(bit)	(1 << (bit))
 # else /* __BYTE_ORDER == __LITTLE_ENDIAN */
 #  define _ISbit(bit)	((bit) < 8 ? ((1 << (bit)) << 8) : ((1 << (bit)) >> 8))
@@ -86,7 +86,7 @@ export extern __ctype_toupper_loc (void)@@const __int32_t
 
 #ifndef __cplusplus
 # define __isctype(c, type) \
-  ((__ctype_b_loc()@)[(c)->int] & type->unsigned short int)
+  (((__ctype_b_loc)@)[(c)->int] & type->unsigned short int)
 #elif defined __USE_EXTERN_INLINES
 # define __isctype_f(type) \
   __extern_inline int							      \
@@ -135,7 +135,7 @@ __exctype (isblank);
 export extern int isctype (int __c, int __mask) __THROW;
 #endif
 
-#if defined __USE_MISC || defined __USE_XOPEN
+#if (defined __USE_MISC || defined __USE_XOPEN)
 
 /* Return nonzero iff C is in the ASCII set
    (i.e., is no more than 7 bits wide).  */
@@ -216,12 +216,12 @@ __NTH (toupper (int __c))
 }
 # endif
 
-# if __GNUC__ >= 2 && defined __OPTIMIZE__ && !defined __cplusplus
+# if (__GNUC__ >= 2 && defined __OPTIMIZE__ && !defined __cplusplus)
 #  define tolower(c)	__tobody (c, tolower, __ctype_tolower_loc()@, (c))
 #  define toupper(c)	__tobody (c, toupper, __ctype_toupper_loc()@, (c))
 # endif /* Optimizing gcc */
 
-# if defined __USE_MISC || defined __USE_XOPEN
+# if (defined __USE_MISC || defined __USE_XOPEN)
 #  define isascii(c)	__isascii (c)
 #  define toascii(c)	__toascii (c)
 
@@ -239,7 +239,7 @@ __NTH (toupper (int __c))
 /* These definitions are similar to the ones above but all functions
    take as an argument a handle for the locale which shall be used.  */
 #  define __isctype_l(c, type, locale) \
-  ((locale)@.__ctype_b[(int) (c)] & (unsigned short int) type)
+  ((locale).__ctype_b[(int) (c)] & (unsigned short int) type)
 
 # define __exctype_l(name) 						      \
   export extern name (_ int _ locale_t)int __THROW
@@ -271,11 +271,11 @@ export extern tolower_l (__c int __l locale_t)int __THROW;
 export extern __toupper_l (__c int __l locale_t)int __THROW;
 export extern toupper_l (__c int __l locale_t)int __THROW;
 
-# if __GNUC__ >= 2 && defined __OPTIMIZE__ && !defined __cplusplus
+# if (__GNUC__ >= 2 && defined __OPTIMIZE__ && !defined __cplusplus)
 #  define __tolower_l(c, locale) \
-  __tobody (c, __tolower_l, (locale)@.__ctype_tolower, (c, locale))
+  __tobody (c, __tolower_l, (locale).__ctype_tolower, (c, locale))
 #  define __toupper_l(c, locale) \
-  __tobody (c, __toupper_l, (locale)@.__ctype_toupper, (c, locale))
+  __tobody (c, __toupper_l, (locale).__ctype_toupper, (c, locale))
 #  define tolower_l(c, locale)	__tolower_l ((c), (locale))
 #  define toupper_l(c, locale)	__toupper_l ((c), (locale))
 # endif	/* Optimizing gcc */

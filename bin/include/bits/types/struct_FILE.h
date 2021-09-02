@@ -22,11 +22,11 @@
    stdio.h API.  However, much of it is part of the official *binary*
    interface, and therefore cannot be changed.  */
 
-#if defined _IO_USE_OLD_IO_FILE && !defined _LIBC
+#if (defined _IO_USE_OLD_IO_FILE && !defined _LIBC)
 # error "_IO_USE_OLD_IO_FILE should only be defined when building libc itself"
 #endif
 
-#if defined _IO_lock_t_defined && !defined _LIBC
+#if (defined _IO_lock_t_defined && !defined _LIBC)
 # error "_IO_lock_t_defined should only be defined when building libc itself"
 #endif
 
@@ -48,52 +48,52 @@ type _IO_lock_t ;
    That name should not be used in new code.  */
 _ struct _IO_FILE
 {
-  _flags int;		/* High-order word is _IO_MAGIC; rest is flags. */
+  _flags int		/* High-order word is _IO_MAGIC; rest is flags. */
 
   /* The following pointers correspond to the C++ streambuf protocol. */
-  _IO_read_ptr@char;	/* Current read pointer */
-  _IO_read_end@char;	/* End of get area. */
-  _IO_read_base@char;	/* Start of putback+get area. */
-  _IO_write_base@char;	/* Start of put area. */
-  _IO_write_ptr@char;	/* Current put pointer. */
-  _IO_write_end@char;	/* End of put area. */
-  _IO_buf_base@char;	/* Start of reserve area. */
-  _IO_buf_end@char;	/* End of reserve area. */
+  _IO_read_ptr@char	/* Current read pointer */
+  _IO_read_end@char	/* End of get area. */
+  _IO_read_base@char	/* Start of putback+get area. */
+  _IO_write_base@char	/* Start of put area. */
+  _IO_write_ptr@char	/* Current put pointer. */
+  _IO_write_end@char	/* End of put area. */
+  _IO_buf_base@char	/* Start of reserve area. */
+  _IO_buf_end@char	/* End of reserve area. */
 
   /* The following fields are used to support backing up and undo. */
-  _IO_save_base@char; /* Pointer to start of non-current get area. */
-  _IO_backup_base@char;  /* Pointer to first valid character of backup area */
-  _IO_save_end@char; /* Pointer to end of non-current get area. */
+  _IO_save_base@char /* Pointer to start of non-current get area. */
+  _IO_backup_base@char  /* Pointer to first valid character of backup area */
+  _IO_save_end@char /* Pointer to end of non-current get area. */
 
-  _markers@struct _IO_marker;
+  _markers@struct _IO_marker
 
-  _chain@struct _IO_FILE;
+  _chain@struct _IO_FILE
 
-  _fileno int;
-  _flags2 int;
-  _old_offset __off_t; /* This used to be _offset but it's too small.  */
+  _fileno int
+  _flags2 int
+  _old_offset __off_t /* This used to be _offset but it's too small.  */
 
   /* 1+column number of pbase(); 0 is unknown. */
-  _cur_column unsigned short;
-  _vtable_offset signed char;
-  _shortbuf[1]char;
+  _cur_column unsigned short
+  _vtable_offset signed char
+  _shortbuf[1]char
 
-  _lock@_IO_lock_t;
+  _lock@_IO_lock_t
 #ifdef _IO_USE_OLD_IO_FILE
 };
 
 _ struct _IO_FILE_complete
 {
-  _ struct _IO_FILE _file;
+  _ struct _IO_FILE _file
 #endif
-  _offset __off64_t;
+  _offset __off64_t
   /* Wide character stream stuff.  */
-  _codecvt@struct _IO_codecvt;
-  _wide_data@struct _IO_wide_data;
-  _freeres_list@struct _IO_FILE;
-  _freeres_buf@ ;
-  __pad5 size_t;
-  _mode int;
+  _codecvt@struct _IO_codecvt
+  _wide_data@struct _IO_wide_data
+  _freeres_list@struct _IO_FILE
+  _freeres_buf@ 
+  __pad5 size_t
+  _mode int
   /* Make sure we don't get into trouble again.  */
   _unused2[15 * sizeof int - 4 * sizeof @ - sizeof size_t]char;
 };

@@ -16,7 +16,7 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#if !defined _SYS_WAIT_H && !defined _STDLIB_H
+#if (!defined _SYS_WAIT_H && !defined _STDLIB_H)
 # error "Never include <bits/waitstatus.h> directly; use <sys/wait.h> instead."
 #endif
 

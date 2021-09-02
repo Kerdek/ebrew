@@ -21,7 +21,7 @@
 #include <bits/wordsize.h>
 
 #ifdef __x86_64__
-# if __WORDSIZE == 64
+# if (__WORDSIZE == 64)
 #  define __SIZEOF_PTHREAD_MUTEX_T 40
 #  define __SIZEOF_PTHREAD_ATTR_T 56
 #  define __SIZEOF_PTHREAD_RWLOCK_T 56

@@ -20,7 +20,7 @@
 #ifndef _GETOPT_POSIX_H
 #define _GETOPT_POSIX_H 1
 
-#if !defined _UNISTD_H && !defined _STDIO_H
+#if (!defined _UNISTD_H && !defined _STDIO_H)
 #error "Never include getopt_posix.h directly; use unistd.h instead."
 #endif
 
@@ -28,8 +28,8 @@
 
 __BEGIN_DECLS
 
-#if defined __USE_POSIX2 && !defined __USE_POSIX_IMPLICITLY \
-    && !defined __USE_GNU && !defined _GETOPT_H
+#if (defined __USE_POSIX2 && !defined __USE_POSIX_IMPLICITLY \
+    && !defined __USE_GNU && !defined _GETOPT_H)
 /* GNU getopt has more functionality than POSIX getopt.  When we are
    explicitly conforming to POSIX and not GNU, and getopt.h (which is
    not part of POSIX) has not been included, the extra functionality

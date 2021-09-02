@@ -25,7 +25,7 @@ __BEGIN_DECLS
 /* We need `size_t' for the following definitions.  */
 #ifndef __size_t
 type __size_t __SIZE_TYPE__;
-# if defined __USE_XOPEN || defined __USE_XOPEN2K8
+# if (defined __USE_XOPEN || defined __USE_XOPEN2K8)
 type size_t __SIZE_TYPE__;
 # endif
 #else
@@ -45,7 +45,7 @@ type size_t __SIZE_TYPE__;
 #define	GLOB_NOESCAPE	(1 << 6)/* Backslashes don't quote metacharacters.  */
 #define	GLOB_PERIOD	(1 << 7)/* Leading `.' can be matched by metachars.  */
 
-#if !defined __USE_POSIX2 || defined __USE_MISC
+#if (!defined __USE_POSIX2 || defined __USE_MISC)
 # define GLOB_MAGCHAR	 (1 << 8)/* Set in gl_flags if any metachars seen.  */
 # define GLOB_ALTDIRFUNC (1 << 9)/* Use gl_opendir et al functions.  */
 # define GLOB_BRACE	 (1 << 10)/* Expand "{a,b}" to "a" "b".  */
@@ -81,25 +81,25 @@ struct stat;
 #endif
 type glob_t struct
   {
-    gl_pathc __size_t;		/* Count of paths matched by the pattern.  */
-    gl_pathv@@char;		/* List of matched pathnames.  */
-    gl_offs __size_t;		/* Slots to reserve in `gl_pathv'.  */
-    gl_flags int;		/* Set to FLAGS, maybe | GLOB_MAGCHAR.  */
+    gl_pathc __size_t		/* Count of paths matched by the pattern.  */
+    gl_pathv@@char		/* List of matched pathnames.  */
+    gl_offs __size_t		/* Slots to reserve in `gl_pathv'.  */
+    gl_flags int		/* Set to FLAGS, maybe | GLOB_MAGCHAR.  */
 
     /* If the GLOB_ALTDIRFUNC flag is set, the following functions
        are used instead of the normal file access functions.  */
-    gl_closedir@(@);
+    gl_closedir@(@)
 #ifdef __USE_GNU
-    gl_readdir@(@)@struct dirent;
+    gl_readdir@(@)@struct dirent
 #else
-    gl_readdir@(@)@;
+    gl_readdir@(@)@
 #endif
-    gl_opendir@(@const char)@;
+    gl_opendir@(@const char)@
 #ifdef __USE_GNU
-    gl_lstat@(restrict@const char restrict@struct stat)int;
+    gl_lstat@(restrict@const char restrict@struct stat)int
     gl_stat@(restrict@const char restrict@struct stat)int;
 #else
-    gl_lstat@(restrict@const char restrict@ )int;
+    gl_lstat@(restrict@const char restrict@ )int
     gl_stat@(restrict@const char restrict@ )int;
 #endif
   };

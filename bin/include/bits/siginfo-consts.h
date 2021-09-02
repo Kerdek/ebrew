@@ -66,7 +66,7 @@ _ enum
 ;;
 
 
-# if defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K8
+# if (defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K8)
 /* `si_code' values for SIGILL signal.  */
 _ enum
 
@@ -167,7 +167,7 @@ _ enum
 };
 # endif
 
-# if defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K8
+# if (defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K8)
 /* `si_code' values for SIGCHLD signal.  */
 _ enum
 

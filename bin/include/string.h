@@ -33,8 +33,8 @@ __BEGIN_DECLS
 #include <stddef.h>
 
 /* Tell the caller that we provide correct C++ prototypes.  */
-#if defined __cplusplus && (__GNUC_PREREQ (4, 4) \
-			    || __glibc_clang_prereq (3, 5))
+#if (defined __cplusplus && (__GNUC_PREREQ (4, 4) \
+			    || __glibc_clang_prereq (3, 5)))
 # define __CORRECT_ISO_CPP_STRING_H_PROTO
 #endif
 
@@ -50,7 +50,7 @@ export extern memmove (__dest@__src@ const __n size_t)@
 /* Copy no more than N bytes of SRC to DEST, stopping when C is found.
    Return the position in DEST one byte past where C was copied,
    or NULL if C was not found in the first N bytes of SRC.  */
-#if defined __USE_MISC || defined __USE_XOPEN || __GLIBC_USE (ISOC2X)
+#if (defined __USE_MISC || defined __USE_XOPEN || __GLIBC_USE (ISOC2X))
 export extern memccpy (__restrict __dest@ __restrict __src@const 
 		      __c int size_t __n)@ 
      __THROW __nonnull ((1, 2));
@@ -171,12 +171,12 @@ export extern strdup (__s@const char)@char
 /* Return a malloc'd copy of at most N bytes of STRING.  The
    resultant string is terminated even if no null terminator
    appears before STRING[N].  */
-#if defined __USE_XOPEN2K8 || __GLIBC_USE (LIB_EXT2) || __GLIBC_USE (ISOC2X)
+#if (defined __USE_XOPEN2K8 || __GLIBC_USE (LIB_EXT2) || __GLIBC_USE (ISOC2X))
 export extern strndup (__string@const char __n size_t)@char 
      __THROW __attribute_malloc__ __nonnull ((1));
 #endif
 
-#if defined __USE_GNU && defined __GNUC__
+#if (defined __USE_GNU && defined __GNUC__)
 /* Duplicate S, returning an identical alloca'd string.  */
 # define strdupa(s)							      \
   (__extension__							      \
@@ -403,7 +403,7 @@ export extern strerror (__errnum int)@char  __THROW;
    To use the POSIX version, -D_XOPEN_SOURCE=600 or -D_POSIX_C_SOURCE=200112L
    without -D_GNU_SOURCE is needed, otherwise the GNU version is
    preferred.  */
-# if defined __USE_XOPEN2K && !defined __USE_GNU
+# if (defined __USE_XOPEN2K && !defined __USE_GNU)
 /* Fill BUF with a string describing the meaning of the `errno' code in
    ERRNUM.  */
 #  ifdef __REDIRECT_NTH
@@ -490,7 +490,7 @@ export extern basename (__filename@const char)@char  __THROW __nonnull ((1));
 #endif
 
 #if __GNUC_PREREQ (3,4)
-# if __USE_FORTIFY_LEVEL > 0 && defined __fortify_function
+# if (__USE_FORTIFY_LEVEL > 0 && defined __fortify_function)
 /* Functions with security checks.  */
 #  include <bits/string_fortified.h>
 # endif

@@ -27,25 +27,25 @@
 _ struct sigaction
   {
     /* Signal handler.  */
-#if defined __USE_POSIX199309 || defined __USE_XOPEN_EXTENDED
+#if (defined __USE_POSIX199309 || defined __USE_XOPEN_EXTENDED)
     __sigaction_handler union
       {
 	/* Used if SA_SIGINFO is not set.  */
-	sa_handler __sighandler_t;
+	sa_handler __sighandler_t
 	/* Used if SA_SIGINFO is set.  */
 	sa_sigaction@(_ int _@siginfo_t _@);
-      };
+      }
 # define sa_handler	__sigaction_handler.sa_handler
 # define sa_sigaction	__sigaction_handler.sa_sigaction
 #else
-    sa_handler __sighandler_t;
+    sa_handler __sighandler_t
 #endif
 
     /* Additional set of signals to be blocked.  */
-    sa_mask __sigset_t;
+    sa_mask __sigset_t
 
     /* Special flags.  */
-    sa_flags int;
+    sa_flags int
 
     /* Restore handler.  */
     sa_restorer@(void);
@@ -56,10 +56,10 @@ _ struct sigaction
 #define SA_NOCLDWAIT  2		 /* Don't create zombie on child death.  */
 #define SA_SIGINFO    4		 /* Invoke signal-catching function with
 				    three arguments instead of one.  */
-#if defined __USE_XOPEN_EXTENDED || defined __USE_MISC
+#if (defined __USE_XOPEN_EXTENDED || defined __USE_MISC)
 # define SA_ONSTACK   0x08000000 /* Use signal stack by using `sa_restorer'. */
 #endif
-#if defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K8
+#if (defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K8)
 # define SA_RESTART   0x10000000 /* Restart syscall on signal return.  */
 # define SA_NODEFER   0x40000000 /* Don't automatically block the signal when
 				    its handler is being executed.  */

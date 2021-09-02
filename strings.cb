@@ -1,33 +1,28 @@
 #include "chub.hb"
 
 export strarray_push(arr@ StringArray s@ char)  =
-  if !arr@.data {
-    arr@.data = calloc(8->unsigned long sizeof@ char);
-    arr@.capacity = 8;
-  ;
+  if !arr.data {
+    arr.data = calloc 8->unsigned long sizeof@ char;
+    arr.capacity = 8;;
 
-  if arr@.capacity == arr@.len {
-    arr@.data = realloc(arr@.data->@ sizeof@ char * arr@.capacity * 2);
-    arr@.capacity *= 2;
-    for (let i int = arr@.len; i < arr@.capacity; i++)
-      arr@.data[i] = NULL;
-  ;
+  if (arr.capacity == arr.len) {
+    arr.data = realloc (arr.data->@) (sizeof@ char * arr.capacity * 2);
+    arr.capacity *= 2;
+    for (let i int = arr.len; i < arr.capacity; i++)
+      arr.data[i] = 0;  ;
 
-  arr@.data[arr@.len++] = s;
-;
+  arr.data[arr.len++] = s;;
 
-// Takes a printf-style format string and returns a formatted string.
 export format(fmt@ char ...)@ char =
   let buf = 0->@char;
   let buflen = 0->size_t;
   let b = &buflen;
-  let out = open_memstream(&buf b);
+  let out = open_memstream &buf b;
 
   let ap = (let va_list){;;
   va_start(ap, fmt);
-  let pap = &ap;
-  vfprintf(out fmt pap);
+  (vfprintf out fmt &ap);
   va_end(ap)
-  fclose(out);
+  fclose out;
   return buf;
 ;

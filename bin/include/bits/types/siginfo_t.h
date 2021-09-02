@@ -6,7 +6,7 @@
 #include <bits/types/__sigval_t.h>
 
 #define __SI_MAX_SIZE	128
-#if __WORDSIZE == 64
+#if (__WORDSIZE == 64)
 # define __SI_PAD_SIZE	((__SI_MAX_SIZE / sizeof int) - 4)
 #else
 # define __SI_PAD_SIZE	((__SI_MAX_SIZE / sizeof int) - 3)
@@ -35,88 +35,88 @@
 
 type siginfo_t struct
   {
-    si_signo int;		/* Signal number.  */
+    si_signo int		/* Signal number.  */
 #if __SI_ERRNO_THEN_CODE
-    si_errno int;		/* If non-zero, an errno value associated with
+    si_errno int		/* If non-zero, an errno value associated with
 				   this signal, as defined in <errno.h>.  */
-    si_code int;		/* Signal code.  */
+    si_code int		/* Signal code.  */
 #else
-    si_code int;
-    si_errno int;
+    si_code int
+    si_errno int
 #endif
-#if __WORDSIZE == 64
-    __pad0 int;			/* Explicit padding.  */
+#if (__WORDSIZE == 64)
+    __pad0 int			/* Explicit padding.  */
 #endif
 
     _sifields union
       {
-	_pad[__SI_PAD_SIZE]int;
+	_pad[__SI_PAD_SIZE]int
 
 	 /* kill().  */
 	_kill struct
 	  {
-	    si_pid __pid_t;	/* Sending process ID.  */
+	    si_pid __pid_t	/* Sending process ID.  */
 	    si_uid __uid_t;	/* Real user ID of sending process.  */
-	  };
+	  }
 
 	/* POSIX.1b timers.  */
 	_timer struct
 	  {
-	    si_tid int;		/* Timer ID.  */
-	    si_overrun int;	/* Overrun count.  */
+	    si_tid int		/* Timer ID.  */
+	    si_overrun int	/* Overrun count.  */
 	    si_sigval __sigval_t;	/* Signal value.  */
-	  };
+	  }
 
 	/* POSIX.1b signals.  */
 	_rt struct
 	  {
-	    si_pid __pid_t;	/* Sending process ID.  */
-	    si_uid __uid_t;	/* Real user ID of sending process.  */
+	    si_pid __pid_t	/* Sending process ID.  */
+	    si_uid __uid_t	/* Real user ID of sending process.  */
 	    si_sigval __sigval_t;	/* Signal value.  */
-	  };
+	  }
 
 	/* SIGCHLD.  */
 	_sigchld struct
 	  {
-	    si_pid __pid_t;	/* Which child.	 */
-	    si_uid __uid_t;	/* Real user ID of sending process.  */
-	    si_status int;	/* Exit value or signal.  */
-	    si_utime __SI_CLOCK_T;
+	    si_pid __pid_t	/* Which child.	 */
+	    si_uid __uid_t	/* Real user ID of sending process.  */
+	    si_status int	/* Exit value or signal.  */
+	    si_utime __SI_CLOCK_T
 	    si_stime __SI_CLOCK_T;
-	  };
+	  }
 
 	/* SIGILL, SIGFPE, SIGSEGV, SIGBUS.  */
 	_sigfault struct
 	  {
-	    si_addr@;	    /* Faulting insn/memory ref.  */
+	    si_addr@	    /* Faulting insn/memory ref.  */
 	    __SI_SIGFAULT_ADDL
-	    si_addr_lsb short int;  /* Valid LSB of the reported address.  */
+	    si_addr_lsb short int  /* Valid LSB of the reported address.  */
 	    _bounds union
 	      {
 		/* used when si_code=SEGV_BNDERR */
 		_addr_bnd struct
 		  {
-		    _lower@;
+		    _lower@
 		    _upper@;
-		  } ;
+		  } 
 		/* used when si_code=SEGV_PKUERR */
 		_pkey __uint32_t;
 	      };
-	  };
+	  }
 
 	/* SIGPOLL.  */
 	_sigpoll struct
 	  {
-	    si_band __SI_BAND_TYPE;	/* Band event for SIGPOLL.  */
+	    si_band __SI_BAND_TYPE	/* Band event for SIGPOLL.  */
 	    si_fd int;
-	  };
+	  }
 
 	/* SIGSYS.  */
 #if __SI_HAVE_SIGSYS
 	_sigsys struct
 	  {
-	    _call_addr@;	/* Calling user insn.  */
-	    _syscall int;	/* Triggering system call number.  */
+	    _call_addr@	/* Calling user insn.  */
+	    _syscall int	/* Triggering system call number.  */
 	    _arch unsigned int; /* AUDIT_ARCH_* of syscall.  */
 	  };
 #endif

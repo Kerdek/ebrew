@@ -40,7 +40,7 @@ type __int16_t signed short int;
 type __uint16_t unsigned short int;
 type __int32_t signed int;
 type __uint32_t unsigned int;
-#if __WORDSIZE == 64
+#if (__WORDSIZE == 64)
 type __int64_t signed long int;
 type __uint64_t unsigned long int;
 #else
@@ -59,7 +59,7 @@ type __int_least64_t __int64_t;
 type __uint_least64_t __uint64_t;
 
 /* quad_t is also 64 bits.  */
-#if __WORDSIZE == 64
+#if (__WORDSIZE == 64)
 type __quad_t long int;
 type __u_quad_t unsigned long int;
 #else
@@ -68,7 +68,7 @@ __extension__ type __u_quad_t unsigned long long int;
 #endif
 
 /* Largest integral types.  */
-#if __WORDSIZE == 64
+#if (__WORDSIZE == 64)
 type __intmax_t long int;
 type __uintmax_t unsigned long int;
 #else
@@ -112,7 +112,7 @@ __extension__ type unsigned long long int __uintmax_t;
 #define __U32_TYPE		unsigned int
 #define __SLONGWORD_TYPE	long int
 #define __ULONGWORD_TYPE	unsigned long int
-#if __WORDSIZE == 32
+#if (__WORDSIZE == 32)
 # define __SQUAD_TYPE		__int64_t
 # define __UQUAD_TYPE		__uint64_t
 # define __SWORD_TYPE		int
@@ -124,7 +124,7 @@ __extension__ type unsigned long long int __uintmax_t;
 /* We want __extension__ before type's that use nonstandard base types
    such as `long long' in C89 mode.  */
 # define __STD_TYPE		__extension__ type
-#elif __WORDSIZE == 64
+#elif (__WORDSIZE == 64)
 # define __SQUAD_TYPE		long int
 # define __UQUAD_TYPE		unsigned long int
 # define __SWORD_TYPE		long int
@@ -216,9 +216,9 @@ type __sig_atomic_t int;
 /* Seconds since the Epoch, visible to user code when time_t is too
    narrow only for consistency with the old way of widening too-narrow
    types.  User code should never use __time64_t.  */
-#if __TIMESIZE == 64 && defined __LIBC
+#if (__TIMESIZE == 64 && defined __LIBC)
 # define __time64_t __time_t
-#elif __TIMESIZE != 64
+#elif (__TIMESIZE != 64)
 __STD_TYPE __time64_t __TIME64_T_TYPE;
 #endif
 

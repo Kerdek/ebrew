@@ -6,203 +6,136 @@ type
     FILE_CB
     FILE_OBJ
     FILE_AR
-    FILE_DSO
-  ;
-;
-
-usage(status int) = fprintf(stderr "chibicc [options] <file>\n"->@char); exit(status);;
-
-define(str@ char) =
-  let eq = strchr(str '=');
+    FILE_DSO;;
+usage(status int) = fprintf stderr "chibicc [options] <file>\n"->@char; exit status;;
+define(str @char) =
+  let eq = strchr str '=';
   if eq {
-    let b0 = eq - str;
-    let a = strndup(str b0->unsigned long);
-    let b = eq + 1;
-    define_macro(a b);
-  ;
-  else define_macro(str "1"->@char);
-;
-
+    define_macro strndup str (eq - str)->unsigned long (eq + 1);;
+  else define_macro str "1"->@char;;
 open_file(path@ char)@ FILE =
-  if !path || strcmp(path->@ "-"->@char) == 0 return stdout;
-  let out = fopen(path "w"->@char);
-  if !out error("cannot open output file: %s: %s"->@char path strerror(errno));
-  return out;
-;
-
+  if (!path || ! strcmp path->@ "-"->@char) return stdout;
+  let out = fopen path "w"->@char;
+  if !out error "cannot open output file: %s: %s"->@char path strerror errno;
+  return out;;
 endswith(p@ char q@ char)bool =
-  let len1 = strlen(p);
-  let len2 = strlen(q);
-  let a = p + len1 - len2;
-  return ((len1 >= len2) && !strcmp(a->@ q))->bool;
-;
-
+  let len1 = strlen p;
+  let len2 = strlen q;
+  return len1 >= len2 && ! strcmp (p + len1 - len2)->@ q;;
 replace_extn(tmpl@ char extn@ char)@ char =
-  let filename = basename(strdup(tmpl));
-  let dot = strrchr(filename '.');
+  let filename = basename strdup tmpl;
+  let dot = strrchr filename '.';
   if dot dot@ = '\0';
-  return format("%s%s"->@char filename extn);
-;
-
+  return format "%s%s"->@char filename extn;;
 run_subprocess(argv@@char) =
-  if fork() == 0 {
-    execvp(argv[0] argv);
-    fprintf(stderr "exec failed: %s: %s\n"->@char argv[0] strerror(errno));
-    _exit(1);
-  ;
-
+  if ! fork {
+    execvp argv[0] argv;
+    fprintf stderr "exec failed: %s: %s\n"->@char argv[0] strerror errno;
+    _exit 1;;
   let status = 0;
-  let a = &status;
-  while wait(a) > 0;
-  if status exit(1);
-;
-
+  while (wait &status > 0);
+  if status exit 1;;
 must_tokenize_file(path@ char)@ Token =
-  let tok = tokenize_file(path);
-  if !tok error("%s: %s"->@char path strerror(errno));
-  return tok;
-;
-
+  let tok = tokenize_file path;
+  if !tok error "%s: %s"->@char path strerror errno;
+  return tok;;
 append_tokens(tok1@ Token tok2@ Token)@ Token =
-  if !tok1 || tok1@.kind == TK_EOF
-    return tok2;
-
+  if (!tok1 || tok1.kind == TK_EOF) return tok2;
   let t = tok1;
-  while t@.next@.kind != TK_EOF
-    t = t@.next;
-  t@.next = tok2;
-  return tok1;
-;
-
+  while (t.next.kind != TK_EOF) t = t.next;
+  t.next = tok2;
+  return tok1;;
 cc1(input @char output @char opt_fpic bool include_paths @StringArray) =
-  init_macros();
-  let tok = must_tokenize_file(input);
-  tok = preprocess(tok include_paths);
-  let obj = parse(tok);
-  let out = open_file(output);
-  codegen(obj out opt_fpic);
-  fclose(out);
-;
-
+  init_macros;
+  let tok = must_tokenize_file input;
+  tok = preprocess tok include_paths;
+  let obj = parse tok;
+  let out = open_file output;
+  codegen obj out opt_fpic;
+  fclose out;;
 assemble(input@ char output@ char) =
   let cmd[]@ char = {"as"->@char "-c"->@char input "-o"->@char output 0->@char;;
-  run_subprocess(cmd->@@char);
-;
-
+  run_subprocess cmd->@@char;;
 find_file( pattern@ char)@ char =
   let
     path = 0->@char
     buf = (let glob_t){;
-    d = &buf
-  ;
-  glob(pattern 0 0->@(c@char k int)int d);
-  if buf.gl_pathc > 0
-    path = strdup(buf.gl_pathv[buf.gl_pathc - 1]);
+    d = &buf;
+  glob pattern 0 0->@(c@char k int)int d;
+  if (buf.gl_pathc > 0) path = strdup buf.gl_pathv[buf.gl_pathc - 1];
   let a = &buf;
-  globfree(a);
-  return path;
-;
-
+  globfree a;
+  return path;;
 export file_exists(path@ char) bool =
   let st = (let struct stat){;;
   let b = &st;
-  return (!stat(path b))->bool;
-;
-
+  return ! stat path b;;
 find_libpath(void)@ char =
-  if file_exists("/usr/lib/x86_64-linux-gnu/crti.o"->@char) return "/usr/lib/x86_64-linux-gnu"->@char;
-  if file_exists("/usr/lib64/crti.o"->@char) return "/usr/lib64"->@char;
-  error("library path is not found"->@char);
-;
-
+  if file_exists "/usr/lib/x86_64-linux-gnu/crti.o"->@char return "/usr/lib/x86_64-linux-gnu"->@char;
+  if file_exists "/usr/lib64/crti.o"->@char return "/usr/lib64"->@char;
+  error "library path is not found"->@char;;
 find_gcc_libpath(void)@ char =
   let paths[]@ char = {
     "/usr/lib/gcc/x86_64-linux-gnu/*/crtbegin.o"->@char
     "/usr/lib/gcc/x86_64-pc-linux-gnu/*/crtbegin.o"->@char // For Gentoo
-    "/usr/lib/gcc/x86_64-redhat-linux/*/crtbegin.o"->@char // For Fedora
-  ;;
-
+    "/usr/lib/gcc/x86_64-redhat-linux/*/crtbegin.o"->@char;; // For Fedora;;
   for (let i int = 0; i < (sizeof typeof paths) / (sizeof typeof paths@); i++) {
-    let path = find_file(paths[i]);
-    if path
-      return dirname(path);
-  ;
-
-  error("gcc library path is not found"->@char);
-;
-
+    let path = find_file paths[i];
+    if path return dirname path;;
+  error "gcc library path is not found"->@char;;
 run_linker(inputs @StringArray flags @StringArray output@ char opt_shared bool opt_static bool) =
   let a = &(let StringArray){;;
-  strarray_push(a "ld"->@char);
-  strarray_push(a "-o"->@char);
-  strarray_push(a output);
-  strarray_push(a "-m"->@char);
-  strarray_push(a "elf_x86_64"->@char);
-
-  let libpath = find_libpath();
-  let gcc_libpath = find_gcc_libpath();
-
+  strarray_push a "ld"->@char;
+  strarray_push a "-o"->@char;
+  strarray_push a output;
+  strarray_push a "-m"->@char;
+  strarray_push a "elf_x86_64"->@char;
+  let libpath = find_libpath;
+  let gcc_libpath = find_gcc_libpath;
   if opt_shared {
-    strarray_push(a format("%s/crti.o"->@char libpath));
-    strarray_push(a format("%s/crtbeginS.o"->@char gcc_libpath));
-  ; else {
-    strarray_push(a format("%s/crt1.o"->@char libpath));
-    strarray_push(a format("%s/crti.o"->@char libpath));
-    strarray_push(a format("%s/crtbegin.o"->@char gcc_libpath));
-  ;
-
-  strarray_push(a format("-L%s"->@char gcc_libpath));
-  strarray_push(a "-L/usr/lib/x86_64-linux-gnu"->@char)->@char;
-  strarray_push(a "-L/usr/lib64"->@char);
-  strarray_push(a "-L/lib64"->@char);
-  strarray_push(a "-L/usr/lib/x86_64-linux-gnu"->@char);
-  strarray_push(a "-L/usr/lib/x86_64-pc-linux-gnu"->@char);
-  strarray_push(a "-L/usr/lib/x86_64-redhat-linux"->@char);
-  strarray_push(a "-L/usr/lib"->@char);
-  strarray_push(a "-L/lib"->@char);
-
+    strarray_push a format "%s/crti.o"->@char libpath;
+    strarray_push a format "%s/crtbeginS.o"->@char gcc_libpath;;
+  else {
+    strarray_push a format "%s/crt1.o"->@char libpath;
+    strarray_push a format "%s/crti.o"->@char libpath;
+    strarray_push a format "%s/crtbegin.o"->@char gcc_libpath;;
+  strarray_push a format "-L%s"->@char gcc_libpath;
+  strarray_push a "-L/usr/lib/x86_64-linux-gnu"->@char;
+  strarray_push a "-L/usr/lib64"->@char;
+  strarray_push a "-L/lib64"->@char;
+  strarray_push a "-L/usr/lib/x86_64-linux-gnu"->@char;
+  strarray_push a "-L/usr/lib/x86_64-pc-linux-gnu"->@char;
+  strarray_push a "-L/usr/lib/x86_64-redhat-linux"->@char;
+  strarray_push a "-L/usr/lib"->@char;
+  strarray_push a "-L/lib"->@char;
   if !opt_static {
-    strarray_push(a "-dynamic-linker"->@char);
-    strarray_push(a "/lib64/ld-linux-x86-64.so.2"->@char);
-  ;
-
-  for (let i int= 0; i < flags @.len; i++) strarray_push(a flags @.data[i]);
-  for (let i int= 0; i < inputs@.len; i++) strarray_push(a inputs@.data[i]);
-
+    strarray_push a "-dynamic-linker"->@char;
+    strarray_push a "/lib64/ld-linux-x86-64.so.2"->@char;;
+  for (let i int= 0; i < flags .len; i++) strarray_push a flags .data[i];
+  for (let i int= 0; i < inputs.len; i++) strarray_push a inputs.data[i];
   if opt_static {
-    strarray_push(a "--start-group"->@char);
-    strarray_push(a "-lgcc"->@char);
-    strarray_push(a "-lgcc_eh"->@char);
-    strarray_push(a "-lc"->@char);
-    strarray_push(a "--end-group"->@char);
-  ; else {
-    strarray_push(a "-lc"->@char);
-    strarray_push(a "-lgcc"->@char);
-    strarray_push(a "--as-needed"->@char);
-    strarray_push(a "-lgcc_s"->@char);
-    strarray_push(a "--no-as-needed"->@char);
-  ;
-
-  if opt_shared
-    strarray_push(a format("%s/crtendS.o"->@char gcc_libpath));
-  else
-    strarray_push(a format("%s/crtend.o"->@char gcc_libpath));
-
-  strarray_push(a format("%s/crtn.o"->@char libpath));
-  strarray_push(a 0->@char);
-
-  run_subprocess(a@.data);
-;
-
+    strarray_push a "--start-group"->@char;
+    strarray_push a "-lgcc"->@char;
+    strarray_push a "-lgcc_eh"->@char;
+    strarray_push a "-lc"->@char;
+    strarray_push a "--end-group"->@char;;
+  else {
+    strarray_push a "-lc"->@char;
+    strarray_push a "-lgcc"->@char;
+    strarray_push a "--as-needed"->@char;
+    strarray_push a "-lgcc_s"->@char;
+    strarray_push a "--no-as-needed"->@char;;
+  if opt_shared strarray_push a format "%s/crtendS.o"->@char gcc_libpath;
+  else strarray_push a format "%s/crtend.o"->@char gcc_libpath;
+  strarray_push a format "%s/crtn.o"->@char libpath;
+  strarray_push a 0->@char;
+  run_subprocess a.data;;
 get_file_type(filename@ char)FileType =
-  if endswith(filename ".a" ->@char) return FILE_AR->FileType;
-  if endswith(filename ".so"->@char) return FILE_DSO->FileType;
-  if endswith(filename ".o" ->@char) return FILE_OBJ->FileType;
-  if endswith(filename ".cb"->@char) return FILE_CB->FileType;
-
-  error("<command line>: unknown file extension: %s"->@char filename);
-;
-
+  if endswith filename ".a" ->@char return FILE_AR->FileType;
+  if endswith filename ".so"->@char return FILE_DSO->FileType;
+  if endswith filename ".o" ->@char return FILE_OBJ->FileType;
+  if endswith filename ".cb"->@char return FILE_CB->FileType;
+  error "<command line>: unknown file extension: %s"->@char filename;;
 export main(argc int argv@@char) int =
   let 
     opt_c         = false
@@ -214,38 +147,34 @@ export main(argc int argv@@char) int =
     ldset         = &(let StringArray){;
     ldflags       = &(let StringArray){;
     include_paths = &(let StringArray){;
-    default_include_path = format("%s/include"->@char dirname(strdup(argv[0])));
-  strarray_push(include_paths default_include_path);
+    default_include_path = format "%s/include"->@char dirname strdup argv[0];
+  strarray_push include_paths default_include_path;
   for (let i int = 1; i < argc; i++) {
-    if !strcmp (argv[i]->@ "-c"->@char       )   opt_c = true                                                   ;  else
-    if !strcmp (argv[i]->@ "-fpic"->@char    )   opt_fpic = true                                                ;  else
-    if !strcmp (argv[i]->@ "-fPIC"->@char    )   opt_fpic = true                                                ;  else
-    if !strcmp (argv[i]->@ "-o"->@char       )   opt_o = argv[++i]                                              ;  else
-    if !strncmp(argv[i]->@ "-o"->@char      2->unsigned long)   opt_o = argv[i] + 2                                            ;  else
-    if !strcmp (argv[i]->@ "-I"->@char       )                            strarray_push(include_paths argv[++i]);  else
-    if !strncmp(argv[i]->@ "-I"->@char      2->unsigned long) { let b = argv[i] + 2;     strarray_push(include_paths b        );; else
-    if !strcmp (argv[i]->@ "-static"->@char  ) { opt_static = true;       strarray_push(ldflags       "-static"->@char);; else
-    if !strcmp (argv[i]->@ "-shared"->@char  ) { opt_shared = true;       strarray_push(ldflags       "-shared"->@char);; else
-    if !strcmp (argv[i]->@ "-Wl,"  ->@char) || !strcmp (argv[i]->@ "-L"->@char) { strarray_push(ldflags       argv[  i]);
-                                                                strarray_push(ldflags       argv[++i]);; else
-    if !strncmp(argv[i]->@ "-Wl,"->@char 4->unsigned long) || !strncmp(argv[i]->@ "-L"->@char 2->unsigned long)   strarray_push(ldflags       argv[  i]);  else
-    if argv[i][0] == '-' error("unknown argument: %s"->@char argv[i])                                        ;  else
-    strarray_push(ccset argv[i]);
-  ;
-  if ccset@.len == 0 error("no input files"->@char);
-  if ccset@.len > 1 && opt_o && opt_c error("cannot specify -o and -c with multiple inputs"->@char);
-  for (let i int = 0; i < ccset@.len; i++) {
-    let input = ccset@.data[i];
-    let t = get_file_type(input);
-    if t == FILE_OBJ || t == FILE_AR || t == FILE_DSO strarray_push(ldset input); else {
-      let output_o = replace_extn(input ".o"->@char);
-      let output_a = replace_extn(input ".a"->@char);
-      cc1(input output_a opt_fpic include_paths);
-      assemble(output_a output_o);
-      if !opt_c strarray_push(ldset output_o);
-    ;
-  ;
-  let c = opt_o ? opt_o : "a.out";
-  if ldset@.len run_linker(ldset ldflags c opt_shared opt_static);
-  return 0;
-;
+    if ! strcmp  argv[i]->@ "-c"     ->@char                                          opt_c = true                                                    ;  else
+    if ! strcmp  argv[i]->@ "-fpic"  ->@char                                       opt_fpic = true                                                    ;  else
+    if ! strcmp  argv[i]->@ "-fPIC"  ->@char                                       opt_fpic = true                                                    ;  else
+    if ! strcmp  argv[i]->@ "-static"->@char                                   { opt_static = true;       strarray_push ldflags       "-static"->@char;; else
+    if ! strcmp  argv[i]->@ "-shared"->@char                                   { opt_shared = true;       strarray_push ldflags       "-shared"->@char;; else
+    if ! strcmp  argv[i]->@ "-o"     ->@char                                          opt_o = argv[++i]                                               ;  else
+    if ! strncmp argv[i]->@ "-o"     ->@char 2ul                                      opt_o = (argv[i] + 2)                                             ;  else
+    if ! strcmp  argv[i]->@ "-I"     ->@char                                                              strarray_push include_paths argv[++i]       ;  else
+    if ! strncmp argv[i]->@ "-I"     ->@char 2ul                               {      let b = (argv[i] + 2);     strarray_push include_paths b          ;; else
+    if (! strcmp  argv[i]->@ "-Wl,"   ->@char || !strcmp argv[i]->@ "-L"->@char) {                          strarray_push ldflags       argv[  i]       ;
+                                                                                                          strarray_push ldflags       argv[++i]       ;; else
+    if (! strncmp argv[i]->@ "-Wl,"->@char 4ul || ! strncmp argv[i]->@ "-L"->@char 2ul)                     strarray_push ldflags       argv[  i]       ;  else
+    if (argv[i][0] == '-') error "unknown argument: %s"->@char argv[i]                                                                                  ;  else
+    strarray_push ccset argv[i];;
+  if (ccset.len == 0) error "no input files"->@char;
+  if (ccset.len > 1 && opt_o && opt_c) error "cannot specify -o and -c with multiple inputs"->@char;
+  for (let i int = 0; i < ccset.len; i++) {
+    let input = ccset.data[i];
+    let t = get_file_type input;
+    if (t == FILE_OBJ || t == FILE_AR || t == FILE_DSO) strarray_push ldset input; else {
+      let output_o = replace_extn input ".o"->@char;
+      let output_a = replace_extn input ".a"->@char;
+      cc1 input output_a opt_fpic include_paths;
+      assemble output_a output_o;
+      if !opt_c strarray_push ldset output_o;;;
+  let c = (opt_o || "a.out");
+  if ldset.len run_linker ldset ldflags c opt_shared opt_static;
+  return 0;;

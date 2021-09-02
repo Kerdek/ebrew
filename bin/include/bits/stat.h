@@ -15,7 +15,7 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#if !defined _SYS_STAT_H && !defined _FCNTL_H
+#if (!defined _SYS_STAT_H && !defined _FCNTL_H)
 # error "Never include <bits/stat.h> directly; use <sys/stat.h> instead."
 #endif
 
@@ -45,41 +45,41 @@
 
 _ struct stat
   {
-    st_dev __dev_t;		/* Device.  */
+    st_dev __dev_t /* Device.  */
 #ifndef __x86_64__
-    __pad1 short unsigned int;
+    __pad1 short unsigned int
 #endif
-#if defined __x86_64__ || !defined __USE_FILE_OFFSET64
-    st_ino __ino_t;		/* File serial number.	*/
+#if (defined __x86_64__ || !defined __USE_FILE_OFFSET64)
+    st_ino __ino_t		/* File serial number.	*/
 #else
-    __st_ino __ino_t;			/* 32bit file serial number.	*/
+    __st_ino __ino_t			/* 32bit file serial number.	*/
 #endif
 #ifndef __x86_64__
-    st_mode __mode_t;			/* File mode.  */
-    st_nlink __nlink_t;			/* Link count.  */
+    st_mode __mode_t			/* File mode.  */
+    st_nlink __nlink_t			/* Link count.  */
 #else
-    st_nlink __nlink_t;		/* Link count.  */
-    st_mode __mode_t;		/* File mode.  */
+    st_nlink __nlink_t		/* Link count.  */
+    st_mode __mode_t		/* File mode.  */
 #endif
-    st_uid __uid_t;		/* User ID of the file's owner.	*/
-    st_gid __gid_t;		/* Group ID of the file's group.*/
+    st_uid __uid_t		/* User ID of the file's owner.	*/
+    st_gid __gid_t	/* Group ID of the file's group.*/
 #ifdef __x86_64__
-    __pad0 int;
+    __pad0 int
 #endif
-    st_rdev __dev_t;		/* Device number, if device.  */
+    st_rdev __dev_t		/* Device number, if device.  */
 #ifndef __x86_64__
-    __pad2 unsigned short int;
+    __pad2 unsigned short int
 #endif
-#if defined __x86_64__ || !defined __USE_FILE_OFFSET64
-    st_size __off_t;			/* Size of file, in bytes.  */
+#if (defined __x86_64__ || !defined __USE_FILE_OFFSET64)
+    st_size __off_t			/* Size of file, in bytes.  */
 #else
-    st_size __off64_t;			/* Size of file, in bytes.  */
+    st_size __off64_t			/* Size of file, in bytes.  */
 #endif
-    st_blksize __blksize_t;	/* Optimal block size for I/O.  */
-#if defined __x86_64__  || !defined __USE_FILE_OFFSET64
-    st_blocks __blkcnt_t;		/* Number 512-byte blocks allocated. */
+    st_blksize __blksize_t	/* Optimal block size for I/O.  */
+#if (defined __x86_64__  || !defined __USE_FILE_OFFSET64)
+    st_blocks __blkcnt_t		/* Number 512-byte blocks allocated. */
 #else
-    st_blocks __blkcnt64_t;		/* Number 512-byte blocks allocated. */
+    st_blocks __blkcnt64_t		/* Number 512-byte blocks allocated. */
 #endif
 #ifdef __USE_XOPEN2K8
     /* Nanosecond resolution timestamps are stored in a format
@@ -88,25 +88,25 @@ _ struct stat
        identifier 'timespec' to appear in the <sys/stat.h> header.
        Therefore we have to handle the use of this header in strictly
        standard-compliant sources special.  */
-    st_atim struct timespec;		/* Time of last access.  */
-    st_mtim struct timespec;		/* Time of last modification.  */
-    st_ctim struct timespec;		/* Time of last status change.  */
+    st_atim struct timespec		/* Time of last access.  */
+    st_mtim struct timespec		/* Time of last modification.  */
+    st_ctim struct timespec		/* Time of last status change.  */
 # define st_atime st_atim.tv_sec	/* Backward compatibility.  */
 # define st_mtime st_mtim.tv_sec
 # define st_ctime st_ctim.tv_sec
 #else
-    st_atime __time_t;			/* Time of last access.  */
-    st_atimensec __syscall_ulong_t;	/* Nscecs of last access.  */
-    st_mtime __time_t;			/* Time of last modification.  */
-    st_mtimensec __syscall_ulong_t;	/* Nsecs of last modification.  */
-    st_ctime __time_t;			/* Time of last status change.  */
-    st_ctimensec __syscall_ulong_t;	/* Nsecs of last status change.  */
+    st_atime __time_t			/* Time of last access.  */
+    st_atimensec __syscall_ulong_t	/* Nscecs of last access.  */
+    st_mtime __time_t			/* Time of last modification.  */
+    st_mtimensec __syscall_ulong_t	/* Nsecs of last modification.  */
+    st_ctime __time_t			/* Time of last status change.  */
+    st_ctimensec __syscall_ulong_t	/* Nsecs of last status change.  */
 #endif
 #ifdef __x86_64__
     __glibc_reserved[3]__syscall_slong_t;
 #else
 # ifndef __USE_FILE_OFFSET64
-    __glibc_reserved4 unsigned long int;
+    __glibc_reserved4 unsigned long int
     __glibc_reserved5 unsigned long int;
 # else
     st_ino __ino64_t;			/* File serial number.	*/

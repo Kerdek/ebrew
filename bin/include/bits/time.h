@@ -33,11 +33,11 @@
    XSI-conformant systems. */
 #define CLOCKS_PER_SEC  ((__clock_t) 1000000)
 
-#if (!defined __STRICT_ANSI__ || defined __USE_POSIX) \
-   && !defined __USE_XOPEN2K
+#if ((!defined __STRICT_ANSI__ || defined __USE_POSIX) \
+   && !defined __USE_XOPEN2K)
 /* Even though CLOCKS_PER_SEC has such a strange value CLK_TCK
    presents the real value for clock ticks per second for the system.  */
-extern long int __sysconf (int);
+extern __sysconf (int)long;
 # define CLK_TCK ((__clock_t) __sysconf (2))	/* 2 is _SC_CLK_TCK */
 #endif
 

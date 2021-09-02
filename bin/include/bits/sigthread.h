@@ -19,7 +19,7 @@
 #ifndef _BITS_SIGTHREAD_H
 #define _BITS_SIGTHREAD_H	1
 
-#if !defined _SIGNAL_H && !defined _PTHREAD_H
+#if (!defined _SIGNAL_H && !defined _PTHREAD_H)
 # error "Never include this file directly.  Use <signal.h> instead"
 #endif
 

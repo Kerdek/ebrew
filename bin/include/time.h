@@ -38,7 +38,7 @@
 #include <bits/types/time_t.h>
 #include <bits/types/struct_tm.h>
 
-#if defined __USE_POSIX199309 || defined __USE_ISOC11
+#if (defined __USE_POSIX199309 || defined __USE_ISOC11)
 # include <bits/types/struct_timespec.h>
 #endif
 
@@ -122,7 +122,7 @@ export extern gmtime (__timer@const time_t)@struct tm __THROW;
    of *TIMER in the local timezone.  */
 export extern localtime (__timer@const time_t)@struct tm __THROW;
 
-#if defined __USE_POSIX || __GLIBC_USE (ISOC2X)
+#if (defined __USE_POSIX || __GLIBC_USE (ISOC2X))
 /* Return the `struct tm' representation of *TIMER in UTC
    using *TP to store the result.  */
 export extern gmtime_r (__restrict __timer@const time_t
@@ -141,7 +141,7 @@ export extern asctime (__tp@const struct tm)@char __THROW;
 /* Equivalent to `asctime (localtime (timer))'.  */
 export extern ctime (__restrict __timer@const time_t)@char __THROW;
 
-#if defined __USE_POSIX || __GLIBC_USE (ISOC2X)
+#if (defined __USE_POSIX || __GLIBC_USE (ISOC2X))
 /* Reentrant versions of the above functions.  */
 
 /* Return in BUF a string of the form "Day Mon dd hh:mm:ss yyyy\n"
@@ -170,7 +170,7 @@ export extern tzname[2]@char;
 export extern tzset (void) __THROW;
 #endif
 
-#if defined __USE_MISC || defined __USE_XOPEN
+#if (defined __USE_MISC || defined __USE_XOPEN)
 export extern daylight int;
 export extern timezone long int;
 #endif

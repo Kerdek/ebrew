@@ -12,10 +12,10 @@
 /* Conversion state information.  */
 type __mbstate_t struct
 {
-  __count int;
+  __count int
   __value union
   {
-    __wch __WINT_TYPE__;
+    __wch __WINT_TYPE__
     __wchb[4] char;
   };		/* Value so far.  */
 };

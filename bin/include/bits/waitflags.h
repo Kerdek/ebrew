@@ -16,7 +16,7 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#if !defined _SYS_WAIT_H && !defined _STDLIB_H
+#if (!defined _SYS_WAIT_H && !defined _STDLIB_H)
 # error "Never include <bits/waitflags.h> directly; use <sys/wait.h> instead."
 #endif
 
@@ -26,7 +26,7 @@
 #define	WUNTRACED	2	/* Report status of stopped children.  */
 
 /* Bits in the fourth argument to `waitid'.  */
-#if defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K8
+#if (defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K8)
 # define WSTOPPED	2	/* Report stopped child (same as WUNTRACED). */
 # define WEXITED	4	/* Report dead child.  */
 # define WCONTINUED	8	/* Report continued child.  */
@@ -39,7 +39,7 @@
 #define __WCLONE	0x80000000 /* Wait for cloned process.  */
 
 /* The following values are used by the `waitid' function.  */
-#if defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K8
+#if (defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K8)
 # ifndef __ENUM_IDTYPE_T
 # define __ENUM_IDTYPE_T 1
 

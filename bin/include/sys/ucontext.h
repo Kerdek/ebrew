@@ -100,8 +100,8 @@ _ enum
 
 _ struct _libc_fpxreg
 {
-  __ctx(significand)[4]unsigned short int;
-  __ctx(exponent)unsigned short int;
+  __ctx(significand)[4]unsigned short int
+  __ctx(exponent)unsigned short int
   __glibc_reserved1[3]unsigned short int;
 };
 
@@ -113,16 +113,16 @@ _ struct _libc_xmmreg
 _ struct _libc_fpstate
 {
   /* 64-bit FXSAVE format.  */
-  __ctx(cwd)__uint16_t;
-  __ctx(swd)__uint16_t;
-  __ctx(ftw)__uint16_t;
-  __ctx(fop)__uint16_t;
-  __ctx(rip)__uint64_t;
-  __ctx(rdp)__uint64_t;
-  __ctx(mxcsr)__uint32_t;
-  __ctx(mxcr_mask)__uint32_t;
-  _st[8]struct _libc_fpxreg;
-  _xmm[16]struct _libc_xmmreg;
+  __ctx(cwd)__uint16_t
+  __ctx(swd)__uint16_t
+  __ctx(ftw)__uint16_t
+  __ctx(fop)__uint16_t
+  __ctx(rip)__uint64_t
+  __ctx(rdp)__uint64_t
+  __ctx(mxcsr)__uint32_t
+  __ctx(mxcr_mask)__uint32_t
+  _st[8]struct _libc_fpxreg
+  _xmm[16]struct _libc_xmmreg
   __glibc_reserved1[24]__uint32_t;
 };
 
@@ -132,21 +132,21 @@ type fpregset_t@struct _libc_fpstate;
 /* Context to describe whole processor state.  */
 type mcontext_t struct
   {
-    __ctx(gregs)gregset_t;
+    __ctx(gregs)gregset_t
     /* Note that fpregs is a pointer.  */
-    __ctx(fpregs)fpregset_t;
+    __ctx(fpregs)fpregset_t
     __extension__ __reserved1[8]unsigned long long;
 } ;
 
 /* Userlevel context.  */
 type ucontext_t struct ucontext_t
   {
-    __ctx(uc_flags)unsigned long int;
-    uc_link@struct ucontext_t;
-    uc_stack stack_t;
-    uc_mcontext mcontext_t;
-    uc_sigmask sigset_t;
-    __fpregs_mem struct _libc_fpstate;
+    __ctx(uc_flags)unsigned long int
+    uc_link@struct ucontext_t
+    uc_stack stack_t
+    uc_mcontext mcontext_t
+    uc_sigmask sigset_t
+    __fpregs_mem struct _libc_fpstate
     __extension__ __ssp[4]unsigned long long int;
   };
 

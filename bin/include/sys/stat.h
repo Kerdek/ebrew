@@ -30,7 +30,7 @@
 # include <bits/types/struct_timespec.h>
 #endif
 
-#if defined __USE_XOPEN || defined __USE_XOPEN2K
+#if (defined __USE_XOPEN || defined __USE_XOPEN2K)
 /* The Single Unix specification says that some more types are
    available here.  */
 
@@ -100,7 +100,7 @@ __BEGIN_DECLS
 
 #include <bits/stat.h>
 
-#if defined __USE_MISC || defined __USE_XOPEN
+#if (defined __USE_MISC || defined __USE_XOPEN)
 # define S_IFMT		__S_IFMT
 # define S_IFDIR	__S_IFDIR
 # define S_IFCHR	__S_IFCHR
@@ -133,12 +133,12 @@ __BEGIN_DECLS
 # define S_ISLNK(mode)	 __S_ISTYPE((mode), __S_IFLNK)
 #endif
 
-#if defined __USE_MISC && !defined __S_IFLNK
+#if (defined __USE_MISC && !defined __S_IFLNK)
 # define S_ISLNK(mode)  0
 #endif
 
-#if (defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K) \
-    && defined __S_IFSOCK
+#if ((defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K) \
+    && defined __S_IFSOCK)
 # define S_ISSOCK(mode) __S_ISTYPE((mode), __S_IFSOCK)
 #elif defined __USE_XOPEN2K
 # define S_ISSOCK(mode) 0
@@ -160,7 +160,7 @@ __BEGIN_DECLS
 #define	S_ISUID __S_ISUID	/* Set user ID on execution.  */
 #define	S_ISGID	__S_ISGID	/* Set group ID on execution.  */
 
-#if defined __USE_MISC || defined __USE_XOPEN
+#if (defined __USE_MISC || defined __USE_XOPEN)
 /* Save swapped text after use (sticky bit).  This is pretty well obsolete.  */
 # define S_ISVTX	__S_ISVTX
 #endif
@@ -251,7 +251,7 @@ export extern fstatat64 ( __fd int const char *__restrict __file
 # endif
 #endif
 
-#if defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K
+#if (defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K)
 # ifndef __USE_FILE_OFFSET64
 /* Get file attributes about FILE and put them in BUF.
    If FILE is a symbolic link, do not follow it.  */
@@ -288,7 +288,7 @@ export extern lchmod (__file@const char __mode __mode_t)int
 #endif
 
 /* Set file access permissions of the file FD is open on to MODE.  */
-#if defined __USE_POSIX199309 || defined __USE_XOPEN_EXTENDED
+#if (defined __USE_POSIX199309 || defined __USE_XOPEN_EXTENDED)
 export extern fchmod (__fd int __mode __mode_t)int __THROW;
 #endif
 
@@ -327,7 +327,7 @@ export extern mkdirat ( __fd int __path@const char __mode __mode_t)int
 /* Create a device file named PATH, with permission and special bits MODE
    and device number DEV (which can be constructed from major and minor
    device numbers with the `makedev' macro above).  */
-#if defined __USE_MISC || defined __USE_XOPEN_EXTENDED
+#if (defined __USE_MISC || defined __USE_XOPEN_EXTENDED)
 export extern mknod ( __path@const char __mode __mode_t __dev __dev_t)int
      __THROW __nonnull ((1));
 
@@ -440,7 +440,7 @@ __NTH (stat ( __path@const char __statbuf@struct stat))
   return __xstat (_STAT_VER, __path, __statbuf);
 }
 
-# if defined __USE_MISC || defined __USE_XOPEN_EXTENDED
+# if (defined __USE_MISC || defined __USE_XOPEN_EXTENDED)
 __extern_inline int
 __NTH (lstat ( __path@const char __statbuf@struct stat))
 {
@@ -479,16 +479,16 @@ __NTH (mknodat ( __fd int __path@const char __mode __mode_t
 }
 # endif
 
-# if defined __USE_LARGEFILE64 \
+# if (defined __USE_LARGEFILE64 \
   && (! defined __USE_FILE_OFFSET64 \
-      || (defined __REDIRECT_NTH && defined __OPTIMIZE__))
+      || (defined __REDIRECT_NTH && defined __OPTIMIZE__)))
 __extern_inline int
 __NTH (stat64 ( __path@const char __statbuf@struct stat64))
 {
   return __xstat64 (_STAT_VER, __path, __statbuf);
 }
 
-#  if defined __USE_MISC || defined __USE_XOPEN_EXTENDED
+#  if (defined __USE_MISC || defined __USE_XOPEN_EXTENDED)
 __extern_inline int
 __NTH (lstat64 ( __path@const char __statbuf@struct stat64))
 {

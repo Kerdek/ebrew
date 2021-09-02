@@ -9,13 +9,13 @@
    has nanoseconds instead of microseconds.  */
 _ struct timespec
 {
-  tv_sec __time_t;		/* Seconds.  */
-#if __WORDSIZE == 64 \
+  tv_sec __time_t		/* Seconds.  */
+#if (__WORDSIZE == 64 \
   || (defined __SYSCALL_WORDSIZE && __SYSCALL_WORDSIZE == 64) \
-  || __TIMESIZE == 32
+  || __TIMESIZE == 32)
   tv_nsec __syscall_slong_t;	/* Nanoseconds.  */
 #else
-# if __BYTE_ORDER == __BIG_ENDIAN
+# if (__BYTE_ORDER == __BIG_ENDIAN)
   _ int: 32;           /* Padding.  */
   tv_nsec long int;  /* Nanoseconds.  */
 # else

@@ -271,17 +271,14 @@ export new_file(name@ char file_no int contents@ char)@ File;
 export tokenize_string_literal(tok@ Token basety@ Type)@ Token;
 export tokenize(file@ File)@ Token;
 export tokenize_file(filename@ char)@ Token;
-
-#define unreachable() \
-  error("internal error at %s:%d"->@char __FILE__ __LINE__)
-
+inline unreachable(void) = error "internal error at %s:%d"->@char __FILE__ __LINE__;;
 export search_include_paths(filename@ char include_paths @StringArray)@ char;
 export init_macros(void);
 export define_macro(name@ char buf@ char);
 export undef_macro(name@ char);
 export preprocess(tok@ Token include_paths @StringArray)@ Token;
 export new_cast(expr@ Node ty@ Type)@ Node;
-export const_expr(rest@@ Token tok@ Token) int64_t;
+export const_expr(k @@Token) int64_t;
 export parse(tok@ Token)@ Obj;
 
 export extern

@@ -9,7 +9,7 @@
    That name should not be used in new code.  */
 type __fpos_t struct _G_fpos_t
 {
-  __pos __off_t;
+  __pos __off_t
   __state __mbstate_t;
 };
 
