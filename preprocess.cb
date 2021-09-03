@@ -38,10 +38,10 @@ include_next_idx int
 preprocess2(tok@Token include_paths@StringArray)@Token
 find_macro(tok@Token)@Macro;
 
-is_hash(tok@Token)bool = return tok.at_bol && equal tok "#"->@char;;
+is_hash(tok@Token)bool = return tok.at_bol && equal tok "#";;
 skip_line(tok@Token)@Token =
   if tok.at_bol return tok;
-  warn_tok tok "extra token"->@char;
+  warn_tok tok "extra token";
   while tok.at_bol tok = tok.next;
   return tok;;
 copy_token(tok@Token)@Token =
@@ -94,14 +94,14 @@ append(tok1@Token tok2@Token)@Token =
   return head.next;;
 skip_cond_incl2(tok@Token)@Token =
   while (tok.kind != TK_EOF) {
-    if (is_hash tok && (equal tok.next "if"->@char || equal tok.next "ifdef"->@char || equal tok.next "ifndef"->@char)) tok = skip_cond_incl2 tok.next.next;
-    else if (is_hash tok && equal tok.next "endif"->@char) return tok.next.next;
+    if (is_hash tok && (equal tok.next "if" || equal tok.next "ifdef" || equal tok.next "ifndef")) tok = skip_cond_incl2 tok.next.next;
+    else if (is_hash tok && equal tok.next "endif") return tok.next.next;
     else tok = tok.next;;
   return tok;;
 skip_cond_incl(tok@Token)@Token =
   while (tok.kind != TK_EOF) {
-    if (is_hash tok && (equal tok.next "if"->@char || equal tok.next "ifdef"->@char || equal tok.next "ifndef"->@char)) tok = skip_cond_incl2 tok.next.next;
-    else if (is_hash tok && (equal tok.next "elif"->@char || equal tok.next "else"->@char || equal tok.next "endif"->@char)) break;
+    if (is_hash tok && (equal tok.next "if" || equal tok.next "ifdef" || equal tok.next "ifndef")) tok = skip_cond_incl2 tok.next.next;
+    else if (is_hash tok && (equal tok.next "elif" || equal tok.next "else" || equal tok.next "endif")) break;
     else tok = tok.next;;
   return tok;;
 
@@ -121,7 +121,7 @@ quote_string(str@char)@char =
   p++@ = '"';
   p++@ = '\0';
   return buf;;
-new_str_token(str@char tmpl@Token)@Token =
+new_str_token(str @char tmpl@Token)@Token =
   let buf = quote_string str;
   return tokenize new_file tmpl.file.name tmpl.file.file_no buf;;
 copy_line(rest@@Token tok@Token)@Token =
@@ -133,7 +133,7 @@ copy_line(rest@@Token tok@Token)@Token =
   rest@ = tok;
   return head.next;;
 new_num_token(val int tmpl@Token)@Token =
-  let buf = format "%d\n"->@char val;
+  let buf = format "%d\n" val;
   return tokenize new_file tmpl.file.name tmpl.file.file_no buf;;
 read_const_expr(rest@@Token tok@Token)@Token =
   tok = copy_line rest tok;
@@ -141,13 +141,13 @@ read_const_expr(rest@@Token tok@Token)@Token =
     head = (let Token){;
     cur = &head;
   while (tok.kind != TK_EOF) {
-    if equal tok "defined"->@char {
+    if equal tok "defined" {
       let start = tok;
-      let has_paren = consume &tok tok.next "("->@char;
-      if (tok.kind != TK_IDENT) error_tok start "macro name must be an identifier"->@char;
+      let has_paren = consume &tok tok.next "(";
+      if (tok.kind != TK_IDENT) error_tok start "macro name must be an identifier";
       let m = find_macro tok;
       tok = tok.next;
-      if has_paren tok = skip tok ")"->@char;
+      if has_paren tok = skip tok ")";
       cur = cur.next = new_num_token (!!m)->int start;;
     else {
       cur = cur.next = tok;
@@ -158,7 +158,7 @@ eval_const_expr(rest@@Token tok@Token include_paths@StringArray) long =
   let start = tok;
   let expr = read_const_expr rest tok.next;
   expr = preprocess2 expr include_paths;
-  if (expr.kind == TK_EOF) error_tok start "no expression"->@char;
+  if (expr.kind == TK_EOF) error_tok start "no expression";
   for (let t @Token= expr; t.kind != TK_EOF; t = t.next) {
     if (t.kind == TK_IDENT) {
       let next = t.next;
@@ -167,7 +167,7 @@ eval_const_expr(rest@@Token tok@Token include_paths@StringArray) long =
   convert_pp_tokens expr;
   let rest2 = expr;
   let val = const_expr &rest2;
-  if (rest2.kind != TK_EOF) error_tok rest2 "extra token"->@char;
+  if (rest2.kind != TK_EOF) error_tok rest2 "extra token";
   return val;;
 push_cond_incl(tok@Token included bool)@CondIncl =
   let ci = (calloc 1ul sizeof CondIncl)->@CondIncl;
@@ -191,16 +191,16 @@ read_macro_params(rest@@ Token tok@ Token va_args_name@@ char)@ MacroParam =
   let
     head = (let MacroParam){;
     cur = &head;
-  while ! equal tok ")"->@char {
-    if (cur != &head) tok = skip tok ","->@char;
-    if equal tok "..."->@char {
-      va_args_name@ = "__VA_ARGS__"->@char;
-      rest@ = skip tok.next ")"->@char;
+  while ! equal tok ")" {
+    if (cur != &head) tok = skip tok ",";
+    if equal tok "..." {
+      va_args_name@ = "__VA_ARGS__";
+      rest@ = skip tok.next ")";
       return head.next->@MacroParam;;
-    if (tok.kind != TK_IDENT) error_tok tok "expected an identifier"->@char;
-    if equal tok.next "..."->@char {
+    if (tok.kind != TK_IDENT) error_tok tok "expected an identifier";
+    if equal tok.next "..." {
       va_args_name@ = strndup tok.loc tok.len->unsigned long;
-      rest@ = skip tok.next.next ")"->@char;
+      rest@ = skip tok.next.next ")";
       return head.next->@MacroParam;;
     let m = (calloc 1ul sizeof MacroParam)->@MacroParam;
     m.name = strndup tok.loc tok.len->unsigned long;
@@ -210,13 +210,12 @@ read_macro_params(rest@@ Token tok@ Token va_args_name@@ char)@ MacroParam =
   return head.next->@MacroParam;;
 read_macro_definition(rest@@Token tok@Token)  =
   if (tok.kind != TK_IDENT)
-    error_tok tok "macro name must be an identifier"->@char;
+    error_tok tok "macro name must be an identifier";
   let name = strndup tok.loc tok.len->unsigned long;
   tok = tok.next;
-  if (!tok.has_space && equal tok "("->@char) {
+  if (!tok.has_space && equal tok "(") {
     let va_args_name = 0->@char;
-    let b = &va_args_name;
-    let params = read_macro_params &tok tok.next b;
+    let params = read_macro_params &tok tok.next &va_args_name;
     let m = add_macro name false copy_line rest tok;
     m.params = params;
     m.va_args_name = va_args_name;;
@@ -226,10 +225,10 @@ read_macro_arg_one(rest@@Token tok@Token read_rest bool) @MacroArg =
     head = (let Token){;
     cur = &head
     level = 0;
-  while (level || ! equal tok ")"->@char && (read_rest || ! equal tok ","->@char)) {
-    if (tok.kind == TK_EOF) error_tok tok "premature end of input"->@char;
-    else if equal tok "("->@char level++;
-    else if equal tok ")"->@char level--;
+  while (level || ! equal tok ")" && (read_rest || ! equal tok ",")) {
+    if (tok.kind == TK_EOF) error_tok tok "premature end of input";
+    else if equal tok "(" level++;
+    else if equal tok ")" level--;
     cur = cur.next = copy_token tok;
     tok = tok.next;;
   cur.next = new_eof tok;
@@ -246,22 +245,22 @@ read_macro_args(rest@@Token tok@Token params @MacroParam va_args_name@char)@Macr
     pp = params;
   for (; pp; pp = pp.next) {
     if (cur != &head)
-      expect &tok ","->@char;
+      expect &tok ",";
     cur = cur.next = read_macro_arg_one &tok tok false;
     cur.name = pp.name;;
   if va_args_name {
     let arg = 0->@MacroArg;
-    if equal tok ")"->@char {
+    if equal tok ")" {
       arg = (calloc 1ul sizeof MacroArg)->@MacroArg;
       arg.tok = new_eof tok;;
     else {
-      if (pp != params) tok = skip tok ","->@char;
+      if (pp != params) tok = skip tok ",";
       arg = read_macro_arg_one &tok tok true;;
     arg.name = va_args_name;
     arg.is_va_args = true;
     cur = cur.next = arg;;
-  else if pp error_tok start "too many arguments"->@char;
-  skip tok ")"->@char;
+  else if pp error_tok start "too many arguments";
+  skip tok ")";
   rest@ = tok;
   return head.next->@MacroArg;;
 find_arg(args @MacroArg tok@Token)@MacroArg =
@@ -284,26 +283,26 @@ stringize(hash@Token arg@Token)@Token =
   let s = join_tokens arg 0->@Token;
   return new_str_token s hash;;
 paste(lhs@Token rhs@Token)@Token =
-  let buf = format "%.*s%.*s"->@char lhs.len lhs.loc rhs.len rhs.loc;
+  let buf = format "%.*s%.*s" lhs.len lhs.loc rhs.len rhs.loc;
   let tok = tokenize new_file lhs.file.name lhs.file.file_no buf;
-  if (tok.next.kind != TK_EOF) error_tok lhs "pasting forms '%s', an invalid token"->@char buf;
+  if (tok.next.kind != TK_EOF) error_tok lhs "pasting forms '%s', an invalid token" buf;
   return tok;;
 has_varargs(args @MacroArg) bool =
-  for (let a @MacroArg = args; a; a = a.next) if ! strcmp a.name->@ "__VA_ARGS__"->@char return a.tok.kind != TK_EOF;
+  for (let a @MacroArg = args; a; a = a.next) if ! strcmp a.name->@ "__VA_ARGS__" return a.tok.kind != TK_EOF;
   return false;;
 subst(tok@Token args @MacroArg include_paths@StringArray)@ Token =
   let
     head = (let Token){;
     cur = &head;
   while (tok.kind != TK_EOF) {
-    if equal tok "#"->@char {
+    if equal tok "#" {
       let arg = find_arg args tok.next;
-      if !arg error_tok tok.next "'#' is not followed by a macro parameter"->@char;
+      if !arg error_tok tok.next "'#' is not followed by a macro parameter";
       cur = cur.next = stringize tok arg.tok;
       tok = tok.next.next;;
-    else if equal tok "##"->@char {
-      if (cur == &head) error_tok tok "'##' cannot appear at start of macro expansion"->@char;
-      if (tok.next.kind == TK_EOF) error_tok tok "'##' cannot appear at end of macro expansion"->@char;
+    else if equal tok "##" {
+      if (cur == &head) error_tok tok "'##' cannot appear at start of macro expansion";
+      if (tok.next.kind == TK_EOF) error_tok tok "'##' cannot appear at end of macro expansion";
       let arg = find_arg args tok.next;
       if arg {
         if (arg.tok.kind != TK_EOF) {
@@ -315,7 +314,7 @@ subst(tok@Token args @MacroArg include_paths@StringArray)@ Token =
         tok = tok.next.next;;;
     else {
       let arg = find_arg args tok;
-      if (arg && equal tok.next "##"->@char) {
+      if (arg && equal tok.next "##") {
         let rhs = tok.next.next;
         if (arg.tok.kind == TK_EOF) {
           let arg2 = find_arg args rhs;
@@ -325,10 +324,10 @@ subst(tok@Token args @MacroArg include_paths@StringArray)@ Token =
         else {
           for (let t @Token= arg.tok; t.kind != TK_EOF; t = t.next) cur = cur.next = copy_token t;
           tok = tok.next;;;
-      else if (equal tok "__VA_OPT__"->@char && equal tok.next "("->@char) {
+      else if (equal tok "__VA_OPT__" && equal tok.next "(") {
         let arg = read_macro_arg_one &tok tok.next.next true;
         if has_varargs args for (let t @Token = arg.tok; t.kind != TK_EOF; t = t.next) cur = cur.next = t;
-        tok = skip tok ")"->@char;;
+        tok = skip tok ")";;
       else if arg {
         let t = preprocess2 arg.tok include_paths;
         t.at_bol = tok.at_bol;
@@ -356,7 +355,7 @@ expand_macro(rest@@Token tok@Token include_paths@StringArray)bool =
     rest@.at_bol = tok.at_bol;
     rest@.has_space = tok.has_space;
     return true;;
-  if !equal tok.next "("->@char return false;
+  if !equal tok.next "(" return false;
   let macro_token = tok;
   let args  = read_macro_args &tok tok m.params m.va_args_name;
   let rparen = tok;
@@ -375,7 +374,7 @@ export search_include_paths(filename@char include_paths@StringArray)@char =
   let cached = hashmap_get &sipcache filename;
   if cached return cached->@char;
   for (let i int = 0; i < include_paths.len; i++) {
-    let path = format "%s/%s"->@char include_paths.data[i] filename;
+    let path = format "%s/%s" include_paths.data[i] filename;
     if file_exists path {
       hashmap_put &sipcache filename path->@;
       include_next_idx = i + 1;
@@ -383,7 +382,7 @@ export search_include_paths(filename@char include_paths@StringArray)@char =
   return 0->@char;;
 search_include_next(filename@char include_paths @StringArray)@char =
   for (; include_next_idx < include_paths.len; include_next_idx++) {
-    let path = format "%s/%s"->@char include_paths.data[include_next_idx] filename;
+    let path = format "%s/%s" include_paths.data[include_next_idx] filename;
     if file_exists path return path;;
   return 0->@char;;
 read_include_filename(rest@@Token tok@Token is_dquote@bool include_paths @StringArray)@char =
@@ -391,9 +390,9 @@ read_include_filename(rest@@Token tok@Token is_dquote@bool include_paths @String
     is_dquote@ = true;
     rest@ = skip_line tok.next;
     return strndup (tok.loc + 1) (tok.len - 2)->unsigned long;;
-  if equal tok "<"->@char {
+  if equal tok "<" {
     let start = tok;
-    for (; ! equal tok ">"->@char; tok = tok.next) if (tok.at_bol || tok.kind == TK_EOF) error_tok tok "expected '>'"->@char;
+    for (; ! equal tok ">"; tok = tok.next) if (tok.at_bol || tok.kind == TK_EOF) error_tok tok "expected '>'";
     is_dquote@ = false;
     rest@ = skip_line tok.next;
     return join_tokens start.next tok;;
@@ -401,18 +400,18 @@ read_include_filename(rest@@Token tok@Token is_dquote@bool include_paths @String
     let a = copy_line rest tok;
     let tok2 = preprocess2 a include_paths;
     return read_include_filename &tok2 tok2 is_dquote include_paths;;
-  error_tok tok "expected a filename"->@char;;
+  error_tok tok "expected a filename";;
 detect_include_guard(tok@Token)@char =
-  if (! is_hash tok || ! equal tok.next "ifndef"->@char) return 0->@char;
+  if (! is_hash tok || ! equal tok.next "ifndef") return 0->@char;
   tok = tok.next.next;
   if (tok.kind != TK_IDENT) return 0->@char;
   let macro = strndup tok.loc tok.len->unsigned long;
   tok = tok.next;
-  if (! is_hash tok || ! equal tok.next "define"->@char || ! equal tok.next.next macro) return 0->@char;
+  if (! is_hash tok || ! equal tok.next "define" || ! equal tok.next.next macro) return 0->@char;
   while (tok.kind != TK_EOF) {
     if !is_hash tok tok = tok.next;
-    else if (equal tok.next "endif"->@char && tok.next.next.kind == TK_EOF) return macro;
-    else if (equal tok "if"->@char || equal tok "ifdef"->@char || equal tok "ifndef"->@char) tok = skip_cond_incl tok.next;
+    else if (equal tok.next "endif" && tok.next.next.kind == TK_EOF) return macro;
+    else if (equal tok "if" || equal tok "ifdef" || equal tok "ifndef") tok = skip_cond_incl tok.next;
     else tok = tok.next;;
   return 0->@char;;
 ifinclude_guards HashMap;
@@ -421,18 +420,18 @@ include_file(tok@Token path@char filename_tok@Token)@Token =
   let guard_name = hashmap_get &ifinclude_guards path;
   if (guard_name && hashmap_get &macros guard_name->@char) return tok;
   let tok2 = tokenize_file path;
-  if !tok2 error_tok filename_tok "%s: cannot open file: %s"->@char path strerror errno;
+  if !tok2 error_tok filename_tok "%s: cannot open file: %s" path strerror errno;
   guard_name = detect_include_guard tok2;
   if guard_name hashmap_put &ifinclude_guards path guard_name;
   return append tok2 tok;;
 read_line_marker(rest@@Token tok@Token include_paths@StringArray)  =
   let start = tok;
   tok = preprocess copy_line rest tok include_paths;
-  if (tok.kind != TK_NUM || tok.ty->@Type.kind != TY_INT) error_tok tok "invalid line marker"->@char;
+  if (tok.kind != TK_NUM || tok.ty->@Type.kind != TY_INT) error_tok tok "invalid line marker";
   start.file.line_delta = tok.val - start.line_no;
   tok = tok.next;
   if (tok.kind == TK_EOF) return;
-  if (tok.kind != TK_STR) error_tok tok "filename expected"->@char;
+  if (tok.kind != TK_STR) error_tok tok "filename expected";
   start.file.display_name = tok.str;;
 preprocess2(tok@Token include_paths@StringArray)@Token =
   let
@@ -447,12 +446,12 @@ preprocess2(tok@Token include_paths@StringArray)@Token =
       start.filename = start.file.display_name;
       cur = cur.next = start;
       start = start.next;;
-    else if equal tok "include"->@char {
+    else if equal tok "include" {
       let is_dquote = false;
       let c = &is_dquote;
       let filename = read_include_filename &tok tok.next c include_paths;
       if (filename[0] != '/' && is_dquote) {
-        let path = format"%s/%s"->@char dirname strdup start.file.name filename;
+        let path = format"%s/%s" dirname strdup start.file.name filename;
         if file_exists path tok = include_file tok path start.next.next;
         else {
           let path = search_include_paths filename include_paths;
@@ -460,58 +459,58 @@ preprocess2(tok@Token include_paths@StringArray)@Token =
       else {
         let path = search_include_paths filename include_paths;
         tok = include_file tok (path || filename) start.next.next;;;
-    else if equal tok "include_next"->@char {
+    else if equal tok "include_next" {
       let ignore = false;
       let c = &ignore;
       let filename = read_include_filename &tok tok.next c include_paths;
       let path = search_include_next filename include_paths;
       tok = include_file tok (path || filename) start.next.next;;
-    else if equal tok "define"->@char read_macro_definition &tok tok.next;
-    else if equal tok "undef"->@char {
+    else if equal tok "define" read_macro_definition &tok tok.next;
+    else if equal tok "undef" {
       tok = tok.next;
-      if (tok.kind != TK_IDENT) error_tok tok "macro name must be an identifier"->@char;
+      if (tok.kind != TK_IDENT) error_tok tok "macro name must be an identifier";
       undef_macro strndup tok.loc tok.len->unsigned long;
       tok = skip_line tok.next;;
-    else if equal tok "if"->@char {
+    else if equal tok "if" {
       let val = eval_const_expr &tok tok include_paths;
       push_cond_incl start val->bool;
       if !val tok = skip_cond_incl tok;;
-    else if equal tok "ifdef"->@char {
+    else if equal tok "ifdef" {
       let defined = find_macro tok.next;
       push_cond_incl tok defined->bool;
       tok = skip_line tok.next.next;
       if !defined tok = skip_cond_incl tok;;
-    else if equal tok "ifndef"->@char {
+    else if equal tok "ifndef" {
       let ndefined = !find_macro tok.next;
       push_cond_incl tok ndefined;
       tok = skip_line tok.next.next;
       if !ndefined tok = skip_cond_incl tok;;
-    else if equal tok "elif"->@char {
-      if (!cond_incl || cond_incl.ctx == IN_ELSE) error_tok start "stray #elif"->@char;
+    else if equal tok "elif" {
+      if (!cond_incl || cond_incl.ctx == IN_ELSE) error_tok start "stray #elif";
       cond_incl.ctx = IN_ELIF;
       if (!cond_incl.included && eval_const_expr &tok tok include_paths) cond_incl.included = true;
       else tok = skip_cond_incl tok;;
-    else if equal tok "else"->@char {
-      if (!cond_incl || cond_incl.ctx == IN_ELSE) error_tok start "stray #else"->@char;
+    else if equal tok "else" {
+      if (!cond_incl || cond_incl.ctx == IN_ELSE) error_tok start "stray #else";
       cond_incl.ctx = IN_ELSE;
       tok = skip_line tok.next;
       if cond_incl.included tok = skip_cond_incl tok;;
-    else if equal tok "endif"->@char {
-      if !cond_incl error_tok start "stray #endif"->@char;
+    else if equal tok "endif" {
+      if !cond_incl error_tok start "stray #endif";
       cond_incl = cond_incl.next;
       tok = skip_line tok.next;;
-    else if equal tok "line"->@char read_line_marker &tok tok.next include_paths;
+    else if equal tok "line" read_line_marker &tok tok.next include_paths;
     else if (tok.kind == TK_PP_NUM) read_line_marker &tok tok include_paths;
-    else if (equal tok "pragma"->@char && equal tok.next "once"->@char) {
+    else if (equal tok "pragma" && equal tok.next "once") {
       hashmap_put &pragma_once tok.file.name 1->@;
       tok = skip_line tok.next.next;;
-    else if equal tok "pragma"->@char do tok = tok.next; while !tok.at_bol;
-    else if equal tok "error"->@char error_tok tok "error"->@char;
-    else if !tok.at_bol error_tok tok "invalid preprocessor directive"->@char;;
+    else if equal tok "pragma" do tok = tok.next; while !tok.at_bol;
+    else if equal tok "error" error_tok tok "error";
+    else if !tok.at_bol error_tok tok "invalid preprocessor directive";;
   cur.next = tok;
   return head.next;;
 export define_macro(name@char buf@char)  =
-  let tok = tokenize new_file "<built-in>"->@char 1 buf;
+  let tok = tokenize new_file "<built-in>" 1 buf;
   add_macro name true tok;;
 export undef_macro(name@char)  =
   hashmap_delete &macros name;;
@@ -530,68 +529,68 @@ counter_macro(tmpl@Token)@Token = return new_num_token cmi++ tmpl;;
 tmbuf[30]char;
 timestamp_macro(tmpl@Token)@Token =
   let st = (let struct stat){;;
-  if (stat tmpl.file.name &st != 0) return new_str_token "??? ??? ?? ??:??:?? ????"->@char tmpl;
-  ctime_r &st.st_mtime tmbuf->@char;
+  if (stat tmpl.file.name &st != 0) return new_str_token "??? ??? ?? ??:??:?? ????" tmpl;
+  ctime_r &st.st_mtime &tmbuf@;
   tmbuf[24] = '\0';
-  return new_str_token tmbuf->@char tmpl;;
+  return new_str_token &tmbuf@ &tmpl@;;
 fmmon[][4]char = {
   "Jan" "Feb" "Mar" "Apr" "May" "Jun"
   "Jul" "Aug" "Sep" "Oct" "Nov" "Dec";;
-format_date(tm@ struct tm)@ char = return format "\"%s %2d %d\""->@char fmmon[tm.tm_mon] tm.tm_mday (tm.tm_year + 1900);;
-format_time(tm@ struct tm)@ char = return format "\"%02d:%02d:%02d\""->@char tm.tm_hour tm.tm_min tm.tm_sec;;
+format_date(tm@ struct tm)@ char = return format "\"%s %2d %d\"" fmmon[tm.tm_mon] tm.tm_mday (tm.tm_year + 1900);;
+format_time(tm@ struct tm)@ char = return format "\"%02d:%02d:%02d\"" tm.tm_hour tm.tm_min tm.tm_sec;;
 export init_macros(void)  =
   macros = (let HashMap){;;
   cond_incl = 0;
   pragma_once = (let HashMap){;;
   include_next_idx = 0;
-  define_macro "_LP64"                    ->@char "1"            ->@char;
-  define_macro "__C99_MACRO_WITH_VA_ARGS" ->@char "1"            ->@char;
-  define_macro "__ELF__"                  ->@char "1"            ->@char;
-  define_macro "__LP64__"                 ->@char "1"            ->@char;
-  define_macro "__SIZEOF_DOUBLE__"        ->@char "8"            ->@char;
-  define_macro "__SIZEOF_FLOAT__"         ->@char "4"            ->@char;
-  define_macro "__SIZEOF_INT__"           ->@char "4"            ->@char;
-  define_macro "__SIZEOF_LONG_DOUBLE__"   ->@char "8"            ->@char;
-  define_macro "__SIZEOF_LONG_LONG__"     ->@char "8"            ->@char;
-  define_macro "__SIZEOF_LONG__"          ->@char "8"            ->@char;
-  define_macro "__SIZEOF_POINTER__"       ->@char "8"            ->@char;
-  define_macro "__SIZEOF_PTRDIFF_T__"     ->@char "8"            ->@char;
-  define_macro "__SIZEOF_SHORT__"         ->@char "2"            ->@char;
-  define_macro "__SIZEOF_SIZE_T__"        ->@char "8"            ->@char;
-  define_macro "__SIZE_TYPE__"            ->@char "unsigned long"->@char;
-  define_macro "__STDC_HOSTED__"          ->@char "1"            ->@char;
-  define_macro "__STDC_NO_COMPLEX__"      ->@char "1"            ->@char;
-  define_macro "__STDC_UTF_16__"          ->@char "1"            ->@char;
-  define_macro "__STDC_UTF_32__"          ->@char "1"            ->@char;
-  define_macro "__STDC_VERSION__"         ->@char "201112L"      ->@char;
-  define_macro "__STDC__"                 ->@char "1"            ->@char;
-  define_macro "__USER_LABEL_PREFIX__"    ->@char ""             ->@char;
-  define_macro "__alignof__"              ->@char "_Alignof"     ->@char;
-  define_macro "__amd64"                  ->@char "1"            ->@char;
-  define_macro "__amd64__"                ->@char "1"            ->@char;
-  define_macro "__chibicc__"              ->@char "1"            ->@char;
-  define_macro "__const__"                ->@char "const"        ->@char;
-  define_macro "__gnu_linux__"            ->@char "1"            ->@char;
-  define_macro "__inline__"               ->@char "inline"       ->@char;
-  define_macro "__linux"                  ->@char "1"            ->@char;
-  define_macro "__linux__"                ->@char "1"            ->@char;
-  define_macro "__signed__"               ->@char "signed"       ->@char;
-  define_macro "__typeof__"               ->@char "typeof"       ->@char;
-  define_macro "__unix"                   ->@char "1"            ->@char;
-  define_macro "__unix__"                 ->@char "1"            ->@char;
-  define_macro "__volatile__"             ->@char "volatile"     ->@char;
-  define_macro "__x86_64"                 ->@char "1"            ->@char;
-  define_macro "__x86_64__"               ->@char "1"            ->@char;
-  define_macro "linux"                    ->@char "1"            ->@char;
-  define_macro "unix"                     ->@char "1"            ->@char;
-  add_builtin "__FILE__"                  ->@char &file_macro     ;
-  add_builtin "__LINE__"                  ->@char &line_macro     ;
-  add_builtin "__COUNTER__"               ->@char &counter_macro  ;
-  add_builtin "__TIMESTAMP__"             ->@char &timestamp_macro;
+  define_macro "_LP64"                     "1"            ;
+  define_macro "__C99_MACRO_WITH_VA_ARGS"  "1"            ;
+  define_macro "__ELF__"                   "1"            ;
+  define_macro "__LP64__"                  "1"            ;
+  define_macro "__SIZEOF_DOUBLE__"         "8"            ;
+  define_macro "__SIZEOF_FLOAT__"          "4"            ;
+  define_macro "__SIZEOF_INT__"            "4"            ;
+  define_macro "__SIZEOF_LONG_DOUBLE__"    "8"            ;
+  define_macro "__SIZEOF_LONG_LONG__"      "8"            ;
+  define_macro "__SIZEOF_LONG__"           "8"            ;
+  define_macro "__SIZEOF_POINTER__"        "8"            ;
+  define_macro "__SIZEOF_PTRDIFF_T__"      "8"            ;
+  define_macro "__SIZEOF_SHORT__"          "2"            ;
+  define_macro "__SIZEOF_SIZE_T__"         "8"            ;
+  define_macro "__SIZE_TYPE__"             "unsigned long";
+  define_macro "__STDC_HOSTED__"           "1"            ;
+  define_macro "__STDC_NO_COMPLEX__"       "1"            ;
+  define_macro "__STDC_UTF_16__"           "1"            ;
+  define_macro "__STDC_UTF_32__"           "1"            ;
+  define_macro "__STDC_VERSION__"          "201112L"      ;
+  define_macro "__STDC__"                  "1"            ;
+  define_macro "__USER_LABEL_PREFIX__"     ""             ;
+  define_macro "__alignof__"               "_Alignof"     ;
+  define_macro "__amd64"                   "1"            ;
+  define_macro "__amd64__"                 "1"            ;
+  define_macro "__chibicc__"               "1"            ;
+  define_macro "__const__"                 "const"        ;
+  define_macro "__gnu_linux__"             "1"            ;
+  define_macro "__inline__"                "inline"       ;
+  define_macro "__linux"                   "1"            ;
+  define_macro "__linux__"                 "1"            ;
+  define_macro "__signed__"                "signed"       ;
+  define_macro "__typeof__"                "typeof"       ;
+  define_macro "__unix"                    "1"            ;
+  define_macro "__unix__"                  "1"            ;
+  define_macro "__volatile__"              "volatile"     ;
+  define_macro "__x86_64"                  "1"            ;
+  define_macro "__x86_64__"                "1"            ;
+  define_macro "linux"                     "1"            ;
+  define_macro "unix"                      "1"            ;
+  add_builtin "__FILE__"                   &file_macro     ;
+  add_builtin "__LINE__"                   &line_macro     ;
+  add_builtin "__COUNTER__"                &counter_macro  ;
+  add_builtin "__TIMESTAMP__"              &timestamp_macro;
   let now = time 0->@long;
   let tm = localtime &now;
-  define_macro "__DATE__"->@char format_date tm;
-  define_macro "__TIME__"->@char format_time tm;;
+  define_macro "__DATE__" format_date tm;
+  define_macro "__TIME__" format_time tm;;
 type StringKind enum
   STR_NONE
   STR_UTF8
@@ -599,15 +598,15 @@ type StringKind enum
   STR_UTF32
   STR_WIDE;;
 getStringKind(tok@Token) StringKind = return
-  !strcmp tok.loc->@ "u8"->@char ? STR_UTF8   ->StringKind :
-  tok.loc[0] == '"'              ? STR_NONE   ->StringKind :
-  tok.loc[0] == 'u'              ? STR_UTF16  ->StringKind :
-  tok.loc[0] == 'U'              ? STR_UTF32  ->StringKind :
-  tok.loc[0] == 'L'              ? STR_WIDE   ->StringKind :
+  !strcmp tok.loc->@ "u8" ? STR_UTF8    :
+  tok.loc[0] == '"'              ? STR_NONE    :
+  tok.loc[0] == 'u'              ? STR_UTF16   :
+  tok.loc[0] == 'U'              ? STR_UTF32   :
+  tok.loc[0] == 'L'              ? STR_WIDE    :
                                    unreachable->StringKind ;;
 export preprocess(tok@Token include_paths@StringArray)@Token =
   tok = preprocess2 tok include_paths;
-  if cond_incl error_tok cond_incl.tok "unterminated conditional directive"->@char;
+  if cond_incl error_tok cond_incl.tok "unterminated conditional directive";
   convert_pp_tokens tok;
   for (let t @Token= tok; t; t = t.next) t.line_no += t.line_delta;
   return tok;;

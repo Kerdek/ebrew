@@ -98,19 +98,19 @@ export hashmap_delete2(map@HashMap key@ char keylen int) =
 export hashmap_test(void) =
   let map = (calloc 1ul sizeof HashMap)->@HashMap;
 
-  for (let i int = 0   ; i < 5000; i++) { let wat = format "key %d"->@char i; hashmap_put map wat i->size_t->@;;
-  for (let i int = 1000; i < 2000; i++) { let wat = format "key %d"->@char i; hashmap_delete map wat;;
-  for (let i int = 1500; i < 1600; i++) { let wat = format "key %d"->@char i; hashmap_put map wat i->size_t->@;;
-  for (let i int = 6000; i < 7000; i++) { let wat = format "key %d"->@char i; hashmap_put map wat i->size_t->@;;
+  for (let i int = 0   ; i < 5000; i++) { let wat = format "key %d" i; hashmap_put map wat i->size_t->@;;
+  for (let i int = 1000; i < 2000; i++) { let wat = format "key %d" i; hashmap_delete map wat;;
+  for (let i int = 1500; i < 1600; i++) { let wat = format "key %d" i; hashmap_put map wat i->size_t->@;;
+  for (let i int = 6000; i < 7000; i++) { let wat = format "key %d" i; hashmap_put map wat i->size_t->@;;
 
-  for (let i int = 0   ; i < 1000; i++) assert(  (hashmap_get map format "key %d"->@char i->size_t) == i);
-  for (let i int = 1000; i < 1500; i++) assert(! hashmap_get map "no such key"->@char);
-  for (let i int = 1500; i < 1600; i++) assert(  (hashmap_get map format "key %d"->@char i->size_t) == i);
-  for (let i int = 1600; i < 2000; i++) assert(! hashmap_get map "no such key"->@char);
-  for (let i int = 2000; i < 5000; i++) assert(  (hashmap_get map format "key %d"->@char i->size_t) == i);
-  for (let i int = 5000; i < 6000; i++) assert(! hashmap_get map "no such key"->@char);
+  for (let i int = 0   ; i < 1000; i++) assert(  (hashmap_get map format "key %d" i->size_t) == i);
+  for (let i int = 1000; i < 1500; i++) assert(! hashmap_get map "no such key");
+  for (let i int = 1500; i < 1600; i++) assert(  (hashmap_get map format "key %d" i->size_t) == i);
+  for (let i int = 1600; i < 2000; i++) assert(! hashmap_get map "no such key");
+  for (let i int = 2000; i < 5000; i++) assert(  (hashmap_get map format "key %d" i->size_t) == i);
+  for (let i int = 5000; i < 6000; i++) assert(! hashmap_get map "no such key");
   for (let i int = 6000; i < 7000; i++) {
-    let wat = format "key %d"->@char i;
+    let wat = format "key %d" i;
     hashmap_put map wat i->size_t->@;;
-  assert(! hashmap_get map "no such key"->@char);
-  printf "OK\n"->@char;;
+  assert(! hashmap_get map "no such key");
+  printf "OK\n";;
