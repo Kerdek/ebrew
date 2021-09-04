@@ -8,3 +8,4 @@ current goals:
 - remove preprocessor
 - nonstruct compound literals
 - arrays to/from functions by value
+- modules
