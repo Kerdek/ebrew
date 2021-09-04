@@ -7,3 +7,4 @@ current goals:
 - remove implicit casts
 - remove preprocessor
 - nonstruct compound literals
+- arrays to/from functions by value
