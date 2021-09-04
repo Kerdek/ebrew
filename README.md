@@ -6,3 +6,4 @@ current goals:
 - remove statements
 - remove implicit casts
 - remove preprocessor
+- nonstruct compound literals
