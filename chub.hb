@@ -72,6 +72,7 @@ type
     ND_ASM
     ND_CAS
     ND_EXCH
+    ND_UNTIL
   ;
 
   TypeKind enum 
@@ -254,7 +255,7 @@ type
     used      int;
   }
 ;
-
+export advance(k @@Token) @Token;
 export strarray_push(arr@ StringArray s@ char);
 export format(fmt@ char ...)@ char __attribute__((format(printf 1 2)));
 export error(fmt@ char ...) __attribute__((format(printf, 1, 2)));
@@ -271,13 +272,13 @@ export new_file(name@ char file_no int contents@ char)@ File;
 export tokenize_string_literal(tok@ Token basety@ Type)@ Token;
 export tokenize(file@ File)@ Token;
 export tokenize_file(filename@ char)@ Token;
-inline unreachable(void) = error "internal error at %s:%d" __FILE__ __LINE__;;
+inline unreachable(void) = return (error "internal error at %s:%d" __FILE__ __LINE__);;
 export search_include_paths(filename@ char include_paths @StringArray)@ char;
 export init_macros(void);
 export define_macro(name@ char buf@ char);
 export undef_macro(name@ char);
 export preprocess(tok@ Token include_paths @StringArray)@ Token;
-export new_cast(expr@ Node ty@ Type)@ Node;
+export new_cast(j @Token expr@ Node ty@ Type)@ Node;
 export const_expr(k @@Token) int64_t;
 export parse(tok@ Token)@ Obj;
 
@@ -301,7 +302,7 @@ export is_integer(ty@ Type)bool;
 export is_flonum(ty@ Type)bool;
 export is_numeric(ty@ Type)bool;
 export format_type(t @Type s@char);
-export is_type_equal(t @Type u @Type)bool;
+export type_equal(t @Type u @Type)bool;
 export copy_type(ty@ Type)@ Type;
 export pointer_to(base@ Type)@ Type;
 export func_type(return_ty@ Type)@ Type;

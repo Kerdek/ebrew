@@ -407,7 +407,7 @@
    safely.  It has been removed from ISO C11 and ISO C++14.  Note: for
    compatibility with various implementations of <cstdio>, this test
    must consider only the value of __cplusplus when compiling C++.  */
-#if (defined __cplusplus ? __cplusplus >= 201402L : defined __USE_ISOC11)
+#if (defined __cplusplus ? (__cplusplus >= 201402L)*1 : defined __USE_ISOC11)
 # define __GLIBC_USE_DEPRECATED_GETS 0
 #else
 # define __GLIBC_USE_DEPRECATED_GETS 1

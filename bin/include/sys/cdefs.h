@@ -413,7 +413,7 @@
 #endif
 
 #if (!defined _Noreturn \
-     && (defined __STDC_VERSION__ ? __STDC_VERSION__ : 0) < 201112 \
+     && (defined __STDC_VERSION__ ? __STDC_VERSION__ : 0l) < 201112 \
      &&  !__GNUC_PREREQ (4,7))
 # if __GNUC_PREREQ (2,8)
 #  define _Noreturn __attribute__ ((__noreturn__))
@@ -442,7 +442,7 @@
 #endif
 
 #if (!defined _Static_assert && !defined __cplusplus \
-     && (defined __STDC_VERSION__ ? __STDC_VERSION__ : 0) < 201112 \
+     && (defined __STDC_VERSION__ ? __STDC_VERSION__ : 0l) < 201112 \
      && (!__GNUC_PREREQ (4, 6) || defined __STRICT_ANSI__))
 # define _Static_assert(expr, diagnostic) \
     extern int (*__Static_assert_function (void)) \

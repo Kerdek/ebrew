@@ -43,9 +43,11 @@ export warn_tok(tok@ Token fmt@ char ...) =
   verror_at tok.file.name tok.file.contents tok.line_no tok.loc fmt ap;
   va_end(ap@);
 export equal(tok@ Token op@ char) bool = return ! memcmp tok.loc->@ op->@ tok.len->unsigned long && !op[tok.len];;
-export expect(tok@@ Token op@ char)  =
+export advance(k @@Token) @Token = return k@ :: j (k@ = k.next)->, j;;
+export expect(tok@@ Token op@ char) =
   if ! equal tok@ op error_tok tok@ "expected '%s'" op;
-  tok@ = tok.next;;
+  tok@ = tok.next;
+  return none;;
 export skip(tok@ Token op@ char)@ Token =
   if ! equal tok op error_tok tok "expected '%s'" op;
   return tok.next;;
@@ -86,7 +88,7 @@ rpkw[]@ char = {
   "+="  "-="  "*="  "/="
   "++"  "--"  "%="  "&="
   "|="  "^="  "&&"  "||"
-  "<<"  ">>"  "##"  "::";;
+  "<<"  ">>"  "##"  "::"         "as";;
 read_punct(p@ char) int =
   for (let i  int= 0; i < (sizeof typeof rpkw) / (sizeof typeof rpkw@); i++) if startswith p rpkw[i] return (strlen rpkw[i])->int;
   return ispunct(p@) ? 1 : 0;;
@@ -99,7 +101,7 @@ ikkw[]@ char = {
   "goto"       "break"        "continue"      "switch"       "case"
   "default"    "extern"       "alignof"       "align"        "do"
   "signed"     "unsigned"     "const"         "volatile"     "auto"
-  "register"   "restrict"     "_Noreturn"
+  "register"   "restrict"     "_Noreturn"     "until"
   "float"      "double"       "typeof"        "asm"          "_Thread_local"
   "__thread"   "_Atomic"      "__attribute__" "bool"         "true"
   "false"      "none";;
@@ -315,8 +317,8 @@ export tokenize(file@ File)@ Token =
     else if (isdigit(p@) || (p@ == '.' && isdigit(p[1]))) {
       let q = p++;
       while (
-        p[0] && p[1] && strchr "eEpP" p[0]->int && strchr "+-" p[1]->int ? (p += 2) && true :
-        (isalnum(p@) || p@ == '.')                                                       ? p++     && true :
+        p[0] && p[1] && strchr "eEpP" p[0]->int && strchr "+-" p[1]->int ? (p += 2), true :
+        (isalnum(p@) || p@ == '.')                                                       ? p++->, true :
                                                                                                      false);
       cur = cur.next = new_token TK_PP_NUM q p;;
     else if (p@ == '"') {

@@ -79,7 +79,7 @@ gen_addr(e@Node fpic bool) = return
   e.kind == ND_COMMA   ? gen_expr e.lhs fpic, gen_addr e.rhs fpic :
   e.kind == ND_MEMBER  ? gen_addr e.lhs fpic, println "  add $%d, %%rax" e.member.offset :
   e.kind == ND_FUNCALL ? gen_expr e fpic :
-  e.kind != ND_ASSIGN  && e.kind != ND_COND || e.ty.kind != TY_STRUCT && e.ty.kind != TY_UNION
+  e.kind != ND_COND || e.ty.kind != TY_STRUCT && e.ty.kind != TY_UNION
     ? error_tok e.tok "not an lvalue" : gen_expr e fpic ;;
 load(t @Type) =
   t.kind == TY_ARRAY  ||
@@ -503,9 +503,15 @@ gen_expr(e@Node fpic bool) =
       println "  mov $%ld, %%r9" ~(((1L << mem.bit_width) - 1) << mem.bit_offset),
       println "  and %%r9, %%rax",
       println "  or %%rdi, %%rax",
-      store e.ty,
+      store e.lhs.ty,
       println "  mov %%r8, %%rax" :
-    store e.ty;
+    store e.lhs.ty;
+  case ND_UNTIL: return
+    count :: c
+    println ".L.until.%d:" c,
+    gen_expr e.lhs fpic,
+    cmp_zero e.lhs.ty,
+    println "  je .L.until.%d" c;
   case ND_COMMA: return
     gen_expr e.lhs fpic,
     gen_expr e.rhs fpic;

@@ -70,7 +70,7 @@ find_gcc_libpath(void)@ char =
     "/usr/lib/gcc/x86_64-linux-gnu/*/crtbegin.o"
     "/usr/lib/gcc/x86_64-pc-linux-gnu/*/crtbegin.o" // For Gentoo
     "/usr/lib/gcc/x86_64-redhat-linux/*/crtbegin.o";; // For Fedora;;
-  for (let i int = 0; i < (sizeof typeof paths) / (sizeof typeof paths@); i++) {
+  for (let i int = 0; i < (sizeof typeof paths) / (sizeof typeof paths@); i+=1) {
     let path = find_file paths[i];
     if path return dirname path;;
   error "gcc library path is not found";;
@@ -102,8 +102,8 @@ run_linker(inputs @StringArray flags @StringArray output@ char opt_shared bool o
   if !opt_static {
     strarray_push a "-dynamic-linker";
     strarray_push a "/lib64/ld-linux-x86-64.so.2";;
-  for (let i int= 0; i < flags .len; i++) strarray_push a flags .data[i];
-  for (let i int= 0; i < inputs.len; i++) strarray_push a inputs.data[i];
+  for (let i int= 0; i < flags .len; i+=1) strarray_push a flags .data[i];
+  for (let i int= 0; i < inputs.len; i+=1) strarray_push a inputs.data[i];
   if opt_static {
     strarray_push a "--start-group";
     strarray_push a "-lgcc";
@@ -142,24 +142,24 @@ export main(argc int argv@@char) int =
     include_paths = &(let StringArray){;
     default_include_path = format "%s/include" dirname strdup argv[0];
   strarray_push include_paths default_include_path;
-  for (let i int = 1; i < argc; i++) {
+  for (let i int = 1; i < argc; (i+=1),i) {
     if ! strcmp  argv[i]->@ "-c"                                               opt_c = true                                                    ;  else
     if ! strcmp  argv[i]->@ "-fpic"                                         opt_fpic = true                                                    ;  else
     if ! strcmp  argv[i]->@ "-fPIC"                                         opt_fpic = true                                                    ;  else
     if ! strcmp  argv[i]->@ "-static"                                   { opt_static = true;       strarray_push ldflags       "-static";; else
     if ! strcmp  argv[i]->@ "-shared"                                   { opt_shared = true;       strarray_push ldflags       "-shared";; else
-    if ! strcmp  argv[i]->@ "-o"                                               opt_o = argv[++i]                                               ;  else
+    if ! strcmp  argv[i]->@ "-o"                                               opt_o = argv[(i+=1),i]                                               ;  else
     if ! strncmp argv[i]->@ "-o"      2ul                                      opt_o = (argv[i] + 2)                                             ;  else
-    if ! strcmp  argv[i]->@ "-I"                                                                   strarray_push include_paths argv[++i]       ;  else
+    if ! strcmp  argv[i]->@ "-I"                                                                   strarray_push include_paths argv[(i+=1),i]       ;  else
     if ! strncmp argv[i]->@ "-I"      2ul                               {      let b = (argv[i] + 2);     strarray_push include_paths b          ;; else
     if (! strcmp  argv[i]->@ "-Wl,"    || !strcmp argv[i]->@ "-L") {                          strarray_push ldflags       argv[  i]       ;
-                                                                                                          strarray_push ldflags       argv[++i]       ;; else
+                                                                                                          strarray_push ldflags       argv[(i+=1),i]       ;; else
     if (! strncmp argv[i]->@ "-Wl," 4ul || ! strncmp argv[i]->@ "-L" 2ul)                     strarray_push ldflags       argv[  i]       ;  else
     if (argv[i][0] == '-') error "unknown argument: %s" argv[i]                                                                                  ;  else
     strarray_push ccset argv[i];;
   if (ccset.len == 0) error "no input files";
   if (ccset.len > 1 && opt_o && opt_c) error "cannot specify -o and -c with multiple inputs";
-  for (let i int = 0; i < ccset.len; i++) {
+  for (let i int = 0; i < ccset.len; i+=1) {
     let input = ccset.data[i];
     let t = get_file_type input;
     if (t == FILE_OBJ || t == FILE_AR || t == FILE_DSO) strarray_push ldset input; else {
