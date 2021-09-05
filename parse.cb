@@ -196,7 +196,7 @@ new_conditional(j @Token a @Node b @Node c @Node) @Node = return
   add_type a, add_type b, add_type c,
   ( ! type_equal b.ty c.ty &&
     ( format_types b.ty c.ty,
-      warn_tok j "asymmetric conditional between %s and %s" &s1@ &s2@) )->,
+      error_tok j "asymmetric conditional between %s and %s" s1 s2) )->,
   new_node ND_COND j :: e
   (e.cond = a), (e.then = b), (e.els = c), (e.ty = b.ty), e;;
 new_assign(j @Token a @Node b @Node) @Node = return
@@ -211,6 +211,24 @@ new_lognot(j @Token a @Node) @Node = return
   add_type a,
   new_unary ND_NOT a j :: e
   (e.ty = a.ty), e;;
+new_logor(j @Token a @Node b @Node) @Node = return
+  add_type a, add_type b,
+  // ! type_equal a.ty b.ty ?
+  //   format_types a.ty b.ty,
+  //   error_tok j "asymmetric logical or between %s and %s" s1 s2,
+  //   0 as @Node :
+  new_binary ND_LOGOR a b j :: e
+  //(e.ty = a.ty),
+  e;;
+new_logand(j @Token a @Node b @Node) @Node = return
+  add_type a, add_type b,
+  // ! type_equal a.ty ty_bool ?
+  //   format_types a.ty ty_bool,
+  //   error_tok j "logical and insufficiently constrained by %s, must be %s" s1 s2,
+  //   0 as @Node :
+  new_binary ND_LOGAND a b j :: e
+  //(e.ty = b.ty),
+  e;;
 new_bitnot(j @Token a @Node) @Node = return
   add_type a,
   new_unary ND_BITNOT a j :: e
@@ -432,7 +450,7 @@ array_designator(k @@Token t @Type begin @int end @int) = return
 struct_designator(k @@Token t@ Type) @Member =
   let start = k@;
   expect k ".";
-  if (k.kind != TK_IDENT )error_tok k@ "expected a field designator";
+  if (k.kind != TK_IDENT) error_tok k@ "expected a field designator";
   for (let g@ Member = t.members; g; g = g.next) {
     if (g.ty->@Type.kind == TY_STRUCT && (!g.name || equal g.name "_") && get_struct_member g.ty->@Type k@) {
         k@ = start;
@@ -539,13 +557,13 @@ initializer2(k @@Token e @Initializer) =
       let a = prefix k;
       add_type a;
       if (a.ty.kind == TY_STRUCT) e.expr = a;
-      else struct_initializer2 k e e.ty.members;;
-  ; else if (e.ty.kind == TY_UNION) union_initializer k e;
+      else struct_initializer2 k e e.ty.members;;;
+  else if (e.ty.kind == TY_UNION) union_initializer k e;
   else if equal k@ "{" {
     k@ = k.next;
-    initializer2 k e; // looks ahead to
-    expect k ";";     // this semicolon
-  ; else e.expr = prefix k;;
+    initializer2 k e;
+    expect k ";";;
+  else e.expr = prefix k;;
 copy_struct_type(t @Type) @Type =
   t = copy_type t;
   let
@@ -613,17 +631,17 @@ lvar_initializer(k @@Token o @Obj) @Node = return
   new_node ND_MEMZERO k@ :: a
   (a.var = o),
   new_binary ND_COMMA a create_lvar_init e o.ty &z k@ k@;;
-read_buf(buf@ char sz int) uint64_t = return
-  ( sz == 1 ? buf@             :
-    sz == 2 ? buf->@ uint16_t@ :
-    sz == 4 ? buf->@ uint32_t@ :
-    sz == 8 ? buf->@ uint64_t@ :
-    0 ) as unsigned long;;
+read_buf(buf@ char sz int) unsigned long = return
+  sz == 1 ? buf@            ->unsigned long :
+  sz == 2 ? buf->@ uint16_t@->unsigned long :
+  sz == 4 ? buf->@ uint32_t@->unsigned long :
+  sz == 8 ? buf->@ uint64_t@                :
+  0ul;;
 write_buf(buf@ char val uint64_t sz int) = return
-  ( sz == 1 ? buf->@ uint8_t @ = val->uint8_t  :
-    sz == 2 ? buf->@ uint16_t@ = val->uint16_t :
-    sz == 4 ? buf->@ uint32_t@ = val->uint32_t :
-    sz == 8 ? buf->@ uint64_t@ = val : 0),
+  sz == 1 ? buf->@ uint8_t @ = val->uint8_t  :
+  sz == 2 ? buf->@ uint16_t@ = val->uint16_t :
+  sz == 4 ? buf->@ uint32_t@ = val->uint32_t :
+  sz == 8 ? buf->@ uint64_t@ = val           :
   none;;
 write_gvar_data(cur@ Relocation init@ Initializer ty@ Type buf@ char offset int)@ Relocation =
   if (ty.kind == TY_ARRAY) {
@@ -866,26 +884,26 @@ eval2(e@ Node label @@@char) int64_t = return
   e.kind == ND_EQ     ? (eval e.lhs == eval e.rhs)->long :
   e.kind == ND_NE     ? (eval e.lhs != eval e.rhs)->long :
   e.kind == ND_DIV    ? e.ty.is_unsigned
-    ? ((eval e.lhs)->uint64_t /  (eval e.rhs)->uint64_t)->long
-    :  (eval e.lhs)           /  (eval e.rhs) :
+    ? (eval e.lhs)->uint64_t /  (eval e.rhs)->uint64_t as long
+    :  eval e.lhs            /   eval e.rhs :
   e.kind == ND_MOD    ? e.ty.is_unsigned
-    ? ((eval e.lhs)->uint64_t %  (eval e.rhs)->uint64_t)->long
-    :  (eval e.lhs)           %  (eval e.rhs) :
+    ? (eval e.lhs)->uint64_t %  (eval e.rhs)->uint64_t as long
+    :  eval e.lhs            %   eval e.rhs :
   e.kind == ND_SHR    ? e.ty.is_unsigned && e.ty.size == 8
-    ? ((eval e.lhs)->uint64_t >> (eval e.rhs)->uint64_t)->long
-    :  (eval e.lhs)           >> (eval e.rhs) :
+    ? (eval e.lhs)->uint64_t >> (eval e.rhs)->uint64_t as long
+    :  eval e.lhs            >>  eval e.rhs :
   e.kind == ND_LT     ? e.lhs.ty.is_unsigned
-    ? ((eval e.lhs)->uint64_t <  (eval e.rhs)->uint64_t)->long
-    :  (eval e.lhs)           <  (eval e.rhs) :
+    ? (eval e.lhs)->uint64_t <  (eval e.rhs)->uint64_t as long
+    :  eval e.lhs            <   eval e.rhs            as long :
   e.kind == ND_LE     ? e.lhs.ty.is_unsigned
-    ? ((eval e.lhs)->uint64_t <= (eval e.rhs)->uint64_t)->long
-    :  (eval e.lhs)           <= (eval e.rhs) :
+    ? (eval e.lhs)->uint64_t <= (eval e.rhs)->uint64_t as long
+    :  eval e.lhs            <=  eval e.rhs            as long :
   e.kind == ND_GT     ? e.lhs.ty.is_unsigned
-    ? ((eval e.lhs)->uint64_t >  (eval e.rhs)->uint64_t)->long
-    :  (eval e.lhs)           >  (eval e.rhs) :
+    ? (eval e.lhs)->uint64_t >  (eval e.rhs)->uint64_t as long
+    :  eval e.lhs            >   eval e.rhs            as long :
   e.kind == ND_GE     ? e.lhs.ty.is_unsigned
-    ? ((eval e.lhs)->uint64_t >= (eval e.rhs)->uint64_t)->long
-    :  (eval e.lhs)           >= (eval e.rhs) :
+    ? (eval e.lhs)->uint64_t >= (eval e.rhs)->uint64_t as long
+    :  eval e.lhs            >=  eval e.rhs            as long :
   e.kind == ND_COND   ? eval e.cond ? eval2 e.then label : eval2 e.els label :
   e.kind == ND_COMMA  ? eval2 e.rhs label :
   e.kind == ND_NOT    ? (! eval e.lhs)->long :
@@ -895,9 +913,9 @@ eval2(e@ Node label @@@char) int64_t = return
   e.kind == ND_CAST   ?
     eval2 e.lhs label :: l
     ! is_integer e.ty ? l :
-    e.ty.size == 1 ? (e.ty.is_unsigned ? l->uint8_t  : l->int8_t )->long :
-    e.ty.size == 2 ? (e.ty.is_unsigned ? l->uint16_t : l->int16_t)->long :
-    e.ty.size == 4 ? (e.ty.is_unsigned ? l->uint32_t : l->int32_t)->long :
+    e.ty.size == 1 ? (e.ty.is_unsigned ? l->uint8_t ->long : l->int8_t ->long) :
+    e.ty.size == 2 ? (e.ty.is_unsigned ? l->uint16_t->long : l->int16_t->long) :
+    e.ty.size == 4 ? (e.ty.is_unsigned ? l->uint32_t->long : l->int32_t->long) :
     l :
   e.kind == ND_ADDR ? eval_rval e.lhs label :
   e.kind == ND_LABEL_VAL ? (label@ = &e.unique_label), 0l :
@@ -962,8 +980,8 @@ eval_double(e@ Node) double = return
     e.kind == ND_COMMA ? eval_double e.rhs                      :
     e.kind == ND_NUM   ? e.fval->double                         :
     e.kind == ND_CAST  ? is_flonum e.lhs.ty                     ? eval_double e.lhs  :
-                                                                  eval        e.lhs  :
-                         /*error_tok e.tok "not a compile-time constant",*/ 0.0   ;;;;
+                                                                  eval e.lhs as double  :
+                         /*error_tok e.tok "not a compile-time constant",*/ 0.0 as double   ;;;;
 
 assign(k @@Token) @Node = return
   conditional k :: a
@@ -991,10 +1009,10 @@ ab(tok@@ Token n int next@(tok@@ Token)@ Node a@ StrNodeKind lhs@@ Node) bool =
       lhs@ = e;
       return true;;;
   return false;;
-left_binary(tok@@ Token n int next@(tok@@ Token)@ Node t@ StrNodeKind)@ Node =
-  let e = next@ tok;
-  while ab tok n next t &e;
-  return e;;
+left_binary(tok@@ Token n int next@(tok@@ Token)@ Node t@ StrNodeKind)@ Node = return
+  next@ tok :: e
+  until !(ab tok n next t &e) as,
+  e;;
 mul       (l@@ Token)@ Node = let d []StrNodeKind = { {  "*" ND_MUL    ; { "/"  ND_DIV ; { "%"  ND_MOD ;                                 ;; return left_binary l 3 &prefix     d->@StrNodeKind;;
 shift     (l@@ Token)@ Node = let d []StrNodeKind = { { "<<" ND_SHL    ; { ">>" ND_SHR ;                                                                  ;; return left_binary l 2 &add        d->@StrNodeKind;;
 relational(l@@ Token)@ Node = let d []StrNodeKind = { {  "<" ND_LT     ; { ">"  ND_GT  ; { "<=" ND_LE  ; { ">=" ND_GE ; ;; return left_binary l 4 &shift      d->@StrNodeKind;;
@@ -1002,8 +1020,14 @@ equality  (l@@ Token)@ Node = let d []StrNodeKind = { { "==" ND_EQ     ; { "!=" 
 bitand    (l@@ Token)@ Node = let d []StrNodeKind = { {  "&" ND_BITAND ;                                                                                                   ;; return left_binary l 1 &equality   d->@StrNodeKind;;
 bitxor    (l@@ Token)@ Node = let d []StrNodeKind = { {  "^" ND_BITXOR ;                                                                                                   ;; return left_binary l 1 &bitand     d->@StrNodeKind;;
 bitor     (l@@ Token)@ Node = let d []StrNodeKind = { {  "|" ND_BITOR  ;                                                                                                   ;; return left_binary l 1 &bitxor     d->@StrNodeKind;;
-logand    (l@@ Token)@ Node = let d []StrNodeKind = { { "&&" ND_LOGAND ;                                                                                                   ;; return left_binary l 1 &bitor      d->@StrNodeKind;;
-logor     (l@@ Token)@ Node = let d []StrNodeKind = { { "||" ND_LOGOR  ;                                                                                                   ;; return left_binary l 1 &logand     d->@StrNodeKind;;
+logand     (k @@Token)@ Node = return
+  bitor k :: a
+  until !(equal k@ "&&" && (advance k :: j (a = new_logand j a bitor k))) as,
+  a;;
+logor     (k @@Token)@ Node = return
+  logand k :: a
+  until !(equal k@ "||" && (advance k :: j (a = new_logor j a logand k))) as,
+  a;;
 conditional(k @@Token)@ Node = return
   logor k :: a
   add_type a,

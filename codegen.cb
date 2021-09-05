@@ -49,13 +49,13 @@ reg_dx(sz int)@char = return
   sz == 2 ? "%dx"  :
   sz == 4 ? "%edx" :
   sz == 8 ? "%rdx" :
-            0 ;;
+            0 as @char ;;
 reg_ax(sz int)@char =return
   sz == 1 ? "%al"  :
   sz == 2 ? "%ax"  :
   sz == 4 ? "%eax" :
   sz == 8 ? "%rax" :
-            0 ;;
+            0 as @char ;;
 gen_addr(e@Node fpic bool) = return
   e.kind == ND_VAR ?
     e.var.is_local ?
@@ -199,15 +199,16 @@ cast_table[][11]@char = {
   { f64i8 f64i16 f64i32 f64i64 f64u8 f64u16 f64u32 f64u64 f64f32 0      f64f80 ; // f64
   { f80i8 f80i16 f80i32 f80i64 f80u8 f80u16 f80u32 f80u64 f80f32 f80f64 0      ;  // f80
 ;;
-cast(from@Type to@Type) =
-  to.kind == TY_VOID ||
-  ( to.kind == TY_BOOL ?
-      cmp_zero from,
-      println "  setne %%al"        ,
-      println "  movzx %%al, %%eax" :
-    getTypeId from :: t1
-    getTypeId to :: t2
-    cast_table[t1][t2] && println "  %s" cast_table[t1][t2]);;
+cast(from@Type to@Type) = return
+  to.kind == TY_VOID ? none :
+  to.kind == TY_BOOL ?
+    cmp_zero from,
+    println "  setne %%al"        ,
+    println "  movzx %%al, %%eax" :
+  getTypeId from :: t1
+  getTypeId to :: t2
+  cast_table[t1][t2] && (println "  %s" cast_table[t1][t2]) as,
+  none;;
 has_flonum(ty@Type lo int hi int offset int)bool =
   if (ty.kind == TY_STRUCT || ty.kind == TY_UNION) {
     for (let mem@Member = ty.members; mem; mem = mem.next) if !has_flonum mem.ty->@Type lo hi (offset + mem.offset) return false;
@@ -482,7 +483,7 @@ gen_expr(e@Node fpic bool) =
       println "  shl $%d, %%rax" (64 - mem.bit_width - mem.bit_offset),
       mem.ty->@Type.is_unsigned ? println "  shr $%d, %%rax" (64 - mem.bit_width) :
       println "  sar $%d, %%rax" (64 - mem.bit_width) :
-    0;
+    none;
   case ND_DEREF: return
     gen_expr e.lhs fpic,
     load e.ty;
@@ -1017,7 +1018,7 @@ assign_lvar_offsets(prog@Obj) =
       // 16-byte boundaries. See p.14 of
       // https://github.com/hjl-tools/x86-psABI/wiki/x86-64-psABI-draft.pdf.
       let alignment = (var.ty.kind == TY_ARRAY && var.ty.size >= 16
-        ? maxl 16->long var.alignment->long : var.alignment);
+        ? maxl 16l var.alignment->long : var.alignment as long);
 
       bottom += var.ty.size;
       bottom = align_to bottom alignment->int;
@@ -1035,7 +1036,7 @@ emit_data(prog@Obj fpic bool) =
     else println "  .globl %s" var.name;
 
     let alignment = (var.ty.kind == TY_ARRAY && var.ty.size >= 16
-      ? maxl 16->long var.alignment->long : var.alignment);
+      ? maxl 16l var.alignment->long : var.alignment as long);
 
     // .data or .tdata
     if var.init_data{
