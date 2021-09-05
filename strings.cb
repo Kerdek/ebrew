@@ -2,11 +2,11 @@
 
 export strarray_push(arr@ StringArray s@ char)  =
   if !arr.data {
-    arr.data = calloc 8ul sizeof @char as @@char;
+    arr.data = (calloc 8ul sizeof @char as @@char);
     arr.capacity = 8;;
 
   if (arr.capacity == arr.len) {
-    arr.data = realloc (arr.data->@) (sizeof @char * arr.capacity * 2) as @@char;
+    arr.data = realloc (arr.data->@) (sizeof@ char * arr.capacity * 2) as @@char;
     arr.capacity *= 2;
     for (let i int = arr.len; i < arr.capacity; i++)
       arr.data[i] = 0 as @char;;
@@ -22,6 +22,7 @@ export format(fmt@ char ...)@ char =
   let ap = (let va_list){;;
   va_start(ap, fmt);
   (vfprintf out fmt &ap);
+  va_end(ap)
   fclose out;
   return buf;
 ;

@@ -38,26 +38,6 @@ include_next_idx int
 preprocess2(tok@Token include_paths@StringArray)@Token
 find_macro(tok@Token)@Macro;
 
-push_hide(k @@Hideset j @Hideset) = return
-  (k.next = j)->,
-  (k@ = j)->,
-  none;;
-
-push_token(k @@Token j @Token) = return
-  (k.next = j)->,
-  (k@ = j)->,
-  none;;
-
-push_macro_arg(k @@MacroArg j @MacroArg) = return
-  (k.next = j)->,
-  (k@ = j)->,
-  none;;
-
-push_macro_param(k @@MacroParam j @MacroParam) = return
-  (k.next = j)->,
-  (k@ = j)->,
-  none;;
-
 is_hash(tok@Token)bool = return tok.at_bol && equal tok "#";;
 skip_line(tok@Token)@Token =
   if tok.at_bol return tok;
@@ -67,12 +47,12 @@ skip_line(tok@Token)@Token =
 copy_token(tok@Token)@Token =
   let t = (calloc 1ul sizeof Token as @Token);
   t@ = tok@;
-  t.next = 0 as@Token;
+  t.next = 0 as @Token;
   return t;;
 new_eof(tok@Token)@Token =
   let t = copy_token tok;
   t.kind = TK_EOF;
-  t.len = 0ul;
+  t.len = 0;
   return t;;
 new_hideset(name@char)@Hideset =
   let hs = (calloc 1ul sizeof Hideset)->@Hideset;
@@ -82,18 +62,18 @@ hideset_union(hs1@Hideset hs2@Hideset)@Hideset =
   let
     head = (let Hideset){;
     cur = &head;
-  for (; hs1; hs1 = hs1.next) push_hide &cur new_hideset hs1.name;
+  for (; hs1; hs1 = hs1.next) { cur.next = new_hideset hs1.name; cur = cur.next;;
   cur.next = hs2;
   return head.next;;
-hideset_contains(hs@Hideset s@char len unsigned long)bool =
-  for (; hs; hs = hs.next) if (strlen hs.name == len && ! strncmp hs.name->@ s len) return true;
+hideset_contains(hs@Hideset s@char len int)bool =
+  for (; hs; hs = hs.next) if (strlen hs.name == len && ! strncmp hs.name->@ s len->unsigned long) return true;
   return false;;
 hideset_intersection(hs1@Hideset hs2@Hideset)@Hideset =
   let
     head = (let Hideset){;
     cur = &head;
   for (; hs1; hs1 = hs1.next) {
-    if hideset_contains hs2 hs1.name strlen hs1.name push_hide &cur new_hideset hs1.name;;
+    if hideset_contains hs2 hs1.name (strlen hs1.name)->int { cur.next = new_hideset hs1.name; cur = cur.next;;;
   return head.next;;
 add_hideset(tok@Token hs@Hideset)@Token =
   let
@@ -101,15 +81,16 @@ add_hideset(tok@Token hs@Hideset)@Token =
     cur = &head;
   for (; tok; tok = tok.next) {
     let t = copy_token tok;
-    t.hideset = hideset_union t.hideset->@Hideset hs as @;
-    push_token &cur t;;
+    t.hideset = hideset_union t.hideset hs;
+    cur.next = t;
+    cur = cur.next;;
   return head.next;;
 append(tok1@Token tok2@Token)@Token =
   if (tok1.kind == TK_EOF) return tok2;
   let
     head = (let Token){;
     cur = &head;
-  for (; tok1.kind != TK_EOF; tok1 = tok1.next) push_token &cur copy_token tok1;
+  for (; tok1.kind != TK_EOF; tok1 = tok1.next) { cur.next = copy_token tok1; cur = cur.next;;
   cur.next = tok2;
   return head.next;;
 skip_cond_incl2(tok@Token)@Token =
@@ -129,14 +110,14 @@ skip_cond_incl(tok@Token)@Token =
 quote_string(str@char)@char =
   let bufsize = 3;
   for (let i int = 0; str[i]; i++) {
-    if (str[i] == '\\'->char || str[i] == '"'->char) bufsize++;
+    if (str[i] == '\\' || str[i] == '"') bufsize++;
     bufsize++;;
   let
     buf = (calloc 1ul bufsize->unsigned long as @char)
     p = buf;
   p++@ = '"' as char;
   for (let i int= 0; str[i]; i++) {
-    if (str[i] == '\\'->char || str[i] == '"'->char) p++@ = '\\' as char;
+    if (str[i] == '\\'->char || str[i] == '"'->char) p++@ = '\\'->char;
     p++@ = str[i];;
   p++@ = '"' as char;
   p++@ = '\0' as char;
@@ -148,7 +129,7 @@ copy_line(rest@@Token tok@Token)@Token =
   let
     head = (let Token){;
     cur = &head;
-  for (; !tok.at_bol; tok = tok.next) push_token &cur copy_token tok;
+  for (; !tok.at_bol; tok = tok.next) { cur.next = copy_token tok; cur = cur.next;;
   cur.next = new_eof tok;
   rest@ = tok;
   return head.next;;
@@ -168,13 +149,15 @@ read_const_expr(rest@@Token tok@Token)@Token =
       let m = find_macro tok;
       tok = tok.next;
       if has_paren tok = skip tok ")";
-      push_token &cur new_num_token (!!m)->int start;;
+      cur.next = new_num_token (!!m)->int start;
+      cur = cur.next;;
     else {
-      push_token &cur tok;
+      cur.next = tok;
+      cur = cur.next;
       tok = tok.next;;;
   cur.next = tok;
   return head.next;;
-eval_const_expr(rest@@Token tok@Token include_paths@StringArray) unsigned long =
+eval_const_expr(rest@@Token tok@Token include_paths@StringArray) long =
   let start = tok;
   let expr = read_const_expr rest tok.next;
   expr = preprocess2 expr include_paths;
@@ -219,19 +202,20 @@ read_macro_params(rest@@ Token tok@ Token va_args_name@@ char)@ MacroParam =
       return head.next;;
     if (tok.kind != TK_IDENT) error_tok tok "expected an identifier";
     if equal tok.next "..." {
-      va_args_name@ = strndup tok.loc tok.len;
+      va_args_name@ = strndup tok.loc tok.len->unsigned long;
       rest@ = skip tok.next.next ")";
       return head.next;;
     let m = (calloc 1ul sizeof MacroParam as @MacroParam);
-    m.name = strndup tok.loc tok.len;
-    push_macro_param &cur m;
+    m.name = strndup tok.loc tok.len->unsigned long;
+    cur.next = m;
+    cur = cur.next;
     tok = tok.next;;
   rest@ = tok.next;
   return head.next;;
 read_macro_definition(rest@@Token tok@Token)  =
   if (tok.kind != TK_IDENT)
     error_tok tok "macro name must be an identifier";
-  let name = strndup tok.loc tok.len;
+  let name = strndup tok.loc tok.len->unsigned long;
   tok = tok.next;
   if (!tok.has_space && equal tok "(") {
     let va_args_name = 0->@char;
@@ -249,7 +233,8 @@ read_macro_arg_one(rest@@Token tok@Token read_rest bool) @MacroArg =
     if (tok.kind == TK_EOF) error_tok tok "premature end of input";
     else if equal tok "(" level++;
     else if equal tok ")" level--;
-    push_token &cur copy_token tok;
+    cur.next = copy_token tok;
+    cur = cur.next;
     tok = tok.next;;
   cur.next = new_eof tok;
   let arg = (calloc 1ul sizeof MacroArg)->@MacroArg;
@@ -266,7 +251,8 @@ read_macro_args(rest@@Token tok@Token params @MacroParam va_args_name@char)@Macr
   for (; pp; pp = pp.next) {
     if (cur != &head)
       expect &tok ",";
-    push_macro_arg &cur read_macro_arg_one &tok tok false;
+    cur.next = read_macro_arg_one &tok tok false;
+    cur = cur.next;
     cur.name = pp.name;;
   if va_args_name {
     let arg = 0->@MacroArg;
@@ -278,24 +264,25 @@ read_macro_args(rest@@Token tok@Token params @MacroParam va_args_name@char)@Macr
       arg = read_macro_arg_one &tok tok true;;
     arg.name = va_args_name;
     arg.is_va_args = true;
-    push_macro_arg &cur arg;;
+    cur.next = arg;
+    cur = cur.next;;
   else if pp error_tok start "too many arguments";
   skip tok ")";
   rest@ = tok;
   return head.next;;
 find_arg(args @MacroArg tok@Token)@MacroArg =
-  for (let ap @MacroArg = args; ap; ap = ap.next) if (tok.len == strlen ap.name && ! strncmp tok.loc->@ ap.name tok.len) return ap;
-  return 0->@MacroArg;;
+  for (let ap @MacroArg = args; ap; ap = ap.next) if (tok.len == strlen ap.name && ! strncmp tok.loc->@ ap.name tok.len->unsigned long) return ap;
+  return 0 as @MacroArg;;
 join_tokens(tok@Token end@Token)@char =
-  let len = 1ul;
+  let len = 1;
   for (let t @Token= tok; t != end && t.kind != TK_EOF; t = t.next) {
     if (t != tok && t.has_space) len++;
     len += t.len;;
-  let buf = (calloc 1ul len as @char);
-  let pos = 0ul;
+  let buf = (calloc 1ul len->unsigned long as @char);
+  let pos = 0;
   for (let t @Token= tok; t != end && t.kind != TK_EOF; t = t.next) {
     if (t != tok && t.has_space) buf[pos++] = ' ' as char;
-    strncpy (buf + pos) t.loc t.len;
+    strncpy (buf + pos) t.loc t.len->unsigned long;
     pos += t.len;;
   buf[pos] = '\0' as char;
   return buf;;
@@ -318,7 +305,8 @@ subst(tok@Token args @MacroArg include_paths@StringArray)@ Token =
     if equal tok "#" {
       let arg = find_arg args tok.next;
       if !arg error_tok tok.next "'#' is not followed by a macro parameter";
-      push_token &cur stringize tok arg.tok;
+      cur.next = stringize tok arg.tok;
+      cur = cur.next;
       tok = tok.next.next;;
     else if equal tok "##" {
       if (cur == &head) error_tok tok "'##' cannot appear at start of macro expansion";
@@ -327,7 +315,7 @@ subst(tok@Token args @MacroArg include_paths@StringArray)@ Token =
       if arg {
         if (arg.tok.kind != TK_EOF) {
           cur@ = (paste cur arg.tok)@;
-          for (let t @Token= arg.tok.next; t.kind != TK_EOF; t = t.next) push_token &cur copy_token t;;
+          for (let t @Token= arg.tok.next; t.kind != TK_EOF; t = t.next) { cur.next = copy_token t; cur = cur.next;;;
         tok = tok.next.next;;
       else {
         cur@ = (paste cur tok.next)@;
@@ -338,29 +326,30 @@ subst(tok@Token args @MacroArg include_paths@StringArray)@ Token =
         let rhs = tok.next.next;
         if (arg.tok.kind == TK_EOF) {
           let arg2 = find_arg args rhs;
-          if arg2 for (let t @Token= arg2.tok; t.kind != TK_EOF; t = t.next) push_token &cur copy_token t;
-          else push_token &cur copy_token rhs;
+          if arg2 for (let t @Token= arg2.tok; t.kind != TK_EOF; t = t.next) { cur.next = copy_token t; cur = cur.next;;
+          else { cur.next = copy_token rhs; cur = cur.next;;
           tok = rhs.next;;
         else {
-          for (let t @Token= arg.tok; t.kind != TK_EOF; t = t.next) push_token &cur copy_token t;
+          for (let t @Token= arg.tok; t.kind != TK_EOF; t = t.next) { cur.next = copy_token t; cur = cur.next;;
           tok = tok.next;;;
       else if (equal tok "__VA_OPT__" && equal tok.next "(") {
         let arg = read_macro_arg_one &tok tok.next.next true;
-        if has_varargs args for (let t @Token = arg.tok; t.kind != TK_EOF; t = t.next) push_token &cur t;
+        if has_varargs args for (let t @Token = arg.tok; t.kind != TK_EOF; t = t.next) { cur.next = t; cur = cur.next;;
         tok = skip tok ")";;
       else if arg {
         let t = preprocess2 arg.tok include_paths;
         t.at_bol = tok.at_bol;
         t.has_space = tok.has_space;
-        for (; t.kind != TK_EOF; t = t.next) push_token &cur copy_token t;
+        for (; t.kind != TK_EOF; t = t.next) { cur.next = copy_token t; cur = cur.next;;
         tok = tok.next;;
       else {
-        push_token &cur copy_token tok;
+        cur.next = copy_token tok;
+        cur = cur.next;
         tok = tok.next;;;;
   cur.next = tok;
   return head.next;;
 expand_macro(rest@@Token tok@Token include_paths@StringArray)bool =
-  if hideset_contains tok.hideset->@Hideset tok.loc tok.len return false;
+  if hideset_contains tok.hideset tok.loc tok.len return false;
   let m = find_macro tok;
   if !m return false;
   if m.handler {
@@ -368,7 +357,7 @@ expand_macro(rest@@Token tok@Token include_paths@StringArray)bool =
     rest@.next = tok.next;
     return true;;
   if m.is_objlike {
-    let hs = hideset_union tok.hideset->@Hideset new_hideset m.name;
+    let hs = hideset_union tok.hideset new_hideset m.name;
     let body = add_hideset m.body hs;
     for (let t @Token= body; t.kind != TK_EOF; t = t.next) t.origin = tok;
     rest@ = append body tok.next;
@@ -379,7 +368,7 @@ expand_macro(rest@@Token tok@Token include_paths@StringArray)bool =
   let macro_token = tok;
   let args  = read_macro_args &tok tok m.params m.va_args_name;
   let rparen = tok;
-  let hs = hideset_intersection macro_token.hideset->@Hideset rparen.hideset->@Hideset;
+  let hs = hideset_intersection macro_token.hideset rparen.hideset;
   hs = hideset_union hs new_hideset m.name;
   let body = subst m.body args include_paths;
   body = add_hideset body hs;
@@ -390,7 +379,7 @@ expand_macro(rest@@Token tok@Token include_paths@StringArray)bool =
   return true;;
 sipcache HashMap;
 export search_include_paths(filename@char include_paths@StringArray)@char =
-  if (filename[0] == '/'->char) return filename;
+  if (filename[0] == '/') return filename;
   let cached = hashmap_get &sipcache filename;
   if cached return cached->@char;
   for (let i int = 0; i < include_paths.len; i++) {
@@ -409,7 +398,7 @@ read_include_filename(rest@@Token tok@Token is_dquote@bool include_paths @String
   if (tok.kind == TK_STR) {
     is_dquote@ = true;
     rest@ = skip_line tok.next;
-    return strndup (tok.loc + 1) (tok.len - 2);;
+    return strndup (tok.loc + 1) (tok.len - 2)->unsigned long;;
   if equal tok "<" {
     let start = tok;
     for (; ! equal tok ">"; tok = tok.next) if (tok.at_bol || tok.kind == TK_EOF) error_tok tok "expected '>'";
@@ -425,7 +414,7 @@ detect_include_guard(tok@Token)@char =
   if (! is_hash tok || ! equal tok.next "ifndef") return 0->@char;
   tok = tok.next.next;
   if (tok.kind != TK_IDENT) return 0->@char;
-  let macro = strndup tok.loc tok.len;
+  let macro = strndup tok.loc tok.len->unsigned long;
   tok = tok.next;
   if (! is_hash tok || ! equal tok.next "define" || ! equal tok.next.next macro) return 0->@char;
   while (tok.kind != TK_EOF) {
@@ -464,13 +453,14 @@ preprocess2(tok@Token include_paths@StringArray)@Token =
     else if !is_hash start {
       start.line_delta = start.file.line_delta;
       start.filename = start.file.display_name;
-      push_token &cur start;
+      cur.next = start;
+      cur = cur.next;
       start = start.next;;
     else if equal tok "include" {
       let is_dquote = false;
       let c = &is_dquote;
       let filename = read_include_filename &tok tok.next c include_paths;
-      if (filename[0] != '/'->char && is_dquote) {
+      if (filename[0] != '/' && is_dquote) {
         let path = format"%s/%s" dirname strdup start.file.name filename;
         if file_exists path tok = include_file tok path start.next.next;
         else {
@@ -489,7 +479,7 @@ preprocess2(tok@Token include_paths@StringArray)@Token =
     else if equal tok "undef" {
       tok = tok.next;
       if (tok.kind != TK_IDENT) error_tok tok "macro name must be an identifier";
-      undef_macro strndup tok.loc tok.len;
+      undef_macro strndup tok.loc tok.len->unsigned long;
       tok = skip_line tok.next;;
     else if equal tok "if" {
       let val = eval_const_expr &tok tok include_paths;
@@ -619,10 +609,10 @@ type StringKind enum
   STR_WIDE;;
 getStringKind(tok@Token) StringKind = return
   !strcmp tok.loc->@ "u8" ? STR_UTF8    :
-  tok.loc[0] == '"'->char ? STR_NONE    :
-  tok.loc[0] == 'u'->char ? STR_UTF16   :
-  tok.loc[0] == 'U'->char ? STR_UTF32   :
-  tok.loc[0] == 'L'->char ? STR_WIDE    :
+  tok.loc[0] == '"'              ? STR_NONE    :
+  tok.loc[0] == 'u'              ? STR_UTF16   :
+  tok.loc[0] == 'U'              ? STR_UTF32   :
+  tok.loc[0] == 'L'              ? STR_WIDE    :
                                    unreachable->StringKind ;;
 export preprocess(tok@Token include_paths@StringArray)@Token =
   tok = preprocess2 tok include_paths;

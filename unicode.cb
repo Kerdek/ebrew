@@ -1,18 +1,18 @@
 #include "chub.hb"
 
-export encode_utf8(buf@ char c unsigned int) int =
-  if (c <= 0x7Fu) {
+export encode_utf8(buf@ char c uint32_t) int =
+  if (c <= 0x7F) {
     buf[0] = c as char;
     return 1;
   ;
 
-  if (c <= 0x7FFu) {
+  if (c <= 0x7FF) {
     buf[0] = 0b11000000 | (c >> 6) as char;
     buf[1] = 0b10000000 | (c & 0b00111111) as char;
     return 2;
   ;
 
-  if (c <= 0xFFFFu) {
+  if (c <= 0xFFFF) {
     buf[0] = 0b11100000 | (c >> 12) as char;
     buf[1] = 0b10000000 | ((c >> 6) & 0b00111111) as char;
     buf[2] = 0b10000000 | (c & 0b00111111) as char;
@@ -27,7 +27,7 @@ export encode_utf8(buf@ char c unsigned int) int =
 ;
 
 export decode_utf8(new_pos@@ char p@char) uint32_t =
-  if (p@->unsigned char < 128->unsigned char) {
+  if (p@->unsigned char < 128) {
     new_pos@ = p + 1;
     return p@->unsigned int;
   ;
@@ -35,21 +35,21 @@ export decode_utf8(new_pos@@ char p@char) uint32_t =
   let
     start = p
     len = 0
-    c = (0 as unsigned int);
+    c = 0->uint32_t;
 
-  if (p@->unsigned char >= 0b11110000->unsigned char) {
+  if (p@->unsigned char >= 0b11110000) {
     len = 4;
     c = p@ & 0b111 as unsigned int;
-  ; else if (p@->unsigned char >= 0b11100000->unsigned char) {
+  ; else if (p@->unsigned char >= 0b11100000) {
     len = 3;
     c = p@ & 0b1111 as unsigned int;
-  ; else if (p@->unsigned char >= 0b11000000->unsigned char) {
+  ; else if (p@->unsigned char >= 0b11000000) {
     len = 2;
     c = p@ & 0b11111 as unsigned int;
   ; else  error_at start "invalid UTF-8 sequence";
 
   for (let i int = 1; i < len; i++) {
-    if (p[i]->unsigned char >> 6 != 0b10->unsigned char)
+    if (p[i]->unsigned char >> 6 != 0b10)
       error_at start "invalid UTF-8 sequence";
     c = (c << 6) | (p[i] & 0b111111);;
   new_pos@ = p + len;
@@ -57,7 +57,7 @@ export decode_utf8(new_pos@@ char p@char) uint32_t =
 ;
 
 in_range(range@ uint32_t c uint32_t) bool =
-  for (let i unsigned long = 0ul; range[i] != -1u; i += 2)
+  for (let i int = 0; range[i] != -1; i += 2)
     if (range[i] <= c && c <= range[i + 1])
       return true;
   return false;;
@@ -78,11 +78,11 @@ ii1range []uint32_t = {
   0xA0000u 0xAFFFDu 0xB0000u 0xBFFFDu 0xC0000u 0xCFFFDu 0xD0000u 0xDFFFDu
   0xE0000u 0xEFFFDu 0xFFFFFFFFu;;
 export is_ident1(c uint32_t) bool =
-  return c!= '@'->unsigned int && in_range ii1range->@unsigned int c;;
+  return c!= '@' && in_range ii1range->@unsigned int c;;
 ii2range[] uint32_t = {
   '0'->unsigned int '9'->unsigned int '$'->unsigned int '$'->unsigned int 0x0300u 0x036Fu 0x1DC0u 0x1DFFu 0x20D0u 0x20FFu 0xFE20u 0xFE2Fu -1u;;
 export is_ident2(c uint32_t) bool =
-  return c!= '@'->unsigned int && (is_ident1 c || in_range ii2range->@unsigned int c);;
+  return c!= '@' && (is_ident1 c || in_range ii2range->@unsigned int c);;
 cwrange1[] uint32_t = {
   0x00000u 0x0001Fu 0x0007fu 0x000a0u 0x00300u 0x0036Fu 0x00483u 0x00486u
   0x00488u 0x00489u 0x00591u 0x005BDu 0x005BFu 0x005BFu 0x005C1u 0x005C2u
@@ -131,11 +131,11 @@ char_width(c uint32_t) int = return
   in_range cwrange1->@uint32_t c ? 0 :
   in_range cwrange2->@uint32_t c ? 2 :
                                    1 ;;
-export display_width(p@ char len unsigned long) int =
+export display_width(p@ char len int) int =
   let
     start = p
     w = 0;
-  while ((p - start)->unsigned long < len) {
+  while (p - start < len) {
     let c = decode_utf8 &p p;
     w += char_width c;;
   return w;;

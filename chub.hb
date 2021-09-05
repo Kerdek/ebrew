@@ -107,6 +107,11 @@ type
     line_delta    int;
   }
 
+  Hideset struct {
+    next        @same
+    name        @char;
+  }
+
   Token struct {
     kind        enum 
       TK_IDENT
@@ -117,10 +122,10 @@ type
       TK_PP_NUM
       TK_EOF;
     next       @same
-    val         unsigned long
+    val         int64_t
     fval        long double
     loc        @char
-    len         unsigned long
+    len         int
     ty         @
     str        @char
     file       @File
@@ -138,18 +143,18 @@ type
     ty           @
     tok          @Token
     name         @Token
-    idx           unsigned long
-    alignment     unsigned long
-    offset        unsigned long
+    idx           int
+    alignment     int
+    offset        int
     is_bitfield   bool
-    bit_offset    unsigned long
-    bit_width     unsigned long;
+    bit_offset    int
+    bit_width     int;
   }
 
   Type struct  {
     kind          TypeKind
-    size          unsigned long
-    alignment     unsigned long
+    size          int
+    alignment     int
     is_unsigned   bool
     next         @same
     is_atomic     bool
@@ -157,7 +162,7 @@ type
     base         @same
     name         @Token
     name_pos     @Token
-    array_len     unsigned long
+    array_len     int
     members      @Member
     is_flexible   bool
     is_packed     bool
@@ -166,16 +171,11 @@ type
     is_variadic   bool;
   }
 
-  Hideset struct {
-    next        @same
-    name        @char;
-  }
-
   Relocation struct {
     next       @same
-    offset      unsigned long
+    offset      int
     label     @@char
-    addend      unsigned long;
+    addend      long;
   }
 
   Obj struct {
@@ -184,8 +184,8 @@ type
     ty              @Type
     tok             @Token
     is_local         bool
-    alignment        unsigned long
-    offset           unsigned long
+    alignment        int
+    offset           int
     is_function      bool
     is_definition    bool
     is_export        bool
@@ -199,7 +199,7 @@ type
     locals          @same
     va_area         @same
     alloca_bottom   @same
-    stack_size       unsigned long
+    stack_size       int
     is_live          bool
     is_root          bool
     refs             StringArray;
@@ -230,8 +230,8 @@ type
     goto_next     @same
     case_next     @same
     default_case  @same
-    begin          unsigned long
-    end            unsigned long
+    begin          long
+    end            long
     asm_str       @char
     cas_addr      @same
     cas_old       @same
@@ -239,20 +239,20 @@ type
     atomic_addr   @Obj
     atomic_expr   @same
     var           @Obj
-    val            unsigned long
+    val            int64_t
     fval           long double;
   }
 
   HashEntry struct {
     key    @char
-    keylen  unsigned long
+    keylen  int
     val    @;
   }
 
   HashMap struct {
     buckets  @HashEntry
-    capacity  unsigned long
-    used      unsigned long;
+    capacity  int
+    used      int;
   }
 ;
 export advance(k @@Token) @Token;
@@ -279,7 +279,7 @@ export define_macro(name@ char buf@ char);
 export undef_macro(name@ char);
 export preprocess(tok@ Token include_paths @StringArray)@ Token;
 export new_cast(j @Token expr@ Node ty@ Type)@ Node;
-export const_expr(k @@Token) unsigned long;
+export const_expr(k @@Token) int64_t;
 export parse(tok@ Token)@ Obj;
 
 export extern
@@ -306,13 +306,13 @@ export type_equal(t @Type u @Type)bool;
 export copy_type(ty@ Type)@ Type;
 export pointer_to(base@ Type)@ Type;
 export func_type(return_ty@ Type)@ Type;
-export array_of(base@ Type size unsigned long)@ Type;
+export array_of(base@ Type size int)@ Type;
 export enum_type(void)@ Type;
 export struct_type(void)@ Type;
 export add_type(node@ Node);
 
 export codegen(prog@ Obj out@ FILE opt_fpic bool);
-export align_to(n unsigned long alignment unsigned long) unsigned long;
+export align_to(n int alignment int)int;
 
 export encode_utf8(buf@ char c uint32_t)int;
 export decode_utf8(new_pos@@ char p@ char)uint32_t;
@@ -321,12 +321,12 @@ export is_ident2(c uint32_t)bool;
 export display_width(p@ char len int)int;
 
 export hashmap_get(map@ HashMap key@ char)@;
-export hashmap_get2(map@ HashMap key@ char keylen unsigned long)@;
+export hashmap_get2(map@ HashMap key@ char keylen int)@;
 export hashmap_put(map@ HashMap key@ char val@);
-export hashmap_put2(map@ HashMap key@ char keylen unsigned long val@);
+export hashmap_put2(map@ HashMap key@ char keylen int val@);
 export hashmap_delete(map@ HashMap key@ char);
 
-export hashmap_delete2(map@ HashMap key@ char keylen unsigned long);
+export hashmap_delete2(map@ HashMap key@ char keylen int);
 export hashmap_test(void);
 
 export file_exists(path@ char)bool;

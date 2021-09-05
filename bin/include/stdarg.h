@@ -19,7 +19,7 @@ __va_arg_mem(ap@ __va_elem sz int alignment int)@  =
   let p = ap.overflow_arg_area;
   if (alignment > 8)
     p = (p + 15) / 16 * 16;
-  ap.overflow_arg_area = (p->unsigned long + sz + 7) / 8 * 8;
+  ap.overflow_arg_area = (p->unsigned long + sz + 7) / 8 * 8 as @;
   return p;
 ;
 
