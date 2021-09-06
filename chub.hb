@@ -310,6 +310,7 @@ export array_of(base@ Type size int)@ Type;
 export enum_type(void)@ Type;
 export struct_type(void)@ Type;
 export add_type(node@ Node);
+export usual_arith_conv(lhs@@ Node rhs@@ Node);
 
 export codegen(prog@ Obj out@ FILE opt_fpic bool);
 export align_to(n int alignment int)int;

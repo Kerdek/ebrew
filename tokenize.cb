@@ -89,7 +89,7 @@ rpkw[]@ char = {
   "+="  "-="  "*="  "/="
   "++"  "--"  "%="  "&="
   "|="  "^="  "&&"  "||"
-  "<<"  ">>"  "##"  "::"         "as";;
+  "<<"  ">>"  "##"  "::"    "to"     "as" ":;";;
 read_punct(p@ char) int =
   for (let i  int= 0; i < (sizeof typeof rpkw) / (sizeof typeof rpkw@); i++) if startswith p rpkw[i] return (strlen rpkw[i])->int;
   return ispunct(p@) ? 1 : 0;;

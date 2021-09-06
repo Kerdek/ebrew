@@ -20,7 +20,7 @@ open_file(path@ char) @FILE = return
 endswith(p@ char q@ char) bool = return
   strlen p :: len1
   strlen q :: len2
-  len1 >= len2 && ! strcmp (p + len1 - len2)->@ q;;
+  len1 >= len2 && ! strcmp ((p + len1) - len2)->@ q;;
 replace_extn(tmpl@ char extn@ char) @char = return
   basename strdup tmpl :: filename
   strrchr filename '.' :: dot

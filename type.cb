@@ -123,7 +123,7 @@ get_common_type(t1@ Type t2@ Type)@ Type =
                             t2.kind == TY_BOOL    ? t2                        :
                                                     t1                        ;;
 
-usual_arith_conv(lhs@@ Node rhs@@ Node) =
+export usual_arith_conv(lhs@@ Node rhs@@ Node) =
   let ty = get_common_type lhs.ty rhs.ty;
   type_equal lhs.ty ty || (lhs@ = new_cast lhs.tok lhs@ ty);
   type_equal rhs.ty ty || (rhs@ = new_cast rhs.tok rhs@ ty);;
