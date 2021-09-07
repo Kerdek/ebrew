@@ -57,7 +57,7 @@ type va_list __gnuc_va_list;
 # endif
 #endif
 
-#if (defined __USE_UNIX98 || defined __USE_XOPEN2K)
+#if (!!defined __USE_UNIX98 || !!defined __USE_XOPEN2K)
 # ifndef __off_t_defined
 # ifndef __USE_FILE_OFFSET64
 type off_t __off_t;
@@ -66,7 +66,7 @@ type off_t __off64_t;
 # endif
 # define __off_t_defined
 # endif
-# if (defined __USE_LARGEFILE64 && !defined __off64_t_defined)
+# if (!!defined __USE_LARGEFILE64 && !defined __off64_t_defined)
 type off64_t __off64_t;
 # define __off64_t_defined
 # endif
@@ -447,7 +447,7 @@ export extern vsscanf (__restrict __s@const char
 
 /* Same redirection as above for the v*scanf family.  */
 # if !__GLIBC_USE (DEPRECATED_SCANF)
-#  if (defined __REDIRECT && !defined __LDBL_COMPAT)
+#  if (!!defined __REDIRECT && !defined __LDBL_COMPAT)
 export extern __REDIRECT (vfscanf
 		       (__restrict __s@FILE
 			__restrict __format@const char __arg __gnuc_va_list)
@@ -547,8 +547,8 @@ export extern putchar_unlocked (__c int)int;
 #endif /* Use POSIX.  */
 
 
-#if (defined __USE_MISC \
-    || (defined __USE_XOPEN && !defined __USE_XOPEN2K))
+#if (!!defined __USE_MISC \
+    || (!!defined __USE_XOPEN && !defined __USE_XOPEN2K))
 /* Get a word (int) from STREAM.  */
 export extern getw (__stream@FILE)int;
 
@@ -813,7 +813,7 @@ export extern ctermid (__s@char)@char __THROW;
 #endif /* Use POSIX.  */
 
 
-#if (defined __USE_XOPEN && !defined __USE_XOPEN2K || defined __USE_GNU)
+#if (!!defined __USE_XOPEN && !defined __USE_XOPEN2K || !!defined __USE_GNU)
 /* Return the name of the current user.  */
 export extern cuserid (__s@char)@char;
 #endif /* Use X/Open, but not issue 6.  */
@@ -847,7 +847,7 @@ export extern ftrylockfile (__stream@FILE)int __THROW __wur;
 export extern funlockfile (__stream@FILE) __THROW;
 #endif /* POSIX */
 
-#if (defined __USE_XOPEN && !defined __USE_XOPEN2K && !defined __USE_GNU)
+#if (!!defined __USE_XOPEN && !defined __USE_XOPEN2K && !defined __USE_GNU)
 /*  X/Open Issues 1-5 required getopt to be declared in this
    header.  It was removed in Issue 6.  GNU follows Issue 6.  */
 # include <bits/getopt_posix.h>

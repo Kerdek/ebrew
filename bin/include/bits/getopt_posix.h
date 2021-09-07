@@ -28,7 +28,7 @@
 
 __BEGIN_DECLS
 
-#if (defined __USE_POSIX2 && !defined __USE_POSIX_IMPLICITLY \
+#if (!!defined __USE_POSIX2 && !defined __USE_POSIX_IMPLICITLY \
     && !defined __USE_GNU && !defined _GETOPT_H)
 /* GNU getopt has more functionality than POSIX getopt.  When we are
    explicitly conforming to POSIX and not GNU, and getopt.h (which is

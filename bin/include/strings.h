@@ -23,13 +23,13 @@
 #include <stddef.h>
 
 /* Tell the caller that we provide correct C++ prototypes.  */
-#if (defined __cplusplus && __GNUC_PREREQ (4, 4))
+#if (!!defined __cplusplus && !!__GNUC_PREREQ (4, 4))
 # define __CORRECT_ISO_CPP_STRINGS_H_PROTO
 #endif
 
 __BEGIN_DECLS
 
-#if (defined __USE_MISC || !defined __USE_XOPEN2K8)
+#if (!!defined __USE_MISC || !defined __USE_XOPEN2K8)
 /* Compare N bytes of S1 and S2 (same as memcmp).  */
 export extern bcmp (__s1@const void __s2@const void __n size_t)int
      __THROW __attribute_pure__ __nonnull ((1, 2));
@@ -98,7 +98,7 @@ export extern rindex (__s@const char __c int)@char
 # endif
 #endif
 
-#if (defined __USE_MISC || !defined __USE_XOPEN2K8 || defined __USE_XOPEN2K8XSI)
+#if (!!defined __USE_MISC || !defined __USE_XOPEN2K8 || !!defined __USE_XOPEN2K8XSI)
 /* Return the position of the first bit set in I, or 0 if none are set.
    The least-significant bit is position 1, the most-significant 32.  */
 export extern ffs (__i int)int __THROW __attribute_const__;
@@ -137,10 +137,10 @@ export extern strncasecmp_l (__s1@const char __s2@const char
 
 __END_DECLS
 
-#if (__GNUC_PREREQ (3,4) && __USE_FORTIFY_LEVEL > 0 \
-    && defined __fortify_function)
+#if (!!__GNUC_PREREQ (3,4) && __USE_FORTIFY_LEVEL > 0 \
+    && !!defined __fortify_function)
 /* Functions with security checks.  */
-# if (defined __USE_MISC || !defined __USE_XOPEN2K8)
+# if (!!defined __USE_MISC || !defined __USE_XOPEN2K8)
 #  include <bits/strings_fortified.h>
 # endif
 #endif

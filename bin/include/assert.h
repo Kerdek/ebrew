@@ -88,7 +88,7 @@ __END_DECLS
      (static_cast <bool> (expr)						\
       ? void (0)							\
       : __assert_fail #expr __FILE__ __LINE__->unsigned int __ASSERT_FUNCTION)
-# elif (!defined __GNUC__ || defined __STRICT_ANSI__)
+# elif (!defined __GNUC__ || !!defined __STRICT_ANSI__)
 #  define assert(expr)							\
     ((expr)								\
      ? 0 __ASSERT_VOID_CAST \
@@ -120,10 +120,10 @@ __END_DECLS
    This is broken in G++ before version 2.6.
    C9x has a similar variable called __func__, but prefer the GCC one since
    it demangles C++ function names.  */
-# if (defined __cplusplus ? __GNUC_PREREQ (2, 6) : __GNUC_PREREQ (2, 4))
+# if (!!defined __cplusplus ? !!__GNUC_PREREQ (2, 6) : !!__GNUC_PREREQ (2, 4))
 #   define __ASSERT_FUNCTION	__extension__ __PRETTY_FUNCTION__
 # else
-#  if (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L)
+#  if (!!defined __STDC_VERSION__ && !!__STDC_VERSION__ >= 199901L)
 #   define __ASSERT_FUNCTION	0->@char
 #  else
 #   define __ASSERT_FUNCTION	0->@char
@@ -133,7 +133,7 @@ __END_DECLS
 #endif /* NDEBUG.  */
 
 
-#if (defined __USE_ISOC11 && !defined __cplusplus)
+#if (!!defined __USE_ISOC11 && !defined __cplusplus)
 # undef static_assert
 # define static_assert _Static_assert
 #endif

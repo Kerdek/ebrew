@@ -133,12 +133,12 @@ __BEGIN_DECLS
 # define S_ISLNK(mode)	 __S_ISTYPE((mode), __S_IFLNK)
 #endif
 
-#if (defined __USE_MISC && !defined __S_IFLNK)
+#if (!!defined __USE_MISC && !defined __S_IFLNK)
 # define S_ISLNK(mode)  0
 #endif
 
-#if ((defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K) \
-    && defined __S_IFSOCK)
+#if ((!!defined __USE_XOPEN_EXTENDED || !!defined __USE_XOPEN2K) \
+    && !!defined __S_IFSOCK)
 # define S_ISSOCK(mode) __S_ISTYPE((mode), __S_IFSOCK)
 #elif defined __USE_XOPEN2K
 # define S_ISSOCK(mode) 0

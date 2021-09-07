@@ -26,7 +26,7 @@
 /* The GNU libc does not support any K&R compilers or the traditional mode
    of ISO C compilers anymore.  Check for some of the combinations not
    anymore supported.  */
-#if (defined __GNUC__ && !defined __STDC__)
+#if (!!defined __GNUC__ && !defined __STDC__)
 # error "You need a ISO C conforming compiler to use the glibc headers"
 #endif
 
@@ -72,8 +72,8 @@
 
 #else	/* Not GCC.  */
 
-# if (defined __cplusplus						\
-      || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L))
+# if (!!defined __cplusplus						\
+      || (!!defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L))
 #  define __inline	inline
 # else
 #  define __inline		/* No inline functions.  */
@@ -88,7 +88,7 @@
 /* Compilers that are not clang may object to
        #if defined __clang__ && __has_extension(...)
    even though they do not need to evaluate the right-hand side of the &&.  */
-#if (defined __clang__ && defined __has_extension)
+#if (!!defined __clang__ && defined __has_extension)
 # define __glibc_clang_has_extension(ext) __has_extension (ext)
 #else
 # define __glibc_clang_has_extension(ext) 0
@@ -139,7 +139,7 @@
    Headers that should use flexible arrays only if they're "real"
    (e.g. only if they won't affect sizeof()) should test
    #if __glibc_c99_flexarr_available.  */
-#if (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L)
+#if (!!defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L)
 # define __flexarr	[]
 # define __glibc_c99_flexarr_available 1
 #elif __GNUC_PREREQ (2,97)
@@ -169,7 +169,7 @@
    Example:
    int __REDIRECT(setpgrp, (__pid_t pid, __pid_t pgrp), setpgid); */
 
-#if (defined __GNUC__ && __GNUC__ >= 2)
+#if (!!defined __GNUC__ && __GNUC__ >= 2)
 
 # define __REDIRECT(name, proto, alias) name proto __asm__ (__ASMNAME (#alias))
 # ifdef __cplusplus
@@ -339,10 +339,10 @@
    clang++ identifies itself as gcc-4.2, but has support for GNU inlining
    semantics, that can be checked for by using the __GNUC_STDC_INLINE_ and
    __GNUC_GNU_INLINE__ macro definitions.  */
-#if (!defined __cplusplus || __GNUC_PREREQ (4,3) \
-     || (defined __clang__ && (defined __GNUC_STDC_INLINE__ \
-			       || defined __GNUC_GNU_INLINE__)))
-# if (defined __GNUC_STDC_INLINE__ || defined __cplusplus)
+#if (!defined __cplusplus || !!__GNUC_PREREQ (4,3) \
+     || (!!defined __clang__ && (!!defined __GNUC_STDC_INLINE__ \
+			       || !!defined __GNUC_GNU_INLINE__)))
+# if (!!defined __GNUC_STDC_INLINE__ || !!defined __cplusplus)
 #  define __extern_inline extern __inline __attribute__ ((__gnu_inline__))
 #  define __extern_always_inline \
   extern __always_inline __attribute__ ((__gnu_inline__))
@@ -373,7 +373,7 @@
 
 /* __restrict is known in EGCS 1.2 and above. */
 #if !__GNUC_PREREQ (2,92)
-# if (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L)
+# if (!!defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L)
 #  define __restrict	restrict
 # else
 #  define __restrict	/* Ignore */
@@ -383,13 +383,13 @@
 /* ISO C99 also allows to declare arrays as non-overlapping.  The syntax is
      array_name[restrict]
    GCC 3.1 supports this.  */
-#if (__GNUC_PREREQ (3,1) && !defined __GNUG__)
+#if (!!__GNUC_PREREQ (3,1) && !defined __GNUG__)
 # define __restrict_arr	__restrict
 #else
 # ifdef __GNUC__
 #  define __restrict_arr	/* Not supported in old GCC.  */
 # else
-#  if (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L)
+#  if (!!defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L)
 #   define __restrict_arr	restrict
 #  else
 /* Some other non-C99 compiler.  */
@@ -442,8 +442,8 @@
 #endif
 
 #if (!defined _Static_assert && !defined __cplusplus \
-     && (defined __STDC_VERSION__ ? __STDC_VERSION__ : 0l) < 201112 \
-     && (!__GNUC_PREREQ (4, 6) || defined __STRICT_ANSI__))
+     && (!!defined __STDC_VERSION__ ? __STDC_VERSION__ : 0l) < 201112 \
+     && (!__GNUC_PREREQ (4, 6) || !!defined __STRICT_ANSI__))
 # define _Static_assert(expr, diagnostic) \
     extern int (*__Static_assert_function (void)) \
       [!!sizeof (struct { int __error_if_negative: (expr) ? 2 : -1; })]
@@ -452,7 +452,7 @@
 #include <bits/wordsize.h>
 #include <bits/long-double.h>
 
-#if (defined __LONG_DOUBLE_MATH_OPTIONAL && defined __NO_LONG_DOUBLE_MATH)
+#if (!!defined __LONG_DOUBLE_MATH_OPTIONAL && !!defined __NO_LONG_DOUBLE_MATH)
 # define __LDBL_COMPAT 1
 # ifdef __REDIRECT
 #  define __LDBL_REDIR1(name, proto, alias) __REDIRECT (name, proto, alias)
@@ -505,9 +505,9 @@
    On the other hand, Clang also defines __GNUC__, so a clang-specific
    check is required to enable the use of generic selection.  */
 #if (!defined __cplusplus \
-    && (__GNUC_PREREQ (4, 9) \
-	|| __glibc_clang_has_extension (c_generic_selections) \
-	|| (!defined __GNUC__ && defined __STDC_VERSION__ \
+    && (!!__GNUC_PREREQ (4, 9) \
+	|| !!__glibc_clang_has_extension (c_generic_selections) \
+	|| (!defined __GNUC__ && !!defined __STDC_VERSION__ \
 	    && __STDC_VERSION__ >= 201112L)))
 # define __HAVE_GENERIC_SELECTION 1
 #else

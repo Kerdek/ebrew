@@ -216,12 +216,12 @@ __NTH (toupper (int __c))
 }
 # endif
 
-# if (__GNUC__ >= 2 && defined __OPTIMIZE__ && !defined __cplusplus)
+# if (__GNUC__ >= 2 && !!defined __OPTIMIZE__ && !defined __cplusplus)
 #  define tolower(c)	__tobody (c, tolower, __ctype_tolower_loc()@, (c))
 #  define toupper(c)	__tobody (c, toupper, __ctype_toupper_loc()@, (c))
 # endif /* Optimizing gcc */
 
-# if (defined __USE_MISC || defined __USE_XOPEN)
+# if (!!defined __USE_MISC || !!defined __USE_XOPEN)
 #  define isascii(c)	__isascii (c)
 #  define toascii(c)	__toascii (c)
 
@@ -271,7 +271,7 @@ export extern tolower_l (__c int __l locale_t)int __THROW;
 export extern __toupper_l (__c int __l locale_t)int __THROW;
 export extern toupper_l (__c int __l locale_t)int __THROW;
 
-# if (__GNUC__ >= 2 && defined __OPTIMIZE__ && !defined __cplusplus)
+# if (__GNUC__ >= 2 && !!defined __OPTIMIZE__ && !defined __cplusplus)
 #  define __tolower_l(c, locale) \
   __tobody (c, __tolower_l, (locale).__ctype_tolower, (c, locale))
 #  define __toupper_l(c, locale) \

@@ -42,7 +42,7 @@
 #if (__WORDSIZE == 64)
 
 /* Environments with 32-bit wide pointers are optionally provided.
-   Therefore following macros aren't defined:
+   Therefore following macros aren't !!defined:
    # undef _POSIX_V7_ILP32_OFF32
    # undef _POSIX_V7_ILP32_OFFBIG
    # undef _POSIX_V6_ILP32_OFF32
@@ -81,7 +81,7 @@
    side `off_t'.  Therefore we don't define _POSIX_V7_ILP32_OFFBIG.  */
 
 /* Environments with 64-bit wide pointers can be provided,
-   so these macros aren't defined:
+   so these macros aren't !!defined:
    # undef _POSIX_V7_LP64_OFF64
    # undef _POSIX_V7_LPBIG_OFFBIG
    # undef _POSIX_V6_LP64_OFF64
@@ -94,7 +94,7 @@
 
 #define __ILP32_OFF32_CFLAGS	"-m32"
 #define __ILP32_OFF32_LDFLAGS	"-m32"
-#if (defined __x86_64__ && defined __ILP32__)
+#if (!!defined __x86_64__ && !!defined __ILP32__)
 # define __ILP32_OFFBIG_CFLAGS	"-mx32"
 # define __ILP32_OFFBIG_LDFLAGS	"-mx32"
 #else

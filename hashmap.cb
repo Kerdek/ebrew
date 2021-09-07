@@ -16,7 +16,7 @@
 
 fnv_hash(s@ char len int) uint64_t =
   let hash = 0xcbf29ce484222325;
-  for (let i int = 0; i < len; i++) {
+  for (let i int = 0; i < len; (i:;i+=1)) {
     hash *= 0x100000001b3;
     hash ^= s[i]->unsigned char;
   ;
@@ -28,9 +28,9 @@ fnv_hash(s@ char len int) uint64_t =
 rehash(map@ HashMap)  =
   // Compute the size of the new hashmap.
   let nkeys = 0;
-  for (let i int = 0; i < map.capacity; i++)
-    if (map.buckets[i].key && map.buckets[i].key != TOMBSTONE)
-      nkeys++;
+  for (let i int = 0; i < map.capacity; (i:;i+=1))
+    if (!!map.buckets[i].key && map.buckets[i].key != TOMBSTONE)
+      (nkeys:;nkeys+=1);
 
   let cap = map.capacity;
   while ((nkeys * 100) / cap >= LOW_WATERMARK)
@@ -42,20 +42,19 @@ rehash(map@ HashMap)  =
   map2.buckets = (calloc cap->unsigned long sizeof HashEntry as @HashEntry);
   map2.capacity = cap;
 
-  for (let i int = 0; i < map.capacity; i++) {
+  for (let i int = 0; i < map.capacity; (i:;i+=1)) {
     let ent = &map.buckets[i];
     let a = &map2;
-    if (ent.key && ent.key != TOMBSTONE) hashmap_put2 a ent.key ent.keylen ent.val;;
+    if (!!ent.key && ent.key != TOMBSTONE) hashmap_put2 a ent.key ent.keylen ent.val;;
   assert(map2.used == nkeys);
   map@ = map2;;
 
 match(ent@ HashEntry key@ char keylen int) bool =
-  return (ent.key && ent.key != TOMBSTONE &&
-         ent.keylen == keylen && ! memcmp ent.key->@ key->@ keylen->unsigned long)->bool;;
+  return !!ent.key && ent.key != TOMBSTONE && ent.keylen == keylen && !memcmp ent.key->@ key->@ keylen->unsigned long;;
 get_entry(map@ HashMap key@ char keylen int)@ HashEntry =
   if !map.buckets return 0->@HashEntry;
   let hash = fnv_hash key keylen;
-  for (let i int = 0; i < map.capacity; i++) {
+  for (let i int = 0; i < map.capacity; (i:;i+=1)) {
     let ent = &map.buckets[(hash + i) % map.capacity];
     if match ent key keylen return ent;
     if !ent.key return 0->@HashEntry;;
@@ -66,7 +65,7 @@ get_or_insert_entry(map@ HashMap key@ char keylen int)@ HashEntry =
     map.capacity = INIT_SIZE as int;;
   else if ((map.used * 100) / map.capacity >= HIGH_WATERMARK) rehash map;
   let hash = fnv_hash key keylen;
-  for (let i int = 0; i < map.capacity; i++) {
+  for (let i int = 0; i < map.capacity; (i:;i+=1)) {
     let ent = &map.buckets[(hash + i) % map.capacity];
     if match ent key keylen return ent;
     if (ent.key == TOMBSTONE) {
@@ -76,7 +75,7 @@ get_or_insert_entry(map@ HashMap key@ char keylen int)@ HashEntry =
     if !ent.key {
       ent.key = key;
       ent.keylen = keylen;
-      map.used++;
+      (map.used:;map.used+=1);
       return ent;;;
   unreachable;;
 export hashmap_get(map@ HashMap key@ char)@ = { return hashmap_get2 map key (strlen key)->int;;;

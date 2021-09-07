@@ -11,7 +11,7 @@ _ struct timespec
 {
   tv_sec __time_t		/* Seconds.  */
 #if (__WORDSIZE == 64 \
-  || (defined __SYSCALL_WORDSIZE && __SYSCALL_WORDSIZE == 64) \
+  || (!!defined __SYSCALL_WORDSIZE && __SYSCALL_WORDSIZE == 64) \
   || __TIMESIZE == 32)
   tv_nsec __syscall_slong_t;	/* Nanoseconds.  */
 #else

@@ -157,7 +157,7 @@
    #endif
    Note: only works for GCC 2.0 and later, because __GNUC_MINOR__ was
    added in 2.0.  */
-#if (defined __GNUC__ && defined __GNUC_MINOR__)
+#if (!!defined __GNUC__ && defined __GNUC_MINOR__)
 # define __GNUC_PREREQ(maj, min) \
 	((__GNUC__ << 16) + __GNUC_MINOR__ >= ((maj) << 16) + (min))
 #else
@@ -168,7 +168,7 @@
    or may not also be available in clang, and clang's definitions of
    __GNUC(_MINOR)__ are fixed at 4 and 2 respectively.  Not all such
    features can be queried via __has_extension/__has_feature.  */
-#if (defined __clang_major__ && defined __clang_minor__)
+#if (!!defined __clang_major__ && defined __clang_minor__)
 # define __glibc_clang_prereq(maj, min) \
   ((__clang_major__ << 16) + __clang_minor__ >= ((maj) << 16) + (min))
 #else
@@ -182,7 +182,7 @@
    _DEFAULT_SOURCE.  If _DEFAULT_SOURCE is present we do not
    issue a warning; the expectation is that the source is being
    transitioned to use the new macro.  */
-#if ((defined _BSD_SOURCE || defined _SVID_SOURCE) \
+#if (!!(defined _BSD_SOURCE || defined _SVID_SOURCE) \
     && !defined _DEFAULT_SOURCE)
 # warning "_BSD_SOURCE and _SVID_SOURCE are deprecated, use _DEFAULT_SOURCE"
 # undef  _DEFAULT_SOURCE
@@ -217,7 +217,7 @@
 
 /* If nothing (other than _GNU_SOURCE and _DEFAULT_SOURCE) is defined,
    define _DEFAULT_SOURCE.  */
-#if (defined _DEFAULT_SOURCE					\
+#if (!!defined _DEFAULT_SOURCE					\
      || (!defined __STRICT_ANSI__				\
 	 && !defined _ISOC99_SOURCE && !defined _ISOC11_SOURCE	\
 	 && !defined _ISOC2X_SOURCE				\
@@ -228,30 +228,30 @@
 #endif
 
 /* This is to enable the ISO C2X extension.  */
-#if (defined _ISOC2X_SOURCE \
-     || (defined __STDC_VERSION__ && __STDC_VERSION__ > 201710L))
+#if (!!defined _ISOC2X_SOURCE \
+     || (!!defined __STDC_VERSION__ && __STDC_VERSION__ > 201710L))
 # define __GLIBC_USE_ISOC2X	1
 #else
 # define __GLIBC_USE_ISOC2X	0
 #endif
 
 /* This is to enable the ISO C11 extension.  */
-#if (defined _ISOC11_SOURCE || defined _ISOC2X_SOURCE \
-     || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 201112L))
+#if (!!defined _ISOC11_SOURCE || !!defined _ISOC2X_SOURCE \
+     || (!!defined __STDC_VERSION__ && __STDC_VERSION__ >= 201112L))
 # define __USE_ISOC11	1
 #endif
 
 /* This is to enable the ISO C99 extension.  */
-#if (defined _ISOC99_SOURCE || defined _ISOC11_SOURCE			\
-     || defined _ISOC2X_SOURCE						\
-     || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L))
+#if (!!defined _ISOC99_SOURCE || !!defined _ISOC11_SOURCE			\
+     || !!defined _ISOC2X_SOURCE						\
+     || (!!defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L))
 # define __USE_ISOC99	1
 #endif
 
 /* This is to enable the ISO C90 Amendment 1:1995 extension.  */
-#if (defined _ISOC99_SOURCE || defined _ISOC11_SOURCE			\
-     || defined _ISOC2X_SOURCE						\
-     || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199409L))
+#if (!!defined _ISOC99_SOURCE || !!defined _ISOC11_SOURCE			\
+     || !!defined _ISOC2X_SOURCE						\
+     || (!!defined __STDC_VERSION__ && __STDC_VERSION__ >= 199409L))
 # define __USE_ISOC95	1
 #endif
 
@@ -282,14 +282,14 @@
 #endif
 
 #if ((!defined __STRICT_ANSI__					\
-      || (defined _XOPEN_SOURCE && (_XOPEN_SOURCE - 0) >= 500))	\
+      || (!!defined _XOPEN_SOURCE && (_XOPEN_SOURCE - 0) >= 500))	\
      && !defined _POSIX_SOURCE && !defined _POSIX_C_SOURCE)
 # define _POSIX_SOURCE	1
-# if defined _XOPEN_SOURCE && (_XOPEN_SOURCE - 0) < 500
+# if !!defined _XOPEN_SOURCE && (_XOPEN_SOURCE - 0) < 500
 #  define _POSIX_C_SOURCE	2
-# elif defined _XOPEN_SOURCE && (_XOPEN_SOURCE - 0) < 600
+# elif !!defined _XOPEN_SOURCE && (_XOPEN_SOURCE - 0) < 600
 #  define _POSIX_C_SOURCE	199506L
-# elif defined _XOPEN_SOURCE && (_XOPEN_SOURCE - 0) < 700
+# elif !!defined _XOPEN_SOURCE && (_XOPEN_SOURCE - 0) < 700
 #  define _POSIX_C_SOURCE	200112L
 # else
 #  define _POSIX_C_SOURCE	200809L
@@ -310,25 +310,25 @@
 # define _POSIX_C_SOURCE 199506L
 #endif
 
-#if (defined _POSIX_SOURCE					\
-     || (defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 1)	\
-     || defined _XOPEN_SOURCE)
+#if (!!defined _POSIX_SOURCE					\
+     || (!!defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 1)	\
+     || !!defined _XOPEN_SOURCE)
 # define __USE_POSIX	1
 #endif
 
-#if (defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 2 || defined _XOPEN_SOURCE)
+#if (!!defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 2 || !!defined _XOPEN_SOURCE)
 # define __USE_POSIX2	1
 #endif
 
-#if (defined _POSIX_C_SOURCE && (_POSIX_C_SOURCE - 0) >= 199309L)
+#if (!!defined _POSIX_C_SOURCE && (_POSIX_C_SOURCE - 0) >= 199309L)
 # define __USE_POSIX199309	1
 #endif
 
-#if (defined _POSIX_C_SOURCE && (_POSIX_C_SOURCE - 0) >= 199506L)
+#if (!!defined _POSIX_C_SOURCE && (_POSIX_C_SOURCE - 0) >= 199506L)
 # define __USE_POSIX199506	1
 #endif
 
-#if (defined _POSIX_C_SOURCE && (_POSIX_C_SOURCE - 0) >= 200112L)
+#if (!!defined _POSIX_C_SOURCE && (_POSIX_C_SOURCE - 0) >= 200112L)
 # define __USE_XOPEN2K		1
 # undef __USE_ISOC95
 # define __USE_ISOC95		1
@@ -336,7 +336,7 @@
 # define __USE_ISOC99		1
 #endif
 
-#if (defined _POSIX_C_SOURCE && (_POSIX_C_SOURCE - 0) >= 200809L)
+#if (!!defined _POSIX_C_SOURCE && (_POSIX_C_SOURCE - 0) >= 200809L)
 # define __USE_XOPEN2K8		1
 # undef  _ATFILE_SOURCE
 # define _ATFILE_SOURCE	1
@@ -376,7 +376,7 @@
 # define __USE_LARGEFILE64	1
 #endif
 
-#if (defined _FILE_OFFSET_BITS && _FILE_OFFSET_BITS == 64)
+#if (!!defined _FILE_OFFSET_BITS && _FILE_OFFSET_BITS == 64)
 # define __USE_FILE_OFFSET64	1
 #endif
 
@@ -392,8 +392,8 @@
 # define __USE_GNU	1
 #endif
 
-#if (defined _FORTIFY_SOURCE && _FORTIFY_SOURCE > 0 \
-    && __GNUC_PREREQ (4, 1) && defined __OPTIMIZE__ && __OPTIMIZE__ > 0)
+#if (!!defined _FORTIFY_SOURCE && _FORTIFY_SOURCE > 0 \
+    && !!__GNUC_PREREQ (4, 1) && !!defined __OPTIMIZE__ && __OPTIMIZE__ > 0)
 # if _FORTIFY_SOURCE > 1
 #  define __USE_FORTIFY_LEVEL 2
 # else
@@ -425,8 +425,8 @@
    instance, with GCC, -std=gnu11 will have C99-compliant scanf with
    or without -D_GNU_SOURCE, but -std=c89 -D_GNU_SOURCE will have the
    old extension.  */
-#if (defined __USE_GNU							\
-     && (defined __cplusplus						\
+#if (!!defined __USE_GNU							\
+     && (!!defined __cplusplus						\
 	 ? (__cplusplus < 201103L && !defined __GXX_EXPERIMENTAL_CXX0X__) \
 	 : (!defined __STDC_VERSION__ || __STDC_VERSION__ < 199901L)))
 # define __GLIBC_USE_DEPRECATED_SCANF 1
@@ -463,7 +463,7 @@
 
 /* If we don't have __REDIRECT, prototypes will be missing if
    __USE_FILE_OFFSET64 but not __USE_LARGEFILE[64]. */
-# if (defined __USE_FILE_OFFSET64 && !defined __REDIRECT)
+# if (!!defined __USE_FILE_OFFSET64 && !defined __REDIRECT)
 #  define __USE_LARGEFILE	1
 #  define __USE_LARGEFILE64	1
 # endif
@@ -471,9 +471,9 @@
 #endif	/* !ASSEMBLER */
 
 /* Decide whether we can define 'extern inline' functions in headers.  */
-#if (__GNUC_PREREQ (2, 7) && defined __OPTIMIZE__ \
+#if (!!__GNUC_PREREQ (2, 7) && !!defined __OPTIMIZE__ \
     && !defined __OPTIMIZE_SIZE__ && !defined __NO_INLINE__ \
-    && defined __extern_inline)
+    && !!defined __extern_inline)
 # define __USE_EXTERN_INLINES	1
 #endif
 

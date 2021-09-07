@@ -35,8 +35,8 @@
 /* ISO/IEC TR 24731-2:2010 defines the __STDC_WANT_LIB_EXT2__
    macro.  */
 #undef __GLIBC_USE_LIB_EXT2
-#if (defined __USE_GNU							\
-     || (defined __STDC_WANT_LIB_EXT2__ && __STDC_WANT_LIB_EXT2__ > 0))
+#if (!!defined __USE_GNU							\
+     || (!!defined __STDC_WANT_LIB_EXT2__ && __STDC_WANT_LIB_EXT2__ > 0))
 # define __GLIBC_USE_LIB_EXT2 1
 #else
 # define __GLIBC_USE_LIB_EXT2 0
@@ -47,7 +47,7 @@
    18661-1 are enabled unconditionally in C2X; the symbols in Annex F
    still require that macro in C2X.  */
 #undef __GLIBC_USE_IEC_60559_BFP_EXT
-#if (defined __USE_GNU || defined __STDC_WANT_IEC_60559_BFP_EXT__)
+#if (!!defined __USE_GNU || !!defined __STDC_WANT_IEC_60559_BFP_EXT__)
 # define __GLIBC_USE_IEC_60559_BFP_EXT 1
 #else
 # define __GLIBC_USE_IEC_60559_BFP_EXT 0

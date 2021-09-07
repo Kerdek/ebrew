@@ -32,17 +32,17 @@ typedef __pid_t pid_t;
 # define __pid_t_defined
 #endif
 
-#if (defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K8)
+#if (!!defined __USE_XOPEN_EXTENDED || !!defined __USE_XOPEN2K8)
 # include <signal.h>
 #endif
 
-#if (defined __USE_XOPEN_EXTENDED && !defined __USE_XOPEN2K8)
+#if (!!defined __USE_XOPEN_EXTENDED && !defined __USE_XOPEN2K8)
 /* Some older standards require the contents of struct rusage to be
-   defined here.  */
+   !!defined here.  */
 # include <bits/types/struct_rusage.h>
 #endif
 
-/* These macros could also be defined in <stdlib.h>.  */
+/* These macros could also be !!defined in <stdlib.h>.  */
 #if (!defined _STDLIB_H || (!defined __USE_XOPEN && !defined __USE_XOPEN2K8))
 /* This will define the `W*' macros for the flag
    bits to `waitpid', `wait3', and `wait4'.  */
@@ -99,7 +99,7 @@ export extern wait (__stat_loc@int)__pid_t;
    __THROW.  */
 export extern waitpid (__pid __pid_t __stat_loc@int __options int)__pid_t;
 
-#if (defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K8)
+#if (!!defined __USE_XOPEN_EXTENDED || !!defined __USE_XOPEN2K8)
 # ifndef __id_t_defined
 typedef id_t __id_t;
 #  define __id_t_defined
@@ -122,8 +122,8 @@ export extern waitid (__idtype idtype_t __id __id_t __infop@siginfo_t
 		   __options int)int;
 #endif
 
-#if (defined __USE_MISC \
-    || (defined __USE_XOPEN_EXTENDED && !defined __USE_XOPEN2K))
+#if (!!defined __USE_MISC \
+    || (!!defined __USE_XOPEN_EXTENDED && !defined __USE_XOPEN2K))
 /* This being here makes the prototypes valid whether or not
    we have already included <sys/resource.h> to define `struct rusage'.  */
 _ struct rusage;

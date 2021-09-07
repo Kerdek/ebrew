@@ -109,18 +109,18 @@ skip_cond_incl(tok@Token)@Token =
 // Double-quote a given string and returns it.
 quote_string(str@char)@char =
   let bufsize = 3;
-  for (let i int = 0; str[i]; i++) {
-    if (str[i] == '\\' || str[i] == '"') bufsize++;
-    bufsize++;;
+  for (let i int = 0; str[i]; (i:;i+=1)) {
+    if (str[i] == '\\' || str[i] == '"') (bufsize:;bufsize+=1);
+    (bufsize:;bufsize+=1);;
   let
     buf = (calloc 1ul bufsize->unsigned long as @char)
     p = buf;
-  p++@ = '"' as char;
-  for (let i int= 0; str[i]; i++) {
-    if (str[i] == '\\'->char || str[i] == '"'->char) p++@ = '\\'->char;
-    p++@ = str[i];;
-  p++@ = '"' as char;
-  p++@ = '\0' as char;
+  (p:;p+=1)@ = '"' as char;
+  for (let i int= 0; str[i]; (i:;i+=1)) {
+    if (str[i] == '\\'->char || str[i] == '"'->char) (p:;p+=1)@ = '\\'->char;
+    (p:;p+=1)@ = str[i];;
+  (p:;p+=1)@ = '"' as char;
+  (p:;p+=1)@ = '\0' as char;
   return buf;;
 new_str_token(str @char tmpl@Token)@Token =
   let buf = quote_string str;
@@ -229,10 +229,10 @@ read_macro_arg_one(rest@@Token tok@Token read_rest bool) @MacroArg =
     head = (let Token){;
     cur = &head
     level = 0;
-  while (level || ! equal tok ")" && (read_rest || ! equal tok ",")) {
+  while !(!level && (equal tok ")" || !read_rest && equal tok ",")) {
     if (tok.kind == TK_EOF) error_tok tok "premature end of input";
-    else if equal tok "(" level++;
-    else if equal tok ")" level--;
+    else if equal tok "(" (level:;level+=1);
+    else if equal tok ")" (level:;level-=1);
     cur.next = copy_token tok;
     cur = cur.next;
     tok = tok.next;;
@@ -276,12 +276,12 @@ find_arg(args @MacroArg tok@Token)@MacroArg =
 join_tokens(tok@Token end@Token)@char =
   let len = 1;
   for (let t @Token= tok; t != end && t.kind != TK_EOF; t = t.next) {
-    if (t != tok && t.has_space) len++;
+    if (t != tok && t.has_space) (len:;len+=1);
     len += t.len;;
   let buf = (calloc 1ul len->unsigned long as @char);
   let pos = 0;
   for (let t @Token= tok; t != end && t.kind != TK_EOF; t = t.next) {
-    if (t != tok && t.has_space) buf[pos++] = ' ' as char;
+    if (t != tok && t.has_space) buf[(pos:;pos+=1)] = ' ' as char;
     strncpy (buf + pos) t.loc t.len->unsigned long;
     pos += t.len;;
   buf[pos] = '\0' as char;
@@ -322,7 +322,7 @@ subst(tok@Token args @MacroArg include_paths@StringArray)@ Token =
         tok = tok.next.next;;;
     else {
       let arg = find_arg args tok;
-      if (arg && equal tok.next "##") {
+      if (!!arg && equal tok.next "##") {
         let rhs = tok.next.next;
         if (arg.tok.kind == TK_EOF) {
           let arg2 = find_arg args rhs;
@@ -382,7 +382,7 @@ export search_include_paths(filename@char include_paths@StringArray)@char =
   if (filename[0] == '/') return filename;
   let cached = hashmap_get &sipcache filename;
   if cached return cached->@char;
-  for (let i int = 0; i < include_paths.len; i++) {
+  for (let i int = 0; i < include_paths.len; (i:;i+=1)) {
     let path = format "%s/%s" include_paths.data[i] filename;
     if file_exists path {
       hashmap_put &sipcache filename path->@;
@@ -390,7 +390,7 @@ export search_include_paths(filename@char include_paths@StringArray)@char =
       return path;;;
   return 0->@char;;
 search_include_next(filename@char include_paths @StringArray)@char =
-  for (; include_next_idx < include_paths.len; include_next_idx++) {
+  for (; include_next_idx < include_paths.len; (include_next_idx:;include_next_idx+=1)) {
     let path = format "%s/%s" include_paths.data[include_next_idx] filename;
     if file_exists path return path;;
   return 0->@char;;
@@ -427,7 +427,7 @@ ifinclude_guards HashMap;
 include_file(tok@Token path@char filename_tok@Token)@Token =
   if hashmap_get &pragma_once path return tok;
   let guard_name = (hashmap_get &ifinclude_guards path as @char);
-  if (guard_name && hashmap_get &macros guard_name) return tok;
+  if (!!guard_name && hashmap_get &macros guard_name) return tok;
   let tok2 = tokenize_file path;
   if !tok2 error_tok filename_tok "%s: cannot open file: %s" path strerror errno;
   guard_name = detect_include_guard tok2;
@@ -535,7 +535,7 @@ line_macro(tmpl@Token)@ Token =
   while tmpl.origin tmpl = tmpl.origin;
   return new_num_token (tmpl.line_no + tmpl.file.line_delta) tmpl;;
 cmi int = 0;
-counter_macro(tmpl@Token)@Token = return new_num_token cmi++ tmpl;;
+counter_macro(tmpl@Token)@Token = return new_num_token (cmi:;cmi+=1) tmpl;;
 tmbuf[30]char;
 timestamp_macro(tmpl@Token)@Token =
   let st = (let struct stat){;;

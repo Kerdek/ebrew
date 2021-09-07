@@ -48,7 +48,7 @@ export decode_utf8(new_pos@@ char p@char) uint32_t =
     c = p@ & 0b11111 as unsigned int;
   ; else  error_at start "invalid UTF-8 sequence";
 
-  for (let i int = 1; i < len; i++) {
+  for (let i int = 1; i < len; (i:;i+=1)) {
     if (p[i]->unsigned char >> 6 != 0b10)
       error_at start "invalid UTF-8 sequence";
     c = (c << 6) | (p[i] & 0b111111);;

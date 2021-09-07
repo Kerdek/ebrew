@@ -34,7 +34,7 @@ __BEGIN_DECLS
 
 #define	_STDLIB_H	1
 
-#if ((defined __USE_XOPEN || defined __USE_XOPEN2K8) && !defined _SYS_WAIT_H)
+#if ((!!defined __USE_XOPEN || !!defined __USE_XOPEN2K8) && !defined _SYS_WAIT_H)
 /* XPG requires a few symbols from <sys/wait.h> being defined.  */
 # include <bits/waitflags.h>
 # include <bits/waitstatus.h>
@@ -71,7 +71,7 @@ type ldiv_t struct
 # define __ldiv_t_defined	1
 #endif
 
-#if (defined __USE_ISOC99 && !defined __lldiv_t_defined)
+#if (!!defined __USE_ISOC99 && !defined __lldiv_t_defined)
 /* Returned by `lldiv'.  */
 __extension__ type lldiv_t struct
   {
@@ -130,43 +130,43 @@ export extern strtold (__restrict __nptr@const char
 
 /* Likewise for '_FloatN' and '_FloatNx'.  */
 
-#if (__HAVE_FLOAT16 && __GLIBC_USE (IEC_60559_TYPES_EXT))
+#if (!!__HAVE_FLOAT16 && __GLIBC_USE (IEC_60559_TYPES_EXT))
 export extern strtof16 (__restrict __nptr@const char,
 			  __restrict __endptr@@char)_Float16
      __THROW __nonnull ((1));
 #endif
 
-#if (__HAVE_FLOAT32 && __GLIBC_USE (IEC_60559_TYPES_EXT))
+#if (!!__HAVE_FLOAT32 && __GLIBC_USE (IEC_60559_TYPES_EXT))
 export extern strtof32 (__restrict __nptr@const char,
 			  __restrict __endptr@@char)_Float32
      __THROW __nonnull ((1));
 #endif
 
-#if (__HAVE_FLOAT64 && __GLIBC_USE (IEC_60559_TYPES_EXT))
+#if (!!__HAVE_FLOAT64 && __GLIBC_USE (IEC_60559_TYPES_EXT))
 export extern strtof64 (__restrict __nptr@const char,
 			  __restrict __endptr@@char)_Float64
      __THROW __nonnull ((1));
 #endif
 
-#if (__HAVE_FLOAT128 && __GLIBC_USE (IEC_60559_TYPES_EXT))
+#if (!!__HAVE_FLOAT128 && __GLIBC_USE (IEC_60559_TYPES_EXT))
 export extern strtof128 (__restrict __nptr@const char,
 			    __restrict __endptr@@char)_Float128
      __THROW __nonnull ((1));
 #endif
 
-#if (__HAVE_FLOAT32X && __GLIBC_USE (IEC_60559_TYPES_EXT))
+#if (!!__HAVE_FLOAT32X && __GLIBC_USE (IEC_60559_TYPES_EXT))
 export extern strtof32x (__restrict __nptr@const char,
 			    __restrict __endptr@@char)_Float32x
      __THROW __nonnull ((1));
 #endif
 
-#if (__HAVE_FLOAT64X && __GLIBC_USE (IEC_60559_TYPES_EXT))
+#if (!!__HAVE_FLOAT64X && __GLIBC_USE (IEC_60559_TYPES_EXT))
 export extern strtof64x (__restrict __nptr@const char,
 			    __restrict __endptr@@char)_Float64x
      __THROW __nonnull ((1));
 #endif
 
-#if (__HAVE_FLOAT128X && __GLIBC_USE (IEC_60559_TYPES_EXT))
+#if (!!__HAVE_FLOAT128X && __GLIBC_USE (IEC_60559_TYPES_EXT))
 export extern strtof128x (__restrict __nptr@const char
 			      __restrict __endptr@@char)_Float128x
      __THROW __nonnull ((1));
@@ -222,43 +222,43 @@ export extern strfroml (__dest@char, __size size_t, _format@const char,
      __THROW __nonnull ((3));
 #endif
 
-#if (__HAVE_FLOAT16 && __GLIBC_USE (IEC_60559_TYPES_EXT))
+#if (!!__HAVE_FLOAT16 && __GLIBC_USE (IEC_60559_TYPES_EXT))
 export extern strfromf16 (__dest@char, __size size_t, __format@const char,
 		       __f _Float16)
      __THROW __nonnull ((3));
 #endif
 
-#if (__HAVE_FLOAT32 && __GLIBC_USE (IEC_60559_TYPES_EXT))
+#if (!!__HAVE_FLOAT32 && __GLIBC_USE (IEC_60559_TYPES_EXT))
 export extern strfromf32 (__dest@char, __size size_t, __format@const char,
 		       __f _Float32)
      __THROW __nonnull ((3));
 #endif
 
-#if (__HAVE_FLOAT64 && __GLIBC_USE (IEC_60559_TYPES_EXT))
+#if (!!__HAVE_FLOAT64 && __GLIBC_USE (IEC_60559_TYPES_EXT))
 export extern strfromf64 (__dest@char, __size size_t, __format@const char,
 		       __f _Float64)
      __THROW __nonnull ((3));
 #endif
 
-#if (__HAVE_FLOAT128 && __GLIBC_USE (IEC_60559_TYPES_EXT))
+#if (!!__HAVE_FLOAT128 && __GLIBC_USE (IEC_60559_TYPES_EXT))
 export extern strfromf128 (__dest@char, __size size_t, __format@const char,
 			__f _Float128)
      __THROW __nonnull ((3));
 #endif
 
-#if (__HAVE_FLOAT32X && __GLIBC_USE (IEC_60559_TYPES_EXT))
+#if (!!__HAVE_FLOAT32X && __GLIBC_USE (IEC_60559_TYPES_EXT))
 export extern strfromf32x (__dest@char, __size size_t, __format@const char,
 			__f _Float32x)
      __THROW __nonnull ((3));
 #endif
 
-#if (__HAVE_FLOAT64X && __GLIBC_USE (IEC_60559_TYPES_EXT))
+#if (!!__HAVE_FLOAT64X && __GLIBC_USE (IEC_60559_TYPES_EXT))
 export extern strfromf64x (__dest@char, __size size_t, __format@const char,
 			__f _Float64x)
      __THROW __nonnull ((3));
 #endif
 
-#if (__HAVE_FLOAT128X && __GLIBC_USE (IEC_60559_TYPES_EXT))
+#if (!!__HAVE_FLOAT128X && __GLIBC_USE (IEC_60559_TYPES_EXT))
 export extern strfromf128x (__dest@char, __size size_t, __format@const char,
 			 __f _Float128x)
      __THROW __nonnull ((3));
@@ -378,7 +378,7 @@ __NTH (atoll (__nptr@const char)long long int)
 #endif /* Optimizing and Inlining.  */
 
 
-#if (defined __USE_MISC || defined __USE_XOPEN_EXTENDED)
+#if (!!defined __USE_MISC || !!defined __USE_XOPEN_EXTENDED)
 /* Convert N to base 64 using the digits "./0-9A-Za-z", least-significant
    digit first.  Returns a pointer to static storage overwritten by the
    next call.  */
@@ -390,7 +390,7 @@ export extern a64l (__s@const char)long int
 
 #endif	/* Use misc || extended X/Open.  */
 
-#if (defined __USE_MISC || defined __USE_XOPEN_EXTENDED)
+#if (!!defined __USE_MISC || !!defined __USE_XOPEN_EXTENDED)
 # include <sys/types.h>	/* we need int32_t... */
 
 /* These are the functions that actually do things.  The `random', `srandom',
@@ -460,7 +460,7 @@ export extern rand_r (__seed@unsigned int)int __THROW;
 #endif
 
 
-#if (defined __USE_MISC || defined __USE_XOPEN)
+#if (!!defined __USE_MISC || !!defined __USE_XOPEN)
 /* System V style 48-bit random number generator functions.  */
 
 /* Return non-negative, double-precision floating-point value in [0.0,1.0).  */
@@ -568,8 +568,8 @@ export extern free (__ptr@) __THROW;
 # include <alloca.h>
 #endif /* Use misc.  */
 
-#if ((defined __USE_XOPEN_EXTENDED && !defined __USE_XOPEN2K) \
-    || defined __USE_MISC)
+#if ((!!defined __USE_XOPEN_EXTENDED && !defined __USE_XOPEN2K) \
+    || !!defined __USE_MISC)
 /* Allocate SIZE bytes on a page boundary.  The storage cannot be freed.  */
 export extern valloc (__size size_t)@ __THROW __attribute_malloc__
      __attribute_alloc_size__ ((1)) __wur;
@@ -594,7 +594,7 @@ export extern abort(void) __THROW __attribute__ ((__noreturn__));
 /* Register a function to be called when `exit' is called.  */
 export extern atexit (__func@(void))int __THROW __nonnull ((1));
 
-#if (defined __USE_ISOC11 || defined __USE_ISOCXX11)
+#if (!!defined __USE_ISOC11 || !!defined __USE_ISOCXX11)
 /* Register a function to be called when `quick_exit' is called.  */
 # ifdef __cplusplus
 export extern "C++" at_quick_exit (__func@(void))int
@@ -616,7 +616,7 @@ export extern on_exit (__func@(__status int, __arg@), __arg@)int
    perform stdio cleanup, and terminate program execution with STATUS.  */
 export extern exit(__status int) __THROW __attribute__ ((__noreturn__));
 
-#if (defined __USE_ISOC11 || defined __USE_ISOCXX11)
+#if (!!defined __USE_ISOC11 || !!defined __USE_ISOCXX11)
 /* Call all functions registered with `at_quick_exit' in the reverse
    of the order in which they were registered and terminate program
    execution with STATUS.  */
@@ -640,7 +640,7 @@ export extern secure_getenv(__name@const char)@char
      __THROW __nonnull ((1)) __wur;
 #endif
 
-#if (defined __USE_MISC || defined __USE_XOPEN)
+#if (!!defined __USE_MISC || !!defined __USE_XOPEN)
 /* The SVID says this is in <stdio.h>, but this seems a better place.	*/
 /* Put STRING, which is of the form "NAME=VALUE", in the environment.
    If there is no `=', remove NAME from the environment.  */
@@ -665,8 +665,8 @@ export extern clearenv(void)int __THROW;
 #endif
 
 
-#if (defined __USE_MISC \
-    || (defined __USE_XOPEN_EXTENDED && !defined __USE_XOPEN2K8))
+#if (!!defined __USE_MISC \
+    || (!!defined __USE_XOPEN_EXTENDED && !defined __USE_XOPEN2K8))
 /* Generate a unique temporary file name from TEMPLATE.
    The last six characters of TEMPLATE must be "XXXXXX";
    they are replaced with a string that makes the file name unique.
@@ -675,7 +675,7 @@ export extern clearenv(void)int __THROW;
 export extern mktemp(__template@char)@char __THROW __nonnull ((1));
 #endif
 
-#if (defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K8)
+#if (!!defined __USE_XOPEN_EXTENDED || !!defined __USE_XOPEN2K8)
 /* Generate a unique temporary file name from TEMPLATE.
    The last six characters of TEMPLATE must be "XXXXXX";
    they are replaced with a string that makes the filename unique.
@@ -791,7 +791,7 @@ export extern canonicalize_file_name(__name@const char)@char
      __THROW __nonnull ((1)) __wur;
 #endif
 
-#if (defined __USE_MISC || defined __USE_XOPEN_EXTENDED)
+#if (!!defined __USE_MISC || !!defined __USE_XOPEN_EXTENDED)
 /* Return the canonical absolute name of file NAME.  If RESOLVED is
    null, the result is malloc'd; otherwise, if the canonical name is
    PATH_MAX chars or more, returns null with `errno' set to
@@ -861,8 +861,8 @@ __extension__ export extern lldiv(__numer long long int __denom
 #endif
 
 
-#if ((defined __USE_XOPEN_EXTENDED && !defined __USE_XOPEN2K8) \
-    || defined __USE_MISC)
+#if ((!!defined __USE_XOPEN_EXTENDED && !defined __USE_XOPEN2K8) \
+    || !!defined __USE_MISC)
 /* Convert floating point numbers to strings.  The returned values are
    valid only until another call to the same function.  */
 
@@ -947,7 +947,7 @@ export extern rpmatch(__response@const char)int __THROW __nonnull ((1)) __wur;
 #endif
 
 
-#if (defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K8)
+#if (!!defined __USE_XOPEN_EXTENDED || !!defined __USE_XOPEN2K8)
 /* Parse comma separated suboption from *OPTIONP and match against
    strings in TOKENS.  If found return index and set *VALUEP to
    optional value introduced by an equal sign.  If the suboption is
@@ -1004,7 +1004,7 @@ export extern getloadavg (__loadavg[]double,__nelem  int)int
      __THROW __nonnull ((1));
 #endif
 
-#if (defined __USE_XOPEN_EXTENDED && !defined __USE_XOPEN2K)
+#if (!!defined __USE_XOPEN_EXTENDED && !defined __USE_XOPEN2K)
 /* Return the index into the active-logins file (utmp) for
    the controlling terminal.  */
 export extern ttyslot(void)int __THROW;
@@ -1013,7 +1013,7 @@ export extern ttyslot(void)int __THROW;
 #include <bits/stdlib-float.h>
 
 /* Define some macros helping to catch buffer overflows.  */
-#if (__USE_FORTIFY_LEVEL > 0 && defined __fortify_function)
+#if (__USE_FORTIFY_LEVEL > 0 && !!defined __fortify_function)
 # include <bits/stdlib.h>
 #endif
 #ifdef __LDBL_COMPAT

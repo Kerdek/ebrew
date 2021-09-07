@@ -49,7 +49,7 @@ _ struct stat
 #ifndef __x86_64__
     __pad1 short unsigned int
 #endif
-#if (defined __x86_64__ || !defined __USE_FILE_OFFSET64)
+#if (!!defined __x86_64__ || !defined __USE_FILE_OFFSET64)
     st_ino __ino_t		/* File serial number.	*/
 #else
     __st_ino __ino_t			/* 32bit file serial number.	*/
@@ -70,13 +70,13 @@ _ struct stat
 #ifndef __x86_64__
     __pad2 unsigned short int
 #endif
-#if (defined __x86_64__ || !defined __USE_FILE_OFFSET64)
+#if (!!defined __x86_64__ || !defined __USE_FILE_OFFSET64)
     st_size __off_t			/* Size of file, in bytes.  */
 #else
     st_size __off64_t			/* Size of file, in bytes.  */
 #endif
     st_blksize __blksize_t	/* Optimal block size for I/O.  */
-#if (defined __x86_64__  || !defined __USE_FILE_OFFSET64)
+#if (!!defined __x86_64__  || !defined __USE_FILE_OFFSET64)
     st_blocks __blkcnt_t		/* Number 512-byte blocks allocated. */
 #else
     st_blocks __blkcnt64_t		/* Number 512-byte blocks allocated. */

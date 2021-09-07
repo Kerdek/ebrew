@@ -8,10 +8,10 @@ export strarray_push(arr@ StringArray s@ char)  =
   if (arr.capacity == arr.len) {
     arr.data = realloc (arr.data->@) (sizeof@ char * arr.capacity * 2) as @@char;
     arr.capacity *= 2;
-    for (let i int = arr.len; i < arr.capacity; i++)
+    for (let i int = arr.len; i < arr.capacity; (i:;i+=1))
       arr.data[i] = 0 as @char;;
 
-  arr.data[arr.len++] = s;;
+  arr.data[(arr.len:;arr.len+=1)] = s;;
 
 export format(fmt@ char ...)@ char =
   let buf = 0->@char;

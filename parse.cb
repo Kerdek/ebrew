@@ -117,11 +117,11 @@ new_initializer(t @Type is_flexible bool) @Initializer =
       e.is_flexible = true;
       return e;;
     e.children = (calloc t.array_len->unsigned long sizeof @Initializer as @@Initializer);
-    for (let i int = 0; i < t.array_len; i++) e.children[i] = new_initializer t.base false;
+    for (let i int = 0; i < t.array_len; (i:;i+=1)) e.children[i] = new_initializer t.base false;
     return e;;
   if (t.kind == TY_STRUCT || t.kind == TY_UNION) {
     let len = 0;
-    for (let g@ Member = t.members; g; g = g.next) len++;
+    for (let g@ Member = t.members; g; g = g.next) (len:;len+=1);
     e.children = (calloc len->unsigned long sizeof @Initializer as @@Initializer);
     for (let g@ Member = t.members; g; g = g.next) {
       if (is_flexible && t.is_flexible && !g.next) {
@@ -154,7 +154,7 @@ new_gvar(name @char t @Type) @Obj = return
   (globals = o),
   o;;
 nunid int = 0;
-new_unique_name(void) @char = return format ".L..%d" nunid++;;
+new_unique_name(void) @char = return format ".L..%d" (nunid:;nunid+=1);;
 new_anon_gvar(t @Type) @Obj = return new_gvar new_unique_name t;;
 new_string_literal(p @char t @Type) @Obj = return new_anon_gvar t :: o (o.init_data = p), o;;
 
@@ -169,16 +169,18 @@ new_string_literal(p @char t @Type) @Obj = return new_anon_gvar t :: o (o.init_d
 just_a(j @Token a @Node b @Node) @Node = return a;;
 just_b(j @Token a @Node b @Node) @Node = return b;;
 
-new_node       (c NodeKind                 j @Token) @Node = return (calloc 1ul sizeof Node)->@Node :: e (e.kind = c), (e.tok = j), e;;
-new_binary     (c NodeKind a @Node b @Node j @Token) @Node = return new_node c j :: e (e.lhs = a), (e.rhs = b), e;;
-new_unary      (c NodeKind a @Node j @Token        ) @Node = return new_binary c a 0->@Node j;;
-new_nullary    (c NodeKind         j @Token        ) @Node = return new_unary c 0->@Node j;;
-new_lit        (l long             j @Token t @Type) @Node = return new_nullary ND_NUM j :: e (e.val = l), (e.ty = t), e;;
-new_none       (j @Token) @Node = return new_lit 0l j ty_void;;
-new_bool       (l long j @Token) @Node = return new_lit l j ty_bool;;
-new_long       (l long j @Token) @Node = return new_lit l j ty_long;;
-new_ulong      (l long j @Token) @Node = return new_lit l j ty_ulong;;
-new_reference  (o @Obj j @Token) @Node = return new_nullary ND_VAR j :: e (e.var = o), (e.ty = o.ty), e;;
+new_node            (c NodeKind                 j @Token) @Node = return (calloc 1ul sizeof Node)->@Node :: e (e.kind = c), (e.tok = j), e;;
+new_binary          (c NodeKind a @Node b @Node j @Token) @Node = return new_node c j :: e (e.lhs = a), (e.rhs = b), e;;
+new_unary           (c NodeKind a @Node j @Token        ) @Node = return new_binary c a 0->@Node j;;
+new_nullary         (c NodeKind         j @Token        ) @Node = return new_unary c 0->@Node j;;
+new_lit             (l long             j @Token t @Type) @Node = return new_nullary ND_NUM j :: e (e.val = l), (e.ty = t), e;;
+new_none            (j @Token) @Node = return new_lit 0l j ty_void;;
+new_bool            (l long j @Token) @Node = return new_lit l j ty_bool;;
+new_long            (l long j @Token) @Node = return new_lit l j ty_long;;
+new_ulong           (l long j @Token) @Node = return new_lit l j ty_ulong;;
+new_reference       (o @Obj j @Token) @Node = return new_nullary ND_VAR j :: e (e.var = o), (e.ty = o.ty), e;;
+new_member_reference(j @Token a @Node g @Member) @Node = return new_unary ND_MEMBER a j :: e (e.member = g), (e.ty = g.ty as @Type), e;;
+
 export new_cast(j @Token a @Node t @Type) @Node = return
   add_type a,
   new_unary ND_CAST a j :: e
@@ -196,8 +198,8 @@ new_until(j @Token a @Node) @Node = return
 new_comma(j @Token a @Node b @Node) @Node = return
   add_type a, add_type b,
   a.ty.kind != TY_VOID && (
-    format_types a.ty b.ty,
-    error_tok j "(%s , %s) left operand of comma must be void") as,
+    format_types a.ty ty_void,
+    error_tok j "(%s ,) you must write %s" s1 s2),
   new_binary ND_COMMA a b j :: e
   (e.ty = b.ty),
   e;;
@@ -207,16 +209,16 @@ new_let(j @Token a @Node b @Node o @Obj) @Node = return
   (e.ty = b.ty), e;;
 new_conditional(j @Token a @Node b @Node c @Node) @Node = return
   add_type a, add_type b, add_type c,
-  ( ! type_equal b.ty c.ty &&
-    ( format_types b.ty c.ty,
-      error_tok j "(? %s : %s)asymmetric conditional" s1 s2) )->,
+  !type_equal b.ty c.ty && (
+    format_types b.ty c.ty,
+    error_tok j "(? %s : %s) you must write equal types" s1 s2 ),
   new_node ND_COND j :: e
   (e.cond = a), (e.then = b), (e.els = c), (e.ty = b.ty), e;;
 new_assign(j @Token a @Node b @Node) @Node = return
   add_type a, add_type b,
   ! type_equal a.ty b.ty ?
     format_types a.ty b.ty,
-    error_tok j "(%s = %s) asymmetric assignment" s1 s2,
+    error_tok j "(%s = %s) you must write equal types" s1 s2,
     0 as @Node :
   new_binary ND_ASSIGN a b j :: e
   (e.ty = ty_void), e;;
@@ -226,15 +228,19 @@ new_lognot(j @Token a @Node) @Node = return
   (e.ty = a.ty), e;;
 new_logor(j @Token a @Node b @Node) @Node = return
   add_type a, add_type b,
-  usual_arith_conv &a &b,
+  ! type_equal   a.ty b.ty && (
+    format_types a.ty b.ty,
+    error_tok j "(%s || %s) must be of the form (T || T)" s1 s2),
   new_binary ND_LOGOR a b j :: e
-  (e.ty = a.ty),
+  (e.ty = b.ty),
   e;;
 new_logand(j @Token a @Node b @Node) @Node = return
   add_type a, add_type b,
-  usual_arith_conv &a &b,
+  !type_equal a.ty ty_bool && (
+    format_types a.ty b.ty,
+    error_tok j "(%s &&) you must write bool" s1),
   new_binary ND_LOGAND a b j :: e
-  (e.ty = a.ty),
+  (e.ty = b.ty),
   e;;
 new_bitnot(j @Token a @Node) @Node = return
   add_type a,
@@ -340,7 +346,7 @@ new_sub(j @Token a @Node b @Node) @Node = return
     format_types a.ty b.ty,
     error_tok j "(%s - %s) you may not subtract a pointer from a number" s1 s2, 0 as @Node :
   is_numeric a.ty && is_numeric b.ty ? new_binary ND_SUB a b j :
-  a.ty.base && is_integer b.ty ?
+  !!a.ty.base && is_integer b.ty ?
     new_binary ND_SUB a new_mul j b new_long a.ty.base.size->long j j :: e
     (e.ty = a.ty),
     e :
@@ -352,15 +358,13 @@ new_inc_dec(a @Node j @Token l long) @Node = return
   new_cast j new_comma j (new_add j a new_lit l j ty_int :: e new_assign j a e) new_add j a new_lit -l j ty_int a.ty;;
 
 
-
 get_ident(k@ Token) @char = return
-  (k.kind != TK_IDENT && error_tok k "expected an identifier")->,
+  k.kind != TK_IDENT && error_tok k "expected an identifier",
   strndup k.loc k.len->unsigned long;;
 find_type(k @Token) @Type = return
-  (k.kind == TK_IDENT)->@Type &&
-  ( (search_scope k scope_vars->@(sc@Scope)@HashMap)->@VarScope :: sc
-    sc->@Type && sc.type_def) ||
-  0->@Type;;
+  k.kind != TK_IDENT ? 0 as @Type :
+  (search_scope k scope_vars->@(sc@Scope)@HashMap)->@VarScope :: sc
+  sc->@Type ? sc.type_def : 0 as @Type;;
 push_tag_scope(k@ Token t@ Type) = return hashmap_put2 &scope.tags k.loc k.len t->@;;
 
 declspec(k @@Token v@ VarAttr) =
@@ -507,7 +511,7 @@ enum_specifier(k @@Token) @Type =
       l = const_expr k as int;;
     let sc = push_scope p;
     sc.enum_ty = t;
-    sc.enum_val = l++;;
+    sc.enum_val = (l:;l+=1);;
   return t;;
 typeof_specifier(k @@Token) @Type = return
   prefix k :: e
@@ -528,7 +532,7 @@ declaration(k @@Token v @VarAttr) @Node =
     if (t.kind == TY_VOID) error_tok k@ "variable declared void";
     if !t.name error_tok t.name_pos "variable name omitted";
     if equal t.name "_" continue;
-    if (v && v.is_static) {
+    if (!!v && v.is_static) {
       let o = new_anon_gvar t;
       (push_scope get_ident t.name).var = o;
       if equal k@ "=" {
@@ -536,7 +540,7 @@ declaration(k @@Token v @VarAttr) @Node =
         gvar_initializer k o;;
       continue;;
     let o = new_lvar get_ident t.name t;
-    if (v && v.alignment) o.alignment = v.alignment;
+    if (!!v && v.alignment) o.alignment = v.alignment;
     if equal k@ "=" {
       k@ = k.next;
       let e = lvar_initializer k o;
@@ -559,20 +563,20 @@ string_initializer(k @@Token e@ Initializer)  =
   if e.is_flexible e@ = (new_initializer array_of e.ty.base k.ty->@Type.array_len false)@;
   let len = minl e.ty.array_len->long k.ty->@Type.array_len->long;
   switch e.ty.base.size {
-  case 1: { let str = k.str           ; for (let i int = 0; i < len; i++) e.children[i].expr = new_lit str[i]->long k@ ty_int; break; ;
-  case 2: { let str = k.str->@uint16_t; for (let i int = 0; i < len; i++) e.children[i].expr = new_lit str[i]->long k@ ty_int; break; ;
-  case 4: { let str = k.str->@uint32_t; for (let i int = 0; i < len; i++) e.children[i].expr = new_lit str[i]->long k@ ty_int; break; ;
+  case 1: { let str = k.str           ; for (let i int = 0; i < len; (i:;i+=1)) e.children[i].expr = new_lit str[i]->long k@ ty_int; break; ;
+  case 2: { let str = k.str->@uint16_t; for (let i int = 0; i < len; (i:;i+=1)) e.children[i].expr = new_lit str[i]->long k@ ty_int; break; ;
+  case 4: { let str = k.str->@uint32_t; for (let i int = 0; i < len; (i:;i+=1)) e.children[i].expr = new_lit str[i]->long k@ ty_int; break; ;
   default: unreachable ;;
   k@ = k.next;;
 array_designator(k @@Token t @Type begin @int end @int) = return
   (k@ = k.next),
   (begin@ = const_expr k as int),
-  (begin@ >= t.array_len && error_tok k@ "array designator index exceeds array bounds")->,
+  begin@ >= t.array_len && error_tok k@ "array designator index exceeds array bounds",
   equal k@ "..." ?
     (k@ = k.next),
     (end@ = const_expr k as int),
-    (end@ >= t.array_len && error_tok k@ "array designator index exceeds array bounds")->,
-    end@ < begin@ && (error_tok k@ "array designator range [%d, %d] is empty" begin@ end@) as :
+    end@ >= t.array_len && error_tok k@ "array designator index exceeds array bounds",
+    end@ < begin@ && error_tok k@ "array designator range [%d, %d] is empty" begin@ end@ :
   (end@ = begin@),
   expect k "]";;
 struct_designator(k @@Token t@ Type) @Member =
@@ -588,10 +592,10 @@ struct_designator(k @@Token t@ Type) @Member =
       return g;;;
   error_tok k@ "struct has no such member";;
 designation(k @@Token e@ Initializer);
-designation_children(k @@Token e @Initializer begin int end int) = for (let i int = begin; i <= end; i++) designation k e.children[i];;
+designation_children(k @@Token e @Initializer begin int end int) = for (let i int = begin; i <= end; (i:;i+=1)) designation k e.children[i];;
 designation(k @@Token e@ Initializer) = return
   equal k@ "[" ?
-    (e.ty.kind != TY_ARRAY && error_tok k@ "array index in non-array initializer")->,
+    e.ty.kind != TY_ARRAY && error_tok k@ "array index in non-array initializer",
     0 :: begin
     0 :: end
     array_designator k e.ty &begin &end,
@@ -625,7 +629,7 @@ count_array_init_elements(j @Token t @Type) int =
       expect k "]";
       designation k dummy;
     ; else initializer2 k dummy;
-    i++;
+    (i:;i+=1);
     max = maxl max->long i->long as int;;
   return max;;
 array_initializer1(k @@Token e@ Initializer)  =
@@ -633,13 +637,13 @@ array_initializer1(k @@Token e@ Initializer)  =
   if e.is_flexible {
     let l = count_array_init_elements k@ e.ty;
     e@ = (new_initializer array_of e.ty.base l false)@;;
-  for (let i int = 0; ! consume k k@ ";"; i++) {
+  for (let i int = 0; ! consume k k@ ";"; (i:;i+=1)) {
     if (i < e.ty.array_len) initializer2 k e.children[i];;;
 array_initializer2(k @@Token e @Initializer i int)  =
   if e.is_flexible {
     let len = count_array_init_elements k@ e.ty;
     e@ = (new_initializer array_of e.ty.base len false)@;;
-  for (; i < e.ty.array_len && ! equal k@ ";"; i++) {
+  for (; i < e.ty.array_len && ! equal k@ ";"; (i:;i+=1)) {
     let start = k@;
     if (equal k@ "[" || equal k@ ".") {
       k@ = start;
@@ -658,7 +662,7 @@ struct_initializer1(k @@Token e @Initializer)  =
       g = g.next;
     ;;;
 struct_initializer2(k @@Token e@ Initializer g @Member)  =
-  for (; g && ! equal k@ ";"; g = g.next) {
+  for (; !!g && ! equal k@ ";"; g = g.next) {
     let start = k@;
     if (equal k@ "[" || equal k@ ".") {
       k@ = start;
@@ -735,7 +739,7 @@ init_desg_expr(z @InitDesg k @Token) @Node = return
 create_lvar_init(e @Initializer t @Type z @InitDesg k @Token)@ Node =
   if (t.kind == TY_ARRAY) {
     let a = new_node ND_NULL_EXPR k;
-    for (let i int = 0; i < t.array_len; i++) {
+    for (let i int = 0; i < t.array_len; (i:;i+=1)) {
       let
         z2 = (let InitDesg){z i;
         b = create_lvar_init e.children[i] t.base &z2 k;
@@ -804,7 +808,7 @@ write_buf(buf@ char val uint64_t sz int) = return
 write_gvar_data(cur@ Relocation init@ Initializer ty@ Type buf@ char offset int)@ Relocation =
   if (ty.kind == TY_ARRAY) {
     let sz = ty.base.size;
-    for (let i int = 0; i < ty.array_len; i++) {
+    for (let i int = 0; i < ty.array_len; (i:;i+=1)) {
       cur = write_gvar_data cur init.children[i] ty.base buf (offset + sz * i);;
     return cur;;
   if (ty.kind == TY_STRUCT) {
@@ -871,18 +875,17 @@ stmt(k @@Token) @Node = return
     expect k ";",
     add_type e.lhs,
     current_fn.ty.return_ty :: t
-    ( !type_equal current_fn.ty.return_ty e.lhs.ty &&
+    !type_equal current_fn.ty.return_ty e.lhs.ty &&
       ( format_types e.lhs.ty current_fn.ty.return_ty,
-        error_tok e.lhs.tok "asymmetric return from %s to %s" s1 s2 ))->,
+        error_tok e.lhs.tok "asymmetric return from %s to %s" s1 s2 ),
     e :
   consume k k@ "if" ?
     new_node ND_IF j :: e
     (e.cond = prefix k),
     (e.then = stmt k),
-    (consume k k@ "else" && (e.els = stmt k))->,
+    consume k k@ "else" && (e.els = stmt k),
     e :
   consume k k@ "switch" ?
-    warn_tok k@ "shitty switch case",
     new_node ND_SWITCH j :: e
     (e.cond = prefix k),
     current_switch :: sw
@@ -895,7 +898,7 @@ stmt(k @@Token) @Node = return
     (brk_label = brk),
     e :
   consume k k@ "case" ?
-    (!current_switch && error_tok j "stray case")->,
+    !current_switch && error_tok j "stray case",
     new_node ND_CASE j :: e
     const_expr k :: begin
     begin :: end
@@ -908,7 +911,7 @@ stmt(k @@Token) @Node = return
     (current_switch.case_next = e),
     e :
   consume k k@ "default" ?
-    (! current_switch && error_tok j "stray default")->,
+    !current_switch && error_tok j "stray default",
     new_node ND_CASE j :: e
     expect k ":",
     (e.label = new_unique_name),
@@ -929,9 +932,9 @@ stmt(k @@Token) @Node = return
         declspec k 0->@VarAttr,
         (e.init = declaration k 0->@VarAttr) :
       (e.init = expr_stmt k)),
-    (! equal k@ ";" && (e.cond = assign k))->,
+    !equal k@ ";" && (e.cond = assign k),
     expect k ";",
-    (! equal k@ ")" && (e.inc = assign k))->,
+    !equal k@ ")" && (e.inc = assign k),
     expect k ")",
     (e.then     = stmt k),
     leave_scope,
@@ -1092,7 +1095,7 @@ eval2(e@ Node label @@@char) int64_t = return
   e.kind == ND_COMMA  ? eval2 e.rhs label :
   e.kind == ND_NOT    ? (! eval e.lhs)->long :
   e.kind == ND_BITNOT ? ~ eval e.lhs :
-  e.kind == ND_LOGAND ? eval e.lhs && eval e.rhs :
+  e.kind == ND_LOGAND ? !!eval e.lhs && eval e.rhs :
   e.kind == ND_LOGOR  ? eval e.lhs || eval e.rhs :
   e.kind == ND_CAST   ?
     eval2 e.lhs label :: l
@@ -1165,7 +1168,7 @@ eval_double(e@ Node) double = return
     e.kind == ND_NUM   ? e.fval->double                         :
     e.kind == ND_CAST  ? is_flonum e.lhs.ty                     ? eval_double e.lhs  :
                                                                   eval e.lhs as double  :
-                         /*error_tok e.tok "not a compile-time constant",*/ 0.0 as double   ;;;;
+                         /*error_tok e.tok "not a compile-time constant",*/ 0.0    ;;;;
 
 
 
@@ -1210,6 +1213,9 @@ eval_double(e@ Node) double = return
 
 compound_assign(new @(j @Token a @Node b @Node) @Node k @@Token a @Node) @Node = return
   advance k :: j new_assign j a new@ j a conditional k;;
+
+try_assign(k @@Token a @Node op @char new @(j @Token a @Node b @Node) @Node) @Node = return
+  equal k@ op ? compound_assign new k a : 0 as @Node;;
 
 assign(k @@Token) @Node = return
                                     conditional k :: a
@@ -1263,7 +1269,7 @@ prefix(k @@Token) @Node = return
   consume k k@ "&" ?
     postfix k :: a
     add_type a,
-    a.kind == ND_MEMBER && a.member.is_bitfield && (error_tok k@ "cannot take address of bitfield") as,
+    a.kind == ND_MEMBER && a.member.is_bitfield && error_tok k@ "cannot take address of bitfield",
     new_unary ND_ADDR a start :
   consume k k@ "!"     ? new_unary ND_NOT    prefix k start                                              :
   consume k k@ "~"     ? new_unary ND_BITNOT prefix k start                                              :
@@ -1276,22 +1282,22 @@ prefix(k @@Token) @Node = return
       t.params :: u
       (let Node){; :: head
       &head :: cur
-      until !((u || t.is_variadic && ! equal k@ ")" && ! equal k@ ";" && !equal k@ "," && ! equal k@ ":") && (
+      until !((!!u || t.is_variadic && ! equal k@ ")" && ! equal k@ ";" && !equal k@ "," && ! equal k@ ":") && (
         prefix k :: b
         add_type b,
-        u && (
+        !!u && (
           !type_equal b.ty u && (
             format_types b.ty u,
-            error_tok k@ "asymmetric argument from %s to %s" s1 s2) as,
-          (u = u.next)) as,
+            error_tok k@ "asymmetric argument from %s to %s" s1 s2),
+          (u = u.next)),
         (cur.next = b),
         (cur = cur.next))) as,
-      u && (error_tok k@ "not enough arguments") as,
+      !!u && error_tok k@ "not enough arguments",
       new_unary ND_FUNCALL a k@ :: e
       (e.func_ty = t),
       (e.ty = t.return_ty),
       (e.args = head.next),
-      (e.ty.kind == TY_STRUCT || e.ty.kind == TY_UNION) && (e.ret_buffer = new_lvar "" e.ty) as,
+      (e.ty.kind == TY_STRUCT || e.ty.kind == TY_UNION) && (e.ret_buffer = new_lvar "" e.ty),
       (a = e))) as,
     a;;
 primary(k @@Token) @Node = return
@@ -1305,10 +1311,10 @@ primary(k @@Token) @Node = return
     (search_scope k@ scope_vars->@(sc@Scope)@HashMap)->@VarScope :: sc
     (k@ = k.next),
     sc ?
-      sc.var && sc.var.is_function &&
+      !!sc.var && sc.var.is_function &&
         ( &current_fn.refs :: a
           current_fn ? strarray_push a sc.var.name :
-          (sc.var.is_root = true)) as,
+          (sc.var.is_root = true) ),
       sc.var ? new_reference sc.var k@ :
       sc.enum_ty ? new_lit sc.enum_val->long k@ sc.enum_ty :
       error_tok k@ "internal compiler error", 0->@Node :
@@ -1318,22 +1324,19 @@ primary(k @@Token) @Node = return
     (k@ = k.next), e :
   k.kind == TK_NUM ?
     ( is_flonum k.ty->@Type
-      ? new_node ND_NUM k@ :: e (e.fval = k.fval), e
+      ? new_node ND_NUM k@ :: e (e.fval = k.fval), (e.ty = k.ty as @Type), e
       : new_lit k.val k@ k.ty->@Type) :: e (k@ = k.next), e :
   error_tok k@ "expected an expression", 0 as @Node;;
-struct_ref(e @Node k @@Token) @Node =
-  add_type e;
-  if (e.ty.kind != TY_STRUCT && e.ty.kind != TY_UNION) error_tok e.tok "not a struct nor a union";
-  let t = e.ty;
-  for (;;) {
-    let g = get_struct_member t k@;
-    if !g error_tok k@ "no such member";
-    e = new_unary ND_MEMBER e k@;
-    e.member = g;
-    if g.name break;
-    t = g.ty as @Type;;
-  k@ = k.next;
-  return e;;
+struct_ref(k @@Token a @Node) @Node = return
+  a.ty.kind != TY_STRUCT && a.ty.kind != TY_UNION && (
+    format_types a.ty ty_void,
+    error_tok k@ "(%s . %.*s) you must write struct or union" s1 k.next.len k.next.loc),
+  get_struct_member a.ty k@ :: g
+  !g && (
+    format_types a.ty ty_void,
+    error_tok k@ "(%s . %.*s) no such member" s1 k.next.len k.next.loc),
+  new_member_reference k@ a g :;
+  k@ = k.next;;
 postfix(k @@Token)@ Node =
   let start = k@;
   if (equal k@ "(" && equal k.next "let") {
@@ -1356,12 +1359,10 @@ postfix(k @@Token)@ Node =
       let l = conditional k;
       expect k "]";
       e = new_unary ND_DEREF new_add start e l start;;
-    else if consume k k@ "." { add_type e; while (e.ty.kind == TY_PTR) { e = new_unary ND_DEREF e start; add_type e;; e = struct_ref e k;;
+    else if consume k k@ "." { add_type e; while (e.ty.kind == TY_PTR) { e = new_unary ND_DEREF e start; add_type e;; e = struct_ref k e;;
     else if consume k k@ "@" e = new_unary ND_DEREF e start;
     else if consume k k@ "->" {
       e = new_cast start e type_suffix k;;
-    else if consume k k@ "++" e = new_inc_dec e start 1l;
-    else if consume k k@ "--" e = new_inc_dec e start -1l;
     else return e;;;
 
 
@@ -1414,7 +1415,7 @@ struct_members(k @@Token t @Type)  =
       let g = (calloc 1ul sizeof Member as @Member);
       g.ty = declarator k as @;
       g.name = g.ty->@Type.name;
-      g.idx = idx++;
+      g.idx = (idx:;idx+=1);
       g.alignment = v.alignment ? v.alignment : g.ty->@Type.alignment;
       if consume k k@ ":" {
         g.is_bitfield = true;
@@ -1441,10 +1442,10 @@ struct_union_decl(k @@Token) @Type = return
   struct_type :: t
   attribute_list k t,
   0 as @Token :: tag
-  (k.kind == TK_IDENT &&
+  k.kind == TK_IDENT &&
     ( (tag = k@),
-      (k@ = k.next)))->,
-  tag && ! equal k@ "{" ?
+      (k@ = k.next)),
+  !!tag && ! equal k@ "{" ?
     (search_scope tag scope_tags->@(sc@Scope)@HashMap)->@Type :: t2
     t2 ? t2 :
     (t.size = -1),
@@ -1500,7 +1501,7 @@ get_struct_member(t @Type j @Token) @Member =
 typedecl(k@@ Token) =
   while ! consume k k@ ";" {
     declarator k :: t
-    t.name || (error_tok t.name_pos "type name may not be omitted in type alias declaration") as,
+    !t.name && (error_tok t.name_pos "type name may not be omitted in type alias declaration"),
     ((push_scope get_ident t.name).type_def = t);;;
 create_param_lvars(param@ Type) = return
   param ?
@@ -1515,22 +1516,22 @@ find_func(name @char) @Obj = return
   scope :: sc
   until ! next_scope &sc as,
   hashmap_get &sc.vars name as @VarScope :: sc2
-  sc2 && sc2.var && sc2.var.is_function && sc2.var as @Obj;;
+  !!sc2 && !!sc2.var && sc2.var.is_function ? sc2.var : 0 as @Obj;;
 mark_live(o@ Obj) =
   if (!o.is_function || o.is_live) return;
   o.is_live = true;
-  for (let i int = 0; i < o.refs.len; i++) {
+  for (let i int = 0; i < o.refs.len; (i:;i+=1)) {
     let o2 = find_func o.refs.data[i];
     if o2 mark_live o2;;;
 function(k @@Token attr @VarAttr) = return
   declarator k :: ty
-  ((!ty.name || equal ty.name "_") && error_tok ty.name_pos "function name omitted")->,
+  (!ty.name || equal ty.name "_") && error_tok ty.name_pos "function name omitted",
   get_ident ty.name :: name_str
   find_func name_str :: o
   ( o ?
-      (!o.is_function && error_tok k@ "redeclared as a different kind of symbol")->,
-      (o.is_definition && equal k@ "=" && error_tok k@ "redefinition of %s" name_str)->,
-      (o.is_export != attr.is_export && error_tok k@ "mismatched visibility")->,
+      !o.is_function                  && error_tok k@ "redeclared as a different kind of symbol",
+      o.is_definition && equal k@ "=" && error_tok k@ "redefinition of %s" name_str,
+      o.is_export != attr.is_export   && error_tok k@ "mismatched visibility",
       (o.is_definition = o.is_definition || equal k@ "=") :
     (o = new_gvar name_str ty),
     (o.is_function = true),
@@ -1544,9 +1545,9 @@ function(k @@Token attr @VarAttr) = return
   enter_scope,
   create_param_lvars ty.params,
   ty.return_ty :: rty
-  (((rty.kind == TY_STRUCT || rty.kind == TY_UNION) && rty.size > 16) && new_lvar "" pointer_to rty)->,
+  ((rty.kind == TY_STRUCT || rty.kind == TY_UNION) && rty.size > 16) && new_lvar "" pointer_to rty as,
   (o.params = locals),
-  (ty.is_variadic && (o.va_area = new_lvar "__va_area__" array_of ty_char 136))->,
+  ty.is_variadic && (o.va_area = new_lvar "__va_area__" array_of ty_char 136),
   (o.alloca_bottom = new_lvar "__alloca_size__" pointer_to ty_char),
   expect k "=",
   (o.body = compound_stmt k as @),

@@ -31,11 +31,11 @@ __BEGIN_DECLS
 
 #include <bits/types/sig_atomic_t.h>
 
-#if defined __USE_POSIX
+#if !!defined __USE_POSIX
 #include <bits/types/sigset_t.h>
 #endif
 
-#if (defined __USE_XOPEN || defined __USE_XOPEN2K)
+#if (!!defined __USE_XOPEN || !!defined __USE_XOPEN2K)
 # ifndef __pid_t_defined
 type __pid_t pid_t;
 #  define __pid_t_defined
@@ -53,7 +53,7 @@ type __uid_t uid_t;
 # include <bits/types/struct_timespec.h>
 #endif
 
-#if (defined __USE_POSIX199309 || defined __USE_XOPEN_EXTENDED)
+#if (!!defined __USE_POSIX199309 || !!defined __USE_XOPEN_EXTENDED)
 # include <bits/types/siginfo_t.h>
 # include <bits/siginfo-consts.h>
 #endif
@@ -98,9 +98,9 @@ export extern __REDIRECT_NTH (signal
 # endif
 #endif
 
-#if (defined __USE_XOPEN_EXTENDED && !defined __USE_XOPEN2K8)
+#if (!!defined __USE_XOPEN_EXTENDED && !defined __USE_XOPEN2K8)
 /* The X/Open definition of `signal' conflicts with the BSD version.
-   So they defined another function `bsd_signal'.  */
+   So they !!defined another function `bsd_signal'.  */
 export extern bsd_signal (__sig int __handler __sighandler_t)__sighandler_t
      __THROW;
 #endif
@@ -112,7 +112,7 @@ export extern bsd_signal (__sig int __handler __sighandler_t)__sighandler_t
 export extern kill (__pid __pid_t __sig int)int __THROW;
 #endif /* Use POSIX.  */
 
-#if (defined __USE_MISC || defined __USE_XOPEN_EXTENDED)
+#if (!!defined __USE_MISC || !!defined __USE_XOPEN_EXTENDED)
 /* Send SIG to all processes in process group PGRP.
    If PGRP is zero, send SIG to all processes in
    the current process's process group.  */
@@ -296,18 +296,18 @@ export extern sigreturn (__scp@struct sigcontext)int __THROW;
 #endif /* Use misc.  */
 
 
-#if (defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K8)
+#if (!!defined __USE_XOPEN_EXTENDED || !!defined __USE_XOPEN2K8)
 # define __need_size_t
 # include <stddef.h>
 
 # include <bits/types/stack_t.h>
-# if (defined __USE_XOPEN || defined __USE_XOPEN2K8)
+# if (!!defined __USE_XOPEN || !!defined __USE_XOPEN2K8)
 /* This will define `ucontext_t' and `mcontext_t'.  */
 #  include <sys/ucontext.h>
 # endif
 #endif /* Use POSIX.1-2008 or X/Open Unix.  */
 
-#if (defined __USE_XOPEN_EXTENDED || defined __USE_MISC)
+#if (!!defined __USE_XOPEN_EXTENDED || !!defined __USE_MISC)
 /* If INTERRUPT is nonzero, make signal SIG interrupt system calls
    (causing them to fail with EINTR); if INTERRUPT is zero, make system
    calls be restarted after signal SIG.  */
@@ -322,13 +322,13 @@ export extern sigaltstack (__restrict __ss@const stack_t
 			__restrict __oss@stack_t)int __THROW;
 #endif /* __USE_XOPEN_EXTENDED || __USE_MISC */
 
-#if ((defined __USE_XOPEN_EXTENDED && !defined __USE_XOPEN2K8)	\
-     || defined __USE_MISC)
+#if ((!!defined __USE_XOPEN_EXTENDED && !defined __USE_XOPEN2K8)	\
+     || !!defined __USE_MISC)
 # include <bits/types/struct_sigstack.h>
 #endif
 
-#if ((defined __USE_XOPEN_EXTENDED && !defined __USE_XOPEN2K)	\
-     || defined __USE_MISC)
+#if ((!!defined __USE_XOPEN_EXTENDED && !defined __USE_XOPEN2K)	\
+     || !!defined __USE_MISC)
 /* Run signals handlers on the stack specified by SS (if not NULL).
    If OSS is not NULL, it is filled in with the old signal stack status.
    This interface is obsolete and on many platform not implemented.  */
@@ -352,9 +352,9 @@ export extern sigignore (__sig int)int __THROW;
 export extern sigset (__sig int __disp __sighandler_t)__sighandler_t __THROW;
 #endif
 
-#if (defined __USE_POSIX199506 || defined __USE_UNIX98)
+#if (!!defined __USE_POSIX199506 || !!defined __USE_UNIX98)
 /* Some of the functions for handling signals in threaded programs must
-   be defined here.  */
+   be !!defined here.  */
 # include <bits/pthreadtypes.h>
 # include <bits/sigthread.h>
 #endif /* use Unix98 */

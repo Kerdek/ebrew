@@ -22,11 +22,11 @@
    stdio.h API.  However, much of it is part of the official *binary*
    interface, and therefore cannot be changed.  */
 
-#if (defined _IO_USE_OLD_IO_FILE && !defined _LIBC)
+#if (!!defined _IO_USE_OLD_IO_FILE && !defined _LIBC)
 # error "_IO_USE_OLD_IO_FILE should only be defined when building libc itself"
 #endif
 
-#if (defined _IO_lock_t_defined && !defined _LIBC)
+#if (!!defined _IO_lock_t_defined && !defined _LIBC)
 # error "_IO_lock_t_defined should only be defined when building libc itself"
 #endif
 

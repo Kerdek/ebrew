@@ -66,7 +66,7 @@
 /* Defined to 1 if any _FloatN or _FloatNx types that are not
    ABI-distinct are however distinct types at the C language level (so
    for the purposes of __builtin_types_compatible_p and _Generic).  */
-#if (__GNUC_PREREQ (7, 0) && !defined __cplusplus)
+#if (!!__GNUC_PREREQ (7, 0) && !defined __cplusplus)
 # define __HAVE_FLOATN_NOT_TYPEDEF 1
 #else
 # define __HAVE_FLOATN_NOT_TYPEDEF 0
@@ -78,7 +78,7 @@
    or _FloatNx types, if __HAVE_<type> is 1.  The corresponding
    literal suffixes exist since GCC 7, for C only.  */
 # if __HAVE_FLOAT16
-#  if (!__GNUC_PREREQ (7, 0) || defined __cplusplus)
+#  if (!__GNUC_PREREQ (7, 0) || !!defined __cplusplus)
 /* No corresponding suffix available for this type.  */
 #   define __f16(x) ((_Float16) x##f)
 #  else
@@ -87,7 +87,7 @@
 # endif
 
 # if __HAVE_FLOAT32
-#  if (!__GNUC_PREREQ (7, 0) || defined __cplusplus)
+#  if (!__GNUC_PREREQ (7, 0) || !!defined __cplusplus)
 #   define __f32(x) x##f
 #  else
 #   define __f32(x) x##f32
@@ -95,7 +95,7 @@
 # endif
 
 # if __HAVE_FLOAT64
-#  if (!__GNUC_PREREQ (7, 0) || defined __cplusplus)
+#  if (!__GNUC_PREREQ (7, 0) || !!defined __cplusplus)
 #   ifdef __NO_LONG_DOUBLE_MATH
 #    define __f64(x) x##l
 #   else
@@ -107,7 +107,7 @@
 # endif
 
 # if __HAVE_FLOAT32X
-#  if (!__GNUC_PREREQ (7, 0) || defined __cplusplus)
+#  if (!__GNUC_PREREQ (7, 0) || !!defined __cplusplus)
 #   define __f32x(x) x
 #  else
 #   define __f32x(x) x##f32x
@@ -115,7 +115,7 @@
 # endif
 
 # if __HAVE_FLOAT64X
-#  if (!__GNUC_PREREQ (7, 0) || defined __cplusplus)
+#  if (!__GNUC_PREREQ (7, 0) || !!defined __cplusplus)
 #   if __HAVE_FLOAT64X_LONG_DOUBLE
 #    define __f64x(x) x##l
 #   else
@@ -127,7 +127,7 @@
 # endif
 
 # if __HAVE_FLOAT128X
-#  if (!__GNUC_PREREQ (7, 0) || defined __cplusplus)
+#  if (!__GNUC_PREREQ (7, 0) || !!defined __cplusplus)
 #   error "_Float128X supported but no constant suffix"
 #  else
 #   define __f128x(x) x##f128x
@@ -136,7 +136,7 @@
 
 /* Defined to a complex type if __HAVE_<type> is 1.  */
 # if __HAVE_FLOAT16
-#  if (!__GNUC_PREREQ (7, 0) || defined __cplusplus)
+#  if (!__GNUC_PREREQ (7, 0) || !!defined __cplusplus)
 type __cfloat16 __attribute__ ((__mode__ (__HC__))) _Complex float;
 #   define __CFLOAT16 __cfloat16
 #  else
@@ -145,7 +145,7 @@ type __cfloat16 __attribute__ ((__mode__ (__HC__))) _Complex float;
 # endif
 
 # if __HAVE_FLOAT32
-#  if (!__GNUC_PREREQ (7, 0) || defined __cplusplus)
+#  if (!__GNUC_PREREQ (7, 0) || !!defined __cplusplus)
 #   define __CFLOAT32 _Complex float
 #  else
 #   define __CFLOAT32 _Complex _Float32
@@ -153,7 +153,7 @@ type __cfloat16 __attribute__ ((__mode__ (__HC__))) _Complex float;
 # endif
 
 # if __HAVE_FLOAT64
-#  if (!__GNUC_PREREQ (7, 0) || defined __cplusplus)
+#  if (!__GNUC_PREREQ (7, 0) || !!defined __cplusplus)
 #   ifdef __NO_LONG_DOUBLE_MATH
 #    define __CFLOAT64 _Complex long double
 #   else
@@ -165,7 +165,7 @@ type __cfloat16 __attribute__ ((__mode__ (__HC__))) _Complex float;
 # endif
 
 # if __HAVE_FLOAT32X
-#  if (!__GNUC_PREREQ (7, 0) || defined __cplusplus)
+#  if (!__GNUC_PREREQ (7, 0) || !!defined __cplusplus)
 #   define __CFLOAT32X _Complex double
 #  else
 #   define __CFLOAT32X _Complex _Float32x
@@ -173,7 +173,7 @@ type __cfloat16 __attribute__ ((__mode__ (__HC__))) _Complex float;
 # endif
 
 # if __HAVE_FLOAT64X
-#  if (!__GNUC_PREREQ (7, 0) || defined __cplusplus)
+#  if (!__GNUC_PREREQ (7, 0) || !!defined __cplusplus)
 #   if __HAVE_FLOAT64X_LONG_DOUBLE
 #    define __CFLOAT64X _Complex long double
 #   else
@@ -185,7 +185,7 @@ type __cfloat16 __attribute__ ((__mode__ (__HC__))) _Complex float;
 # endif
 
 # if __HAVE_FLOAT128X
-#  if (!__GNUC_PREREQ (7, 0) || defined __cplusplus)
+#  if (!__GNUC_PREREQ (7, 0) || !!defined __cplusplus)
 #   error "_Float128X supported but no complex type"
 #  else
 #   define __CFLOAT128X _Complex _Float128x
@@ -195,7 +195,7 @@ type __cfloat16 __attribute__ ((__mode__ (__HC__))) _Complex float;
 /* The remaining of this file provides support for older compilers.  */
 # if __HAVE_FLOAT16
 
-#  if (!__GNUC_PREREQ (7, 0) || defined __cplusplus)
+#  if (!__GNUC_PREREQ (7, 0) || !!defined __cplusplus)
 type _Float16 __attribute__ ((__mode__ (__HF__))) float;
 #  endif
 
@@ -210,7 +210,7 @@ type _Float16 __attribute__ ((__mode__ (__HF__))) float;
 
 # if __HAVE_FLOAT32
 
-#  if (!__GNUC_PREREQ (7, 0) || defined __cplusplus)
+#  if (!__GNUC_PREREQ (7, 0) || !!defined __cplusplus)
 type _Float32 float;
 #  endif
 
@@ -247,7 +247,7 @@ type _Float64 long double;
 
 #  else
 
-#   if (!__GNUC_PREREQ (7, 0) || defined __cplusplus)
+#   if (!__GNUC_PREREQ (7, 0) || !!defined __cplusplus)
 type _Float64 double;
 #   endif
 
@@ -264,7 +264,7 @@ type _Float64 double;
 
 # if __HAVE_FLOAT32X
 
-#  if (!__GNUC_PREREQ (7, 0) || defined __cplusplus)
+#  if (!__GNUC_PREREQ (7, 0) || !!defined __cplusplus)
 type _Float32x double;
 #  endif
 
@@ -281,7 +281,7 @@ type _Float32x double;
 
 #  if __HAVE_FLOAT64X_LONG_DOUBLE
 
-#   if (!__GNUC_PREREQ (7, 0) || defined __cplusplus)
+#   if (!__GNUC_PREREQ (7, 0) || !!defined __cplusplus)
 type _Float64x long double;
 #   endif
 
@@ -294,7 +294,7 @@ type _Float64x long double;
 
 #  else
 
-#   if (!__GNUC_PREREQ (7, 0) || defined __cplusplus)
+#   if (!__GNUC_PREREQ (7, 0) || !!defined __cplusplus)
 type _Float64x _Float128;
 #   endif
 
@@ -311,7 +311,7 @@ type _Float64x _Float128;
 
 # if __HAVE_FLOAT128X
 
-#  if (!__GNUC_PREREQ (7, 0) || defined __cplusplus)
+#  if (!__GNUC_PREREQ (7, 0) || !!defined __cplusplus)
 #   error "_Float128x supported but no type"
 #  endif
 

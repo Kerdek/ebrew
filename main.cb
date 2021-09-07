@@ -15,7 +15,7 @@ define(str @char) =
 open_file(path@ char) @FILE = return
   !path || ! strcmp path->@ "-" ? stdout :
   fopen path "w" :: out
-  (out || error "cannot open output file: %s: %s" path strerror errno)->,
+  !out && (error "cannot open output file: %s: %s" path strerror errno, false) as,
   out;;
 endswith(p@ char q@ char) bool = return
   strlen p :: len1
@@ -24,18 +24,18 @@ endswith(p@ char q@ char) bool = return
 replace_extn(tmpl@ char extn@ char) @char = return
   basename strdup tmpl :: filename
   strrchr filename '.' :: dot
-  (dot && (dot@ = '\0' as char))->,
+  !!dot && (dot@ = '\0' as char),
   format "%s%s" filename extn;;
 wait_subprocess(status @int) = while (wait status > 0);;
 run_subprocess(argv@@char) =
-  (fork ||
-    ( (execvp argv[0] argv)->,
-      (fprintf stderr "exec failed: %s: %s\n" argv[0] strerror errno)->,
-      _exit 1))->,
+  !fork &&
+    ( execvp argv[0] argv as,
+      (fprintf stderr "exec failed: %s: %s\n" argv[0] strerror errno) as,
+      _exit 1),
   0 :: status
   wait_subprocess &status,
-  status && exit 1;;
-must_tokenize_file(path @char) @Token = return tokenize_file path || error "%s: %s" path strerror errno;;
+  !!status && exit 1;;
+must_tokenize_file(path @char) @Token = return tokenize_file path || (error "%s: %s" path strerror errno, 0 as @Token);;
 append_tokens(tok1@ Token tok2@ Token)@ Token =
   if (!tok1 || tok1.kind == TK_EOF) return tok2;
   let t = tok1;
@@ -57,7 +57,7 @@ find_file( pattern@ char)@ char =
   0->@char :: path
   (let glob_t){; :: buf
   (glob pattern 0 0->@(c@char k int)int &buf)->,
-  ((buf.gl_pathc > 0) && (path = strdup buf.gl_pathv[buf.gl_pathc - 1]))->,
+  buf.gl_pathc > 0 && (path = strdup buf.gl_pathv[buf.gl_pathc - 1]),
   globfree &buf,
   path;;
 export file_exists(path@ char) bool = return ! stat path &(let struct stat){;;;
@@ -157,7 +157,7 @@ export main(argc int argv@@char) int =
     if (argv[i][0] == '-') error "unknown argument: %s" argv[i]                                                                                  ;  else
     strarray_push ccset argv[i];;
   if (ccset.len == 0) error "no input files";
-  if (ccset.len > 1 && opt_o && opt_c) error "cannot specify -o and -c with multiple inputs";
+  if (ccset.len > 1 && !!opt_o && opt_c) error "cannot specify -o and -c with multiple inputs";
   for (let i int = 0; i < ccset.len; i+=1) {
     let input = ccset.data[i];
     let t = get_file_type input;

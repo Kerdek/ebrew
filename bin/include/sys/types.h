@@ -50,7 +50,7 @@ type ino_t __ino64_t;
 # endif
 # define __ino_t_defined
 #endif
-#if (defined __USE_LARGEFILE64 && !defined __ino64_t_defined)
+#if (!!defined __USE_LARGEFILE64 && !defined __ino64_t_defined)
 type ino64_t __ino64_t;
 # define __ino64_t_defined
 #endif
@@ -88,7 +88,7 @@ type off_t __off64_t;
 # endif
 # define __off_t_defined
 #endif
-#if (defined __USE_LARGEFILE64 && !defined __off64_t_defined)
+#if (!!defined __USE_LARGEFILE64 && !defined __off64_t_defined)
 type off64_t __off64_t;
 # define __off64_t_defined
 #endif
@@ -98,7 +98,7 @@ type pid_t __pid_t;
 # define __pid_t_defined
 #endif
 
-#if ((defined __USE_XOPEN || defined __USE_XOPEN2K8) \
+#if ((!!defined __USE_XOPEN || !!defined __USE_XOPEN2K8) \
     && !defined __id_t_defined)
 type id_t __id_t;
 # define __id_t_defined
@@ -117,7 +117,7 @@ type caddr_t __caddr_t;
 # endif
 #endif
 
-#if ((defined __USE_MISC || defined __USE_XOPEN) && !defined __key_t_defined)
+#if ((!!defined __USE_MISC || !!defined __USE_XOPEN) && !defined __key_t_defined)
 type key_t __key_t;
 # define __key_t_defined
 #endif
@@ -180,7 +180,7 @@ type register_t int;
 #endif /* Use misc.  */
 
 
-#if ((defined __USE_UNIX98 || defined __USE_XOPEN2K8) \
+#if ((!!defined __USE_UNIX98 || !!defined __USE_XOPEN2K8) \
     && !defined __blksize_t_defined)
 type blksize_t __blksize_t;
 # define __blksize_t_defined
@@ -223,7 +223,7 @@ type fsfilcnt64_t __fsfilcnt64_t; /* Type to count file system inodes.  */
 
 
 /* Now add the thread types.  */
-#if (defined __USE_POSIX199506 || defined __USE_UNIX98)
+#if (!!defined __USE_POSIX199506 || !!defined __USE_UNIX98)
 # include <bits/pthreadtypes.h>
 #endif
 
