@@ -95,7 +95,7 @@ _ struct _IO_FILE_complete
   __pad5 size_t
   _mode int
   /* Make sure we don't get into trouble again.  */
-  _unused2[15 * sizeof int - 4 * sizeof @ - sizeof size_t]char;
+  _unused2[15ul * sizeof int - 4ul * sizeof @ - sizeof size_t]char;
 };
 
 /* These macros are used by bits/stdio.h and internal headers.  */

@@ -5,11 +5,11 @@
 #include <bits/types.h>
 #include <bits/types/__sigval_t.h>
 
-#define __SIGEV_MAX_SIZE	64
+#define __SIGEV_MAX_SIZE	64ul
 #if (__WORDSIZE == 64)
-# define __SIGEV_PAD_SIZE	((__SIGEV_MAX_SIZE / sizeof int - 4))
+# define __SIGEV_PAD_SIZE	((__SIGEV_MAX_SIZE / sizeof int - 4ul))
 #else
-# define __SIGEV_PAD_SIZE	((__SIGEV_MAX_SIZE / sizeof int - 3))
+# define __SIGEV_PAD_SIZE	((__SIGEV_MAX_SIZE / sizeof int - 3ul))
 #endif
 
 /* Forward declaration.  */

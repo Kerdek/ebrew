@@ -6,7 +6,7 @@ export strarray_push(arr@ StringArray s@ char)  =
     arr.capacity = 8;;
 
   if (arr.capacity == arr.len) {
-    arr.data = realloc (arr.data->@) (sizeof@ char * arr.capacity * 2) as @@char;
+    arr.data = realloc (arr.data to @) (sizeof@ char * arr.capacity * 2) as @@char;
     arr.capacity *= 2;
     for (let i int = arr.len; i < arr.capacity; (i:;i+=1))
       arr.data[i] = 0 as @char;;
@@ -14,12 +14,12 @@ export strarray_push(arr@ StringArray s@ char)  =
   arr.data[(arr.len:;arr.len+=1)] = s;;
 
 export format(fmt@ char ...)@ char =
-  let buf = 0->@char;
-  let buflen = 0->size_t;
+  let buf = 0 to @char;
+  let buflen = 0 to size_t;
   let b = &buflen;
   let out = open_memstream &buf b;
 
-  let ap = (let va_list){;;
+  let ap = new va_list {;;
   va_start(ap, fmt);
   (vfprintf out fmt &ap);
   va_end(ap)

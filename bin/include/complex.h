@@ -36,7 +36,7 @@ __BEGIN_DECLS
 /* We might need to add support for more compilers here.  But since ISO
    C99 is out hopefully all maintained compilers will soon provide the data
    types `float complex' and `double complex'.  */
-#if __GNUC_PREREQ (2, 7) && !__GNUC_PREREQ (2, 97)
+#if __GNUC_PREREQ (2, 7) &&  not __GNUC_PREREQ (2, 97)
 # define _Complex __complex__
 #endif
 
@@ -116,7 +116,7 @@ __BEGIN_DECLS
 
 /* And the long double versions.  It is non-critical to define them
    here unconditionally since `long double' is required in ISO C99.  */
-#if !(defined __NO_LONG_DOUBLE_MATH && defined _LIBC)	\
+#if  not (defined __NO_LONG_DOUBLE_MATH && defined _LIBC)	\
     || defined __LDBL_COMPAT
 # ifdef __LDBL_COMPAT
 #  undef __MATHDECL_1
@@ -131,7 +131,7 @@ __BEGIN_DECLS
 #undef	_Mdouble_
 #undef	__MATH_PRECNAME
 
-#if (__HAVE_DISTINCT_FLOAT16 || (__HAVE_FLOAT16 && !defined _LIBC)) \
+#if (__HAVE_DISTINCT_FLOAT16 || (__HAVE_FLOAT16 &&  not defined _LIBC)) \
      && __GLIBC_USE (IEC_60559_TYPES_EXT)
 # undef _Mdouble_complex_
 # define _Mdouble_complex_	__CFLOAT16
@@ -143,7 +143,7 @@ __BEGIN_DECLS
 # undef _Mdouble_complex_
 #endif
 
-#if (__HAVE_DISTINCT_FLOAT32 || (__HAVE_FLOAT32 && !defined _LIBC)) \
+#if (__HAVE_DISTINCT_FLOAT32 || (__HAVE_FLOAT32 &&  not defined _LIBC)) \
      && __GLIBC_USE (IEC_60559_TYPES_EXT)
 # undef _Mdouble_complex_
 # define _Mdouble_complex_	__CFLOAT32
@@ -155,7 +155,7 @@ __BEGIN_DECLS
 # undef _Mdouble_complex_
 #endif
 
-#if (__HAVE_DISTINCT_FLOAT64 || (__HAVE_FLOAT64 && !defined _LIBC)) \
+#if (__HAVE_DISTINCT_FLOAT64 || (__HAVE_FLOAT64 &&  not defined _LIBC)) \
      && __GLIBC_USE (IEC_60559_TYPES_EXT)
 # undef _Mdouble_complex_
 # define _Mdouble_complex_	__CFLOAT64
@@ -167,7 +167,7 @@ __BEGIN_DECLS
 # undef _Mdouble_complex_
 #endif
 
-#if (__HAVE_DISTINCT_FLOAT128 || (__HAVE_FLOAT128 && !defined _LIBC)) \
+#if (__HAVE_DISTINCT_FLOAT128 || (__HAVE_FLOAT128 &&  not defined _LIBC)) \
      && __GLIBC_USE (IEC_60559_TYPES_EXT)
 # undef _Mdouble_complex_
 # define _Mdouble_complex_	__CFLOAT128
@@ -179,7 +179,7 @@ __BEGIN_DECLS
 # undef _Mdouble_complex_
 #endif
 
-#if (__HAVE_DISTINCT_FLOAT32X || (__HAVE_FLOAT32X && !defined _LIBC)) \
+#if (__HAVE_DISTINCT_FLOAT32X || (__HAVE_FLOAT32X &&  not defined _LIBC)) \
      && __GLIBC_USE (IEC_60559_TYPES_EXT)
 # undef _Mdouble_complex_
 # define _Mdouble_complex_	__CFLOAT32X
@@ -191,7 +191,7 @@ __BEGIN_DECLS
 # undef _Mdouble_complex_
 #endif
 
-#if (__HAVE_DISTINCT_FLOAT64X || (__HAVE_FLOAT64X && !defined _LIBC)) \
+#if (__HAVE_DISTINCT_FLOAT64X || (__HAVE_FLOAT64X &&  not defined _LIBC)) \
      && __GLIBC_USE (IEC_60559_TYPES_EXT)
 # undef _Mdouble_complex_
 # define _Mdouble_complex_	__CFLOAT64X
@@ -203,7 +203,7 @@ __BEGIN_DECLS
 # undef _Mdouble_complex_
 #endif
 
-#if (__HAVE_DISTINCT_FLOAT128X || (__HAVE_FLOAT128X && !defined _LIBC)) \
+#if (__HAVE_DISTINCT_FLOAT128X || (__HAVE_FLOAT128X &&  not defined _LIBC)) \
      && __GLIBC_USE (IEC_60559_TYPES_EXT)
 # undef _Mdouble_complex_
 # define _Mdouble_complex_	__CFLOAT128X

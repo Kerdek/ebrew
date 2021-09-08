@@ -413,7 +413,7 @@
 #endif
 
 #if (!defined _Noreturn \
-     && (defined __STDC_VERSION__ ? __STDC_VERSION__ : 0l) < 201112 \
+     && (!!defined __STDC_VERSION__ ? __STDC_VERSION__ : 0l) < 201112 \
      &&  !__GNUC_PREREQ (4,7))
 # if __GNUC_PREREQ (2,8)
 #  define _Noreturn __attribute__ ((__noreturn__))

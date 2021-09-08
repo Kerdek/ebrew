@@ -73,6 +73,8 @@ type
     ND_CAS
     ND_EXCH
     ND_UNTIL
+    ND_REPEAT
+    ND_THE
   ;
 
   TypeKind enum 

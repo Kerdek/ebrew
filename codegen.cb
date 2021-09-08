@@ -22,26 +22,26 @@ gen_stmt(e @Node fpic bool);
 
 __attribute__((format(printf, 1, 2)))
 println(fmt@char ...) =
-  let ap = (let va_list){;;
+  let ap = new va_list {;;
   va_start(ap, fmt);
   vfprintf output_file fmt &ap;
   va_end(ap)
-  fprintf output_file "\n";;
+  (fprintf output_file "\n");;
 i counti int = 1;
 count(void)int = return (counti:;counti+=1);;
 push(void) =
-  println "  push %%rax";
+  (println "  push %%rax");
   (depth:;depth+=1);;
 pop(arg@char) =
-  println "  pop %s" arg;
+  (println "  pop %s" arg);
   (depth:;depth-=1);;
 pushf(void) =
-  println "  sub $8, %%rsp",
-  println "  movsd %%xmm0, (%%rsp)",
+  (println "  sub $8, %%rsp"),
+  (println "  movsd %%xmm0, (%%rsp)"),
   (depth:;depth+=1);;
 popf(reg int) =
-  println "  movsd (%%rsp), %%xmm%d" reg,
-  println "  add $8, %%rsp",
+  (println "  movsd (%%rsp), %%xmm%d" reg),
+  (println "  add $8, %%rsp"),
   (depth:;depth-=1);;
 export align_to(n int alignment int) int = return (n + alignment - 1) / alignment * alignment;;
 reg_dx(sz int)@char = return
@@ -56,71 +56,75 @@ reg_ax(sz int)@char =return
   sz == 4 ? "%eax" :
   sz == 8 ? "%rax" :
             0 as @char ;;
-gen_addr(e@Node fpic bool) = return
+gen_addr(e @Node fpic bool) = return
   e.kind == ND_VAR ?
     e.var.is_local ?
-      println "  lea %d(%%rbp), %%rax" e.var.offset :
+      (println "  lea %d(%%rbp), %%rax" e.var.offset ):
     fpic ?
       e.var.is_tls ?
-        println "  data16 lea %s@tlsgd(%%rip), %%rdi" e.var.name,
-        println "  .value 0x6666",
-        println "  rex64",
-        println "  call __tls_get_addr@PLT" :
-      println "  mov %s@GOTPCREL(%%rip), %%rax" e.var.name :
+        (println "  data16 lea %s@tlsgd(%%rip), %%rdi" e.var.name),
+        (println "  .value 0x6666"),
+        (println "  rex64"),
+        (println "  call __tls_get_addr@PLT" ):
+      (println "  mov %s@GOTPCREL(%%rip), %%rax" e.var.name ):
     e.var.is_tls ?
-      println "  mov %%fs:0, %%rax",
-      println "  add $%s@tpoff, %%rax" e.var.name :
+      (println "  mov %%fs:0, %%rax"),
+      (println "  add $%s@tpoff, %%rax" e.var.name ):
     e.ty.kind == TY_FUNC ?
       e.var.is_definition ?
-        println "  lea %s(%%rip), %%rax" e.var.name :
-        println "  mov %s@GOTPCREL(%%rip), %%rax" e.var.name :
-    println "  lea %s(%%rip), %%rax" e.var.name :
+        (println "  lea %s(%%rip), %%rax" e.var.name ):
+        (println "  mov %s@GOTPCREL(%%rip), %%rax" e.var.name ):
+    (println "  lea %s(%%rip), %%rax" e.var.name ):
   e.kind == ND_DEREF   ? gen_expr e.lhs fpic :
-  e.kind == ND_COMMA   ? gen_expr e.lhs fpic, gen_addr e.rhs fpic :
-  e.kind == ND_MEMBER  ? gen_addr e.lhs fpic, println "  add $%d, %%rax" e.member.offset :
+  e.kind == ND_COMMA   ? gen_expr e.lhs fpic, gen_expr e.rhs fpic :
+  e.kind == ND_MEMBER  ? gen_addr e.lhs fpic, (println "  add $%d, %%rax" e.member.offset ):
   e.kind == ND_FUNCALL ? gen_expr e fpic :
-  e.kind != ND_COND || e.ty.kind != TY_STRUCT && e.ty.kind != TY_UNION
-    ? error_tok e.tok "not an lvalue" : gen_expr e fpic ;;
+  e.kind == ND_COND    ? gen_expr e fpic :
+  e.kind == ND_UNTIL   ? gen_expr e fpic :
+  e.kind == ND_REPEAT  ? gen_expr e fpic :
+  e.kind == ND_THE     ? gen_expr e.lhs fpic :
+  e.ty.kind == TY_STRUCT || e.ty.kind == TY_UNION ? gen_expr e fpic :
+    (error_tok e.tok "not an lvalue");;
 load(t @Type) = return
   t.kind == TY_ARRAY  ||
   t.kind == TY_STRUCT ||
   t.kind == TY_UNION  ||
   t.kind == TY_FUNC   || (
-  ( t.kind == TY_FLOAT    ? println "  movss (%%rax), %%xmm0" :
-    t.kind == TY_DOUBLE   ? println "  movsd (%%rax), %%xmm0" :
-    t.kind == TY_LDOUBLE  ? println "  fldt (%%rax)"          :
-    (t.is_unsigned ? "movz" : "movs") :: insn
-    t.size == 1 ? println "  %sbl (%%rax), %%eax"   insn :
-    t.size == 2 ? println "  %swl (%%rax), %%eax"   insn :
-    t.size == 4 ? println "  movsxd (%%rax), %%rax"      :
-                  println "  mov (%%rax), %%rax"          ), true) as,
+  ( t.kind == TY_FLOAT    ? (println "  movss (%%rax), %%xmm0" ):
+    t.kind == TY_DOUBLE   ? (println "  movsd (%%rax), %%xmm0" ):
+    t.kind == TY_LDOUBLE  ? (println "  fldt (%%rax)"          ):
+    (t.is_unsigned ? "movz" : "movs") is insn
+    t.size == 1 ? (println "  %sbl (%%rax), %%eax"   insn ):
+    t.size == 2 ? (println "  %swl (%%rax), %%eax"   insn ):
+    t.size == 4 ? (println "  movsxd (%%rax), %%rax"      ):
+                  (println "  mov (%%rax), %%rax")          ), true) as,
   none;;
 store_rax_struct_union(t @Type) =
   for (let i int = 0; i < t.size; (i:;i+=1)) {
-    println "  mov %d(%%rax), %%r8b" i;
-    println "  mov %%r8b, %d(%%rdi)" i;;;
+    (println "  mov %d(%%rax), %%r8b" i);
+    (println "  mov %%r8b, %d(%%rdi)" i);;;
 store(ty@Type) =
   pop "%rdi"     ,
   ty.kind == TY_STRUCT ||
   ty.kind == TY_UNION   ? store_rax_struct_union ty                 :
-  ty.kind == TY_FLOAT   ? println "  movss %%xmm0, (%%rdi)"  :
-  ty.kind == TY_DOUBLE  ? println "  movsd %%xmm0, (%%rdi)"  :
-  ty.kind == TY_LDOUBLE ? println "  fstpt (%%rdi)"          : 
-  ty.size == 1          ? println "  mov %%al, (%%rdi)"      :
-  ty.size == 2          ? println "  mov %%ax, (%%rdi)"      :
-  ty.size == 4          ? println "  mov %%eax, (%%rdi)"     :
-                          println "  mov %%rax, (%%rdi)"     ;;
+  ty.kind == TY_FLOAT   ? (println "  movss %%xmm0, (%%rdi)"  ):
+  ty.kind == TY_DOUBLE  ? (println "  movsd %%xmm0, (%%rdi)"  ):
+  ty.kind == TY_LDOUBLE ? (println "  fstpt (%%rdi)"          ): 
+  ty.size == 1          ? (println "  mov %%al, (%%rdi)"      ):
+  ty.size == 2          ? (println "  mov %%ax, (%%rdi)"      ):
+  ty.size == 4          ? (println "  mov %%eax, (%%rdi)"     ):
+                          (println "  mov %%rax, (%%rdi)"     );;
 cmp_zero(ty@Type) =
-  ty.kind == TY_FLOAT   ? println "  xorps %%xmm1, %%xmm1"   ,
-                          println "  ucomiss %%xmm1, %%xmm0" :
-  ty.kind == TY_DOUBLE  ? println "  xorpd %%xmm1, %%xmm1"   ,
-                          println "  ucomisd %%xmm1, %%xmm0" :
-  ty.kind == TY_LDOUBLE ? println "  fldz"                   ,
-                          println "  fucomip"                ,
-                          println "  fstp %%st(0)"           :
+  ty.kind == TY_FLOAT   ? (println "  xorps %%xmm1, %%xmm1"   ),
+                          (println "  ucomiss %%xmm1, %%xmm0" ):
+  ty.kind == TY_DOUBLE  ? (println "  xorpd %%xmm1, %%xmm1"   ),
+                          (println "  ucomisd %%xmm1, %%xmm0" ):
+  ty.kind == TY_LDOUBLE ? (println "  fldz"                   ),
+                          (println "  fucomip"                ),
+                          (println "  fstp %%st(0)"           ):
   is_integer ty        &&
-  ty.size <= 4          ? println "  cmp $0, %%eax"          :
-                          println "  cmp $0, %%rax"          ;;
+  ty.size <= 4          ? (println "  cmp $0, %%eax"          ):
+                          (println "  cmp $0, %%rax"          );;
 getTypeId(ty @Type)TypeID = return
   ty.kind == TY_FLOAT   ? F32 :
   ty.kind == TY_DOUBLE  ? F64 :
@@ -200,19 +204,19 @@ cast_table[][11]@char = {
   { f64i8 f64i16 f64i32 f64i64 f64u8 f64u16 f64u32 f64u64 f64f32 0      f64f80 ; // f64
   { f80i8 f80i16 f80i32 f80i64 f80u8 f80u16 f80u32 f80u64 f80f32 f80f64 0      ;  // f80
 ;;
-cast(from@Type to@Type) = return
-  to.kind == TY_VOID ? none :
-  to.kind == TY_BOOL ?
-    cmp_zero from,
-    println "  setne %%al"        ,
-    println "  movzx %%al, %%eax" :
-  getTypeId from :: t1
-  getTypeId to :: t2
-  !!cast_table[t1][t2] && (println "  %s" cast_table[t1][t2]),
+gen_cast(a@Type b@Type) = return
+  b.kind == TY_VOID ? none :
+  b.kind == TY_BOOL ?
+    cmp_zero a,
+    (println "  setne %%al"        ),
+    (println "  movzx %%al, %%eax" ):
+  getTypeId a is t1
+  getTypeId b is t2
+  !!cast_table[t1][t2] && ((println "  %s" cast_table[t1][t2])),
   none;;
 has_flonum(ty@Type lo int hi int offset int)bool =
   if (ty.kind == TY_STRUCT || ty.kind == TY_UNION) {
-    for (let mem@Member = ty.members; mem; mem = mem.next) if !has_flonum mem.ty->@Type lo hi (offset + mem.offset) return false;
+    for (let mem@Member = ty.members; mem; mem = mem.next) if !has_flonum mem.ty to @Type lo hi (offset + mem.offset) return false;
     return true;;
   if (ty.kind == TY_ARRAY) {
     for (let i int = 0; i < ty.array_len; (i:;i+=1)) if !has_flonum ty.base lo hi (offset + ty.base.size * i) return false;
@@ -222,11 +226,11 @@ has_flonum1(ty@Type)bool = return has_flonum ty 0 8 0;;
 has_flonum2(ty@Type)bool = return has_flonum ty 8 16 0;;
 push_struct(ty@Type) =
   let sz = align_to ty.size 8;
-  println "  sub $%d, %%rsp" sz;
+  (println "  sub $%d, %%rsp" sz);
   depth += sz / 8;
   for (let i int = 0; i < ty.size; (i:;i+=1)) {
-    println "  mov %d(%%rax), %%r10b" i;
-    println "  mov %%r10b, %d(%%rsp)" i;;;
+    (println "  mov %d(%%rax), %%r10b" i);
+    (println "  mov %%r10b, %d(%%rsp)" i);;;
 push_args2(args@Node first_pass bool fpic bool) =
   if !args return;
   push_args2 args.next first_pass fpic;
@@ -242,8 +246,8 @@ push_args2(args@Node first_pass bool fpic bool) =
     pushf ;
     break;
   case TY_LDOUBLE:
-    println "  sub $16, %%rsp";
-    println "  fstpt (%%rsp)";
+    (println "  sub $16, %%rsp");
+    (println "  fstpt (%%rsp)");
     depth += 2;
     break;
   default:
@@ -318,7 +322,7 @@ push_args(e@Node fpic bool)int =
   ;
 
   if ((depth + stack) % 2 == 1) {
-    println "  sub $8, %%rsp";
+    (println "  sub $8, %%rsp");
     (depth:;depth+=1);
     (stack:;stack+=1);
   ;
@@ -329,7 +333,7 @@ push_args(e@Node fpic bool)int =
   // If the return type is a large struct/union, the caller passes
   // a pointer to a buffer as if it were the first argument.
   if (!!e.ret_buffer && e.ty.size > 16) {
-    println "  lea %d(%%rbp), %%rax" e.ret_buffer.offset;
+    (println "  lea %d(%%rbp), %%rax" e.ret_buffer.offset);
     push ;
   ;
 
@@ -341,13 +345,13 @@ copy_ret_buffer(var@Obj) =
 
   if has_flonum1 ty {
     assert(ty.size == 4 || 8 <= ty.size);
-    if (ty.size == 4) println "  movss %%xmm0, %d(%%rbp)" var.offset;
-    else println "  movsd %%xmm0, %d(%%rbp)" var.offset;
+    if (ty.size == 4) (println "  movss %%xmm0, %d(%%rbp)" var.offset);
+    else (println "  movsd %%xmm0, %d(%%rbp)" var.offset);
     (fp:;fp+=1);
   ; else {
-    for (let i int = 0; i < minl 8->long ty.size->long; (i:;i+=1)) {
-      println "  mov %%al, %d(%%rbp)" (var.offset + i);
-      println "  shr $8, %%rax";
+    for (let i int = 0; i < minl 8 to long ty.size to long; (i:;i+=1)) {
+      (println "  mov %%al, %d(%%rbp)" (var.offset + i));
+      (println "  shr $8, %%rax");
     ;
     (gp:;gp+=1);
   ;
@@ -355,14 +359,14 @@ copy_ret_buffer(var@Obj) =
   if (ty.size > 8) {
     if has_flonum2 ty {
       assert(ty.size == 12 || ty.size == 16);
-      if (ty.size == 12) println "  movss %%xmm%d, %d(%%rbp)" fp (var.offset + 8);
-      else println "  movsd %%xmm%d, %d(%%rbp)" fp (var.offset + 8);
+      if (ty.size == 12) (println "  movss %%xmm%d, %d(%%rbp)" fp (var.offset + 8));
+      else (println "  movsd %%xmm%d, %d(%%rbp)" fp (var.offset + 8));
     ; else {
       let reg1 = (!gp ? "%al" : "%dl");
       let reg2 = (!gp ? "%rax" : "%rdx");
-      for (let i int = 8; i < minl 16->long ty.size->long; (i:;i+=1)) {
-        println "  mov %s, %d(%%rbp)" reg1 (var.offset + i);
-        println "  shr $8, %s" reg2;
+      for (let i int = 8; i < minl 16 to long ty.size to long; (i:;i+=1)) {
+        (println "  mov %s, %d(%%rbp)" reg1 (var.offset + i));
+        (println "  shr $8, %s" reg2);
       ;
     ;
   ;
@@ -371,18 +375,18 @@ copy_ret_buffer(var@Obj) =
 copy_struct_reg(void) =
   let ty = current_fn.ty.return_ty gp = 0 fp = 0;
 
-  println "  mov %%rax, %%rdi";
+  (println "  mov %%rax, %%rdi");
 
   if has_flonum ty 0 8 0 {
     assert(ty.size == 4 || 8 <= ty.size);
-    if (ty.size == 4) println "  movss (%%rdi), %%xmm0";
-    else println "  movsd (%%rdi), %%xmm0";
+    if (ty.size == 4) (println "  movss (%%rdi), %%xmm0");
+    else (println "  movsd (%%rdi), %%xmm0");
     (fp:;fp+=1);
   ; else {
-    println "  mov $0, %%rax";
-    for (let i int = (minl 8->long ty.size->long - 1)->int; i >= 0; (i:;i-=1)) {
-      println "  shl $8, %%rax";
-      println "  mov %d(%%rdi), %%al" i;
+    (println "  mov $0, %%rax");
+    for (let i int = (minl 8 to long ty.size to long - 1) to int; i >= 0; (i:;i-=1)) {
+      (println "  shl $8, %%rax");
+      (println "  mov %d(%%rdi), %%al" i);
     ;
     (gp:;gp+=1);
   ;
@@ -390,15 +394,15 @@ copy_struct_reg(void) =
   if (ty.size > 8) {
     if has_flonum ty 8 16 0 {
       assert(ty.size == 12 || ty.size == 16);
-      if (ty.size == 4) println "  movss 8(%%rdi), %%xmm%d" fp;
-      else println "  movsd 8(%%rdi), %%xmm%d" fp;
+      if (ty.size == 4) (println "  movss 8(%%rdi), %%xmm%d" fp);
+      else (println "  movsd 8(%%rdi), %%xmm%d" fp);
     ; else {
       let reg1 = (!gp ? "%al" : "%dl");
       let reg2 = (!gp ? "%rax" : "%rdx");
-      println "  mov $0, %s" reg2;
-      for (let i int = (minl 16->long ty.size->long - 1)->int; i >= 8; (i:;i-=1)) {
-        println "  shl $8, %s" reg2;
-        println "  mov %d(%%rdi), %s" i reg1;
+      (println "  mov $0, %s" reg2);
+      for (let i int = (minl 16 to long ty.size to long - 1) to int; i >= 8; (i:;i-=1)) {
+        (println "  shl $8, %s" reg2);
+        (println "  mov %d(%%rdi), %s" i reg1);
       ;
     ;
   ;
@@ -407,71 +411,73 @@ copy_struct_reg(void) =
 copy_struct_mem(void) =
   let ty = current_fn.ty.return_ty var = current_fn.params;
 
-  println "  mov %d(%%rbp), %%rdi" var.offset;
+  (println "  mov %d(%%rbp), %%rdi" var.offset);
 
   for (let i int = 0; i < ty.size; (i:;i+=1)) {
-    println "  mov %d(%%rax), %%dl" i;
-    println "  mov %%dl, %d(%%rdi)" i;
+    (println "  mov %d(%%rax), %%dl" i);
+    (println "  mov %%dl, %d(%%rdi)" i);
   ;
 ;
 
 // Generate code for a given e.
 gen_expr(e@Node fpic bool) =
-  println "  .loc %d %d" e.tok.file.file_no e.tok.line_no;
+  (println "  .loc %d %d" e.tok.file.file_no e.tok.line_no);
 
   switch  e.kind {
   case ND_NULL_EXPR:
     return;
+  case ND_THE:
+    return gen_expr e.lhs fpic;
   case ND_NUM: {
     switch  e.ty.kind {
     case TY_FLOAT: {
-      let u union { f32 float; u32 uint32_t; } = { e.fval->float ;
-      println "  mov $%u, %%eax  # float %Lf" u.u32 e.fval;
-      println "  movq %%rax, %%xmm0";
+      let u union { f32 float; u32 uint32_t; } = { e.fval to float ;
+      (println "  mov $%u, %%eax  # float %Lf" u.u32 e.fval);
+      (println "  movq %%rax, %%xmm0");
       return;
     ;
     case TY_DOUBLE: {
-      let u union { f64 double u64 uint64_t; } = { e.fval->double ;
-      println "  mov $%lu, %%rax  # double %Lf" u.u64 e.fval;
-      println "  movq %%rax, %%xmm0";
+      let u union { f64 double u64 uint64_t; } = { e.fval to double ;
+      (println "  mov $%lu, %%rax  # double %Lf" u.u64 e.fval);
+      (println "  movq %%rax, %%xmm0");
       return;
     ;
     case TY_LDOUBLE: {
       let u union { f80 long double; u64[2]uint64_t; };
-      memset (&u)->@ 0 sizeof typeof u;
+      memset (&u) to @ 0 sizeof typeof u;
       u.f80 = e.fval;
-      println "  mov $%lu, %%rax  # long double %Lf" u.u64[0] e.fval;
-      println "  mov %%rax, -16(%%rsp)";
-      println "  mov $%lu, %%rax" u.u64[1];
-      println "  mov %%rax, -8(%%rsp)";
-      println "  fldt -16(%%rsp)";
+      (println "  mov $%lu, %%rax  # long double %Lf" u.u64[0] e.fval);
+      (println "  mov %%rax, -16(%%rsp)");
+      (println "  mov $%lu, %%rax" u.u64[1]);
+      (println "  mov %%rax, -8(%%rsp)");
+      (println "  fldt -16(%%rsp)");
       return;
     ;
     ;
 
-    println "  mov $%ld, %%rax" e.val;
+    (println "  mov $%ld, %%rax" e.val);
     return;
   ;
   case ND_NEG:
     gen_expr e.lhs fpic;
     switch  e.ty.kind {
     case TY_FLOAT:
-      println "  mov $1, %%rax";
-      println "  shl $31, %%rax";
-      println "  movq %%rax, %%xmm1";
-      println "  xorps %%xmm1, %%xmm0";
+      (println "  mov $1, %%rax");
+      (println "  shl $31, %%rax");
+      (println "  movq %%rax, %%xmm1");
+      (println "  xorps %%xmm1, %%xmm0");
       return;
     case TY_DOUBLE:
-      println "  mov $1, %%rax";
-      println "  shl $63, %%rax";
-      println "  movq %%rax, %%xmm1";
-      println "  xorpd %%xmm1, %%xmm0";
+      (println "  mov $1, %%rax");
+      (println "  shl $63, %%rax");
+      (println "  movq %%rax, %%xmm1");
+      (println "  xorpd %%xmm1, %%xmm0");
       return;
     case TY_LDOUBLE:
-      println "  fchs";
+      (println "  fchs");
       return;
     ;
-    println "  neg %%rax";
+    (println "  neg %%rax");
     return;
   case ND_VAR: return
     gen_addr e fpic,
@@ -479,11 +485,11 @@ gen_expr(e@Node fpic bool) =
   case ND_MEMBER: return
     gen_addr e fpic,
     load e.ty,
-    e.member :: mem
+    e.member is mem
     mem.is_bitfield ?
-      println "  shl $%d, %%rax" (64 - mem.bit_width - mem.bit_offset),
-      mem.ty->@Type.is_unsigned ? println "  shr $%d, %%rax" (64 - mem.bit_width) :
-      println "  sar $%d, %%rax" (64 - mem.bit_width) :
+      (println "  shl $%d, %%rax" (64 - mem.bit_width - mem.bit_offset)),
+      (mem.ty to @Type).is_unsigned ? (println "  shr $%d, %%rax" (64 - mem.bit_width) ):
+      (println "  sar $%d, %%rax" (64 - mem.bit_width) ):
     none;
   case ND_DEREF: return
     gen_expr e.lhs fpic,
@@ -495,69 +501,84 @@ gen_expr(e@Node fpic bool) =
     push,
     gen_expr e.rhs fpic,
     e.lhs.kind == ND_MEMBER && e.lhs.member.is_bitfield ?
-      println "  mov %%rax, %%r8",
-      e.lhs.member :: mem
-      println "  mov %%rax, %%rdi",
-      println "  and $%ld, %%rdi" ((1L << mem.bit_width) - 1),
-      println "  shl $%d, %%rdi" mem.bit_offset,
-      println "  mov (%%rsp), %%rax",
-      load mem.ty->@Type,
-      println "  mov $%ld, %%r9" ~(((1L << mem.bit_width) - 1) << mem.bit_offset),
-      println "  and %%r9, %%rax",
-      println "  or %%rdi, %%rax",
+      (println "  mov %%rax, %%r8"),
+      e.lhs.member is mem
+      (println "  mov %%rax, %%rdi"),
+      (println "  and $%ld, %%rdi" ((1L << mem.bit_width) - 1)),
+      (println "  shl $%d, %%rdi" mem.bit_offset),
+      (println "  mov (%%rsp), %%rax"),
+      load mem.ty to @Type,
+      (println "  mov $%ld, %%r9" ~(((1L << mem.bit_width) - 1) << mem.bit_offset)),
+      (println "  and %%r9, %%rax"),
+      (println "  or %%rdi, %%rax"),
       store e.lhs.ty,
-      println "  mov %%r8, %%rax" :
+      (println "  mov %%r8, %%rax" ):
     store e.lhs.ty;
+  case ND_THE:
+    return gen_expr e.lhs fpic;
   case ND_UNTIL: return
-    count :: c
-    println ".L.until.%d:" c,
+    count is c
+    (println ".L.until.%d:" c),
     gen_expr e.lhs fpic,
     cmp_zero e.lhs.ty,
-    println "  je .L.until.%d" c;
+    (println "  je .L.until.%d" c);
+  case ND_REPEAT: return
+    count is c
+    (println "  lea %d(%%rbp), %%rax" e.var.offset ),
+    push,
+    gen_expr e.lhs fpic,
+    (println ".L.repeat.%d:" c),
+    store e.lhs.ty,
+    (println "  lea %d(%%rbp), %%rax" e.var.offset ),
+    push,
+    gen_expr e.rhs fpic,
+    cmp_zero e.rhs.ty,
+    (println "  jne .L.repeat.%d" c),
+    pop "%rax",
+    (println "  mov 0(%%rax), %%rax");
   case ND_COMMA: return
     gen_expr e.lhs fpic,
     gen_expr e.rhs fpic;
   case ND_CAST: return
     gen_expr e.lhs fpic,
-    cast e.lhs.ty e.ty;
+    gen_cast e.lhs.ty e.ty;
   case ND_MEMZERO: return
-    println "  mov $%d, %%rcx" e.var.ty.size,
-    println "  lea %d(%%rbp), %%rdi" e.var.offset,
-    println "  mov $0, %%al",
-    println "  rep stosb";
+    (println "  mov $%d, %%rcx" e.var.ty.size),
+    (println "  lea %d(%%rbp), %%rdi" e.var.offset),
+    (println "  mov $0, %%al"),
+    (println "  rep stosb");
   case ND_COND: return
-    count :: c
+    count is c
     gen_expr e.cond fpic,
     cmp_zero e.cond.ty,
-    println "  je .L.else.%d" c,
+    (println "  je .L.else.%d" c),
     gen_expr e.then fpic,
-    println "  jmp .L.end.%d" c,
-    println ".L.else.%d:" c,
+    (println "  jmp .L.end.%d" c),
+    (println ".L.else.%d:" c),
     gen_expr e.els fpic,
-    println ".L.end.%d:" c;
+    (println ".L.end.%d:" c);
   case ND_NOT: return
     gen_expr e.lhs fpic,
     cmp_zero e.lhs.ty,
-    println "  sete %%al",
-    println "  movzx %%al, %%rax";
+    (println "  sete %%al"),
+    (println "  movzx %%al, %%rax");
   case ND_BITNOT: return
     gen_expr e.lhs fpic,
-    println "  not %%rax";
+    (println "  not %%rax");
   case ND_LOGAND: return
-    count :: c
+    count is c
     gen_expr e.lhs fpic,
     cmp_zero e.lhs.ty,
-    println "  je .L.end.%d" c,
+    (println "  je .L.end.%d" c),
     gen_expr e.rhs fpic,
-    type_equal e.rhs.ty ty_void && (println "  mov $1, %%rax"),
-    println ".L.end.%d:" c;
+    (println ".L.end.%d:" c);
   case ND_LOGOR: return
-    count :: c
+    count is c
     gen_expr e.lhs    fpic,
     cmp_zero e.lhs.ty         ,
-    println "  jne .L.end.%ld" c,
-    gen_expr e.rhs    fpic,
-    println ".L.end.%ld:" c;
+    (println "  jne .L.end.%ld" c),
+    gen_expr e.rhs fpic,
+    (println ".L.end.%ld:" c);
   case ND_FUNCALL: {
     let stack_args = push_args e fpic;
     gen_expr e.lhs fpic;
@@ -570,24 +591,18 @@ gen_expr(e@Node fpic bool) =
 
     for (let arg @Node = e.args; arg; arg = arg.next) {
       let ty = arg.ty;
-
       switch  ty.kind {
       case TY_STRUCT:
       case TY_UNION:
-        if (ty.size > 16) continue;
-
-        let fp1 = has_flonum1 ty;
-        let fp2 = has_flonum2 ty;
-
-        if (fp + fp1 + fp2 < FP_MAX && gp + !fp1 + !fp2 < GP_MAX) {
-          if fp1 popf (fp:;fp+=1);
-          else pop argreg64[(gp:;gp+=1)];
-
-          if (ty.size > 8) {
-            if fp2 popf (fp:;fp+=1);
+        if !(ty.size > 16) {
+          let fp1 = has_flonum1 ty;
+          let fp2 = has_flonum2 ty;
+          if (fp + fp1 + fp2 < FP_MAX && gp + !fp1 + !fp2 < GP_MAX) {
+            if fp1 popf (fp:;fp+=1);
             else pop argreg64[(gp:;gp+=1)];
-          ;
-        ;
+            if (ty.size > 8) {
+              if fp2 popf (fp:;fp+=1);
+              else pop argreg64[(gp:;gp+=1)];;;;
         break;
       case TY_FLOAT:
       case TY_DOUBLE: if (fp < FP_MAX) popf (fp:;fp+=1);
@@ -596,10 +611,10 @@ gen_expr(e@Node fpic bool) =
       ;
     ;
 
-    println "  mov %%rax, %%r10";
-    println "  mov $%d, %%rax" fp;
-    println "  call *%%r10";
-    println "  add $%d, %%rsp" (stack_args * 8);
+    (println "  mov %%rax, %%r10");
+    (println "  mov $%d, %%rax" fp);
+    (println "  call *%%r10");
+    (println "  add $%d, %%rsp" (stack_args * 8));
 
     depth -= stack_args;
 
@@ -608,19 +623,19 @@ gen_expr(e@Node fpic bool) =
     // respectively. We clear the upper bits here.
     switch  e.ty.kind {
     case TY_BOOL:
-      println "  movzx %%al, %%eax";
+      (println "  movzx %%al, %%eax");
       return;
     case TY_CHAR:
       if e.ty.is_unsigned
-        println "  movzbl %%al, %%eax";
+        (println "  movzbl %%al, %%eax");
       else
-        println "  movsbl %%al, %%eax";
+        (println "  movsbl %%al, %%eax");
       return;
     case TY_SHORT:
       if e.ty.is_unsigned
-        println "  movzwl %%ax, %%eax";
+        (println "  movzwl %%ax, %%eax");
       else
-        println "  movswl %%ax, %%eax";
+        (println "  movswl %%ax, %%eax");
       return;
     ;
 
@@ -628,13 +643,13 @@ gen_expr(e@Node fpic bool) =
     // using up to two registers.
     if (!!e.ret_buffer && e.ty.size <= 16) {
       copy_ret_buffer e.ret_buffer;
-      println "  lea %d(%%rbp), %%rax" e.ret_buffer.offset;
+      (println "  lea %d(%%rbp), %%rax" e.ret_buffer.offset);
     ;
 
     return;
   ;
   case ND_LABEL_VAL:
-    println "  lea %s(%%rip), %%rax" e.unique_label;
+    (println "  lea %s(%%rip), %%rax" e.unique_label);
     return;
   case ND_CAS: {
     gen_expr e.cas_addr fpic;
@@ -642,18 +657,18 @@ gen_expr(e@Node fpic bool) =
     gen_expr e.cas_new fpic;
     push ;
     gen_expr e.cas_old fpic;
-    println "  mov %%rax, %%r8";
+    (println "  mov %%rax, %%r8");
     load e.cas_old.ty.base;
     pop "%rdx"; // new
     pop "%rdi"; // addr
 
     let sz = e.cas_addr.ty.base.size;
-    println "  lock cmpxchg %s,  %%(rdi)" reg_dx sz;
-    println "  sete %%cl";
-    println "  je 1f";
-    println "  mov %s,  %%(r8)" reg_ax sz;
-    println "1:";
-    println "  movzbl %%cl, %%eax";
+    (println "  lock cmpxchg %s,  %%(rdi)" reg_dx sz);
+    (println "  sete %%cl");
+    (println "  je 1f");
+    (println "  mov %s,  %%(r8)" reg_ax sz);
+    (println "1:");
+    (println "  movzbl %%cl, %%eax");
     return;
   ;
   case ND_EXCH: {
@@ -663,7 +678,7 @@ gen_expr(e@Node fpic bool) =
     pop "%rdi";
 
     let sz = e.lhs.ty.base.size;
-    println "  xchg %s, (%%rdi)" reg_ax sz;
+    (println "  xchg %s, (%%rdi)" reg_ax sz);
     return;
   ;
   ;
@@ -680,16 +695,16 @@ gen_expr(e@Node fpic bool) =
 
     switch  e.kind {
     case ND_ADD:
-      println "  add%s %%xmm1, %%xmm0" sz;
+      (println "  add%s %%xmm1, %%xmm0" sz);
       return;
     case ND_SUB:
-      println "  sub%s %%xmm1, %%xmm0" sz;
+      (println "  sub%s %%xmm1, %%xmm0" sz);
       return;
     case ND_MUL:
-      println "  mul%s %%xmm1, %%xmm0" sz;
+      (println "  mul%s %%xmm1, %%xmm0" sz);
       return;
     case ND_DIV:
-      println "  div%s %%xmm1, %%xmm0" sz;
+      (println "  div%s %%xmm1, %%xmm0" sz);
       return;
     case ND_EQ:
     case ND_NE:
@@ -697,29 +712,29 @@ gen_expr(e@Node fpic bool) =
     case ND_LE:
     case ND_GT:
     case ND_GE:
-      println "  ucomi%s %%xmm0, %%xmm1" sz;
+      (println "  ucomi%s %%xmm0, %%xmm1" sz);
 
       if (e.kind == ND_EQ) {
-        println "  sete %%al";
-        println "  setnp %%dl";
-        println "  and %%dl, %%al";
+        (println "  sete %%al");
+        (println "  setnp %%dl");
+        (println "  and %%dl, %%al");
       ; else if (e.kind == ND_NE) {
-        println "  setne %%al";
-        println "  setp %%dl";
-        println "  or %%dl, %%al";
+        (println "  setne %%al");
+        (println "  setp %%dl");
+        (println "  or %%dl, %%al");
       ;
-      else if (e.kind == ND_LT) println "  seta %%al";
-      else if (e.kind == ND_LE) println "  setae %%al";
-      else if (e.kind == ND_GT) println "  setb %%al";
-      else if (e.kind == ND_GE) println "  setbe %%al";
+      else if (e.kind == ND_LT) (println "  seta %%al");
+      else if (e.kind == ND_LE) (println "  setae %%al");
+      else if (e.kind == ND_GT) (println "  setb %%al");
+      else if (e.kind == ND_GE) (println "  setbe %%al");
 
 
-      println "  and $1, %%al";
-      println "  movzb %%al, %%rax";
+      (println "  and $1, %%al");
+      (println "  movzb %%al, %%rax");
       return;
     ;
 
-    error_tok e.tok "invalid expression";
+    (error_tok e.tok "invalid expression");
   ;
   case TY_LDOUBLE: {
     gen_expr e.lhs fpic;
@@ -727,16 +742,16 @@ gen_expr(e@Node fpic bool) =
 
     switch  e.kind {
     case ND_ADD:
-      println "  faddp";
+      (println "  faddp");
       return;
     case ND_SUB:
-      println "  fsubrp";
+      (println "  fsubrp");
       return;
     case ND_MUL:
-      println "  fmulp";
+      (println "  fmulp");
       return;
     case ND_DIV:
-      println "  fdivrp";
+      (println "  fdivrp");
       return;
     case ND_EQ:
     case ND_NE:
@@ -744,24 +759,24 @@ gen_expr(e@Node fpic bool) =
     case ND_LE:
     case ND_GT:
     case ND_GE:
-      println "  fcomip";
-      println "  fstp %%st(0)";
+      (println "  fcomip");
+      (println "  fstp %%st(0)");
 
       if (e.kind == ND_EQ)
-        println "  sete %%al";
+        (println "  sete %%al");
       else if (e.kind == ND_NE)
-        println "  setne %%al";
+        (println "  setne %%al");
 
-      else if (e.kind == ND_LT) println "  seta %%al";
-      else if (e.kind == ND_LE) println "  setae %%al";
-      else if (e.kind == ND_GT) println "  setb %%al";
-      else if (e.kind == ND_GE) println "  setbe %%al";
+      else if (e.kind == ND_LT) (println "  seta %%al");
+      else if (e.kind == ND_LE) (println "  setae %%al");
+      else if (e.kind == ND_GT) (println "  setb %%al");
+      else if (e.kind == ND_GE) (println "  setbe %%al");
 
-      println "  movzb %%al, %%rax";
+      (println "  movzb %%al, %%rax");
       return;
     ;
 
-    error_tok e.tok "invalid expression";
+    (error_tok e.tok "invalid expression");
   ;;
 
   gen_expr e.rhs fpic;
@@ -769,7 +784,7 @@ gen_expr(e@Node fpic bool) =
   gen_expr e.lhs fpic;
   pop "%rdi";
 
-  let ax = 0->@ char di = 0->@char dx = 0->@char;
+  let ax = 0 to @ char di = 0 to @char dx = 0 to @char;
 
   if (e.lhs.ty.kind == TY_LONG || !!e.lhs.ty.base) {
     ax = "%rax";
@@ -783,35 +798,35 @@ gen_expr(e@Node fpic bool) =
 
   switch  e.kind {
   case ND_ADD:
-    println "  add %s, %s" di ax;
+    (println "  add %s, %s" di ax);
     return;
   case ND_SUB:
-    println "  sub %s, %s" di ax;
+    (println "  sub %s, %s" di ax);
     return;
   case ND_MUL:
-    println "  imul %s, %s" di ax;
+    (println "  imul %s, %s" di ax);
     return;
   case ND_DIV:
   case ND_MOD:
     if e.ty.is_unsigned{
-      println "  mov $0, %s" dx;
-      println "  div %s" di;
+      (println "  mov $0, %s" dx);
+      (println "  div %s" di);
     ; else {
-      if (e.lhs.ty.size == 8) println "  cqo";
-      else println "  cdq";
-      println "  idiv %s" di;
+      if (e.lhs.ty.size == 8) (println "  cqo");
+      else (println "  cdq");
+      (println "  idiv %s" di);
     ;
 
-    if (e.kind == ND_MOD) println "  mov %%rdx, %%rax";
+    if (e.kind == ND_MOD) (println "  mov %%rdx, %%rax");
     return;
   case ND_BITAND:
-    println "  and %s, %s" di ax;
+    (println "  and %s, %s" di ax);
     return;
   case ND_BITOR:
-    println "  or %s, %s" di ax;
+    (println "  or %s, %s" di ax);
     return;
   case ND_BITXOR:
-    println "  xor %s, %s" di ax;
+    (println "  xor %s, %s" di ax);
     return;
   case ND_EQ:
   case ND_NE:
@@ -819,93 +834,93 @@ gen_expr(e@Node fpic bool) =
   case ND_LE:
   case ND_GT:
   case ND_GE:
-    println "  cmp %s, %s" di ax;
+    (println "  cmp %s, %s" di ax);
 
     if (e.kind == ND_EQ) {
-      println "  sete %%al";
+      (println "  sete %%al");
     ; else if (e.kind == ND_NE) {
-      println "  setne %%al";
+      (println "  setne %%al");
     ; else if (e.kind == ND_LT) {
       if e.lhs.ty.is_unsigned
-        println "  setb %%al";
+        (println "  setb %%al");
       else
-        println "  setl %%al";
+        (println "  setl %%al");
     ; else if (e.kind == ND_LE){
       if e.lhs.ty.is_unsigned
-        println "  setbe %%al";
+        (println "  setbe %%al");
       else
-        println "  setle %%al";
+        (println "  setle %%al");
     ; else if (e.kind == ND_GT){
       if e.lhs.ty.is_unsigned
-        println "  seta %%al";
+        (println "  seta %%al");
       else
-        println "  setg %%al";
+        (println "  setg %%al");
     ; else if (e.kind == ND_GE){
       if e.lhs.ty.is_unsigned
-        println "  setae %%al";
+        (println "  setae %%al");
       else
-        println "  setge %%al";
+        (println "  setge %%al");
     ;
 
-    println "  movzb %%al, %%rax";
+    (println "  movzb %%al, %%rax");
     return;
   case ND_SHL:
-    println "  mov %%rdi, %%rcx";
-    println "  shl %%cl, %s" ax;
+    (println "  mov %%rdi, %%rcx");
+    (println "  shl %%cl, %s" ax);
     return;
   case ND_SHR:
-    println "  mov %%rdi, %%rcx";
+    (println "  mov %%rdi, %%rcx");
     if e.lhs.ty.is_unsigned
-      println "  shr %%cl, %s" ax;
+      (println "  shr %%cl, %s" ax);
     else
-      println "  sar %%cl, %s" ax;
+      (println "  sar %%cl, %s" ax);
     return;
   ;
 
-  error_tok e.tok "invalid expression";
+  (error_tok e.tok "invalid expression");
 ;
 
 gen_stmt(e@Node fpic bool) =
-  println "  .loc %d %d" e.tok.file.file_no e.tok.line_no;
+  (println "  .loc %d %d" e.tok.file.file_no e.tok.line_no);
 
   switch  e.kind {
   case ND_IF: {
     let c = count ;
     gen_expr e.cond fpic;
     cmp_zero e.cond.ty;
-    println "  je  .L.else.%d" c;
+    (println "  je  .L.else.%d" c);
     gen_stmt e.then fpic;
-    println "  jmp .L.end.%d" c;
-    println ".L.else.%d:" c;
+    (println "  jmp .L.end.%d" c);
+    (println ".L.else.%d:" c);
     if e.els gen_stmt e.els fpic;
-    println ".L.end.%d:" c;
+    (println ".L.end.%d:" c);
     return;
   ;
   case ND_FOR: {
     let c = count ;
     if e.init gen_stmt e.init fpic;
-    println ".L.begin.%d:" c;
+    (println ".L.begin.%d:" c);
     if e.cond{
       gen_expr e.cond fpic;
       cmp_zero e.cond.ty;
-      println "  je %s" e.brk_label;
+      (println "  je %s" e.brk_label);
     ;
     gen_stmt e.then fpic;
-    println "%s:" e.cont_label;
+    (println "%s:" e.cont_label);
     if e.inc gen_expr e.inc fpic;
-    println "  jmp .L.begin.%d" c;
-    println "%s:" e.brk_label;
+    (println "  jmp .L.begin.%d" c);
+    (println "%s:" e.brk_label);
     return;
   ;
   case ND_DO: {
     let c = count ;
-    println ".L.begin.%d:" c;
+    (println ".L.begin.%d:" c);
     gen_stmt e.then fpic;
-    println "%s:" e.cont_label;
+    (println "%s:" e.cont_label);
     gen_expr e.cond fpic;
     cmp_zero e.cond.ty;
-    println "  jne .L.begin.%d" c;
-    println "%s:" e.brk_label;
+    (println "  jne .L.begin.%d" c);
+    (println "%s:" e.brk_label);
     return;
   ;
   case ND_SWITCH:
@@ -915,31 +930,31 @@ gen_stmt(e@Node fpic bool) =
       let ax = (e.cond.ty.size == 8 ? "%rax" : "%eax");
       let di = (e.cond.ty.size == 8 ? "%rdi" : "%edi");
 
-      println "  cmp $%ld, %s" n.begin ax;
-      println "  je %s" n.label;
+      (println "  cmp $%ld, %s" n.begin ax);
+      (println "  je %s" n.label);
     ;
 
-    if e.default_case println "  jmp %s" e.default_case.label;
-    println "  jmp %s" e.brk_label;
+    if e.default_case (println "  jmp %s" e.default_case.label);
+    (println "  jmp %s" e.brk_label);
     gen_stmt e.then fpic;
-    println "%s:" e.brk_label;
+    (println "%s:" e.brk_label);
     return;
   case ND_CASE:
-    println "%s:" e.label;
+    (println "%s:" e.label);
     gen_stmt e.lhs fpic;
     return;
   case ND_BLOCK:
     for (let n@Node = e.body; n; n = n.next) gen_stmt n fpic;
     return;
   case ND_GOTO:
-    println "  jmp %s" e.unique_label;
+    (println "  jmp %s" e.unique_label);
     return;
   case ND_GOTO_EXPR:
     gen_expr e.lhs fpic;
-    println "  jmp *%%rax";
+    (println "  jmp *%%rax");
     return;
   case ND_LABEL:
-    println "%s:" e.unique_label;
+    (println "%s:" e.unique_label);
     gen_stmt e.lhs fpic;
     return;
   case ND_RETURN:
@@ -955,181 +970,149 @@ gen_stmt(e@Node fpic bool) =
       ;
     ;
 
-    println "  jmp .L.return.%s" current_fn.name;
+    ((println "  jmp .L.return.%s" current_fn.name));
     return;
   case ND_EXPR_STMT:
     gen_expr e.lhs fpic;
     return;
   case ND_ASM:
-    println "  %s" e.asm_str;
+    (println "  %s" e.asm_str);
     return;
   ;
 
-  error_tok e.tok "invalid statement";
+  (error_tok e.tok "invalid statement");
 ;
 
-// Assign offsets to local variables.
-assign_lvar_offsets(prog@Obj) =
-  for (let fn@Obj = prog; fn; fn = fn.next) {
-    if !fn.is_function
-      continue;
+assign_one_param_offset(var @Obj top @int gp @int fp @int) =
+  let ty = var.ty;
+  switch  ty.kind {
+    case TY_STRUCT:
+    case TY_UNION:none;
+      let fp1 = has_flonum ty 0 8 0;
+      let fp2 = has_flonum ty 8 16 8;
+      if (!(fp@ + fp1 + fp2 < FP_MAX && gp@ + !fp1 + !fp2 < GP_MAX) && ty.size > 16) {
+        fp@ = fp@ + fp1 + fp2;
+        gp@ = gp@ + !fp1 + !fp2;
+        return;;
+    case TY_DOUBLE: if ((fp@:;fp@+=1) < FP_MAX) return;
+    default       : if ((gp@:;gp@+=1) < GP_MAX) return;
+    case TY_FLOAT:
+    case TY_LDOUBLE:none;;
+  top@ = align_to top@ 8;
+  var.offset = top@;
+  top@ += var.ty.size;;
+assign_param_offsets(fn @Obj) =
+  let top = 16 gp = 0 fp = 0;
+  for (let var @Obj = fn.params; var; var = var.next)
+    assign_one_param_offset var &top &gp &fp;;
 
-    // If a function has many parameters, some parameters are
-    // inevitably passed by stack rather than by register.
-    // The first passed-by-stack parameter resides at RBP+16.
-    let top = 16 bottom = 0 gp = 0 fp = 0;
+assign_one_lvar_offset(fn @Obj) =
+  if !fn.is_function return;
+  assign_param_offsets fn;
+  let bottom = 0;
+  for (let var@Obj = fn.locals; var; var = var.next)
+    if !var.offset {
+    let alignment = var.alignment as long;
+    bottom += var.ty.size;
+    bottom = align_to bottom alignment;
+    var.offset = -bottom;;
+  fn.stack_size = align_to bottom 16;;
+assign_lvar_offsets(prog @Obj) =
+  for (let fn @Obj = prog; fn; fn = fn.next)
+    assign_one_lvar_offset fn;;
 
-    // Assign offsets to pass-by-stack parameters.
-    for (let var@Obj = fn.params; var; var = var.next) {
-      let ty = var.ty;
-
-      switch  ty.kind {
-      case TY_STRUCT:
-      case TY_UNION:
-        if (ty.size <= 16) {
-          let fp1 = has_flonum ty 0 8 0;
-          let fp2 = has_flonum ty 8 16 8;
-          if (fp + fp1 + fp2 < FP_MAX && gp + !fp1 + !fp2 < GP_MAX) {
-            fp = fp + fp1 + fp2;
-            gp = gp + !fp1 + !fp2;
-            continue;
-          ;
-        ;
-        break;
-      case TY_FLOAT:
-      case TY_DOUBLE:
-        if ((fp:;fp+=1) < FP_MAX) continue;
-      case TY_LDOUBLE:
-        break;
-      default:
-        if ((gp:;gp+=1) < GP_MAX) continue;
-      ;
-
-      top = align_to top 8;
-      var.offset = top;
-      top += var.ty.size;
-    ;
-
-    // Assign offsets to pass-by-register parameters and local variables.
-    for (let var@Obj = fn.locals; var; var = var.next) {
-      if var.offset
-        continue;
-
-      // AMD64 System V ABI has a special alignment rule for an array of
-      // length at least 16 bytes. We need to align such array to at least
-      // 16-byte boundaries. See p.14 of
-      // https://github.com/hjl-tools/x86-psABI/wiki/x86-64-psABI-draft.pdf.
-      let alignment = (var.ty.kind == TY_ARRAY && var.ty.size >= 16
-        ? maxl 16l var.alignment->long : var.alignment as long);
-
-      bottom += var.ty.size;
-      bottom = align_to bottom alignment->int;
-      var.offset = -bottom;
-    ;
-
-    fn.stack_size = align_to bottom 16;
-  ;
-;
-
-emit_data(prog@Obj fpic bool) =
-  for (let var@Obj = prog; var; var = var.next) {
-    if (var.is_function || !var.is_definition) continue;
-    if !var.is_export println "  .local %s" var.name;
-    else println "  .globl %s" var.name;
+emit_data(prog @Obj fpic bool) =
+  for (let var@Obj = prog; var; var = var.next)
+    if !(var.is_function || !var.is_definition) {
+    if !var.is_export (println "  .local %s" var.name);
+    else (println "  .globl %s" var.name);
 
     let alignment = (var.ty.kind == TY_ARRAY && var.ty.size >= 16
-      ? maxl 16l var.alignment->long : var.alignment as long);
+      ? maxl 16l var.alignment to long : var.alignment as long);
 
     // .data or .tdata
     if var.init_data{
       if var.is_tls
-        println "  .section .tdata,\"awT\",@progbits";
+        (println "  .section .tdata,\"awT\",@progbits");
       else
-        println "  .data";
+        (println "  .data");
 
-      println "  .type %s, @object" var.name;
-      println "  .size %s, %d" var.name var.ty.size;
-      println "  .align %d" alignment;
-      println "%s:" var.name;
+      (println "  .type %s, @object" var.name);
+      (println "  .size %s, %d" var.name var.ty.size);
+      (println "  .align %d" alignment);
+      (println "%s:" var.name);
 
       let
         rel = var.rel
         pos = 0;
       while (pos < var.ty.size) {
         if (!!rel && rel.offset == pos) {
-          println "  .quad %s%+ld" rel.label@ rel.addend;
+          (println "  .quad %s%+ld" rel.label@ rel.addend);
           rel = rel.next;
           pos += 8;
         ; else {
-          println "  .byte %d" var.init_data[(pos:;pos+=1)];
+          (println "  .byte %d" var.init_data[(pos:;pos+=1)]);
         ;
       ;
-      continue;
     ;
+    else {
+      // .bss or .tbss
+      if var.is_tls
+        (println "  .section .tbss,\"awT\",@nobits");
+      else
+        (println "  .bss");
 
-    // .bss or .tbss
-    if var.is_tls
-      println "  .section .tbss,\"awT\",@nobits";
-    else
-      println "  .bss";
-
-    println "  .align %d" alignment;
-    println "%s:" var.name;
-    println "  .zero %d" var.ty.size;
-  ;
+      (println "  .align %d" alignment);
+      (println "%s:" var.name);
+      (println "  .zero %d" var.ty.size);
+  ;;
 ;
 
 store_fp(r int offset int sz int) = 
-  sz == 4 ? println "  movss %%xmm%d, %d(%%rbp)" r offset :
-  sz == 8 ? println "  movsd %%xmm%d, %d(%%rbp)" r offset :
+  sz == 4 ? (println "  movss %%xmm%d, %d(%%rbp)" r offset ):
+  sz == 8 ? (println "  movsd %%xmm%d, %d(%%rbp)" r offset ):
             unreachable;;
 
 store_gp(r int offset int sz int) =
   switch  sz {
   case 1:
-    println "  mov %s, %d(%%rbp)" argreg8[r] offset;
+    (println "  mov %s, %d(%%rbp)" argreg8[r] offset);
     return;
   case 2:
-    println "  mov %s, %d(%%rbp)" argreg16[r] offset;
+    (println "  mov %s, %d(%%rbp)" argreg16[r] offset);
     return;
   case 4:
-    println "  mov %s, %d(%%rbp)" argreg32[r] offset;
+    (println "  mov %s, %d(%%rbp)" argreg32[r] offset);
     return;
   case 8:
-    println "  mov %s, %d(%%rbp)" argreg64[r] offset;
+    (println "  mov %s, %d(%%rbp)" argreg64[r] offset);
     return;
   default:
     for (let i int = 0; i < sz; (i:;i+=1)) {
-      println "  mov %s, %d(%%rbp)" argreg8[r] (offset + i);
-      println "  shr $8, %s" argreg64[r];
+      (println "  mov %s, %d(%%rbp)" argreg8[r] (offset + i));
+      (println "  shr $8, %s" argreg64[r]);
     ;
     return;
   ;
 ;
 
 emit_text(prog@Obj fpic bool) =
-  for (let fn@Obj = prog; fn; fn = fn.next) {
-    if (!fn.is_function || !fn.is_definition) continue;
+  for (let fn@Obj = prog; fn; fn = fn.next)
+    if (!(!fn.is_function || !fn.is_definition) && fn.is_live) {
 
-    // No code is emitted for "static inline" functions
-    // if no one is referencing them.
-    if !fn.is_live continue;
+    if !fn.is_export (println "  .local %s" fn.name);
+    else             (println "  .globl %s" fn.name);
 
-    if !fn.is_export
-      println "  .local %s" fn.name;
-    else
-      println "  .globl %s" fn.name;
-
-    println "  .text";
-    println "  .type %s, @function" fn.name;
-    println "%s:" fn.name;
+    (println "  .text");
+    (println "  .type %s, @function" fn.name);
+    (println "%s:" fn.name);
     current_fn = fn;
 
     // Prologue
-    println "  push %%rbp";
-    println "  mov %%rsp, %%rbp";
-    println "  sub $%d, %%rsp" fn.stack_size;
-    println "  mov %%rsp, %d(%%rbp)" fn.alloca_bottom.offset;
+    (println "  push %%rbp");
+    (println "  mov %%rsp, %%rbp");
+    (println "  sub $%d, %%rsp" fn.stack_size);
+    (println "  mov %%rsp, %d(%%rbp)" fn.alloca_bottom.offset);
 
     // Save arg registers if function is variadic
     if fn.va_area {
@@ -1146,75 +1129,78 @@ emit_text(prog@Obj fpic bool) =
       let off = fn.va_area.offset;
 
       // va_elem
-      println "  movl $%d, %d(%%rbp)" (gp * 8) off;          // gp_offset
-      println "  movl $%d, %d(%%rbp)" (fp * 8 + 48) (off + 4); // fp_offset
-      println "  movq %%rbp, %d(%%rbp)" (off + 8);            // overflow_arg_area
-      println "  addq $16, %d(%%rbp)" (off + 8);
-      println "  movq %%rbp, %d(%%rbp)" (off + 16);           // reg_save_area
-      println "  addq $%d, %d(%%rbp)" (off + 24) (off + 16);
+      (println "  movl $%d, %d(%%rbp)" (gp * 8) off);          // gp_offset
+      (println "  movl $%d, %d(%%rbp)" (fp * 8 + 48) (off + 4)); // fp_offset
+      (println "  movq %%rbp, %d(%%rbp)" (off + 8));            // overflow_arg_area
+      (println "  addq $16, %d(%%rbp)" (off + 8));
+      (println "  movq %%rbp, %d(%%rbp)" (off + 16));           // reg_save_area
+      (println "  addq $%d, %d(%%rbp)" (off + 24) (off + 16));
 
       let b = (off + 24);
       // __reg_save_area__
-      println "  movq %%rdi, %d(%%rbp)"   b;
-      b += 8; println "  movq %%rsi, %d(%%rbp)"   b;
-      b += 8; println "  movq %%rdx, %d(%%rbp)"   b;
-      b += 8; println "  movq %%rcx, %d(%%rbp)"   b;
-      b += 8; println "  movq %%r8, %d(%%rbp)"    b;
-      b += 8; println "  movq %%r9, %d(%%rbp)"    b;
-      b += 8; println "  movsd %%xmm0, %d(%%rbp)" b;
-      b += 8; println "  movsd %%xmm1, %d(%%rbp)" b;
-      b += 8; println "  movsd %%xmm2, %d(%%rbp)" b;
-      b += 8; println "  movsd %%xmm3, %d(%%rbp)" b;
-      b += 8; println "  movsd %%xmm4, %d(%%rbp)" b;
-      b += 8; println "  movsd %%xmm5, %d(%%rbp)" b;
-      b += 8; println "  movsd %%xmm6, %d(%%rbp)" b;
-      b += 8; println "  movsd %%xmm7, %d(%%rbp)" b;
+      (println "  movq %%rdi, %d(%%rbp)"   b);
+      b += 8; (println "  movq %%rsi, %d(%%rbp)"   b);
+      b += 8; (println "  movq %%rdx, %d(%%rbp)"   b);
+      b += 8; (println "  movq %%rcx, %d(%%rbp)"   b);
+      b += 8; (println "  movq %%r8, %d(%%rbp)"    b);
+      b += 8; (println "  movq %%r9, %d(%%rbp)"    b);
+      b += 8; (println "  movsd %%xmm0, %d(%%rbp)" b);
+      b += 8; (println "  movsd %%xmm1, %d(%%rbp)" b);
+      b += 8; (println "  movsd %%xmm2, %d(%%rbp)" b);
+      b += 8; (println "  movsd %%xmm3, %d(%%rbp)" b);
+      b += 8; (println "  movsd %%xmm4, %d(%%rbp)" b);
+      b += 8; (println "  movsd %%xmm5, %d(%%rbp)" b);
+      b += 8; (println "  movsd %%xmm6, %d(%%rbp)" b);
+      b += 8; (println "  movsd %%xmm7, %d(%%rbp)" b);
     ;
 
     // Save passed-by-register arguments to the stack
     let gp = 0 fp = 0;
     for (let var@Obj = fn.params; var; var = var.next) {
-      if (var.offset > 0) continue;
+      if !(var.offset > 0) {
 
-      let ty = var.ty;
+        let ty = var.ty;
 
-      switch  ty.kind {
-      case TY_STRUCT:
-      case TY_UNION:
-        assert(ty.size <= 16);
-        let b = (ty.size < 8 ? ty.size : 8);
-        if has_flonum ty 0 8 0
-          store_fp (fp:;fp+=1) var.offset b;
-        else
-          store_gp (gp:;gp+=1) var.offset b;
-
-        if (ty.size > 8) {
-          let b = (var.offset + 8) c = (ty.size - 8);
-          if has_flonum ty 8 16 0
-            store_fp (fp:;fp+=1) b c;
+        switch  ty.kind {
+        case TY_STRUCT:
+        case TY_UNION:
+          assert(ty.size <= 16);
+          let b = (ty.size < 8 ? ty.size : 8);
+          if has_flonum ty 0 8 0
+            store_fp (fp:;fp+=1) var.offset b;
           else
-            store_gp (gp:;gp+=1) b c;
-        ;
-        break;
-      case TY_FLOAT:
-      case TY_DOUBLE:
-        store_fp (fp:;fp+=1) var.offset ty.size;
-        break;
-      default:
-        store_gp (gp:;gp+=1) var.offset ty.size;;;
-    gen_stmt fn.body->@Node fpic;
-    assert(!depth);
-    if ! strcmp fn.name->@ "main" println "  mov $0, %%rax";
-    println ".L.return.%s:" fn.name;
-    println "  mov %%rbp, %%rsp";
-    println "  pop %%rbp";
-    println "  ret";;;
+            store_gp (gp:;gp+=1) var.offset b;
 
-export codegen(prog@Obj out@FILE fpic bool) =
-  output_file = out;
-  let files = get_input_files;
-  for (let i int = 0; files[i]; (i:;i+=1)) println "  .file %d \"%s\"" files[i].file_no files[i].name;
-  assign_lvar_offsets prog;
-  emit_data prog fpic;
-  emit_text prog fpic;
-;
+          if (ty.size > 8) {
+            let b = (var.offset + 8) c = (ty.size - 8);
+            if has_flonum ty 8 16 0
+              store_fp (fp:;fp+=1) b c;
+            else
+              store_gp (gp:;gp+=1) b c;
+          ;
+          break;
+        case TY_FLOAT:
+        case TY_DOUBLE:
+          store_fp (fp:;fp+=1) var.offset ty.size;
+          break;
+        default:
+          store_gp (gp:;gp+=1) var.offset ty.size;;;;
+    gen_stmt fn.body to @Node fpic;
+    assert(!depth);
+    if ! strcmp fn.name to @ "main" (println "  mov $0, %%rax");
+    (println ".L.return.%s:" fn.name);
+    (println "  mov %%rbp, %%rsp");
+    (println "  pop %%rbp");
+    (println "  ret");;;
+
+export codegen(prog@Obj out@FILE fpic bool) = return
+  (output_file = out),
+  get_input_files is files
+  0 is i
+  cast until (!files[i] || (
+    (println "  .file %d \"%s\"" files[i].file_no files[i].name),
+    (i += 1),
+    none)),
+  assign_lvar_offsets prog,
+  emit_data prog fpic,
+  emit_text prog fpic;;

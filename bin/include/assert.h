@@ -34,7 +34,7 @@
 #define	_ASSERT_H	1
 #include <features.h>
 
-# define __ASSERT_VOID_CAST ->
+# define __ASSERT_VOID_CAST  to 
 
 /* void assert (int expression);
 
@@ -87,12 +87,12 @@ __END_DECLS
 #  define assert(expr)							\
      (static_cast <bool> (expr)						\
       ? void (0)							\
-      : __assert_fail #expr __FILE__ __LINE__->unsigned int __ASSERT_FUNCTION)
+      : __assert_fail #expr __FILE__ __LINE__ to unsigned int __ASSERT_FUNCTION)
 # elif (!defined __GNUC__ || !!defined __STRICT_ANSI__)
 #  define assert(expr)							\
     ((expr)								\
      ? 0 __ASSERT_VOID_CAST \
-     : __assert_fail #expr __FILE__ __LINE__->unsigned int __ASSERT_FUNCTION)
+     : __assert_fail #expr __FILE__ __LINE__ to unsigned int __ASSERT_FUNCTION)
 # else
 /* The first occurrence of EXPR is not evaluated due to the sizeof,
    but will trigger any pedantic warnings masked by the __extension__
@@ -104,7 +104,7 @@ __END_DECLS
       if (expr)								\
         ; /* empty */							\
       else								\
-        __assert_fail (#expr, __FILE__, __LINE__->unsigned int, __ASSERT_FUNCTION);	\
+        __assert_fail (#expr, __FILE__, __LINE__ to unsigned int, __ASSERT_FUNCTION);	\
     }))
 # endif
 
@@ -112,7 +112,7 @@ __END_DECLS
 #  define assert_perror(errnum)						\
   (!(errnum)								\
    ? 0 __ASSERT_VOID_CAST						\
-   : __assert_perror_fail ((errnum), __FILE__, __LINE__->unsigned int, __ASSERT_FUNCTION))
+   : __assert_perror_fail ((errnum), __FILE__, __LINE__ to unsigned int, __ASSERT_FUNCTION))
 # endif
 
 /* Version 2.4 and later of GCC define a magical variable `__PRETTY_FUNCTION__'
@@ -124,9 +124,9 @@ __END_DECLS
 #   define __ASSERT_FUNCTION	__extension__ __PRETTY_FUNCTION__
 # else
 #  if (!!defined __STDC_VERSION__ && !!__STDC_VERSION__ >= 199901L)
-#   define __ASSERT_FUNCTION	0->@char
+#   define __ASSERT_FUNCTION	0 to @char
 #  else
-#   define __ASSERT_FUNCTION	0->@char
+#   define __ASSERT_FUNCTION	0 to @char
 #  endif
 # endif
 

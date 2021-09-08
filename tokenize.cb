@@ -6,10 +6,10 @@ at_bol bool
 has_space bool;
 
 export error(fmt@ char ...) =
-  let ap = (let va_list){;;
+  let ap = new va_list {;;
   va_start(ap, fmt);
   vfprintf stderr fmt &ap;
-  fprintf stderr "\n";
+  (fprintf stderr "\n");
   raise SIGTRAP;
   exit 1;;
 verror_at(filename@ char input@ char line_no int loc@ char fmt@ char ap @va_list)  =
@@ -17,39 +17,39 @@ verror_at(filename@ char input@ char line_no int loc@ char fmt@ char ap @va_list
   while (input < line && line[-1] != '\n') (line:;line-=1);
   let end = loc;
   while (!!end@ && end@ != '\n') (end:;end+=1);
-  let indent = fprintf stderr "./%s:(%d,%d): " filename line_no (loc - line + 1);
-  fprintf stderr "%.*s\n" (end - line) line;
-  fprintf stderr "%*s" (display_width line (loc - line)->int + indent) "";
-  fprintf stderr "^ ";
+  let indent = (fprintf stderr "./%s:(%d,%d): " filename line_no (loc - line + 1));
+  (fprintf stderr "%.*s\n" (end - line) line);
+  (fprintf stderr "%*s" (display_width line (loc - line) to int + indent) "");
+  (fprintf stderr "^ ");
   vfprintf stderr fmt ap;
-  fprintf stderr "\n";;
+  (fprintf stderr "\n");;
 export error_at(loc@ char fmt@ char ...) =
   let line_no = 1;
   for (let p @ char= current_file.contents; p < loc; (p:;p+=1)) if (p@ == '\n') (line_no:;line_no+=1);
-  let ap = (let va_list){;;
+  let ap = new va_list {;;
   va_start(ap, fmt);
   verror_at current_file.name current_file.contents line_no loc fmt &ap;
   raise SIGTRAP;
   exit 1;;
 export error_tok(tok@ Token fmt@ char ...)  =
-  let ap = &(let va_list){;;
+  let ap = &new va_list {;;
   va_start(ap@, fmt);
   verror_at tok.file.name tok.file.contents tok.line_no tok.loc fmt ap;
   raise SIGTRAP;
   exit 1;;
 export warn_tok(tok@ Token fmt@ char ...) =
-  let ap = &(let va_list){;;
+  let ap = &new va_list {;;
   va_start(ap@, fmt);
   verror_at tok.file.name tok.file.contents tok.line_no tok.loc fmt ap;
   va_end(ap@);
-export equal(tok@ Token op@ char) bool = return ! memcmp tok.loc->@ op->@ tok.len->unsigned long && !op[tok.len];;
-export advance(k @@Token) @Token = return k@ :: j (k@ = k.next), j;;
+export equal(tok@ Token op@ char) bool = return ! memcmp tok.loc to @ op to @ tok.len to unsigned long && !op[tok.len];;
+export advance(k @@Token) @Token = return k@ is j (k@ = k.next), j;;
 export expect(tok@@ Token op@ char) =
-  if ! equal tok@ op error_tok tok@ "expected '%s'" op;
+  if ! equal tok@ op (error_tok tok@ "expected '%s'" op);
   tok@ = tok.next;
   return none;;
 export skip(tok@ Token op@ char)@ Token =
-  if ! equal tok op error_tok tok "expected '%s'" op;
+  if ! equal tok op (error_tok tok "expected '%s'" op);
   return tok.next;;
 export consume(rest@@ Token tok@ Token str@ char) bool =
   if equal tok str {
@@ -57,8 +57,8 @@ export consume(rest@@ Token tok@ Token str@ char) bool =
     return true;;
   rest@ = tok;
   return false;;
-new_token(kind typeof 0->@Token.kind start@ char end@ char)@ Token =
-  let tok            = (calloc 1->unsigned long sizeof Token as @Token);
+new_token(kind typeof (0 to @Token).kind start@ char end@ char)@ Token =
+  let tok            = (calloc 1 to unsigned long sizeof Token as @Token);
   tok.kind           = kind;
   tok.loc            = start;
   tok.len            = end - start as int;
@@ -69,46 +69,44 @@ new_token(kind typeof 0->@Token.kind start@ char end@ char)@ Token =
   at_bol             = false;
   has_space          = false;
   return tok;;
-startswith(p@ char q@ char) bool = return ! strncmp p->@ q strlen q;;
+startswith(p@ char q@ char) bool = return ! strncmp p to @ q strlen q;;
 read_ident(start@ char) int =
   let p = start;
   let c = decode_utf8 &p p;
   if !is_ident1 c return 0;
   for (;;) {
-    let q = 0->@char;
+    let q = 0 to @char;
     c = decode_utf8 &q p;
-    if !is_ident2 c return (p - start)->int;
+    if !is_ident2 c return (p - start) to int;
     p = q;;;
 from_hex(c char) int =
   if ('0' <= c && c <= '9') return c - '0';
   if ('a' <= c && c <= 'f') return c - 'a' + 10;
   return c - 'A' + 10;;
 rpkw[]@ char = {
-  "<<=" ">>=" "..." "=="
-  "!="  "<="  ">="  "->"
-  "+="  "-="  "*="  "/="
-  "++"  "--"  "%="  "&="
-  "|="  "^="  "&&"  "||"
-  "<<"  ">>"  "##"  "::"    "to"     "as" ":;";;
+  "<<=" ">>=" "..." "=="  "!="  "<="  "for"
+  ">="  "+="  "-="  "*="  "/="  "%=" "&&=" "||="
+  "&="  "|="  "^="  "&&"  "||"  "<<"
+  ">>"  "##"  " is "  "to"  "as"  ":;" "is" ;;
 read_punct(p@ char) int =
-  for (let i  int= 0; i < (sizeof typeof rpkw) / (sizeof typeof rpkw@); (i:;i+=1)) if startswith p rpkw[i] return (strlen rpkw[i])->int;
-  return ispunct(p@) ? 1 : 0;;
+  for (let i  int= 0; i < (sizeof typeof rpkw) / (sizeof typeof rpkw@); (i:;i+=1)) if startswith p rpkw[i] return (strlen rpkw[i]) to int;
+  return !!ispunct(p@) ? 1 : 0;;
 ikmap HashMap
 ikkw[]@ char = {
-  "let"        "return"       "if"            "else"         "for"
-  "while"      "int"          "sizeof"        "same"         "char"
-  "struct"     "union"        "short"         "long"         "void"
-  "typedef"    "_Bool"        "enum"          "static"       "export"
-  "goto"       "break"        "continue"      "switch"       "case"
-  "default"    "extern"       "alignof"       "align"        "do"
-  "signed"     "unsigned"     "const"         "volatile"     "auto"
-  "register"   "restrict"     "_Noreturn"     "until"
-  "float"      "double"       "typeof"        "asm"          "_Thread_local"
-  "__thread"   "_Atomic"      "__attribute__" "bool"         "true"
-  "false"      "none";;
+  "let"      "return"   "if"        "else"     "for"
+  "while"    "int"      "sizeof"    "same"     "char"
+  "struct"   "union"    "short"     "long"     "void"
+  "typedef"  "enum"     "static"    "export"
+  "goto"     "break"    "continue"  "switch"   "case"
+  "default"  "extern"   "alignof"   "align"    "do"
+  "signed"   "unsigned" "const"     "volatile" "auto"
+  "register" "restrict" "_Noreturn" "until"    "the"
+  "float"    "double"   "typeof"    "asm"      "_Thread_local"
+  "__thread" "_Atomic"  "bool"      "true"
+  "false"    "none"     "cast"      "not";;
 is_keyword(tok@ Token) bool =
-  if !ikmap.capacity for (let i int = 0; i < (sizeof typeof ikkw) / (sizeof typeof ikkw@); (i:;i+=1)) hashmap_put &ikmap ikkw[i] 1->@;
-  return (hashmap_get2 &ikmap tok.loc tok.len)->bool;;
+  if !ikmap.capacity for (let i int = 0; i < (sizeof typeof ikkw) / (sizeof typeof ikkw@); (i:;i+=1)) hashmap_put &ikmap ikkw[i] 1 to @;
+  return (hashmap_get2 &ikmap tok.loc tok.len) to bool;;
 read_escaped_char(new_pos@@ char p@ char) int =
   if ('0' <= p@ && p@ <= '7') {
     let c = ((p:;p+=1)@ - '0');
@@ -119,9 +117,9 @@ read_escaped_char(new_pos@@ char p@ char) int =
     return c;;
   if (p@ == 'x') {
     (p:;p+=1);
-    if ! isxdigit p@->int error_at p "invalid hex escape sequence";
+    if ! isxdigit p@ to int (error_at p "invalid hex escape sequence");
     let c = 0;
-    for (; isxdigit p@->int; (p:;p+=1)) c = (c << 4) + from_hex p@;
+    for (; isxdigit p@ to int; (p:;p+=1)) c = (c << 4) + from_hex p@;
     new_pos@ = p;
     return c;;
   new_pos@ = p + 1;
@@ -133,16 +131,16 @@ read_escaped_char(new_pos@@ char p@ char) int =
     p@ == 'v' ? '\v'   :
     p@ == 'f' ? '\f'   :
     p@ == 'r' ? '\r'   :
-                p@->int;;
+                p@ to int;;
 string_literal_end(p@ char)@ char =
   let start = p;
   for (; p@ != '"'; (p:;p+=1)) {
-    if (p@ == '\n' || p@ == '\0') error_at start "unclosed string literal";
+    if (p@ == '\n' || p@ == '\0') (error_at start "unclosed string literal");
     if (p@ == '\\') (p:;p+=1);;
   return p;;
 read_string_literal(start@ char quote@ char)@ Token =
   let end = string_literal_end (quote + 1);
-  let buf = (calloc 1ul (end - quote)->unsigned long)->@char;
+  let buf = (calloc 1ul (end - quote) to unsigned long) to @char;
   let len = 0;
   for (let p @ char = (quote + 1); p < end;) {
     if (p@ == '\\') 
@@ -154,7 +152,7 @@ read_string_literal(start@ char quote@ char)@ Token =
   return tok;;
 read_utf16_string_literal(start@ char quote@ char)@ Token =
   let end = string_literal_end (quote + 1);
-  let buf = (calloc 2ul (end - start)->unsigned long)->@uint16_t;
+  let buf = (calloc 2ul (end - start) to unsigned long) to @uint16_t;
   let len = 0;
   for (let p @char = (quote + 1); p < end;) {
     if (p@ == '\\') {
@@ -168,11 +166,11 @@ read_utf16_string_literal(start@ char quote@ char)@ Token =
         buf[(len:;len+=1)] = 0xdc00 + (c & 0x3ff) as unsigned short;;;;
   let tok = new_token TK_STR start (end + 1);
   tok.ty = array_of ty_ushort (len + 1) as @;
-  tok.str = buf->@ char;
+  tok.str = buf to @ char;
   return tok;;
 read_utf32_string_literal(start@ char quote@ char ty@ Type)@ Token =
   let end = string_literal_end (quote + 1);
-  let buf = (calloc 4ul (end - quote)->unsigned long)->@uint32_t;
+  let buf = (calloc 4ul (end - quote) to unsigned long) to @uint32_t;
   let len = 0;
   for (let p @ char = (quote + 1); p < end;) {
     if (p@ == '\\') {
@@ -180,17 +178,17 @@ read_utf32_string_literal(start@ char quote@ char ty@ Type)@ Token =
     else buf[(len:;len+=1)] = decode_utf8 &p p;;
   let tok = new_token TK_STR start (end + 1);
   tok.ty = array_of ty (len + 1) as @;
-  tok.str = buf->@ char;
+  tok.str = buf to @ char;
   return tok;;
 read_char_literal(start@ char quote@ char ty@ Type)@ Token =
   let p = (quote + 1);
-  if (p@ == '\0') error_at start "unclosed literal char";
+  if (p@ == '\0') (error_at start "unclosed literal char");
   let c = 0;
   if (p@ == '\\') {
     c = read_escaped_char &p (p + 1);;
   else c = decode_utf8 &p p as int;
   let end = strchr p '\'';
-  if !end error_at p "unclosed literal char";
+  if !end (error_at p "unclosed literal char");
   let tok = new_token TK_NUM start (end + 1);
   tok.val = c as long;
   tok.ty = ty as @;
@@ -198,15 +196,15 @@ read_char_literal(start@ char quote@ char ty@ Type)@ Token =
 convert_pp_int(tok@ Token) bool =
   let p = tok.loc;
   let base = 10;
-  if (! strncasecmp p "0x" 2->unsigned long && isxdigit p[2]->int) {
+  if (! strncasecmp p "0x" 2 to unsigned long && isxdigit p[2] to int) {
     p += 2;
     base = 16;;
-  else if (! strncasecmp p "0b" 2->unsigned long && (p[2] == '0' || p[2] == '1')) {
+  else if (! strncasecmp p "0b" 2 to unsigned long && (p[2] == '0' || p[2] == '1')) {
     p += 2;
     base = 2;;
   else if !p@ base = 8;
   let q = &p;
-  let val = strtoul p q base;
+  let v = strtoul p q base;
   let l = false;
   let u = false;
   if (startswith p "LLU" || startswith p "LLu" ||
@@ -231,33 +229,34 @@ convert_pp_int(tok@ Token) bool =
     u = true;;
 
   if (p != tok.loc + tok.len) return false;
-  let ty = (
-    base == 10 ? l && u    ? ty_ulong    :
-                 l         ? ty_long     :
-                 u         ? val >> 32   ? ty_ulong :
-                                           ty_uint  :
-                 val >> 31 ? ty_long     :
-                             ty_int      :
+  return
+  ( base == 10 ? l && u      ? ty_ulong     :
+                 l           ? ty_long      :
+                 u           ? !!(v >> 32)  ? ty_ulong :
+                                              ty_uint  :
+                 !!(v >> 31) ? ty_long      :
+                               ty_int       :
 
-                 l && u    ? ty_ulong    :
-                 l         ?  val >> 63  ? ty_ulong :
-                                           ty_long  :
-                 u         ?  val >> 32  ? ty_ulong :
-                                           ty_uint  :
-                 val >> 63 ? ty_ulong    :
-                 val >> 32 ? ty_long     :
-                 val >> 31 ? ty_uint     :
-                             ty_int                 );
-  tok.kind = TK_NUM;
-  tok.val  = val as long;
-  tok.ty   = ty as @;
-  return true;;
+                 l && u      ? ty_ulong     :
+                 l           ?  !!(v >> 63) ? ty_ulong :
+                                              ty_long  :
+                 u           ?  !!(v >> 32) ? ty_ulong :
+                                              ty_uint  :
+                 !!(v >> 63) ? ty_ulong     :
+                 !!(v >> 32) ? ty_long      :
+                 !!(v >> 31) ? ty_uint      :
+                 ty_int                                )
+  is t
+  (tok.kind = TK_NUM   ),
+  (tok.val  = v as long),
+  (tok.ty   = t as @   ),
+  true;;
 
 convert_pp_number(tok@ Token)  =
   if convert_pp_int tok return;
-  let end = 0->@char;
+  let end = 0 to @char;
   let val = strtold tok.loc &end;
-  let ty = 0->@Type;
+  let ty = 0 to @Type;
   if (end@ == 'f' || end@ == 'F') {
     ty = ty_float;
     (end:;end+=1);;
@@ -265,7 +264,7 @@ convert_pp_number(tok@ Token)  =
     ty = ty_ldouble;
     (end:;end+=1);;
   else ty = ty_double;
-  if (tok.loc + tok.len != end) error_tok tok "invalid numeric constant";
+  if (tok.loc + tok.len != end) (error_tok tok "invalid numeric constant");
   tok.kind = TK_NUM;
   tok.fval = val;
   tok.ty = ty as @;;
@@ -278,15 +277,15 @@ export convert_pp_tokens(tok@ Token)  =
 add_line_numbers(tok@ Token)  =
   let p = current_file.contents;
   let n = 1;
-  do {
-    if (p == tok.loc) {
-      tok.line_no = n;
-      tok = tok.next; ;
-    if (p@ == '\n') (n:;n+=1);;
-    while ((p:;p+=1)@);;
+  until (
+    (p == tok.loc) &&
+    ( (tok.line_no = n) ,
+      (tok = tok.next ) ) ,
+    p@ == '\n' && (n+=1),
+    !(p:;p+=1)@);;
 
 export tokenize_string_literal(tok@ Token basety@ Type)@ Token =
-  let t = 0->@Token;
+  let t = 0 to @Token;
   if (basety.size == 2) t = read_utf16_string_literal tok.loc tok.loc;
   else t = read_utf32_string_literal tok.loc tok.loc basety;
   t.next = tok.next;
@@ -296,7 +295,7 @@ export tokenize(file@ File)@ Token =
   current_file = file;
   let
     p = file.contents
-    head = (let Token){;
+    head = new Token {;
     cur = &head;
   at_bol = true;
   has_space = false;
@@ -307,22 +306,26 @@ export tokenize(file@ File)@ Token =
       has_space = true;;
     else if startswith p "/*" {
       let q = strstr (p + 2) "*/" ;
-      if !q error_at p "unclosed block comment";
+      if !q (error_at p "unclosed block comment");
       p = q + 2;
       has_space = true;;
     else if (p@ == '\n') {
       (p:;p+=1);
       at_bol = true;
       has_space = false;;
-    else if (isspace p@->int) {
+    else if isspace p@ to int {
       (p:;p+=1);
       has_space = true;;
     else if (isdigit(p@) || (p@ == '.' && isdigit(p[1]))) {
       let q = (p:;p+=1);
       while (
-        !!p[0] && !!p[1] && !!strchr "eEpP" p[0]->int && strchr "+-" p[1]->int ? (p += 2), true :
-        (!!isalnum(p@) || p@ == '.')                                                       ? (p:;p+=1)->, true :
-                                                                                                     false);
+        !!p[0]                      &&
+        !!p[1]                      &&
+        !!strchr "eEpP" p[0] to int &&
+        !!strchr "+-"   p[1] to int  ? (p += 2), true  :
+        !!isalnum(p@)               ||
+        p@ == '.'                    ? (p += 1), true  :
+                                                 false );
       cur.next = new_token TK_PP_NUM q p;
       cur = cur.next;;
     else if (p@ == '"') {
@@ -373,7 +376,7 @@ export tokenize(file@ File)@ Token =
           cur.next = new_token TK_PUNCT p (p + punct_len);
           cur = cur.next;
           p += cur.len;;
-        else error_at p "invalid token";;;;
+        else (error_at p "invalid token");;;;
       cur.next = new_token TK_EOF p p;
       cur = cur.next;
   add_line_numbers head.next;
@@ -381,21 +384,21 @@ export tokenize(file@ File)@ Token =
 
 rfbuf2 [4096]char;
 read_file(path@ char)@ char =
-  let fp = 0->@FILE;
-  if ! strcmp path->@ "-" fp = stdin;
+  let fp = 0 to @FILE;
+  if ! strcmp path to @ "-" fp = stdin;
   else {
     fp = fopen path "r";
-    if !fp return 0->@char;;
-  let buf = 0->@char;
-  let buflen = 0->size_t;
+    if !fp return 0 to @char;;
+  let buf = 0 to @char;
+  let buflen = 0 to size_t;
   let b = &buflen;
   let out = open_memstream &buf b;
   for (let k bool = true;k;) {
     let
       m = (sizeof typeof rfbuf2)
-      n = fread rfbuf2->@ 1->unsigned long m fp;
+      n = fread rfbuf2 to @ 1 to unsigned long m fp;
     if (n == 0) k = false;
-    else fwrite rfbuf2->@ 1->unsigned long n out;;
+    else fwrite rfbuf2 to @ 1 to unsigned long n out;;
   if (fp != stdin) fclose fp;
   fflush out;
   if (buflen == 0 || buf[buflen - 1] != '\n') fputc '\n' out;
@@ -407,7 +410,7 @@ export get_input_files(void)@@ File =
   return input_files;;
 
 export new_file(name@ char file_no int contents@ char)@ File =
-  let file = (calloc 1ul sizeof File)->@File;
+  let file = (calloc 1ul sizeof File) to @File;
   file.name = name;
   file.display_name = name;
   file.file_no = file_no;
@@ -421,12 +424,12 @@ canonicalize_newline(p@ char)  =
   while p[i] {
     if (p[i] == '\r' && p[i + 1] == '\n') {
       i += 2;
-      p[(j:;j+=1)] = '\n'->char;;
+      p[(j:;j+=1)] = '\n' to char;;
     else if (p[i] == '\r') {
       (i:;i+=1);
-      p[(j:;j+=1)] = '\n'->char;;
+      p[(j:;j+=1)] = '\n' to char;;
     else p[(j:;j+=1)] = p[(i:;i+=1)];;
-  p[j] = '\0'->char;;
+  p[j] = '\0' to char;;
 
 remove_backslash_newline(p@ char)  =
   let
@@ -439,17 +442,20 @@ remove_backslash_newline(p@ char)  =
       (n:;n+=1);;
     else if (p[i] == '\n') {
       p[(j:;j+=1)] = p[(i:;i+=1)];
-      for (; n > 0; (n:;n-=1)) p[(j:;j+=1)] = '\n'->char;;
+      for (; n > 0; (n:;n-=1)) p[(j:;j+=1)] = '\n' to char;;
     else p[(j:;j+=1)] = p[(i:;i+=1)];;
-  for (; n > 0; (n:;n-=1)) p[(j:;j+=1)] = '\n'->char;
-  p[j] = '\0'->char;;
+  for (; n > 0; (n:;n-=1)) p[(j:;j+=1)] = '\n' to char;
+  p[j] = '\0' to char;;
 
-read_universal_char(p@ char len int) uint32_t =
-  let c = 0;
-  for (let i  int= 0; i < len; (i:;i+=1)) {
-    if !isxdigit(p[i]) return 0->unsigned int;
-    c = (c << 4) | from_hex p[i];;
-  return c->unsigned int;;
+read_universal_char(p@ char len int) unsigned int = return
+  0 is c
+  0 is i
+  cast until (
+    i == len                           ||
+    !isxdigit(p[i]) && ((c = 0), true) ||
+    ( (c = (c << 4) | from_hex p[i]),
+      (i += 1))),
+  cast unsigned int c;;
 
 convert_universal_chars(p@ char) =
   let q = p;
@@ -470,25 +476,19 @@ convert_universal_chars(p@ char) =
       (q:;q+=1)@ = (p:;p+=1)@;
       (q:;q+=1)@ = (p:;p+=1)@;;
     else (q:;q+=1)@ = (p:;p+=1)@;;
-  q@ = '\0'->char;;
+  q@ = '\0' to char;;
 
 tffile_no int;
-export tokenize_file(path@ char)@ Token =
-  let p = read_file path;
-  if !p return 0->@Token;
-
-  if ! memcmp p->@ "\xef\xbb\xbf"->@ 3->unsigned long p += 3;
-
-  canonicalize_newline p;
-  remove_backslash_newline p;
-  convert_universal_chars p;
-
-  let file = new_file path (tffile_no + 1) p;
-
-  input_files = realloc (input_files->@) (sizeof @File * (tffile_no + 2)) as @@File;
-  input_files[tffile_no] = file;
-  input_files[tffile_no + 1] = 0 as @File;
-  (tffile_no:;tffile_no+=1);
-
-  return tokenize file;
-;
+export tokenize_file(path@ char)@ Token = return
+  read_file path is p
+  !p ? cast @Token 0 :
+  ! memcmp p to @ "\xef\xbb\xbf" to @ 3 to unsigned long && (p += 3),
+  canonicalize_newline     p,
+  remove_backslash_newline p,
+  convert_universal_chars  p,
+  new_file path (tffile_no + 1) p is f
+  (input_files = cast @@File realloc (input_files to @) (sizeof @File * (tffile_no + 2))),
+  (input_files[tffile_no] = f),
+  (input_files[tffile_no + 1] = cast @File 0),
+  (tffile_no += 1),
+  tokenize f;;

@@ -12,13 +12,13 @@
 #define LOW_WATERMARK 50
 
 // Represents a deleted hash entry
-#define TOMBSTONE -1->@char
+#define TOMBSTONE -1 to @char
 
 fnv_hash(s@ char len int) uint64_t =
   let hash = 0xcbf29ce484222325;
   for (let i int = 0; i < len; (i:;i+=1)) {
     hash *= 0x100000001b3;
-    hash ^= s[i]->unsigned char;
+    hash ^= s[i] to unsigned char;
   ;
   return hash;
 ;
@@ -38,8 +38,8 @@ rehash(map@ HashMap)  =
   assert(cap > 0);
 
   // Create a new hashmap and copy all key-values.
-  let map2 = (let HashMap){;;
-  map2.buckets = (calloc cap->unsigned long sizeof HashEntry as @HashEntry);
+  let map2 = new HashMap {;;
+  map2.buckets = (calloc cap to unsigned long sizeof HashEntry as @HashEntry);
   map2.capacity = cap;
 
   for (let i int = 0; i < map.capacity; (i:;i+=1)) {
@@ -50,14 +50,14 @@ rehash(map@ HashMap)  =
   map@ = map2;;
 
 match(ent@ HashEntry key@ char keylen int) bool =
-  return !!ent.key && ent.key != TOMBSTONE && ent.keylen == keylen && !memcmp ent.key->@ key->@ keylen->unsigned long;;
+  return !!ent.key && ent.key != TOMBSTONE && ent.keylen == keylen && !memcmp ent.key to @ key to @ keylen to unsigned long;;
 get_entry(map@ HashMap key@ char keylen int)@ HashEntry =
-  if !map.buckets return 0->@HashEntry;
+  if !map.buckets return 0 to @HashEntry;
   let hash = fnv_hash key keylen;
   for (let i int = 0; i < map.capacity; (i:;i+=1)) {
     let ent = &map.buckets[(hash + i) % map.capacity];
     if match ent key keylen return ent;
-    if !ent.key return 0->@HashEntry;;
+    if !ent.key return 0 to @HashEntry;;
   unreachable;;
 get_or_insert_entry(map@ HashMap key@ char keylen int)@ HashEntry =
   if !map.buckets {
@@ -78,17 +78,17 @@ get_or_insert_entry(map@ HashMap key@ char keylen int)@ HashEntry =
       (map.used:;map.used+=1);
       return ent;;;
   unreachable;;
-export hashmap_get(map@ HashMap key@ char)@ = { return hashmap_get2 map key (strlen key)->int;;;
+export hashmap_get(map@ HashMap key@ char)@ = { return hashmap_get2 map key (strlen key) to int;;;
 export hashmap_get2(map@ HashMap key@ char keylen int)@ =
   let ent = get_entry map key keylen;
-  return ent ? ent.val : 0 as @;;
+  return !!ent ? ent.val : 0 as @;;
 export hashmap_put(map@ HashMap key@ char val@) =
-  hashmap_put2 map key (strlen key)->int val;;
+  hashmap_put2 map key (strlen key) to int val;;
 export hashmap_put2(map@HashMap key@ char keylen int val@) =
   let ent = get_or_insert_entry map key keylen;
   ent.val = val;;
 export hashmap_delete(map@HashMap key@ char) =
-  hashmap_delete2 map key (strlen key)->int;;
+  hashmap_delete2 map key (strlen key) to int;;
 export hashmap_delete2(map@HashMap key@ char keylen int) =
   let ent = get_entry map key keylen;
   if ent ent.key = TOMBSTONE;;

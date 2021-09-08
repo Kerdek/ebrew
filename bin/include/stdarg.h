@@ -11,33 +11,25 @@ type __va_elem struct {
 type va_list __va_elem;
 
 #define va_start(ap, last) \
-  do { ap = __va_area__->@__va_elem@; ; while (0)
+  (ap = (__va_area__ to @__va_elem)@)
 
 #define va_end(ap)
 
 __va_arg_mem(ap@ __va_elem sz int alignment int)@  =
-  let p = ap.overflow_arg_area;
-  if (alignment > 8)
-    p = (p + 15) / 16 * 16;
-  ap.overflow_arg_area = (p->unsigned long + sz + 7) / 8 * 8 as @;
-  return p;
-;
+  ap.overflow_arg_area  is  p
+  alignment > 8 && (p = (p + 15) / 16 * 16),
+  (ap.overflow_arg_area = (p to unsigned long + sz + 7) / 8 * 8 as @),
+  p;;
 
-__va_arg_gp(ap@ __va_elem sz int alignment int)@  =
-  if (ap.gp_offset >= 48)
-    return __va_arg_mem ap sz alignment;
+__va_arg_gp(ap@ __va_elem sz int alignment int)@ = return
+  ap.gp_offset >= 48 ? __va_arg_mem ap sz alignment :
+  (ap.reg_save_area + the unsigned int ap.gp_offset) :;
+  (ap.gp_offset += 8u);;
 
-  let r = (ap.reg_save_area + ap.gp_offset);
-  ap.gp_offset += 8;
-  return r;
-;
-
-__va_arg_fp(ap@ __va_elem sz int alignment int)@  =
-  if (ap.fp_offset >= 112) return __va_arg_mem ap sz alignment;
-  let r = (ap.reg_save_area + ap.fp_offset);
-  ap.fp_offset += 8;
-  return r;
-;
+__va_arg_fp(ap@ __va_elem sz int alignment int)@ = return
+  ap.fp_offset >= 112 ? __va_arg_mem ap sz alignment :
+  (ap.reg_save_area + the unsigned int ap.fp_offset) :;
+  (ap.fp_offset += 8u);;
 
 #define va_arg(ap, ty)                                                  \
   ({                                                                    \

@@ -5,11 +5,11 @@
 #include <bits/types.h>
 #include <bits/types/__sigval_t.h>
 
-#define __SI_MAX_SIZE	128
+#define __SI_MAX_SIZE	128ul
 #if (__WORDSIZE == 64)
-# define __SI_PAD_SIZE	((__SI_MAX_SIZE / sizeof int) - 4)
+# define __SI_PAD_SIZE	((__SI_MAX_SIZE / sizeof int) - 4ul)
 #else
-# define __SI_PAD_SIZE	((__SI_MAX_SIZE / sizeof int) - 3)
+# define __SI_PAD_SIZE	((__SI_MAX_SIZE / sizeof int) - 3ul)
 #endif
 
 /* Some fields of siginfo_t have architecture-specific variations.  */

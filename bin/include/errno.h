@@ -51,5 +51,5 @@ export extern program_invocation_short_name@char;
 
 __END_DECLS
 
-#endif /* !__ASSEMBLER__ */
+#endif /*  not __ASSEMBLER__ */
 #endif /* errno.h */

@@ -86,7 +86,7 @@ export extern __ctype_toupper_loc (void)@@const __int32_t
 
 #ifndef __cplusplus
 # define __isctype(c, type) \
-  (((__ctype_b_loc)@)[(c)->int] & type->unsigned short int)
+  (((__ctype_b_loc)@)[(c) to int] & type to unsigned short int)
 #elif defined __USE_EXTERN_INLINES
 # define __isctype_f(type) \
   __extern_inline int							      \

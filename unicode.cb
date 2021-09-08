@@ -1,69 +1,53 @@
 #include "chub.hb"
 
-export encode_utf8(buf@ char c uint32_t) int =
-  if (c <= 0x7F) {
-    buf[0] = c as char;
-    return 1;
-  ;
+encode_utf8_byte(p @char c unsigned int i long p int s unsigned int m unsigned int) =
+  p[i] = cast char the unsigned int (the char p[i] | c >> s & m);;
+export encode_utf8(p@ char c unsigned int) int = return
+  &encode_utf8_byte is f
+  c < 0x00080 ? f@ p c 0l 0x00  0u 0xffu , 1 :
+  c < 0x00800 ? f@ p c 1l 0x80  0u 0x3fu ,
+                f@ p c 0l 0xb0  6u 0xffu , 2 :
+  c < 0x80000 ? f@ p c 2l 0x80  0u 0x3fu ,
+                f@ p c 1l 0x80  6u 0x3fu ,
+                f@ p c 0l 0xe0 12u 0xffu , 3 :
+                f@ p c 3l 0x80  0u 0x3fu ,
+                f@ p c 2l 0x80  6u 0x3fu ,
+                f@ p c 1l 0x80 12u 0x3fu ,
+                f@ p c 0l 0xf0 18u 0xffu , 4 ;;
 
-  if (c <= 0x7FF) {
-    buf[0] = 0b11000000 | (c >> 6) as char;
-    buf[1] = 0b10000000 | (c & 0b00111111) as char;
-    return 2;
-  ;
-
-  if (c <= 0xFFFF) {
-    buf[0] = 0b11100000 | (c >> 12) as char;
-    buf[1] = 0b10000000 | ((c >> 6) & 0b00111111) as char;
-    buf[2] = 0b10000000 | (c & 0b00111111) as char;
-    return 3;
-  ;
-
-  buf[0] = 0b11110000 | (c >> 18) as char;
-  buf[1] = 0b10000000 | ((c >> 12) & 0b00111111) as char;
-  buf[2] = 0b10000000 | ((c >> 6) & 0b00111111) as char;
-  buf[3] = 0b10000000 | (c & 0b00111111) as char;
-  return 4;
-;
-
-export decode_utf8(new_pos@@ char p@char) uint32_t =
-  if (p@->unsigned char < 128) {
-    new_pos@ = p + 1;
-    return p@->unsigned int;
-  ;
-
-  let
-    start = p
-    len = 0
-    c = 0->uint32_t;
-
-  if (p@->unsigned char >= 0b11110000) {
-    len = 4;
-    c = p@ & 0b111 as unsigned int;
-  ; else if (p@->unsigned char >= 0b11100000) {
-    len = 3;
-    c = p@ & 0b1111 as unsigned int;
-  ; else if (p@->unsigned char >= 0b11000000) {
-    len = 2;
-    c = p@ & 0b11111 as unsigned int;
-  ; else  error_at start "invalid UTF-8 sequence";
-
-  for (let i int = 1; i < len; (i:;i+=1)) {
-    if (p[i]->unsigned char >> 6 != 0b10)
-      error_at start "invalid UTF-8 sequence";
-    c = (c << 6) | (p[i] & 0b111111);;
-  new_pos@ = p + len;
-  return c;
-;
+export decode_utf8(new_pos@@ char p@char) unsigned int = return
+  the char p@ to unsigned int is q
+  q < 128 ? (new_pos@ = p + 1l), q :
+  q & ( q >= 0xF0 ? 0x67u :
+        q >= 0xE0 ? 0x4Fu :
+        q >= 0xB0 ? 0x3Fu :
+                    0x00u ) is len_c
+  !len_c && (error_at p "invalid UTF-8 sequence"),
+  len_c & 0x60u is len
+  len_c & 0x1Fu is c
+  1l is i
+  until (i != len ? c : 0u :;
+    the char p[i] to unsigned int is q
+    (q & 0b11000000u) != 0b01000000 ? (error_at p "invalid UTF-8 sequence"):
+    (c = (c << 6u) | q & 0b00111111u),
+    (i += 1l)) :;
+  (new_pos@ = p + the unsigned int len);;
 
 in_range(range@ uint32_t c uint32_t) bool =
-  for (let i int = 0; range[i] != -1; i += 2)
-    if (range[i] <= c && c <= range[i + 1])
+  for (let i long = 0l; range[i] != -1; i += 2l)
+    if (range[i] <= c && c <= range[i + 1l])
       return true;
   return false;;
 
 ii1range []uint32_t = {
-  '_'->unsigned int '_'->unsigned int 'a'->unsigned int 'z'->unsigned int 'A'->unsigned int 'Z'->unsigned int '$'->unsigned int '$'->unsigned int
+  the int '_' to unsigned int
+  the int '_' to unsigned int
+  the int 'a' to unsigned int
+  the int 'z' to unsigned int
+  the int 'A' to unsigned int
+  the int 'Z' to unsigned int
+  the int '$' to unsigned int
+  the int '$' to unsigned int
   0x000A8u 0x000A8u 0x000AAu 0x000AAu 0x000ADu 0x000ADu 0x000AFu 0x000AFu
   0x000B2u 0x000B5u 0x000B7u 0x000BAu 0x000BCu 0x000BEu 0x000C0u 0x000D6u
   0x000D8u 0x000F6u 0x000F8u 0x000FFu 0x00100u 0x002FFu 0x00370u 0x0167Fu
@@ -78,11 +62,12 @@ ii1range []uint32_t = {
   0xA0000u 0xAFFFDu 0xB0000u 0xBFFFDu 0xC0000u 0xCFFFDu 0xD0000u 0xDFFFDu
   0xE0000u 0xEFFFDu 0xFFFFFFFFu;;
 export is_ident1(c uint32_t) bool =
-  return c!= '@' && in_range ii1range->@unsigned int c;;
+  return c!= '@' && in_range the typeof ii1range ii1range to @unsigned int c;;
 ii2range[] uint32_t = {
-  '0'->unsigned int '9'->unsigned int '$'->unsigned int '$'->unsigned int 0x0300u 0x036Fu 0x1DC0u 0x1DFFu 0x20D0u 0x20FFu 0xFE20u 0xFE2Fu -1u;;
+  0x0030u 0x0039u 0x0024u 0x0024u
+  0x0300u 0x036Fu 0x1DC0u 0x1DFFu 0x20D0u 0x20FFu 0xFE20u 0xFE2Fu -1u;;
 export is_ident2(c uint32_t) bool =
-  return c!= '@' && (is_ident1 c || in_range ii2range->@unsigned int c);;
+  return c!= '@' && (is_ident1 c || in_range the typeof ii2range ii2range to @unsigned int c);;
 cwrange1[] uint32_t = {
   0x00000u 0x0001Fu 0x0007fu 0x000a0u 0x00300u 0x0036Fu 0x00483u 0x00486u
   0x00488u 0x00489u 0x00591u 0x005BDu 0x005BFu 0x005BFu 0x005C1u 0x005C2u
@@ -128,14 +113,13 @@ cwrange2[] uint32_t = {
   0x20000u 0x2FFFDu 0x30000u 0x3FFFDu
   0xFFFFFFFFu;;
 char_width(c uint32_t) int = return
-  in_range cwrange1->@uint32_t c ? 0 :
-  in_range cwrange2->@uint32_t c ? 2 :
-                                   1 ;;
-export display_width(p@ char len int) int =
-  let
-    start = p
-    w = 0;
-  while (p - start < len) {
-    let c = decode_utf8 &p p;
-    w += char_width c;;
-  return w;;
+  in_range the typeof cwrange1 cwrange1 to @uint32_t c ? 0 :
+  in_range the typeof cwrange2 cwrange2 to @uint32_t c ? 2 :
+                                                         1 ;;
+export display_width(p@ char len int) int = return
+  p is q
+  0 is w
+  cast until !((p - q < len) && (
+    decode_utf8 &p p is c
+    (w += char_width c))),
+  w;;

@@ -40,7 +40,7 @@ type
 
 locals         @Obj
 globals        @Obj
-scope          @Scope = &(let Scope){;
+scope          @Scope = &new Scope {;
 current_type   @Type
 current_fn     @Obj
 gotos          @Node
@@ -102,61 +102,61 @@ format_types(t @Type u @Type) = return
   format_type u &s2@,
   none;;
 align_down(n int alignment int) int = return align_to (n - alignment + 1) alignment;;
-enter_scope(void) = let sc = (calloc 1ul sizeof Scope)->@Scope; sc.next = scope; scope = sc;;
+enter_scope(void) = let sc = (calloc 1ul sizeof Scope) to @Scope; sc.next = scope; scope = sc;;
 leave_scope(void) = scope = scope.next;;
-push_scope(name@ char) @VarScope = return (calloc 1ul sizeof VarScope)->@VarScope :: sc hashmap_put &scope.vars name sc->@, sc;;
-search_scope(tok @Token which(_@ Scope)@HashMap)@ = for (let sc@ Scope = scope; sc; sc = sc.next) { let sc2 = hashmap_get2 which@ sc tok.loc tok.len; if sc2 return sc2; ; return 0->@; ;
+push_scope(name@ char) @VarScope = return (calloc 1ul sizeof VarScope) to @VarScope is sc hashmap_put &scope.vars name sc to @, sc;;
+search_scope(tok @Token which(_@ Scope)@HashMap)@ = for (let sc@ Scope = scope; sc; sc = sc.next) { let sc2 = hashmap_get2 which@ sc tok.loc tok.len; if sc2 return sc2; ; return 0 to @; ;
 scope_vars(s @Scope) @HashMap = return &s.vars;;
 scope_tags(s @Scope) @HashMap = return &s.tags;;
 
 new_initializer(t @Type is_flexible bool) @Initializer =
-  let e = (calloc 1ul sizeof Initializer)->@Initializer;
+  let e = (calloc 1ul sizeof Initializer) to @Initializer;
   e.ty = t;
   if (t.kind == TY_ARRAY) {
     if (is_flexible && t.size < 0) {
       e.is_flexible = true;
       return e;;
-    e.children = (calloc t.array_len->unsigned long sizeof @Initializer as @@Initializer);
+    e.children = (calloc t.array_len to unsigned long sizeof @Initializer as @@Initializer);
     for (let i int = 0; i < t.array_len; (i:;i+=1)) e.children[i] = new_initializer t.base false;
     return e;;
   if (t.kind == TY_STRUCT || t.kind == TY_UNION) {
     let len = 0;
     for (let g@ Member = t.members; g; g = g.next) (len:;len+=1);
-    e.children = (calloc len->unsigned long sizeof @Initializer as @@Initializer);
+    e.children = (calloc len to unsigned long sizeof @Initializer as @@Initializer);
     for (let g@ Member = t.members; g; g = g.next) {
       if (is_flexible && t.is_flexible && !g.next) {
-        let child = (calloc 1ul sizeof Initializer)->@Initializer;
-        child.ty = g.ty->@Type;
+        let child = (calloc 1ul sizeof Initializer) to @Initializer;
+        child.ty = g.ty to @Type;
         child.is_flexible = true;
         e.children[g.idx] = child;;
-      else e.children[g.idx] = new_initializer g.ty->@Type false;    ;
+      else e.children[g.idx] = new_initializer g.ty to @Type false;    ;
     return e;;
   return e;;
 
 new_var(name @char t @Type) @Obj = return
-  calloc 1ul sizeof Obj as @Obj :: o
+  calloc 1ul sizeof Obj as @Obj is o
   (o.name = name),
   (o.ty = t),
   (o.alignment = t.alignment),
   ((push_scope name).var = o),
   o;;
 new_lvar(name @char t @Type) @Obj = return
-  new_var name t :: o
+  new_var name t is o
   (o.is_local = true),
   (o.next = locals),
   (locals = o),
   o;;
 new_gvar(name @char t @Type) @Obj = return
-  new_var name t :: o
+  new_var name t is o
   (o.next = globals),
   (o.is_export = false),
   (o.is_definition = true),
   (globals = o),
   o;;
 nunid int = 0;
-new_unique_name(void) @char = return format ".L..%d" (nunid:;nunid+=1);;
+new_unique_name(void) @char = return (format ".L..%d" (nunid:;nunid+=1));;
 new_anon_gvar(t @Type) @Obj = return new_gvar new_unique_name t;;
-new_string_literal(p @char t @Type) @Obj = return new_anon_gvar t :: o (o.init_data = p), o;;
+new_string_literal(p @char t @Type) @Obj = return new_anon_gvar t is o (o.init_data = p), o;;
 
 // ######## ########  ######## ########
 //    ##    ##     ## ##       ##
@@ -169,217 +169,276 @@ new_string_literal(p @char t @Type) @Obj = return new_anon_gvar t :: o (o.init_d
 just_a(j @Token a @Node b @Node) @Node = return a;;
 just_b(j @Token a @Node b @Node) @Node = return b;;
 
-new_node            (c NodeKind                 j @Token) @Node = return (calloc 1ul sizeof Node)->@Node :: e (e.kind = c), (e.tok = j), e;;
-new_binary          (c NodeKind a @Node b @Node j @Token) @Node = return new_node c j :: e (e.lhs = a), (e.rhs = b), e;;
-new_unary           (c NodeKind a @Node j @Token        ) @Node = return new_binary c a 0->@Node j;;
-new_nullary         (c NodeKind         j @Token        ) @Node = return new_unary c 0->@Node j;;
-new_lit             (l long             j @Token t @Type) @Node = return new_nullary ND_NUM j :: e (e.val = l), (e.ty = t), e;;
+new_node            (c NodeKind                 j @Token) @Node = return (calloc 1ul sizeof Node) to @Node is e (e.kind = c), (e.tok = j), e;;
+new_binary          (c NodeKind a @Node b @Node j @Token) @Node = return new_node c j is e (e.lhs = a), (e.rhs = b), e;;
+new_unary           (c NodeKind a @Node j @Token        ) @Node = return new_binary c a 0 to @Node j;;
+new_nullary         (c NodeKind         j @Token        ) @Node = return new_unary c 0 to @Node j;;
+new_lit             (l long             j @Token t @Type) @Node = return new_nullary ND_NUM j is e (e.val = l), (e.ty = t), e;;
 new_none            (j @Token) @Node = return new_lit 0l j ty_void;;
 new_bool            (l long j @Token) @Node = return new_lit l j ty_bool;;
 new_long            (l long j @Token) @Node = return new_lit l j ty_long;;
 new_ulong           (l long j @Token) @Node = return new_lit l j ty_ulong;;
-new_reference       (o @Obj j @Token) @Node = return new_nullary ND_VAR j :: e (e.var = o), (e.ty = o.ty), e;;
-new_member_reference(j @Token a @Node g @Member) @Node = return new_unary ND_MEMBER a j :: e (e.member = g), (e.ty = g.ty as @Type), e;;
+new_reference       (o @Obj j @Token) @Node = return new_nullary ND_VAR j is e (e.var = o), (e.ty = o.ty), e;;
+new_member_reference(j @Token a @Node g @Member) @Node = return new_unary ND_MEMBER a j is e (e.member = g), (e.ty = g.ty as @Type), e;;
 
 export new_cast(j @Token a @Node t @Type) @Node = return
   add_type a,
-  new_unary ND_CAST a j :: e
+  type_equal     a.ty ty_void && (
+    format_types a.ty t,
+    (error_tok j "(%s as %s) absurd axiom" s1 s2)),
+  type_equal     a.ty t && (
+    format_types a.ty t,
+    (warn_tok j "(%s as %s) extraneous axiom" s1 s2)),
+  a.kind != ND_THE && (
+    format_types a.ty t//,
+    //warn_tok j "(%s as %s) bare axiom" s1 s2
+    ),
+  new_unary ND_CAST a j is e
   (e.ty = t),
-  type_equal a.ty e.ty ?
-    format_types a.ty e.ty,
-    warn_tok j "(%s as %s) needless cast" s1 s2,
-    e :
   e;;
-new_until(j @Token a @Node) @Node = return 
+new_the(j @Token a @Node t @Type) @Node = return
   add_type a,
-  new_unary ND_UNTIL a j :: e
-  (e.ty = a.ty),
+  !type_equal    t a.ty && (
+    format_types t a.ty,
+    (error_tok j "(the %s %s) false hypothesis" s1 s2) ),
+  new_unary ND_THE a j is e
+  (e.ty = t),
   e;;
 new_comma(j @Token a @Node b @Node) @Node = return
   add_type a, add_type b,
   a.ty.kind != TY_VOID && (
     format_types a.ty ty_void,
-    error_tok j "(%s ,) you must write %s" s1 s2),
-  new_binary ND_COMMA a b j :: e
+    (error_tok j "(%s ,) you must write %s" s1 s2)),
+  new_binary ND_COMMA a b j is e
   (e.ty = b.ty),
   e;;
-new_let(j @Token a @Node b @Node o @Obj) @Node = return
-  add_type a, add_type b,
-  new_comma j new_cast j new_binary ND_ASSIGN new_reference o j a j ty_void b :: e
-  (e.ty = b.ty), e;;
-new_conditional(j @Token a @Node b @Node c @Node) @Node = return
-  add_type a, add_type b, add_type c,
-  !type_equal b.ty c.ty && (
-    format_types b.ty c.ty,
-    error_tok j "(? %s : %s) you must write equal types" s1 s2 ),
-  new_node ND_COND j :: e
-  (e.cond = a), (e.then = b), (e.els = c), (e.ty = b.ty), e;;
 new_assign(j @Token a @Node b @Node) @Node = return
-  add_type a, add_type b,
-  ! type_equal a.ty b.ty ?
-    format_types a.ty b.ty,
-    error_tok j "(%s = %s) you must write equal types" s1 s2,
-    0 as @Node :
-  new_binary ND_ASSIGN a b j :: e
-  (e.ty = ty_void), e;;
-new_lognot(j @Token a @Node) @Node = return
-  add_type a,
-  new_unary ND_NOT a j :: e
-  (e.ty = a.ty), e;;
-new_logor(j @Token a @Node b @Node) @Node = return
   add_type a, add_type b,
   ! type_equal   a.ty b.ty && (
     format_types a.ty b.ty,
-    error_tok j "(%s || %s) must be of the form (T || T)" s1 s2),
-  new_binary ND_LOGOR a b j :: e
-  (e.ty = b.ty),
+    (error_tok j "(%s = %s) must be of the form (T = T)" s1 s2)),
+  new_binary ND_ASSIGN a b j is e
+  (e.ty = ty_void), e;;
+new_until(j @Token a @Node) @Node = return 
+  add_type a,
+  new_unary ND_UNTIL a j is e
+  (e.ty = a.ty),
+  e;;
+new_let(j @Token a @Node b @Node o @Obj) @Node = return
+  add_type a, add_type b,
+  new_comma j new_assign j new_reference o j a b is e
+  (e.ty = b.ty), e;;
+new_repeat(j @Token a @Node b @Node o @Obj) @Node = return 
+  add_type a, add_type b,
+  ! type_equal   a.ty b.ty && (
+    format_types a.ty b.ty,
+    (error_tok j "(%s for %s) must be of the form (T for T)" s1 s2)),
+  new_binary ND_REPEAT a b j is e
+  (e.ty = a.ty),
+  (e.var = o),
+  e;;
+new_conditional(j @Token a @Node b @Node c @Node) @Node = return
+  add_type a, add_type b, add_type c,
+  ! type_equal   a.ty ty_bool && (
+    format_types a.ty b.ty,
+    (error_tok j "(%s ?:) must be of the form (bool ?:)" s1 s2)),
+  ! type_equal   b.ty c.ty && (
+    format_types b.ty c.ty,
+    (error_tok j "(? %s : %s) must be of the form (: T ? T)" s1 s2)),
+  new_node ND_COND j is e
+  (e.cond = a), (e.then = b), (e.els = c), (e.ty = b.ty), e;;
+new_lognot(j @Token a @Node) @Node = return
+  add_type a,
+  new_unary ND_NOT a j is e
+  (e.ty = ty_bool), e;;
+new_logor(j @Token a @Node b @Node) @Node = return
+  add_type a, add_type b,
+  ! type_equal   a.ty b.ty    &&
+  ! type_equal   b.ty ty_void &&
+  ( format_types a.ty b.ty,
+    (error_tok j "(%s || %s) must be of the form (T || T) or (T || void)" s1 s2)),
+  new_binary ND_LOGOR a b j is e
+  (e.ty = a.ty),
   e;;
 new_logand(j @Token a @Node b @Node) @Node = return
   add_type a, add_type b,
-  !type_equal a.ty ty_bool && (
+  !type_equal a.ty ty_bool && !type_equal ty_void b.ty && (
     format_types a.ty b.ty,
-    error_tok j "(%s &&) you must write bool" s1),
-  new_binary ND_LOGAND a b j :: e
+    (error_tok j "(%s && %s) must be of the form (bool && T) or (T && void)" s1 s2)),
+  new_binary ND_LOGAND a b j is e
   (e.ty = b.ty),
   e;;
 new_bitnot(j @Token a @Node) @Node = return
   add_type a,
-  new_unary ND_BITNOT a j :: e
+  new_unary ND_BITNOT a j is e
   (e.ty = a.ty),
   e;;
 new_bitor(j @Token a @Node b @Node) @Node = return
   add_type a, add_type b,
   usual_arith_conv &a &b,
-  new_binary ND_BITOR a b j :: e
+  new_binary ND_BITOR a b j is e
   (e.ty = a.ty),
   e;;
 new_bitxor(j @Token a @Node b @Node) @Node = return
   add_type a, add_type b,
   usual_arith_conv &a &b,
-  new_binary ND_BITXOR a b j :: e
+  new_binary ND_BITXOR a b j is e
   (e.ty = a.ty),
   e;;
 new_bitand(j @Token a @Node b @Node) @Node = return
   add_type a, add_type b,
   usual_arith_conv &a &b,
-  new_binary ND_BITAND a b j :: e
+  new_binary ND_BITAND a b j is e
   (e.ty = a.ty),
   e;;
 new_eq(j @Token a @Node b @Node) @Node = return
   add_type a, add_type b,
-  new_binary ND_EQ a b j :: e
+  new_binary ND_EQ a b j is e
   (e.ty = ty_bool),
   e;;
 new_neq(j @Token a @Node b @Node) @Node = return
   add_type a, add_type b,
-  new_binary ND_NE a b j :: e
+  new_binary ND_NE a b j is e
   (e.ty = ty_bool),
   e;;
 new_gt(j @Token a @Node b @Node) @Node = return
   add_type a, add_type b,
-  new_binary ND_GT a b j :: e
+  new_binary ND_GT a b j is e
   (e.ty = ty_bool),
   e;;
 new_lt(j @Token a @Node b @Node) @Node = return
   add_type a, add_type b,
-  new_binary ND_LT a b j :: e
+  new_binary ND_LT a b j is e
   (e.ty = ty_bool),
   e;;
 new_ge(j @Token a @Node b @Node) @Node = return
   add_type a, add_type b,
-  new_binary ND_GE a b j :: e
+  new_binary ND_GE a b j is e
   (e.ty = ty_bool),
   e;;
 new_le(j @Token a @Node b @Node) @Node = return
   add_type a, add_type b,
-  new_binary ND_LE a b j :: e
+  new_binary ND_LE a b j is e
   (e.ty = ty_bool),
   e;;
 new_shl(j @Token a @Node b @Node) @Node = return
   add_type a, add_type b,
   usual_arith_conv &a &b,
-  new_binary ND_SHL a b j :: e
+  new_binary ND_SHL a b j is e
   (e.ty = a.ty),
   e;;
 new_shr(j @Token a @Node b @Node) @Node = return
   add_type a, add_type b,
   usual_arith_conv &a &b,
-  new_binary ND_SHR a b j :: e
+  new_binary ND_SHR a b j is e
   (e.ty = a.ty),
   e;;
 new_mul(j @Token a @Node b @Node) @Node = return
   add_type a, add_type b,
   usual_arith_conv &a &b,
-  new_binary ND_MUL a b j :: e
+  new_binary ND_MUL a b j is e
   (e.ty = a.ty),
   e;;
 new_div(j @Token a @Node b @Node) @Node = return
   add_type a, add_type b,
   usual_arith_conv &a &b,
-  new_binary ND_DIV a b j :: e
+  new_binary ND_DIV a b j is e
   (e.ty = a.ty),
   e;;
 new_mod(j @Token a @Node b @Node) @Node = return
   add_type a, add_type b,
   usual_arith_conv &a &b,
-  new_binary ND_MOD a b j :: e
+  new_binary ND_MOD a b j is e
   (e.ty = a.ty),
   e;;
 new_pointer_add(j @Token a @Node b @Node) @Node = return
-  new_binary ND_ADD a new_mul j b new_long a.ty.base.size->long j j;;
+  new_binary ND_ADD a new_mul j b new_long a.ty.base.size to long j j;;
 new_add(j @Token a @Node b @Node) @Node = return
   add_type a, add_type b,
   !!a.ty.base && !!b.ty.base ?
     format_types a.ty b.ty,
-    error_tok j "(%s + %s) you may not add two pointers", 0 as @Node :
+    (error_tok j "(%s + %s) you may not add two pointers"), 0 as @Node :
   ( is_numeric a.ty && is_numeric b.ty ?
       usual_arith_conv &a &b,
       new_binary ND_ADD a b j :
-    a.ty.base ?
+    !!a.ty.base ?
       new_pointer_add j a b :
-    new_pointer_add j b a ) :: e
+    new_pointer_add j b a ) is e
   (e.ty = a.ty),
   e;;
 new_sub(j @Token a @Node b @Node) @Node = return
   add_type a, add_type b,
-  !a.ty.base && b.ty.base ?
+  !a.ty.base && !!b.ty.base ?
     format_types a.ty b.ty,
-    error_tok j "(%s - %s) you may not subtract a pointer from a number" s1 s2, 0 as @Node :
+    (error_tok j "(%s - %s) you may not subtract a pointer from a number" s1 s2), 0 as @Node :
   is_numeric a.ty && is_numeric b.ty ? new_binary ND_SUB a b j :
   !!a.ty.base && is_integer b.ty ?
-    new_binary ND_SUB a new_mul j b new_long a.ty.base.size->long j j :: e
+    new_binary ND_SUB a new_mul j b new_long a.ty.base.size to long j j is e
     (e.ty = a.ty),
     e :
-  new_binary ND_SUB a b j :: e
+  new_binary ND_SUB a b j is e
   (e.ty = ty_long),
-  new_div j e new_long a.ty.base.size->long j;;
+  new_div j e new_long a.ty.base.size to long j;;
+new_neg(j @Token a @Node) @Node = return
+  add_type a,
+  new_unary ND_NEG a j is e
+  (e.ty = a.ty),
+  e;;
 new_inc_dec(a @Node j @Token l long) @Node = return
   add_type a,
-  new_cast j new_comma j (new_add j a new_lit l j ty_int :: e new_assign j a e) new_add j a new_lit -l j ty_int a.ty;;
+  new_cast j new_comma j (new_add j a new_lit l j ty_int is e new_assign j a e) new_add j a new_lit -l j ty_int a.ty;;
+new_addressof(j @Token a @Node) @Node = return
+  add_type a,
+  a.kind == ND_MEMBER && a.member.is_bitfield && (error_tok j "cannot take address of bitfield"),
+  new_unary ND_ADDR a j is e
+  (e.ty = pointer_to a.ty),
+  e;;
+new_false  (j @Token) @Node = return new_bool 0l j;;
+new_true   (j @Token) @Node = return new_bool 1l j;;
+new_sizeof (j @Token t @Type) @Node = return new_ulong t.size      to long j;;
+new_alignof(j @Token t @Type) @Node = return new_ulong t.alignment to long j;;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 get_ident(k@ Token) @char = return
-  k.kind != TK_IDENT && error_tok k "expected an identifier",
-  strndup k.loc k.len->unsigned long;;
+  k.kind != TK_IDENT && (error_tok k "expected an identifier"),
+  strndup k.loc k.len to unsigned long;;
 find_type(k @Token) @Type = return
   k.kind != TK_IDENT ? 0 as @Type :
-  (search_scope k scope_vars->@(sc@Scope)@HashMap)->@VarScope :: sc
-  sc->@Type ? sc.type_def : 0 as @Type;;
-push_tag_scope(k@ Token t@ Type) = return hashmap_put2 &scope.tags k.loc k.len t->@;;
+  (search_scope k scope_vars to @(sc@Scope)@HashMap) to @VarScope is sc
+  !!sc ? sc.type_def : 0 as @Type;;
+push_tag_scope(k@ Token t@ Type) = return hashmap_put2 &scope.tags k.loc k.len t to @;;
 
 declspec(k @@Token v@ VarAttr) =
   for (;;) {
     if (equal k@ "type" || equal k@ "export" || equal k@ "extern" || equal k@ "inline" || equal k@ "_Thread_local" || equal k@ "__thread") {
-      if !v error_tok k@ "storage class specifier is not allowed in this context";
+      if !v (error_tok k@ "storage class specifier is not allowed in this context");
       ( equal k@ "type"   ? &v.is_type   :
         equal k@ "export" ? &v.is_export :
         equal k@ "extern" ? &v.is_extern :
         equal k@ "inline" ? &v.is_inline :
                              &v.is_tls      )@ = true;
-      if (v.is_type && v.is_static + v.is_export + v.is_extern + v.is_inline + v.is_tls > 1) error_tok k@ "type may not be used together with export, static, extern, inline, __thread or _Thread_local";
+      if (v.is_type && v.is_static + v.is_export + v.is_extern + v.is_inline + v.is_tls > 1) (error_tok k@ "type may not be used together with export, static, extern, inline, __thread or _Thread_local");
       k@ = k.next;;
     else if equal k@ "align" {
-      if !v error_tok k@ "align is not allowed in this context";
+      if !v (error_tok k@ "align is not allowed in this context");
       k@ = k.next;
       v.alignment = const_expr k as int;;
     else if consume k k@ "restrict";
@@ -390,7 +449,7 @@ type_specifier(k @@Token)@ Type =
   if consume k k@ "enum"   return enum_specifier   k; else
   if consume k k@ "typeof" return typeof_specifier k; else
   if consume k k@ "same"   {
-    if !current_type error_tok k@ "`same` may not be used outside struct/union definition";
+    if !current_type (error_tok k@ "`same` may not be used outside struct/union definition");
     return current_type;;
   else {
     let ty2 = find_type k@;
@@ -398,7 +457,7 @@ type_specifier(k @@Token)@ Type =
       k@ = k.next;
       return ty2;;
     else {
-      let counter = 0->enum 
+      let counter = 0 to enum 
         BOOL     = (1 <<  2)
         CHAR     = (1 <<  4)
         SHORT    = (1 <<  6)
@@ -421,49 +480,49 @@ type_specifier(k @@Token)@ Type =
           break;
         k@ = k.next;;
       switch counter {
-      case (0                           ) : return ty_void;
-      case (BOOL                        ) : return ty_bool;
-      case (CHAR                        ) :
-      case (SIGNED + CHAR               ) : return ty_char;
-      case (UNSIGNED + CHAR             ) : return ty_uchar;
-      case (SHORT                       ) :
-      case (SHORT + INT                 ) :
-      case (SIGNED + SHORT              ) :
-      case (SIGNED + SHORT + INT        ) : return ty_short;
-      case (UNSIGNED + SHORT            ) :
-      case (UNSIGNED + SHORT + INT      ) : return ty_ushort;
-      case (INT                         ) :
-      case (SIGNED                      ) :
-      case (SIGNED + INT                ) : return ty_int;
-      case (UNSIGNED                    ) :
-      case (UNSIGNED + INT              ) : return ty_uint;
-      case (LONG                        ) :
-      case (LONG + INT                  ) :
-      case (LONG + LONG                 ) :
-      case (LONG + LONG + INT           ) :
-      case (SIGNED + LONG               ) :
-      case (SIGNED + LONG + INT         ) :
-      case (SIGNED + LONG + LONG        ) :
-      case (SIGNED + LONG + LONG + INT  ) : return ty_long;
-      case (UNSIGNED + LONG             ) :
-      case (UNSIGNED + LONG + INT       ) :
-      case (UNSIGNED + LONG + LONG      ) :
-      case (UNSIGNED + LONG + LONG + INT) : return ty_ulong;
-      case (FLOAT                       ) : return ty_float;
-      case (DOUBLE                      ) : return ty_double;
-      case (LONG + DOUBLE               ) : return ty_ldouble;
-      default                             : error_tok k@ "invalid type";;;;;
+        case (0                           ) : return ty_void;
+        case (BOOL                        ) : return ty_bool;
+        case (CHAR                        ) :
+        case (SIGNED + CHAR               ) : return ty_char;
+        case (UNSIGNED + CHAR             ) : return ty_uchar;
+        case (SHORT                       ) :
+        case (SHORT + INT                 ) :
+        case (SIGNED + SHORT              ) :
+        case (SIGNED + SHORT + INT        ) : return ty_short;
+        case (UNSIGNED + SHORT            ) :
+        case (UNSIGNED + SHORT + INT      ) : return ty_ushort;
+        case (INT                         ) :
+        case (SIGNED                      ) :
+        case (SIGNED + INT                ) : return ty_int;
+        case (UNSIGNED                    ) :
+        case (UNSIGNED + INT              ) : return ty_uint;
+        case (LONG                        ) :
+        case (LONG + INT                  ) :
+        case (LONG + LONG                 ) :
+        case (LONG + LONG + INT           ) :
+        case (SIGNED + LONG               ) :
+        case (SIGNED + LONG + INT         ) :
+        case (SIGNED + LONG + LONG        ) :
+        case (SIGNED + LONG + LONG + INT  ) : return ty_long;
+        case (UNSIGNED + LONG             ) :
+        case (UNSIGNED + LONG + INT       ) :
+        case (UNSIGNED + LONG + LONG      ) :
+        case (UNSIGNED + LONG + LONG + INT) : return ty_ulong;
+        case (FLOAT                       ) : return ty_float;
+        case (DOUBLE                      ) : return ty_double;
+        case (LONG + DOUBLE               ) : return ty_ldouble;;
+      (error_tok k@ "invalid type");;;;
 func_params(k @@Token) @Type =
   if (equal k@ "void" && consume k k.next ")") return func_type type_suffix k;
   let
-    head = (let Type){;
+    head = new Type {;
     cur = &head
     is_variadic = false;
   while ! equal k@ ")" {
     if consume k k@ "..." {
       is_variadic = true;
       break;;
-    declspec k 0->@VarAttr;
+    declspec k 0 to @VarAttr;
     let t = declarator k;
     let name = t.name;
    if (t.kind == TY_FUNC) {
@@ -485,18 +544,17 @@ array_dimensions(k @@Token)@ Type =
   let e = conditional k;
   expect k "]";
   let t = type_suffix k;
-  return array_of t (eval e)->int;;
-type_suffix(k @@Token)@ Type =
-  while ( consume k k@ "const"    ||
-          consume k k@ "volatile"  );
-     if consume k k@ "("        return func_params            k ;
-     if consume k k@ "["        return array_dimensions       k ;
-     if consume k k@ "@"        return pointer_to type_suffix k;
-  return type_specifier k;;
+  return array_of t (eval e) to int;;
+type_suffix(k @@Token) @Type = return
+  cast until !( consume k k@ "const" || consume k k@ "volatile"  ),
+  consume k k@ "(" ? func_params            k :
+  consume k k@ "[" ? array_dimensions       k :
+  consume k k@ "@" ? pointer_to type_suffix k :
+  type_specifier k;;
 declarator(k @@Token)@ Type = return
-  k@ :: name
+  k@ is name
   (k@ = k.next),
-  type_suffix k :: t
+  type_suffix k is t
   (t.name = name),
   (t.name_pos = name),
   t;;
@@ -514,7 +572,7 @@ enum_specifier(k @@Token) @Type =
     sc.enum_val = (l:;l+=1);;
   return t;;
 typeof_specifier(k @@Token) @Type = return
-  prefix k :: e
+  prefix k is e
   add_type e,
   e.ty;;
 
@@ -525,29 +583,29 @@ typeof_specifier(k @@Token) @Type = return
 
 declaration(k @@Token v @VarAttr) @Node =
   let
-    head = (let Node){;
+    head = new Node {;
     cur = &head;
   while !equal k@ ";" {
     let t = declarator k;
-    if (t.kind == TY_VOID) error_tok k@ "variable declared void";
-    if !t.name error_tok t.name_pos "variable name omitted";
-    if equal t.name "_" continue;
-    if (!!v && v.is_static) {
-      let o = new_anon_gvar t;
-      (push_scope get_ident t.name).var = o;
-      if equal k@ "=" {
-        k@ = k.next;
-        gvar_initializer k o;;
-      continue;;
-    let o = new_lvar get_ident t.name t;
-    if (!!v && v.alignment) o.alignment = v.alignment;
-    if equal k@ "=" {
-      k@ = k.next;
-      let e = lvar_initializer k o;
-      cur.next = new_unary ND_EXPR_STMT e k@;
-      cur = cur.next;;
-    if (o.ty.size < 0) error_tok t.name "variable has incomplete type";
-    if (o.ty.kind == TY_VOID) error_tok t.name "variable declared void";;
+    if (t.kind == TY_VOID) (error_tok k@ "variable declared void");
+    if !t.name (error_tok t.name_pos "variable name omitted");
+    if !equal t.name "_" {
+      if (!!v && v.is_static) {
+        let o = new_anon_gvar t;
+        (push_scope get_ident t.name).var = o;
+        if equal k@ "=" {
+          k@ = k.next;
+          gvar_initializer k o;;;
+      else {
+        let o = new_lvar get_ident t.name t;
+        if (!!v && v.alignment) o.alignment = v.alignment;
+        if equal k@ "=" {
+          k@ = k.next;
+          let e = lvar_initializer k o;
+          cur.next = new_unary ND_EXPR_STMT e k@;
+          cur = cur.next;;
+        if (o.ty.size < 0) (error_tok t.name "variable has incomplete type");
+        if (o.ty.kind == TY_VOID) (error_tok t.name "variable declared void");;;;
   let e = new_node ND_BLOCK k@;
   e.body = head.next;
   k@ = k.next;
@@ -560,57 +618,56 @@ declaration(k @@Token v @VarAttr) @Node =
 
 
 string_initializer(k @@Token e@ Initializer)  =
-  if e.is_flexible e@ = (new_initializer array_of e.ty.base k.ty->@Type.array_len false)@;
-  let len = minl e.ty.array_len->long k.ty->@Type.array_len->long;
+  if e.is_flexible e@ = (new_initializer array_of e.ty.base (k.ty to @Type).array_len false)@;
+  let len = minl e.ty.array_len to long (k.ty to @Type).array_len to long;
   switch e.ty.base.size {
-  case 1: { let str = k.str           ; for (let i int = 0; i < len; (i:;i+=1)) e.children[i].expr = new_lit str[i]->long k@ ty_int; break; ;
-  case 2: { let str = k.str->@uint16_t; for (let i int = 0; i < len; (i:;i+=1)) e.children[i].expr = new_lit str[i]->long k@ ty_int; break; ;
-  case 4: { let str = k.str->@uint32_t; for (let i int = 0; i < len; (i:;i+=1)) e.children[i].expr = new_lit str[i]->long k@ ty_int; break; ;
-  default: unreachable ;;
-  k@ = k.next;;
+  case 1: { let str = k.str             ; for (let i int = 0; i < len; (i:;i+=1)) e.children[i].expr = new_lit str[i] to long k@ ty_int; k@ = k.next; return; ;
+  case 2: { let str = k.str to @uint16_t; for (let i int = 0; i < len; (i:;i+=1)) e.children[i].expr = new_lit str[i] to long k@ ty_int; k@ = k.next; return; ;
+  case 4: { let str = k.str to @uint32_t; for (let i int = 0; i < len; (i:;i+=1)) e.children[i].expr = new_lit str[i] to long k@ ty_int; k@ = k.next; return; ;;
+  unreachable ;;
 array_designator(k @@Token t @Type begin @int end @int) = return
   (k@ = k.next),
   (begin@ = const_expr k as int),
-  begin@ >= t.array_len && error_tok k@ "array designator index exceeds array bounds",
+  begin@ >= t.array_len && (error_tok k@ "array designator index exceeds array bounds"),
   equal k@ "..." ?
     (k@ = k.next),
     (end@ = const_expr k as int),
-    end@ >= t.array_len && error_tok k@ "array designator index exceeds array bounds",
-    end@ < begin@ && error_tok k@ "array designator range [%d, %d] is empty" begin@ end@ :
+    end@ >= t.array_len && (error_tok k@ "array designator index exceeds array bounds"),
+    end@ < begin@ && (error_tok k@ "array designator range [%d, %d] is empty" begin@ end@) :
   (end@ = begin@),
   expect k "]";;
 struct_designator(k @@Token t@ Type) @Member =
   let start = k@;
   expect k ".";
-  if (k.kind != TK_IDENT) error_tok k@ "expected a field designator";
+  if (k.kind != TK_IDENT) (error_tok k@ "expected a field designator");
   for (let g@ Member = t.members; g; g = g.next) {
-    if (g.ty->@Type.kind == TY_STRUCT && (!g.name || equal g.name "_") && get_struct_member g.ty->@Type k@) {
+    if ((g.ty to @Type).kind == TY_STRUCT && (!g.name || equal g.name "_") && get_struct_member g.ty to @Type k@) {
         k@ = start;
         return g;;
-    else if (g.name.len == k.len && ! strncmp g.name.loc->@ k.loc k.len->unsigned long) {
+    else if (g.name.len == k.len && ! strncmp g.name.loc to @ k.loc k.len to unsigned long) {
       k@ = k.next;
       return g;;;
-  error_tok k@ "struct has no such member";;
+  (error_tok k@ "struct has no such member");;
 designation(k @@Token e@ Initializer);
 designation_children(k @@Token e @Initializer begin int end int) = for (let i int = begin; i <= end; (i:;i+=1)) designation k e.children[i];;
 designation(k @@Token e@ Initializer) = return
   equal k@ "[" ?
-    e.ty.kind != TY_ARRAY && error_tok k@ "array index in non-array initializer",
-    0 :: begin
-    0 :: end
+    (e.ty.kind != TY_ARRAY && (error_tok k@ "array index in non-array initializer")),
+    0 is begin
+    0 is end
     array_designator k e.ty &begin &end,
     designation_children k e begin end,
     array_initializer2 k e (begin + 1) :
   equal k@ "." && e.ty.kind == TY_STRUCT ?
-    struct_designator k e.ty :: g
+    struct_designator k e.ty is g
     designation k e.children[g.idx],
     (e.expr = 0 as @Node),
     struct_initializer2 k e g.next :
   equal k@ "." && e.ty.kind == TY_UNION ?
-    struct_designator k e.ty :: g
+    struct_designator k e.ty is g
     (e.g = g),
     designation k e.children[g.idx] :
-  equal k@ "." ? error_tok k@ "field name not in struct or union initializer" :
+  equal k@ "." ? (error_tok k@ "field name not in struct or union initializer"):
   equal k@ "=" ? k@ = k.next :
   initializer2 k e;;
 count_array_init_elements(j @Token t @Type) int =
@@ -630,7 +687,7 @@ count_array_init_elements(j @Token t @Type) int =
       designation k dummy;
     ; else initializer2 k dummy;
     (i:;i+=1);
-    max = maxl max->long i->long as int;;
+    max = maxl max to long i to long as int;;
   return max;;
 array_initializer1(k @@Token e@ Initializer)  =
   expect k "{";
@@ -670,7 +727,7 @@ struct_initializer2(k @@Token e@ Initializer g @Member)  =
     initializer2 k e.children[g.idx];;;
 union_initializer(k @@Token e @Initializer) = return
   equal k@ "{" && equal k.next "." ?
-    struct_designator k e.ty :: g
+    struct_designator k e.ty is g
     (e.g = g),
     designation k e.children[g.idx] :
   (e.g = e.ty.members),
@@ -699,10 +756,10 @@ initializer2(k @@Token e @Initializer) =
 copy_struct_type(t @Type) @Type =
   t = copy_type t;
   let
-    head = (let Member){;
+    head = new Member {;
     cur = &head;
   for (let g@ Member = t.members; g; g = g.next) {
-    let m = (calloc 1ul sizeof Member)->@ Member;
+    let m = (calloc 1ul sizeof Member) to @ Member;
     m@ = g@;
     cur.next = m;
     cur = cur.next;;
@@ -716,16 +773,16 @@ initializer(k @@Token t @@Type) @Initializer =
     let g = t.members;
     while g.next g = g.next;
     g.ty = e.children[g.idx].ty as @;
-    t.size += g.ty->@Type.size;
+    t.size += (g.ty to @Type).size;
   ; else t@ = e.ty;
   return e;;
 init_desg_expr(z @InitDesg k @Token) @Node = return
-  z.var ? new_reference z.var k :
-  z.member ?
-    new_unary ND_MEMBER init_desg_expr z.next k k :: e
+  !!z.var ? new_reference z.var k :
+  !!z.member ?
+    new_unary ND_MEMBER init_desg_expr z.next k k is e
     (e.member = z.member),
     e :
-  new_unary ND_DEREF new_add k init_desg_expr z.next k new_lit z.idx->long k ty_int k;;
+  new_unary ND_DEREF new_add k init_desg_expr z.next k new_lit z.idx to long k ty_int k;;
 
 
 
@@ -741,7 +798,7 @@ create_lvar_init(e @Initializer t @Type z @InitDesg k @Token)@ Node =
     let a = new_node ND_NULL_EXPR k;
     for (let i int = 0; i < t.array_len; (i:;i+=1)) {
       let
-        z2 = (let InitDesg){z i;
+        z2 = new InitDesg {z i;
         b = create_lvar_init e.children[i] t.base &z2 k;
       a = new_binary ND_COMMA a b k;;
     return a;;
@@ -749,22 +806,22 @@ create_lvar_init(e @Initializer t @Type z @InitDesg k @Token)@ Node =
     let a = new_node ND_NULL_EXPR k;
     for (let g @Member = t.members; g; g = g.next) {
       let
-        z2 = (let InitDesg){z 0 g;
-        b = create_lvar_init e.children[g.idx] g.ty->@Type &z2 k;
+        z2 = new InitDesg {z 0 g;
+        b = create_lvar_init e.children[g.idx] g.ty to @Type &z2 k;
       a = new_binary ND_COMMA a b k;;
     return a;;
   if (t.kind == TY_UNION) {
     let
       g = (e.g || t.members)
-      z2 = (let InitDesg){z 0 g;;
-    return create_lvar_init e.children[g.idx] g.ty->@Type &z2 k;;
+      z2 = new InitDesg {z 0 g;;
+    return create_lvar_init e.children[g.idx] g.ty to @Type &z2 k;;
   if !e.expr return new_node ND_NULL_EXPR k;
   let a = init_desg_expr z k;
   add_type e.expr;
   add_type a;
   if ! type_equal a.ty e.expr.ty {
     format_types e.expr.ty a.ty;
-    error_tok e.expr.tok "asymmetric init from %s to %s" s1 s2;;
+    (error_tok e.expr.tok "asymmetric init from %s to %s" s1 s2);;
   return new_binary ND_ASSIGN a e.expr k;;
 
 
@@ -774,10 +831,10 @@ create_lvar_init(e @Initializer t @Type z @InitDesg k @Token)@ Node =
 
 
 lvar_initializer(k @@Token o @Obj) @Node = return
-  &o.ty :: d
-  initializer k d :: e
-  (let InitDesg){ 0->@InitDesg 0 0->@Member o; :: z
-  new_node ND_MEMZERO k@ :: a
+  &o.ty is d
+  initializer k d is e
+  new InitDesg { 0 to @InitDesg 0 0 to @Member o; is z
+  new_node ND_MEMZERO k@ is a
   (a.var = o),
   new_binary ND_COMMA a create_lvar_init e o.ty &z k@ k@;;
 
@@ -789,16 +846,16 @@ lvar_initializer(k @@Token o @Obj) @Node = return
 
 
 read_buf(buf@ char sz int) unsigned long = return
-  sz == 1 ? buf@            ->unsigned long :
-  sz == 2 ? buf->@ uint16_t@->unsigned long :
-  sz == 4 ? buf->@ uint32_t@->unsigned long :
-  sz == 8 ? buf->@ uint64_t@                :
+  sz == 1 ? (buf              )@ to unsigned long :
+  sz == 2 ? (buf to @ uint16_t)@ to unsigned long :
+  sz == 4 ? (buf to @ uint32_t)@ to unsigned long :
+  sz == 8 ? (buf to @ uint64_t)@                  :
   0ul;;
 write_buf(buf@ char val uint64_t sz int) = return
-  sz == 1 ? buf->@ uint8_t @ = val->uint8_t  :
-  sz == 2 ? buf->@ uint16_t@ = val->uint16_t :
-  sz == 4 ? buf->@ uint32_t@ = val->uint32_t :
-  sz == 8 ? buf->@ uint64_t@ = val           :
+  sz == 1 ? (buf to @ uint8_t )@ = val to uint8_t  :
+  sz == 2 ? (buf to @ uint16_t)@ = val to uint16_t :
+  sz == 4 ? (buf to @ uint32_t)@ = val to uint32_t :
+  sz == 8 ? (buf to @ uint64_t)@ = val             :
   none;;
 
 
@@ -817,29 +874,29 @@ write_gvar_data(cur@ Relocation init@ Initializer ty@ Type buf@ char offset int)
         let expr = init.children[g.idx].expr;
         if !expr break;
         let loc = (buf + offset + g.offset);
-        let oldval = read_buf loc g.ty->@Type.size;
+        let oldval = read_buf loc (g.ty to @Type).size;
         let newval = eval expr;
         let mask = ((1L << g.bit_width) - 1);
         let combined = (oldval | ((newval & mask) << g.bit_offset));
-        write_buf loc combined g.ty->@Type.size;;
+        write_buf loc combined (g.ty to @Type).size;;
       else {
-        cur = write_gvar_data cur init.children[g.idx] g.ty->@Type buf (offset + g.offset);;;
+        cur = write_gvar_data cur init.children[g.idx] g.ty to @Type buf (offset + g.offset);;;
     return cur;;
   if (ty.kind == TY_UNION) {
     if !init.g return cur;
-    return write_gvar_data cur init.children[init.g.idx] init.g.ty->@Type buf offset;;
+    return write_gvar_data cur init.children[init.g.idx] init.g.ty to @Type buf offset;;
   if !init.expr return cur;
   if (ty.kind == TY_FLOAT) {
-    (buf + offset)->@ float@ = eval_double init.expr as float;
+    ((buf + offset) to @ float)@ = eval_double init.expr as float;
     return cur;;
   if (ty.kind == TY_DOUBLE) {
-    (buf + offset)->@ double@ = eval_double init.expr;
+    ((buf + offset) to @ double)@ = eval_double init.expr;
     return cur;;
   let label = (0 as @@char);
   let val = eval2 init.expr &label;
   if !label {
     let a = (buf + offset);
-    write_buf a val->unsigned long ty.size;
+    write_buf a val to unsigned long ty.size;
     return cur;;
   let rel = (calloc 1ul sizeof Relocation as @Relocation);
   rel.offset = offset;
@@ -848,11 +905,11 @@ write_gvar_data(cur@ Relocation init@ Initializer ty@ Type buf@ char offset int)
   cur.next = rel;
   return cur.next;;
 gvar_initializer(k @@Token o@ Obj) =
-  &o.ty :: d
-  initializer k d :: e
-  (let Relocation){; :: head
-  calloc 1ul o.ty.size->unsigned long as @char :: buf
-  (write_gvar_data &head e o.ty buf 0)->,
+  &o.ty is d
+  initializer k d is e
+  new Relocation {; is head
+  calloc 1ul o.ty.size to unsigned long as @char is buf
+  (write_gvar_data &head e o.ty buf 0) to ,
   (o.init_data = buf),
   (o.rel = head.next);;
 
@@ -867,30 +924,30 @@ gvar_initializer(k @@Token o@ Obj) =
 
 
 stmt(k @@Token) @Node = return
-  k@ :: j
+  k@ is j
   consume k k@ "return" ?
-    new_node ND_RETURN j :: e
+    new_node ND_RETURN j is e
     consume k k@ ";" ? e :
     (e.lhs = conditional k),
     expect k ";",
     add_type e.lhs,
-    current_fn.ty.return_ty :: t
+    current_fn.ty.return_ty is t
     !type_equal current_fn.ty.return_ty e.lhs.ty &&
       ( format_types e.lhs.ty current_fn.ty.return_ty,
-        error_tok e.lhs.tok "asymmetric return from %s to %s" s1 s2 ),
+        (error_tok e.lhs.tok "asymmetric return from %s to %s" s1 s2)),
     e :
   consume k k@ "if" ?
-    new_node ND_IF j :: e
+    new_node ND_IF j is e
     (e.cond = prefix k),
     (e.then = stmt k),
     consume k k@ "else" && (e.els = stmt k),
     e :
   consume k k@ "switch" ?
-    new_node ND_SWITCH j :: e
+    new_node ND_SWITCH j is e
     (e.cond = prefix k),
-    current_switch :: sw
+    current_switch is sw
     (current_switch = e),
-    brk_label :: brk
+    brk_label is brk
     (e.brk_label = new_unique_name),
     (brk_label = e.brk_label),
     (e.then = stmt k),
@@ -898,10 +955,10 @@ stmt(k @@Token) @Node = return
     (brk_label = brk),
     e :
   consume k k@ "case" ?
-    !current_switch && error_tok j "stray case",
-    new_node ND_CASE j :: e
-    const_expr k :: begin
-    begin :: end
+    !current_switch && (error_tok j "stray case"),
+    new_node ND_CASE j is e
+    const_expr k is begin
+    begin is end
     expect k ":",
     (e.label = new_unique_name),
     (e.lhs = stmt k),
@@ -911,27 +968,28 @@ stmt(k @@Token) @Node = return
     (current_switch.case_next = e),
     e :
   consume k k@ "default" ?
-    !current_switch && error_tok j "stray default",
-    new_node ND_CASE j :: e
+    (warn_tok k@ "delet pls"),
+    !current_switch && (error_tok j "stray default"),
+    new_node ND_CASE j is e
     expect k ":",
     (e.label = new_unique_name),
     (e.lhs = stmt k),
     (current_switch.default_case = e),
     e :
   consume k k@ "for" ?
-    new_node ND_FOR j :: e
+    new_node ND_FOR j is e
     expect k "(",
     enter_scope,
-    brk_label :: brk
-    cont_label :: cont
-    (e.brk_label = new_unique_name),
-    (brk_label  = e.brk_label ),
+    brk_label is brk
+    cont_label is cont
+    (e.brk_label  = new_unique_name),
+    (brk_label    = e.brk_label    ),
     (e.cont_label = new_unique_name),
-    (cont_label = e.cont_label),
+    (cont_label   = e.cont_label   ),
     ( consume k k@ "let" ?
-        declspec k 0->@VarAttr,
-        (e.init = declaration k 0->@VarAttr) :
-      (e.init = expr_stmt k)),
+        declspec k 0 to @VarAttr,
+        (e.init = declaration k 0 to @VarAttr) :
+      (e.init = expr_stmt k) ),
     !equal k@ ";" && (e.cond = assign k),
     expect k ";",
     !equal k@ ")" && (e.inc = assign k),
@@ -942,43 +1000,22 @@ stmt(k @@Token) @Node = return
     (cont_label = cont),
     e :
   consume k k@ "while" ?
-    new_node ND_FOR j :: e
-    (e.cond     = prefix k),
-    brk_label :: brk
-    cont_label :: cont
-    (e.brk_label = new_unique_name),
-    (brk_label  = e.brk_label ),
-    (e.cont_label = new_unique_name),
-    (cont_label = e.cont_label),
-    (e.then     = stmt k),
-    (brk_label  = brk),
-    (cont_label = cont),
-    e :
-  consume k k@ "do" ?
-    new_node ND_DO j :: e
-    brk_label :: brk
-    cont_label :: cont
-    (e.brk_label = new_unique_name),
-    (brk_label  = e.brk_label ),
-    (e.cont_label = new_unique_name),
-    (cont_label = e.cont_label),
-    (e.then     = stmt k),
-    (brk_label  = brk),
-    (cont_label = cont),
-    expect k "while",
-    (e.cond = prefix k),
-    expect k ";",
+    new_node ND_FOR j is e
+    brk_label is brk
+    cont_label is cont
+    (e.cond       = prefix k         ),
+    (e.brk_label  = new_unique_name  ),
+    (brk_label    = e.brk_label      ),
+    (e.cont_label = new_unique_name  ),
+    (cont_label   = e.cont_label     ),
+    (e.then       = stmt k           ),
+    (brk_label    = brk              ),
+    (cont_label   = cont             ),
     e :
   consume k k@ "break" ?
-    !brk_label ? error_tok j "stray break", 0->@Node :
-    new_node ND_GOTO j :: e
+    !brk_label ? (error_tok j "stray break"), 0 to @Node :
+    new_node ND_GOTO j is e
     (e.unique_label = brk_label),
-    expect k ";",
-    e :
-  consume k k@ "continue" ?
-    !cont_label ? error_tok j "stray continue", 0->@Node :
-    new_node ND_GOTO j :: e
-    (e.unique_label = cont_label),
     expect k ";",
     e :
   consume k k@ "{" ? compound_stmt k :
@@ -986,18 +1023,19 @@ stmt(k @@Token) @Node = return
 
 
 decl_stmt(k @@Token) @Node =
+  //warn_tok k@ "you are so dumb bro";
   let
-    head = (let Node){;
+    head = new Node {;
     cur = &head;
   while ! equal k@ ";" {
     if equal k.next "=" {
-      if (k.kind != TK_IDENT || equal k@ "_") error_tok k@ "expected identifer";
+      if (k.kind != TK_IDENT || equal k@ "_") (error_tok k@ "expected identifer");
       else {
         let name = k@;
         k@ = k.next.next;
         let e = prefix k;
       add_type e;
-        if (e.ty.kind == TY_VOID) error_tok k@ "variable declared void";
+        if (e.ty.kind == TY_VOID) (error_tok k@ "variable declared void");
         else {
           let o = new_lvar get_ident name e.ty;
           cur.next = new_unary ND_EXPR_STMT new_binary ND_ASSIGN new_reference o k@ e k@ k@;
@@ -1005,61 +1043,61 @@ decl_stmt(k @@Token) @Node =
     else {
       //warn_tok(k@ "deprecated initializer");
       let t = declarator k;
-      if (t.kind == TY_VOID) error_tok k@ "variable declared void";
+      if (t.kind == TY_VOID) (error_tok k@ "variable declared void");
       else {
-        if !t.name error_tok t.name_pos "variable name omitted";
+        if !t.name (error_tok t.name_pos "variable name omitted");
         else if !equal t.name "_" {
           let o = new_lvar get_ident t.name t;
           if consume k k@ "=" {
             let e = lvar_initializer k o;
             cur.next = new_unary ND_EXPR_STMT e k@;
             cur = cur.next;;
-          if (o.ty.size < 0) error_tok t.name "variable has incomplete type";
-          else if (o.ty.kind == TY_VOID) error_tok t.name "variable declared void";;;;;
+          if (o.ty.size < 0) (error_tok t.name "variable has incomplete type");
+          else if (o.ty.kind == TY_VOID) (error_tok t.name "variable declared void");;;;;
   let e = new_node ND_BLOCK k@;
   k@ = k.next;
   e.body = head.next;
   return e;;
 
-
-compound_stmt(k @@Token) @Node =
-  let
-    e = new_node ND_BLOCK k@
-    head = (let Node){;
-    cur = &head;
-  enter_scope;
-  while !consume k k@ ";" {
-    cur.next = (consume k k@ "let" ? &decl_stmt : &stmt)@ k;
-    cur = cur.next;
-    add_type cur;;
-  leave_scope;
-  e.body = head.next;
-  return e;;
+compound_stmt(k @@Token) @Node = return
+  cast new int {1;,
+  new_node ND_BLOCK k@ is e
+  new Node {; is head
+  &head is cur
+  enter_scope,
+  cast until (consume k k@ ";" || (false :;
+    (cur.next = (consume k k@ "let" ? &decl_stmt : &stmt)@ k),
+    (cur      = cur.next),
+    add_type cur)),
+  leave_scope,
+  (e.body = head.next),
+  e;;
 
 
 expr_stmt(k @@Token)@ Node = return
   equal k@ ";" ?
-    new_node ND_BLOCK k@ :: e
+    new_node ND_BLOCK k@ is e
     (k@ = k.next),
     e :
-  new_node ND_EXPR_STMT k@ :: e
+  new_node ND_EXPR_STMT k@ is e
   (e.lhs = assign k),
   expect k ";",
   e;;
 
 
-// ######## ##     ##    ###    ##       
-// ##       ##     ##   ## ##   ##       
-// ##       ##     ##  ##   ##  ##       
-// ######   ##     ## ##     ## ##       
-// ##        ##   ##  ######### ##       
-// ##         ## ##   ##     ## ##       
-// ########    ###    ##     ## ######## 
+
+
+//  ####    ####   #    #   ####   #####  ######  #    #    ##    #
+// #    #  #    #  ##   #  #         #    #       #    #   #  #   #
+// #       #    #  # #  #   ####     #    #####   #    #  #    #  #
+// #       #    #  #  # #       #    #    #       #    #  ######  #
+// #    #  #    #  #   ##  #    #    #    #        #  #   #    #  #
+//  ####    ####   #    #   ####     #    ######    ##    #    #  ######
 
 
 eval2(e@ Node label @@@char) int64_t = return
   add_type e,
-  is_flonum e.ty ? (eval_double e)->long :
+  is_flonum e.ty ? (eval_double e) to long :
   e.kind == ND_ADD    ? eval2 e.lhs label + eval e.rhs :
   e.kind == ND_SUB    ? eval2 e.lhs label - eval e.rhs :
   e.kind == ND_NEG    ? -eval e.lhs :
@@ -1068,63 +1106,64 @@ eval2(e@ Node label @@@char) int64_t = return
   e.kind == ND_BITOR  ? eval e.lhs |  eval e.rhs :
   e.kind == ND_BITXOR ? eval e.lhs ^  eval e.rhs :
   e.kind == ND_SHL    ? eval e.lhs << eval e.rhs :
-  e.kind == ND_EQ     ? (eval e.lhs == eval e.rhs)->long :
-  e.kind == ND_NE     ? (eval e.lhs != eval e.rhs)->long :
+  e.kind == ND_EQ     ? (eval e.lhs == eval e.rhs) to long :
+  e.kind == ND_NE     ? (eval e.lhs != eval e.rhs) to long :
   e.kind == ND_DIV    ? e.ty.is_unsigned
-    ? (eval e.lhs)->uint64_t /  (eval e.rhs)->uint64_t as long
+    ? (eval e.lhs) to uint64_t /  (eval e.rhs) to uint64_t as long
     :  eval e.lhs            /   eval e.rhs :
   e.kind == ND_MOD    ? e.ty.is_unsigned
-    ? (eval e.lhs)->uint64_t %  (eval e.rhs)->uint64_t as long
+    ? (eval e.lhs) to uint64_t %  (eval e.rhs) to uint64_t as long
     :  eval e.lhs            %   eval e.rhs :
   e.kind == ND_SHR    ? e.ty.is_unsigned && e.ty.size == 8
-    ? (eval e.lhs)->uint64_t >> (eval e.rhs)->uint64_t as long
+    ? (eval e.lhs) to uint64_t >> (eval e.rhs) to uint64_t as long
     :  eval e.lhs            >>  eval e.rhs :
   e.kind == ND_LT     ? e.lhs.ty.is_unsigned
-    ? (eval e.lhs)->uint64_t <  (eval e.rhs)->uint64_t as long
+    ? (eval e.lhs) to uint64_t <  (eval e.rhs) to uint64_t as long
     :  eval e.lhs            <   eval e.rhs            as long :
   e.kind == ND_LE     ? e.lhs.ty.is_unsigned
-    ? (eval e.lhs)->uint64_t <= (eval e.rhs)->uint64_t as long
+    ? (eval e.lhs) to uint64_t <= (eval e.rhs) to uint64_t as long
     :  eval e.lhs            <=  eval e.rhs            as long :
   e.kind == ND_GT     ? e.lhs.ty.is_unsigned
-    ? (eval e.lhs)->uint64_t >  (eval e.rhs)->uint64_t as long
+    ? (eval e.lhs) to uint64_t >  (eval e.rhs) to uint64_t as long
     :  eval e.lhs            >   eval e.rhs            as long :
   e.kind == ND_GE     ? e.lhs.ty.is_unsigned
-    ? (eval e.lhs)->uint64_t >= (eval e.rhs)->uint64_t as long
+    ? (eval e.lhs) to uint64_t >= (eval e.rhs) to uint64_t as long
     :  eval e.lhs            >=  eval e.rhs            as long :
-  e.kind == ND_COND   ? eval e.cond ? eval2 e.then label : eval2 e.els label :
+  e.kind == ND_COND   ? !!eval e.cond ? eval2 e.then label : eval2 e.els label :
   e.kind == ND_COMMA  ? eval2 e.rhs label :
-  e.kind == ND_NOT    ? (! eval e.lhs)->long :
+  e.kind == ND_NOT    ? (! eval e.lhs) to long :
   e.kind == ND_BITNOT ? ~ eval e.lhs :
   e.kind == ND_LOGAND ? !!eval e.lhs && eval e.rhs :
   e.kind == ND_LOGOR  ? eval e.lhs || eval e.rhs :
+  e.kind == ND_THE    ? eval2 e.lhs label :
   e.kind == ND_CAST   ?
-    eval2 e.lhs label :: l
+    eval2 e.lhs label is l
     ! is_integer e.ty ? l :
-    e.ty.size == 1 ? (e.ty.is_unsigned ? l->uint8_t ->long : l->int8_t ->long) :
-    e.ty.size == 2 ? (e.ty.is_unsigned ? l->uint16_t->long : l->int16_t->long) :
-    e.ty.size == 4 ? (e.ty.is_unsigned ? l->uint32_t->long : l->int32_t->long) :
+    e.ty.size == 1 ? (e.ty.is_unsigned ? l to uint8_t  to long : l to int8_t  to long) :
+    e.ty.size == 2 ? (e.ty.is_unsigned ? l to uint16_t to long : l to int16_t to long) :
+    e.ty.size == 4 ? (e.ty.is_unsigned ? l to uint32_t to long : l to int32_t to long) :
     l :
   e.kind == ND_ADDR ? eval_rval e.lhs label :
   e.kind == ND_LABEL_VAL ? (label@ = &e.unique_label), 0l :
   e.kind == ND_MEMBER ?
-    !label ? error_tok e.tok "not a compile-time constant", 0l :
-    e.ty.kind != TY_ARRAY ? error_tok e.tok "invalid initializer", 0l :
+    !label ? (error_tok e.tok "not a compile-time constant"), 0l :
+    e.ty.kind != TY_ARRAY ? (error_tok e.tok "invalid initializer"), 0l :
     eval_rval e.lhs label + e.member.offset :
   e.kind == ND_VAR ?
-    !label ? error_tok e.tok "not a compile-time constant", 0l :
-    e.var.ty.kind != TY_ARRAY && e.var.ty.kind != TY_FUNC ? error_tok e.tok "invalid initializer", 0l :
+    !label ? (error_tok e.tok "not a compile-time constant"), 0l :
+    e.var.ty.kind != TY_ARRAY && e.var.ty.kind != TY_FUNC ? (error_tok e.tok "invalid initializer"), 0l :
     (label@ = &e.var.name), 0l :
   e.kind == ND_NUM ? e.val :
-  error_tok e.tok "not a compile-time constant",
+  (error_tok e.tok "not a compile-time constant"),
   0l;;
-eval(e@ Node) int64_t = return eval2 e 0->@@@char;;
+eval(e@ Node) int64_t = return eval2 e 0 to @@@char;;
 eval_rval(e@ Node label @@@char) long = return
   e.kind == ND_VAR ?
-    e.var.is_local ? error_tok e.tok "not a compile-time constant", 0l :
+    e.var.is_local ? (error_tok e.tok "not a compile-time constant"), 0l :
     (label@ = &e.var.name), 0l :
   e.kind == ND_DEREF  ? eval2     e.lhs label :
   e.kind == ND_MEMBER ? eval_rval e.lhs label + e.member.offset :
-  error_tok e.tok "invalid initializer",
+  (error_tok e.tok "invalid initializer"),
   0l;;
 is_const_expr(e@ Node) bool = return
   add_type e,
@@ -1145,27 +1184,29 @@ is_const_expr(e@ Node) bool = return
   e.kind == ND_GE     ||
   e.kind == ND_LOGAND ||
   e.kind == ND_LOGOR   ? is_const_expr e.lhs && is_const_expr e.rhs :
-  e.kind == ND_COND    ? is_const_expr e.cond && is_const_expr (eval e.cond ? e.then : e.els) :
+  e.kind == ND_COND    ? is_const_expr e.cond && is_const_expr (!!eval e.cond ? e.then : e.els) :
   e.kind == ND_COMMA   ? is_const_expr e.rhs :
   e.kind == ND_NEG    ||
   e.kind == ND_NOT    ||
   e.kind == ND_BITNOT ||
+  e.kind == ND_THE    ||
   e.kind == ND_CAST    ? is_const_expr e.lhs :
   e.kind == ND_NUM;;
 export const_expr(k@@ Token) int64_t = return eval prefix k;;
 eval_double(e@ Node) double = return
   add_type e,
   is_integer e.ty ?
-    (eval e)->double :
+    (eval e) to double :
     e.kind == ND_ADD   ?  eval_double e.lhs + eval_double e.rhs :
     e.kind == ND_SUB   ?  eval_double e.lhs - eval_double e.rhs :
     e.kind == ND_MUL   ?  eval_double e.lhs * eval_double e.rhs :
     e.kind == ND_DIV   ?  eval_double e.lhs / eval_double e.rhs :
     e.kind == ND_NEG   ? -eval_double e.lhs                     :
-    e.kind == ND_COND  ?  eval_double e.cond                    ? eval_double e.then :
+    e.kind == ND_COND  ? !!eval_double e.cond                    ? eval_double e.then :
                                                                   eval_double e.els  :
     e.kind == ND_COMMA ? eval_double e.rhs                      :
-    e.kind == ND_NUM   ? e.fval->double                         :
+    e.kind == ND_NUM   ? e.fval to double                         :
+    e.kind == ND_THE  ||
     e.kind == ND_CAST  ? is_flonum e.lhs.ty                     ? eval_double e.lhs  :
                                                                   eval e.lhs as double  :
                          /*error_tok e.tok "not a compile-time constant",*/ 0.0    ;;;;
@@ -1175,200 +1216,178 @@ eval_double(e@ Node) double = return
 
 
 
+// ######  #    #  #####   #####   ######   ####    ####   #   ####   #    # 
+// #        #  #   #    #  #    #  #       #       #       #  #    #  ##   # 
+// #####     ##    #    #  #    #  #####    ####    ####   #  #    #  # #  # 
+// #         ##    #####   #####   #            #       #  #  #    #  #  # # 
+// #        #  #   #       #   #   #       #    #  #    #  #  #    #  #   ## 
+// ######  #    #  #       #    #  ######   ####    ####   #   ####   #    # 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-compound_assign(new @(j @Token a @Node b @Node) @Node k @@Token a @Node) @Node = return
-  advance k :: j new_assign j a new@ j a conditional k;;
-
-try_assign(k @@Token a @Node op @char new @(j @Token a @Node b @Node) @Node) @Node = return
-  equal k@ op ? compound_assign new k a : 0 as @Node;;
-
-assign(k @@Token) @Node = return
-                                    conditional k :: a
-
-  equal k@   "=" ? compound_assign &just_b      k    a :
-  equal k@  "+=" ? compound_assign &new_add     k    a :
-  equal k@  "-=" ? compound_assign &new_sub     k    a :
-  equal k@  "*=" ? compound_assign &new_mul     k    a :
-  equal k@  "/=" ? compound_assign &new_div     k    a :
-  equal k@  "%=" ? compound_assign &new_mod     k    a :
-  equal k@  "&=" ? compound_assign &new_bitand  k    a :
-  equal k@  "|=" ? compound_assign &new_bitor   k    a :
-  equal k@  "^=" ? compound_assign &new_bitxor  k    a :
-  equal k@ "<<=" ? compound_assign &new_shl     k    a :
-  equal k@ ">>=" ? compound_assign &new_shr     k    a :
-
-                                                     a ;;
-
-mul        (k @@Token)@ Node = return prefix     k :: a until (equal k@ "*"  ? advance k :: j (a = new_mul    j a prefix     k), 0 as @Node :
-                                                               equal k@ "/"  ? advance k :: j (a = new_div    j a prefix     k), 0 as @Node :
-                                                               equal k@ "%"  ? advance k :: j (a = new_mod    j a prefix     k), 0 as @Node : a);;
-add        (k @@Token)@ Node = return mul        k :: a until (equal k@ "+"  ? advance k :: j (a = new_add    j a mul        k), 0 as @Node :
-                                                               equal k@ "-"  ? advance k :: j (a = new_sub    j a mul        k), 0 as @Node : a);;
-shift      (k @@Token)@ Node = return add        k :: a until (equal k@ "<<" ? advance k :: j (a = new_shl    j a add        k), 0 as @Node :
-                                                               equal k@ ">>" ? advance k :: j (a = new_shr    j a add        k), 0 as @Node : a);;
-relational (k @@Token)@ Node = return shift      k :: a until (equal k@ "<"  ? advance k :: j (a = new_lt     j a shift      k), 0 as @Node :
-                                                               equal k@ ">"  ? advance k :: j (a = new_gt     j a shift      k), 0 as @Node :
-                                                               equal k@ "<=" ? advance k :: j (a = new_le     j a shift      k), 0 as @Node :
-                                                               equal k@ ">=" ? advance k :: j (a = new_ge     j a shift      k), 0 as @Node :
-                                                               equal k@ "==" ? advance k :: j (a = new_eq     j a shift      k), 0 as @Node :
-                                                               equal k@ "!=" ? advance k :: j (a = new_neq    j a shift      k), 0 as @Node : a);;
-bitand     (k @@Token)@ Node = return relational k :: a until (equal k@ "&"  ? advance k :: j (a = new_bitand j a relational k), 0 as @Node : a);;
-bitxor     (k @@Token)@ Node = return bitand     k :: a until (equal k@ "^"  ? advance k :: j (a = new_bitxor j a bitand     k), 0 as @Node : a);;
-bitor      (k @@Token)@ Node = return bitxor     k :: a until (equal k@ "|"  ? advance k :: j (a = new_bitor  j a bitxor     k), 0 as @Node : a);;
-logand     (k @@Token)@ Node = return bitor      k :: a until (equal k@ "&&" ? advance k :: j (a = new_logand j a bitor      k), 0 as @Node : a);;
-logor      (k @@Token)@ Node = return logand     k :: a until (equal k@ "||" ? advance k :: j (a = new_logor  j a logand     k), 0 as @Node : a);;
-new_then(j @Token a @Node b @Node o @Obj) @Node = return new_let j a new_comma j b new_reference o j o;;
-conditional(k @@Token)@ Node = return
-  logor k :: a
-  add_type a,
-  until !(equal k@ "as" && (advance k :: j (a = new_cast j a type_suffix k))) as,
-
-  equal k@ ":;" ? advance k :: j enter_scope, new_lvar new_unique_name     a.ty :: o new_then        j a        assign k o :; leave_scope :
-  equal k@ "::" ? advance k :: j enter_scope, new_lvar get_ident advance k a.ty :: o new_let         j a        assign k o :; leave_scope :
-  equal k@ "?"  ? advance k :: j assign k :: b expect k ":"                        , new_conditional j a b      assign k                  :
-  equal k@ ","  ? advance k :: j                                                     new_comma       j a        assign k                  :
-                                                                                                       a                                  ;;
+primary_a(k @@Token op @char  new_x @(j @Token t @Type) @Node) @Node = return
+  equal k@ op && (advance k is j new_x@ j type_suffix k);;
+primary_b(k @@Token op @char  new_x @(j @Token) @Node) @Node = return
+  equal k@ op && (advance k is j new_x@ j);;
+primary(k @@Token) @Node = return
+  ( &primary_a is a
+    &primary_b is b
+    a@ k "sizeof"  &new_sizeof     ||
+    a@ k "alignof" &new_alignof    ||
+    b@ k "none"    &new_none       ||
+    b@ k "false"   &new_false      ||
+    b@ k "true"    &new_true     ) ||
+  ( equal k@ "new" ?
+    advance k is j
+    type_suffix k is t
+    !scope.next ?
+      new_anon_gvar t is o
+      gvar_initializer k o,
+      new_reference o j :
+    new_lvar "" t is o
+    new_binary ND_COMMA lvar_initializer k o new_reference o k@ j :
+  consume k k@ "(" ? assign k :; expect k ")" :
+  k.kind == TK_IDENT ?
+    (search_scope k@ scope_vars to @(sc@Scope)@HashMap) to @VarScope is sc
+    (k@ = k.next),
+    !!sc ?
+      !!sc.var && sc.var.is_function &&
+        ( &current_fn.refs is a
+          !!current_fn ? strarray_push a sc.var.name :
+          (sc.var.is_root = true) ),
+      !!sc.var ? new_reference sc.var k@ :
+      !!sc.enum_ty ? new_lit sc.enum_val to long k@ sc.enum_ty :
+      (error_tok k@ "internal compiler error"), 0 to @Node :
+    (error_tok k@ "lookup failed"), 0 to @Node :
+  k.kind == TK_STR ?
+    new_string_literal k.str k.ty to @Type is o
+    new_cast k@ new_the k@ new_reference o k@ o.ty pointer_to (k.ty to @Type).base is e
+    (k@ = k.next), e :
+  k.kind == TK_NUM ?
+    ( is_flonum k.ty to @Type
+      ? new_node ND_NUM k@ is e (e.fval = k.fval), (e.ty = k.ty as @Type), e
+      : new_lit k.val k@ k.ty to @Type) is e (k@ = k.next), e :
+  (error_tok k@ "expected an expression"), 0 as @Node);;
+postfix(k @@Token) @Node = return
+  equal k@ "the"   ? advance k is j type_suffix k is t new_the       j postfix k t :
+  equal k@ "&"     ? advance k is j                    new_addressof j postfix k   :
+  primary the @@Token k is a
+  until !(
+    k@ is start
+    consume k k@ "[" && (
+      conditional k is l
+      expect k "]",
+      (a = new_unary ND_DEREF new_add start a l start) ) ||
+    consume k k@ "." && (
+      add_type a,
+      until !(a.ty.kind == TY_PTR && ((a = new_unary ND_DEREF a start), add_type a)) as,
+      a.ty.kind != TY_STRUCT && a.ty.kind != TY_UNION && (
+        format_types a.ty ty_void,
+        error_tok k@ "(%s . %.*s) you must write struct or union" s1 k.next.len k.next.loc),
+      get_struct_member a.ty k@ is g
+      !g && (
+        format_types a.ty ty_void,
+        error_tok k@ "(%s . %.*s) no such member" s1 k.next.len k.next.loc),
+      (a = new_member_reference k@ a g),
+      k@ = k.next ) ||
+    consume k k@ "@" && (a = new_unary ND_DEREF a start)) as,
+  a;;;
+prefix_a(k @@Token op @char  new_x @(j @Token a @Node) @Node) @Node = return
+  equal k@ op && (advance k is j  new_x@ j prefix k);;
 prefix(k @@Token) @Node = return
-  k@ :: start
-  consume k k@ "-" ? new_unary ND_NEG prefix k start :
-  consume k k@ "&" ?
-    postfix k :: a
-    add_type a,
-    a.kind == ND_MEMBER && a.member.is_bitfield && error_tok k@ "cannot take address of bitfield",
-    new_unary ND_ADDR a start :
-  consume k k@ "!"     ? new_unary ND_NOT    prefix k start                                              :
-  consume k k@ "~"     ? new_unary ND_BITNOT prefix k start                                              :
-  consume k k@ "until" ? new_until start     prefix k                                                    :
-  consume k k@ "++"    ? prefix k :: a new_add start a new_lit 1l start ty_int :: e new_assign start a e :
-  consume k k@ "--"    ? prefix k :: a new_sub start a new_lit 1l start ty_int :: e new_assign start a e :
-    postfix k :: a
+  ( &prefix_a is a
+    a@ k  "-"      &new_neg      ||
+    a@ k  "!"      &new_lognot   ||
+    a@ k  "~"      &new_bitnot   ||
+    a@ k  "until"  &new_until  ) ||
+  ( equal    k@ "cast"   ? advance k is j type_suffix k is t new_cast      j prefix  k t :
+    postfix k is a
+    until !(equal k@ "to" && (advance k is j a = new_cast j a type_suffix k)) as,
     until !(add_type a, a.ty.kind == TY_FUNC && (
-      a.ty :: t
-      t.params :: u
-      (let Node){; :: head
-      &head :: cur
-      until !((!!u || t.is_variadic && ! equal k@ ")" && ! equal k@ ";" && !equal k@ "," && ! equal k@ ":") && (
-        prefix k :: b
+      a.ty is t
+      t.params is u
+      new Node {; is head
+      &head is cur
+      cast until !((!!u || t.is_variadic && ! equal k@ ")") &&
+      ( prefix k is b
         add_type b,
         !!u && (
           !type_equal b.ty u && (
             format_types b.ty u,
-            error_tok k@ "asymmetric argument from %s to %s" s1 s2),
+            (error_tok k@ "asymmetric argument from %s to %s" s1 s2)),
           (u = u.next)),
         (cur.next = b),
-        (cur = cur.next))) as,
-      !!u && error_tok k@ "not enough arguments",
-      new_unary ND_FUNCALL a k@ :: e
-      (e.func_ty = t),
-      (e.ty = t.return_ty),
-      (e.args = head.next),
-      (e.ty.kind == TY_STRUCT || e.ty.kind == TY_UNION) && (e.ret_buffer = new_lvar "" e.ty),
+        (cur = cur.next))),
+      !!u && (error_tok k@ "not enough arguments"),
+      new_unary ND_FUNCALL a k@ is e
+      (e.func_ty =    t          ),
+      (e.ty      =    t.return_ty),
+      (e.args    = head.next     ),
+      (e.ty.kind == TY_STRUCT || e.ty.kind == TY_UNION) &&
+        (e.ret_buffer = new_lvar "" e.ty),
       (a = e))) as,
-    a;;
-primary(k @@Token) @Node = return
-  consume k k@ "none"    ? new_none k@ :
-  consume k k@ "true"    ? new_bool 1l k@ :
-  consume k k@ "false"   ? new_bool 0l k@ :
-  consume k k@ "sizeof"  ? new_ulong (type_suffix k).size     ->long k@ :
-  consume k k@ "alignof" ? new_ulong (type_suffix k).alignment->long k@ :
-  consume k k@ "(" ? assign k :; expect k ")" :
-  k.kind == TK_IDENT ?
-    (search_scope k@ scope_vars->@(sc@Scope)@HashMap)->@VarScope :: sc
-    (k@ = k.next),
-    sc ?
-      !!sc.var && sc.var.is_function &&
-        ( &current_fn.refs :: a
-          current_fn ? strarray_push a sc.var.name :
-          (sc.var.is_root = true) ),
-      sc.var ? new_reference sc.var k@ :
-      sc.enum_ty ? new_lit sc.enum_val->long k@ sc.enum_ty :
-      error_tok k@ "internal compiler error", 0->@Node :
-    error_tok k@ "lookup failed", 0->@Node :
-  k.kind == TK_STR ?
-    new_cast k@ new_reference new_string_literal k.str k.ty->@Type k@ pointer_to k.ty->@Type.base :: e
-    (k@ = k.next), e :
-  k.kind == TK_NUM ?
-    ( is_flonum k.ty->@Type
-      ? new_node ND_NUM k@ :: e (e.fval = k.fval), (e.ty = k.ty as @Type), e
-      : new_lit k.val k@ k.ty->@Type) :: e (k@ = k.next), e :
-  error_tok k@ "expected an expression", 0 as @Node;;
-struct_ref(k @@Token a @Node) @Node = return
-  a.ty.kind != TY_STRUCT && a.ty.kind != TY_UNION && (
-    format_types a.ty ty_void,
-    error_tok k@ "(%s . %.*s) you must write struct or union" s1 k.next.len k.next.loc),
-  get_struct_member a.ty k@ :: g
-  !g && (
-    format_types a.ty ty_void,
-    error_tok k@ "(%s . %.*s) no such member" s1 k.next.len k.next.loc),
-  new_member_reference k@ a g :;
-  k@ = k.next;;
-postfix(k @@Token)@ Node =
-  let start = k@;
-  if (equal k@ "(" && equal k.next "let") {
-    k@ = k.next.next;
-    let t = type_suffix k;
-    expect k ")";
-    if !scope.next {
-      let o = new_anon_gvar t;
-      gvar_initializer k o;
-      return new_reference o start;;
-    let
-      o = new_lvar "" t
-      a = lvar_initializer k o
-      b = new_reference o k@;
-    return new_binary ND_COMMA a b start;; // suspect
-  let e = primary k;
-  for (;;) {
-    let start = k@;
-    if consume k k@ "[" {
-      let l = conditional k;
-      expect k "]";
-      e = new_unary ND_DEREF new_add start e l start;;
-    else if consume k k@ "." { add_type e; while (e.ty.kind == TY_PTR) { e = new_unary ND_DEREF e start; add_type e;; e = struct_ref k e;;
-    else if consume k k@ "@" e = new_unary ND_DEREF e start;
-    else if consume k k@ "->" {
-      e = new_cast start e type_suffix k;;
-    else return e;;;
+    a);;
 
 
+mul        (k @@Token)@ Node = return prefix     k is a until (equal k@ "*"     ? advance k is j (a = new_mul    j a prefix     k), 0 as @Node :
+                                                               equal k@ "/"     ? advance k is j (a = new_div    j a prefix     k), 0 as @Node :
+                                                               equal k@ "%"     ? advance k is j (a = new_mod    j a prefix     k), 0 as @Node : a);;
+add        (k @@Token)@ Node = return mul        k is a until (equal k@ "+"     ? advance k is j (a = new_add    j a mul        k), 0 as @Node :
+                                                               equal k@ "-"     ? advance k is j (a = new_sub    j a mul        k), 0 as @Node : a);;
+shift      (k @@Token)@ Node = return add        k is a until (equal k@ "<<"    ? advance k is j (a = new_shl    j a add        k), 0 as @Node :
+                                                               equal k@ ">>"    ? advance k is j (a = new_shr    j a add        k), 0 as @Node : a);;
+relational (k @@Token)@ Node = return shift      k is a until (equal k@ "<"     ? advance k is j (a = new_lt     j a shift      k), 0 as @Node :
+                                                               equal k@ ">"     ? advance k is j (a = new_gt     j a shift      k), 0 as @Node :
+                                                               equal k@ "<="    ? advance k is j (a = new_le     j a shift      k), 0 as @Node :
+                                                               equal k@ ">="    ? advance k is j (a = new_ge     j a shift      k), 0 as @Node :
+                                                               equal k@ "=="    ? advance k is j (a = new_eq     j a shift      k), 0 as @Node :
+                                                               equal k@ "!="    ? advance k is j (a = new_neq    j a shift      k), 0 as @Node : a);;
+bitand     (k @@Token)@ Node = return relational k is a until (equal k@ "&"     ? advance k is j (a = new_bitand j a relational k), 0 as @Node : a);;
+bitxor     (k @@Token)@ Node = return bitand     k is a until (equal k@ "^"     ? advance k is j (a = new_bitxor j a bitand     k), 0 as @Node : a);;
+bitor      (k @@Token)@ Node = return bitxor     k is a until (equal k@ "|"     ? advance k is j (a = new_bitor  j a bitxor     k), 0 as @Node : a);;
+logand     (k @@Token)@ Node = return bitor      k is a until (equal k@ "&&"    ? advance k is j (a = new_logand j a bitor      k), 0 as @Node : a);;
+logor      (k @@Token)@ Node = return logand     k is a until (equal k@ "||"    ? advance k is j (a = new_logor  j a logand     k), 0 as @Node : a);;
+new_then(j @Token a @Node b @Node o @Obj) @Node = return new_let j a new_comma j b new_reference o j o;;
 
+noident(k @@Token) @char = return new_unique_name    ;;
+ident  (k @@Token) @char = return get_ident advance k;;
 
+conditional_a(k @@Token a @Node op @char xident (k @@Token) @char new_x (j @Token a @Node b @Node o @Obj) @Node) @Node = return
+  equal k@ op && (advance k is j enter_scope, new_lvar xident@ k a.ty is o new_x@ j a assign k o :; leave_scope);;
 
+conditional(k @@Token) @Node = return
+    ((logor k is a add_type a, a)
+      for a equal k@ "as" &&
+      ( advance k is j new_cast j a type_suffix k ))
+  is a
+  &conditional_a is f
+  f@ k a ":;"  &noident &new_then   ||
+  f@ k a "is"  &ident   &new_let    ||
+  f@ k a "for" &ident   &new_repeat || (
+  equal k@ "?" ? advance k     is j
+                  assign k     is b
+                  expect k ":"    , new_conditional j a b assign k :
+  equal k@ "," ? advance k     is j new_comma       j a   assign k :
+                                                      a            );;
+
+assign_a(k @@Token a @Node op @char  new_x @(j @Token a @Node b @Node) @Node) @Node = return
+  equal k@ op && (advance k is j new_assign j a  new_x@ j a conditional k);;
+assign(k @@Token) @Node = return
+  conditional k is a
+  &assign_a is f
+  f@ k    a   "=" &just_b     || 
+  f@ k    a  "+=" &new_add    ||
+  f@ k    a  "-=" &new_sub    ||
+  f@ k    a  "*=" &new_mul    ||
+  f@ k    a  "/=" &new_div    ||
+  f@ k    a  "%=" &new_mod    ||
+  f@ k    a  "&=" &new_bitand ||
+  f@ k    a  "|=" &new_bitor  ||
+  f@ k    a  "^=" &new_bitxor ||
+  f@ k    a "||=" &new_logor  ||
+  f@ k    a "&&=" &new_logand ||
+  f@ k    a "<<=" &new_shl    ||
+  f@ k    a ">>=" &new_shr    ||
+          a                   ;;
 
 
 
@@ -1405,60 +1424,47 @@ postfix(k @@Token)@ Node =
 
 struct_members(k @@Token t @Type)  =
   let
-    head = (let Member){;
+    head = new Member{;
     cur = &head
     idx = 0;
   while ! consume k k@ "}" {
-    let v = &(let VarAttr){;;
+    let v = &new VarAttr {;;
     declspec k v;
     while ! consume k k@ ";" {
       let g = (calloc 1ul sizeof Member as @Member);
       g.ty = declarator k as @;
-      g.name = g.ty->@Type.name;
+      g.name = (cast @Type the @ g.ty).name;
       g.idx = (idx:;idx+=1);
-      g.alignment = v.alignment ? v.alignment : g.ty->@Type.alignment;
+      g.alignment = v.alignment || (g.ty to @Type).alignment;
       if consume k k@ ":" {
         g.is_bitfield = true;
         g.bit_width = const_expr k as int;;
       cur.next = g;
       cur = cur.next;;;
-  if (cur != &head && cur.ty->@Type.kind == TY_ARRAY && cur.ty->@Type.array_len < 0) {
-    cur.ty = array_of cur.ty->@Type.base 0 as @;
+  if (cur != &head && (cur.ty to @Type).kind == TY_ARRAY && (cur.ty to @Type).array_len < 0) {
+    cur.ty = array_of (cur.ty to @Type).base 0 as @;
     t.is_flexible = true;;
   t.members = head.next;;
-attribute_list(k @@Token t @Type) =
-  while consume k k@ "__attribute__" {
-    expect k "(";
-    expect k "(";
-    while ! consume k k@ ")" {
-      if consume k k@ "packed" t.is_packed = true;
-      else if consume k k@ "aligned" {
-        expect k "(";
-        t.alignment = const_expr k as int; // looks ahead to
-        expect k ")";;               // this paren
-      else error_tok k@ "unknown attribute";;
-    expect k ")";;;
+
 struct_union_decl(k @@Token) @Type = return
-  struct_type :: t
-  attribute_list k t,
-  0 as @Token :: tag
+  struct_type is t
+  0 as @Token is tag
   k.kind == TK_IDENT &&
     ( (tag = k@),
       (k@ = k.next)),
   !!tag && ! equal k@ "{" ?
-    (search_scope tag scope_tags->@(sc@Scope)@HashMap)->@Type :: t2
-    t2 ? t2 :
-    (t.size = -1),
-    push_tag_scope tag t,
-    t :
+    (search_scope tag scope_tags to @(sc@Scope)@HashMap) to @Type is t2
+    t2 || (
+      (t.size = -1),
+      push_tag_scope tag t,
+      t) :
   expect k "{",
   (current_type = t),
   struct_members k t,
-  attribute_list k t,
   (current_type = 0 as @Type),
-  tag ?
-    (hashmap_get2 &scope.tags tag.loc tag.len)->@Type :: t2
-    t2 ? (t2@ = t@), t2 :
+  !!tag ?
+    (hashmap_get2 &scope.tags tag.loc tag.len) to @Type is t2
+    !!t2 ? (t2@ = t@), t2 :
     push_tag_scope tag t, t :
   t;;
 struct_decl(k @@Token) @Type =
@@ -1467,9 +1473,9 @@ struct_decl(k @@Token) @Type =
   if (t.size < 0) return t;
   let bits = 0;
   for (let g@ Member = t.members; g; g = g.next) {
-    if (g.is_bitfield && g.bit_width == 0) bits = align_to bits (g.ty->@Type.size * 8);
+    if (g.is_bitfield && g.bit_width == 0) bits = align_to bits ((g.ty to @Type).size * 8);
     else if g.is_bitfield {
-      let sz = g.ty->@Type.size;
+      let sz = (g.ty to @Type).size;
       if (bits / (sz * 8) != (bits + g.bit_width - 1) / (sz * 8)) {
         bits = align_to bits (sz * 8);;
       g.offset = align_down (bits / 8) sz;
@@ -1478,7 +1484,7 @@ struct_decl(k @@Token) @Type =
     else {
       if !t.is_packed bits = align_to bits (g.alignment * 8);
       g.offset = bits / 8;
-      bits += g.ty->@Type.size * 8;;
+      bits += (g.ty to @Type).size * 8;;
     if (!t.is_packed && t.alignment < g.alignment)
       t.alignment = g.alignment;;
   t.size = align_to bits (t.alignment * 8) / 8;
@@ -1489,49 +1495,54 @@ union_decl(k @@Token) @Type =
   if (t.size < 0) return t;
   for (let g@ Member = t.members; g; g = g.next) {
     if (t.alignment < g.alignment) t.alignment = g.alignment;
-    if (t.size < g.ty->@Type.size) t.size = g.ty->@Type.size;;
+    if (t.size < (g.ty to @Type).size) t.size = (g.ty to @Type).size;;
   t.size = align_to t.size t.alignment;
   return t;;
 get_struct_member(t @Type j @Token) @Member =
   for (let g@ Member = t.members; g; g = g.next) {
-    if ((g.ty->@Type.kind == TY_STRUCT || g.ty->@Type.kind == TY_UNION) && (!g.name || equal g.name "_")) {
-      if get_struct_member g.ty->@Type j return g;;
-    else if (g.name.len == j.len && ! strncmp g.name.loc->@ j.loc j.len->unsigned long) return g;;
+    if (((g.ty to @Type).kind == TY_STRUCT || (g.ty to @Type).kind == TY_UNION) && (!g.name || equal g.name "_")) {
+      if get_struct_member g.ty to @Type j return g;;
+    else if (g.name.len == j.len && ! strncmp g.name.loc to @ j.loc j.len to unsigned long) return g;;
   return 0 as @Member;;
-typedecl(k@@ Token) =
-  while ! consume k k@ ";" {
-    declarator k :: t
+typedecl(k@@ Token) = return
+  cast until (consume k k@ ";" || (
+    declarator k is t
     !t.name && (error_tok t.name_pos "type name may not be omitted in type alias declaration"),
-    ((push_scope get_ident t.name).type_def = t);;;
+    ((push_scope get_ident t.name).type_def = t),
+    false));;
 create_param_lvars(param@ Type) = return
-  param ?
+  !!param ?
     create_param_lvars param.next,
     !param.name ?
-      error_tok param.name_pos "parameter name omitted" :
+      (error_tok param.name_pos "parameter name omitted" ):
     new_lvar get_ident param.name param as :
   none;;
 next_scope(s @@Scope) bool = return
-  s.next::a a ? (s@ = a), true : false;;
+  s.next is a !!a ? (s@ = a), true : false;;
 find_func(name @char) @Obj = return
-  scope :: sc
+  scope is sc
   until ! next_scope &sc as,
-  hashmap_get &sc.vars name as @VarScope :: sc2
+  hashmap_get &sc.vars name as @VarScope is sc2
   !!sc2 && !!sc2.var && sc2.var.is_function ? sc2.var : 0 as @Obj;;
-mark_live(o@ Obj) =
-  if (!o.is_function || o.is_live) return;
-  o.is_live = true;
-  for (let i int = 0; i < o.refs.len; (i:;i+=1)) {
-    let o2 = find_func o.refs.data[i];
-    if o2 mark_live o2;;;
+mark_live(o@ Obj) = return
+  !o.is_function || o.is_live ? none :
+  (o.is_live = true),
+  0 is i
+  cast until (i == o.refs.len || (
+    find_func o.refs.data[i] is o2
+    o2 && mark_live o2,
+    (i += 1),
+    false)),
+  none;;
 function(k @@Token attr @VarAttr) = return
-  declarator k :: ty
-  (!ty.name || equal ty.name "_") && error_tok ty.name_pos "function name omitted",
-  get_ident ty.name :: name_str
-  find_func name_str :: o
-  ( o ?
-      !o.is_function                  && error_tok k@ "redeclared as a different kind of symbol",
-      o.is_definition && equal k@ "=" && error_tok k@ "redefinition of %s" name_str,
-      o.is_export != attr.is_export   && error_tok k@ "mismatched visibility",
+  declarator k is ty
+  (!ty.name || equal ty.name "_") && (error_tok ty.name_pos "function name omitted"),
+  get_ident ty.name is name_str
+  find_func name_str is o
+  ( !!o ?
+      !o.is_function                  && (error_tok k@ "redeclared as a different kind of symbol"),
+      o.is_definition && equal k@ "=" && (error_tok k@ "redefinition of %s" name_str),
+      o.is_export != attr.is_export   && (error_tok k@ "mismatched visibility"),
       (o.is_definition = o.is_definition || equal k@ "=") :
     (o = new_gvar name_str ty),
     (o.is_function = true),
@@ -1544,7 +1555,7 @@ function(k @@Token attr @VarAttr) = return
   (locals = 0 as @Obj),
   enter_scope,
   create_param_lvars ty.params,
-  ty.return_ty :: rty
+  ty.return_ty is rty
   ((rty.kind == TY_STRUCT || rty.kind == TY_UNION) && rty.size > 16) && new_lvar "" pointer_to rty as,
   (o.params = locals),
   ty.is_variadic && (o.va_area = new_lvar "__va_area__" array_of ty_char 136),
@@ -1559,58 +1570,56 @@ global_variable(tok@ Token attr@ VarAttr)@ Token =
   while ! consume k tok ";" {
     first = false;
     let ty = declarator k;
-    if (!ty.name || equal ty.name "_") continue;
-    let var = new_gvar get_ident ty.name ty;
-    var.is_definition = !attr.is_extern;
-    var.is_export = attr.is_export;
-    var.is_inline = attr.is_inline;
-    var.is_tls = attr.is_tls;
-    if attr.alignment var.alignment = attr.alignment;
-    if equal tok "=" {
-      tok = tok.next;
-      gvar_initializer k var;;
-    else if (!attr.is_extern && !attr.is_tls) var.is_tentative = true;;
+    if !(!ty.name || equal ty.name "_") {
+      let var = new_gvar get_ident ty.name ty;
+      var.is_definition = !attr.is_extern;
+      var.is_export = attr.is_export;
+      var.is_inline = attr.is_inline;
+      var.is_tls = attr.is_tls;
+      if attr.alignment var.alignment = attr.alignment;
+      if equal tok "=" {
+        tok = tok.next;
+        gvar_initializer k var;;
+      else if (!attr.is_extern && !attr.is_tls) var.is_tentative = true;;;
   return tok;;
 is_function(j @Token) bool = return
   ! equal j ";" &&
   (declarator &j).kind == TY_FUNC;;
 scan_globals(void) =
   let
-    head = (let Obj){;
+    head = new Obj{;
     cur = &head;
   for (let o@ Obj = globals; o; o = o.next) {
     if !o.is_tentative {
       cur.next = o;
-      cur = cur.next;
-      continue;;
-    let o2 = globals;
-    for (; o2; o2 = o2.next) if (o != o2 && o2.is_definition && ! strcmp o.name->@ o2.name) break;
-    if !o2 { cur.next = o; cur = cur.next;;;
+      cur = cur.next;;
+    else {
+      let o2 = globals;
+      for (; o2; o2 = o2.next) if (o != o2 && o2.is_definition && ! strcmp o.name to @ o2.name) break;
+      if !o2 { cur.next = o; cur = cur.next;;;;
   cur.next = 0 as @Obj;
   globals = head.next;;
-export parse(tok @Token) @Obj =
-  let k = &tok;
-  locals = 0 as @Obj;
-  globals = 0 as @Obj;
-  scope = &(let Scope){;;
-  current_type = 0 as @Type;
-  current_fn = 0 as @Obj;
-  gotos = 0 as @Node;
-  labels = 0 as @Node;
-  brk_label = 0 as @char;
-  cont_label = 0 as @char;
-  current_switch = 0 as @Node;
-  builtin_alloca = 0 as @Obj;
-  while (tok.kind != TK_EOF) {
-    let attr = (let VarAttr){;;
-    declspec k &attr;
-    if attr.is_type {
-      typedecl k;
-      continue;;
-    if is_function tok {
-      function &tok &attr;
-      continue;;
-    tok = global_variable tok &attr;;
-  for (let var@ Obj = globals; var; var = var.next) if var.is_root mark_live var;
-  scan_globals;
-  return globals;;
+export parse(tok @Token) @Obj = return
+  (locals         = cast @Obj   0),
+  (globals        = cast @Obj   0),
+  (scope          = &new Scope {;),
+  (current_type   = cast @Type  0),
+  (current_fn     = cast @Obj   0),
+  (gotos          = cast @Node  0),
+  (labels         = cast @Node  0),
+  (brk_label      = cast @char  0),
+  (cont_label     = cast @char  0),
+  (current_switch = cast @Node  0),
+  (builtin_alloca = cast @Obj   0),
+  &tok is k
+  cast until (tok.kind == TK_EOF || (
+    new VarAttr {; is attr
+    declspec k &attr,
+    attr.is_type    ? typedecl k         , false :
+    is_function tok ? function &tok &attr, false :
+    (tok = global_variable tok &attr),
+    false)),
+  globals is v
+  cast until (!v || (v.is_root && mark_live v, (v = v.next), false)),
+  scan_globals,
+  globals;;

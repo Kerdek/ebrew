@@ -494,7 +494,7 @@ _ enum
 #define _SC_LEVEL4_CACHE_LINESIZE	_SC_LEVEL4_CACHE_LINESIZE
     /* Leave room here maybe we need a few more cache levels some day.  */
 
-    _SC_IPV6 = (_SC_LEVEL1_ICACHE_SIZE + 50)
+    _SC_IPV6 = (the typeof _SC_LEVEL1_ICACHE_SIZE _SC_LEVEL1_ICACHE_SIZE + 50)
 #define _SC_IPV6			_SC_IPV6
     _SC_RAW_SOCKETS
 #define _SC_RAW_SOCKETS			_SC_RAW_SOCKETS
