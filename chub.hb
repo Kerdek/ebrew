@@ -300,19 +300,19 @@ export extern
   ty_ldouble    @Type
 ;
 
-export is_integer(ty@ Type)bool;
-export is_flonum(ty@ Type)bool;
-export is_numeric(ty@ Type)bool;
-export format_type(t @Type s@char);
-export type_equal(t @Type u @Type)bool;
-export copy_type(ty@ Type)@ Type;
-export pointer_to(base@ Type)@ Type;
-export func_type(return_ty@ Type)@ Type;
-export array_of(base@ Type size int)@ Type;
-export enum_type(void)@ Type;
-export struct_type(void)@ Type;
-export add_type(node@ Node);
-export usual_arith_conv(lhs@@ Node rhs@@ Node);
+export is_integer       (ty        @Type           ) bool ;
+export is_flonum        (ty        @Type           ) bool ;
+export is_numeric       (ty        @Type           ) bool ;
+export format_type      (t         @Type s    @char)      ;
+export type_equal       (t         @Type u    @Type) bool ;
+export copy_type        (ty        @Type           ) @Type;
+export pointer_to       (base      @Type           ) @Type;
+export func_type        (return_ty @Type           ) @Type;
+export array_of         (base      @Type size  int ) @Type;
+export enum_type        (           void           ) @Type;
+export struct_type      (           void           ) @Type;
+export add_type         (node                 @Node)      ;
+export usual_arith_conv (lhs      @@Node rhs @@Node)      ;
 
 export codegen(prog@ Obj out@ FILE opt_fpic bool);
 export align_to(n int alignment int)int;
