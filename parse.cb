@@ -536,7 +536,7 @@ func_params(k @@Token) @Type =
   t.params = head.next;
   t.is_variadic = is_variadic;
   return t;;
-array_dimensions(k @@Token)@ Type =
+array_dimensions(k @@Token) @Type =
   while (equal k@ "static" || equal k@ "restrict") k@ = k.next;
   if consume k k@ "]" {
     let t = type_suffix k;
