@@ -300,12 +300,12 @@ export extern
   ty_ldouble    @Type
 ;
 
-export is_integer       (ty        @Type           ) bool ;
-export is_flonum        (ty        @Type           ) bool ;
-export is_numeric       (ty        @Type           ) bool ;
+export is_integer       (t         @Type           ) bool ;
+export is_flonum        (t         @Type           ) bool ;
+export is_numeric       (t         @Type           ) bool ;
 export format_type      (t         @Type s    @char)      ;
 export type_equal       (t         @Type u    @Type) bool ;
-export copy_type        (ty        @Type           ) @Type;
+export copy_type        (t         @Type           ) @Type;
 export pointer_to       (base      @Type           ) @Type;
 export func_type        (return_ty @Type           ) @Type;
 export array_of         (base      @Type size  int ) @Type;
