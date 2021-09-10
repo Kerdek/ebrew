@@ -1330,12 +1330,12 @@ tertiary(k @@Token) @Node = return
         (a = e))) as),
     a);;
 
-seq(k @@Token) @Node = return tertiary k;;
+//seq(k @@Token) @Node = return tertiary k;;
   // !equal k@ ")" && !equal k@ ";" ?
   // advance k is j new_comma j a tertiary_seq k :
-mul        (k @@Token)@ Node = return seq        k is a until (equal k@ "*"     ? advance k is j (a = new_mul    j a seq        k), cast @Node 0 :
-                                                               equal k@ "/"     ? advance k is j (a = new_div    j a seq        k), cast @Node 0 :
-                                                               equal k@ "%"     ? advance k is j (a = new_mod    j a seq        k), cast @Node 0 : a);;
+mul        (k @@Token)@ Node = return tertiary   k is a until (equal k@ "*"     ? advance k is j (a = new_mul    j a tertiary   k), cast @Node 0 :
+                                                               equal k@ "/"     ? advance k is j (a = new_div    j a tertiary   k), cast @Node 0 :
+                                                               equal k@ "%"     ? advance k is j (a = new_mod    j a tertiary   k), cast @Node 0 : a);;
 add        (k @@Token)@ Node = return mul        k is a until (equal k@ "+"     ? advance k is j (a = new_add    j a mul        k), cast @Node 0 :
                                                                equal k@ "-"     ? advance k is j (a = new_sub    j a mul        k), cast @Node 0 : a);;
 shift      (k @@Token)@ Node = return add        k is a until (equal k@ "<<"    ? advance k is j (a = new_shl    j a add        k), cast @Node 0 :
@@ -1351,6 +1351,12 @@ bitxor     (k @@Token)@ Node = return bitand     k is a until (equal k@ "^"     
 bitor      (k @@Token)@ Node = return bitxor     k is a until (equal k@ "|"     ? advance k is j (a = new_bitor  j a bitxor     k), cast @Node 0 : a);;
 logand     (k @@Token)@ Node = return bitor      k is a until (equal k@ "&&"    ? advance k is j (a = new_logand j a bitor      k), cast @Node 0 : a);;
 logor      (k @@Token)@ Node = return logand     k is a until (equal k@ "||"    ? advance k is j (a = new_logor  j a logand     k), cast @Node 0 : a);;
+
+noident(k @@Token) @char = return new_unique_name    ;;
+ident  (k @@Token) @char = return get_ident advance k;;
+
+conditional_a(k @@Token a @Node op @char xident (k @@Token) @char new_x (j @Token a @Node b @Node o @Obj) @Node) @Node = return
+  equal k@ op && (advance k is j enter_scope, new_lvar xident@ k a.ty is o new_x@ j a quaternary k o :; leave_scope);;
 
 infix(k @@Token) @Node = return
   ( logor k is a
