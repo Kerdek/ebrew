@@ -16,10 +16,10 @@
 #include <time.h>
 #include <unistd.h>
 
-maxl(a long b long) long = a > b ? a : b;;
-minl(a long b long) long = a < b ? a : b;;
-maxul(a unsigned long b unsigned long) unsigned long = a > b ? a : b;;
-minul(a unsigned long b unsigned long) unsigned long = a < b ? a : b;;
+maxl(a long b long) long = (a > b) ? a : b;;
+minl(a long b long) long = (a < b) ? a : b;;
+maxul(a unsigned long b unsigned long) unsigned long = (a > b) ? a : b;;
+minul(a unsigned long b unsigned long) unsigned long = (a < b) ? a : b;;
 
 type
   NodeKind enum 

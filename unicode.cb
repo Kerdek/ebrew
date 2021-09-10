@@ -1,35 +1,35 @@
 #include "chub.hb"
 
 encode_utf8_byte(p @char c unsigned int i long p int s unsigned int m unsigned int) =
-  p[i] = cast char the unsigned int (the char p[i] | c >> s & m);;
+  (p[i] = cast char the unsigned int (the char p[i] | c >> s & m));;
 export encode_utf8(p@ char c unsigned int) int = return
   &encode_utf8_byte is f
-  c < 0x00080 ? f@ p c 0l 0x00  0u 0xffu , 1 :
-  c < 0x00800 ? f@ p c 1l 0x80  0u 0x3fu ,
-                f@ p c 0l 0xb0  6u 0xffu , 2 :
-  c < 0x80000 ? f@ p c 2l 0x80  0u 0x3fu ,
-                f@ p c 1l 0x80  6u 0x3fu ,
-                f@ p c 0l 0xe0 12u 0xffu , 3 :
-                f@ p c 3l 0x80  0u 0x3fu ,
-                f@ p c 2l 0x80  6u 0x3fu ,
-                f@ p c 1l 0x80 12u 0x3fu ,
-                f@ p c 0l 0xf0 18u 0xffu , 4 ;;
+  (c < 0x00080) ? f@ p c 0l 0x00  0u 0xffu , 1 :
+  (c < 0x00800) ? f@ p c 1l 0x80  0u 0x3fu ,
+                  f@ p c 0l 0xb0  6u 0xffu , 2 :
+  (c < 0x80000) ? f@ p c 2l 0x80  0u 0x3fu ,
+                  f@ p c 1l 0x80  6u 0x3fu ,
+                  f@ p c 0l 0xe0 12u 0xffu , 3 :
+                  f@ p c 3l 0x80  0u 0x3fu ,
+                  f@ p c 2l 0x80  6u 0x3fu ,
+                  f@ p c 1l 0x80 12u 0x3fu ,
+                  f@ p c 0l 0xf0 18u 0xffu , 4 ;;
 
 export decode_utf8(new_pos@@ char p@char) unsigned int = return
   the char p@ to unsigned int is q
-  q < 128 ? (new_pos@ = p + 1l), q :
-  q & ( q >= 0xF0 ? 0x67u :
-        q >= 0xE0 ? 0x4Fu :
-        q >= 0xB0 ? 0x3Fu :
-                    0x00u ) is len_c
-  !len_c && (error_at p "invalid UTF-8 sequence"),
-  len_c & 0x60u is len
-  len_c & 0x1Fu is c
+  (q < 128) ? (new_pos@ = p + 1l), q :
+  (q & ( (q >= 0xF0) ? 0x67u :
+         (q >= 0xE0) ? 0x4Fu :
+         (q >= 0xB0) ? 0x3Fu :
+                       0x00u ) ) is len_c
+  (!len_c && (error_at p "invalid UTF-8 sequence")),
+  (len_c & 0x60u) is len
+  (len_c & 0x1Fu) is c
   1l is i
-  until (i != len ? c : 0u :;
-    the char p[i] to unsigned int is q
-    (q & 0b11000000u) != 0b01000000 ? (error_at p "invalid UTF-8 sequence"):
-    (c = (c << 6u) | q & 0b00111111u),
+  until ((i != len) ? c : 0u :;
+    cast unsigned int the char p[i] is q
+    ((q & 0b11000000u) != 0b01000000) ? (error_at p "invalid UTF-8 sequence") :
+    (c = c << 6u | q & 0b00111111u),
     (i += 1l)) :;
   (new_pos@ = p + the unsigned int len);;
 

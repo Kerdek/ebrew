@@ -16,43 +16,43 @@ export
   ty_ldouble  @Type = &new Type { TY_LDOUBLE 16 16     ;;
 
 new_type(kind TypeKind size int alignment int) @Type = return
-  calloc 1ul sizeof Type as @Type is t
+  cast @Type calloc 1ul sizeof Type is t
   (t.kind      = kind),
   (t.size      = size),
   (t.alignment = alignment),
   t;;
 export is_integer(t@ Type) bool = return
   t.kind is c
-  c == TY_BOOL  ||
-  c == TY_CHAR  ||
-  c == TY_SHORT ||
-  c == TY_INT   ||
-  c == TY_LONG  ||
-  c == TY_ENUM  ;;
+  (c == TY_BOOL  ||
+   c == TY_CHAR  ||
+   c == TY_SHORT ||
+   c == TY_INT   ||
+   c == TY_LONG  ||
+   c == TY_ENUM   );;
 export is_flonum(t@ Type) bool = return
   t.kind is c
-  c == TY_FLOAT   ||
-  c == TY_DOUBLE  ||
-  c == TY_LDOUBLE ;;
+  (c == TY_FLOAT    ||
+   c == TY_DOUBLE   ||
+   c == TY_LDOUBLE   );;
 export is_numeric(t@ Type) bool = return is_integer t || is_flonum t;;
 format_function_type(p @Type s @char) = for (; p; p = p.next) format_type p s;;
 export format_type(t @Type s @char) =
   t.kind is c
-  c == TY_VOID    ? strcat s "void"        :
-  c == TY_BOOL    ? strcat s "bool"        :
-  c == TY_FLOAT   ? strcat s "float"        :
-  c == TY_DOUBLE  ? strcat s "double"      :
-  c == TY_LDOUBLE ? strcat s "long double" :
-  c == TY_ENUM    ? strcat s "enum"        :
-  c == TY_STRUCT  ? strcat s "struct"      :
-  c == TY_UNION   ? strcat s "union"       :
-  c == TY_CHAR    ? (t.is_unsigned && strcat s "unsigned ") to , strcat s "char"  :
-  c == TY_SHORT   ? (t.is_unsigned && strcat s "unsigned ") to , strcat s "short" :
-  c == TY_INT     ? (t.is_unsigned && strcat s "unsigned ") to , strcat s "int"   :
-  c == TY_LONG    ? (t.is_unsigned && strcat s "unsigned ") to , strcat s "long"  :
-  c == TY_ARRAY   ? strcat s "[]" is r format_type t.base s, r:
-  c == TY_PTR     ? strcat s "@"  is r format_type t.base s, r:
-  c == TY_FUNC    ? 
+  (c == TY_VOID   ) ? strcat s "void"        :
+  (c == TY_BOOL   ) ? strcat s "bool"        :
+  (c == TY_FLOAT  ) ? strcat s "float"       :
+  (c == TY_DOUBLE ) ? strcat s "double"      :
+  (c == TY_LDOUBLE) ? strcat s "long double" :
+  (c == TY_ENUM   ) ? strcat s "enum"        :
+  (c == TY_STRUCT ) ? strcat s "struct"      :
+  (c == TY_UNION  ) ? strcat s "union"       :
+  (c == TY_CHAR   ) ? (t.is_unsigned && strcat s "unsigned ") to , strcat s "char"  :
+  (c == TY_SHORT  ) ? (t.is_unsigned && strcat s "unsigned ") to , strcat s "short" :
+  (c == TY_INT    ) ? (t.is_unsigned && strcat s "unsigned ") to , strcat s "int"   :
+  (c == TY_LONG   ) ? (t.is_unsigned && strcat s "unsigned ") to , strcat s "long"  :
+  (c == TY_ARRAY  ) ? strcat s "[]" is r format_type t.base s, r:
+  (c == TY_PTR    ) ? strcat s "@"  is r format_type t.base s, r:
+  (c == TY_FUNC   ) ? 
     (strcat s "(") to ,
     t.params is p
       (t.is_variadic && !p && strcat s "void") to ,
@@ -60,32 +60,32 @@ export format_type(t @Type s @char) =
     strcat s ")" is r
     format_type t.return_ty s, r :
   strcat s "???";;;
-is_function_type_equal(p @Type q@Type) bool = while !(!p || !q) { if ! type_equal p q return false; p = p.next; q = q.next;; return p == q;;
+is_function_type_equal(p @Type q@Type) bool = while !(!p || !q) { if ! type_equal p q return false; (p = p.next); (q = q.next);; return p == q;;
 export type_equal(t @Type u @Type) bool = return
-  t.kind is c
-  t == u || (
-    !!t.origin      ? type_equal t.origin u :
-    !!u.origin      ? type_equal t u.origin :
-    c == u.kind     && (
-    c == TY_VOID    ||  
-    c == TY_BOOL    ||
-    c == TY_FLOAT   ||
-    c == TY_DOUBLE  ||
-    c == TY_LDOUBLE || (
-        c == TY_CHAR  ||
-        c == TY_SHORT ||
-        c == TY_INT   ||
-        c == TY_LONG  ? t.is_unsigned == u.is_unsigned          :
-        c == TY_FUNC  ? ! type_equal t.return_ty u.return_ty    ? false :
-                      t.is_variadic != u.is_variadic            ? false :
-                      is_function_type_equal t.params u.params  :
-        c == TY_ARRAY ? ! type_equal t.base u.base              ? false :
-                      t.array_len == u.array_len                :
-        c == TY_PTR   ? type_equal t.base u.base                :
-                      false                                             )));;
+  t.kind is c (
+    t == u || (
+      !!t.origin      ? type_equal t.origin u :
+      !!u.origin      ? type_equal t u.origin :
+      ( c == u.kind     && (
+        c == TY_VOID    ||  
+        c == TY_BOOL    ||
+        c == TY_FLOAT   ||
+        c == TY_DOUBLE  ||
+        c == TY_LDOUBLE || ((
+            c == TY_CHAR  ||
+            c == TY_SHORT ||
+            c == TY_INT   ||
+            c == TY_LONG)  ? (t.is_unsigned == u.is_unsigned)          :
+            (c == TY_FUNC)  ? ! type_equal t.return_ty u.return_ty    ? false :
+                          (t.is_variadic != u.is_variadic)            ? false :
+                          is_function_type_equal t.params u.params  :
+            (c == TY_ARRAY) ? ! type_equal t.base u.base              ? false :
+                          (t.array_len == u.array_len)                :
+            (c == TY_PTR)   ? type_equal t.base u.base                :
+                          false                                             )))));;
 
 export copy_type(t @Type) @Type = return
-  calloc 1 to unsigned long sizeof Type as @Type is u
+  cast @Type calloc 1 to unsigned long sizeof Type is u
   (u@ = t@),
   (u.origin = t),
   u;;
@@ -106,27 +106,27 @@ export enum_type  (void) @Type = return new_type TY_ENUM 4 4;;
 export struct_type(void) @Type = return new_type TY_STRUCT 0 1;;
 get_common_type(t1@ Type t2@ Type)@ Type =
                                         !!t1.base ? pointer_to t1.base        :
-                               t1.kind == TY_FUNC ? pointer_to t1             :
-                               t2.kind == TY_FUNC ? pointer_to t2             :
-   t1.kind == TY_LDOUBLE || t2.kind == TY_LDOUBLE ? ty_ldouble                :
-   t1.kind == TY_DOUBLE  || t2.kind == TY_DOUBLE  ? ty_double                 :
-   t1.kind == TY_FLOAT   || t2.kind == TY_FLOAT   ? ty_float                  :
-                            t1.kind == TY_LONG    ? t1                        :
-                            t2.kind == TY_LONG    ? t2                        :
-                            t1.kind == TY_INT     ? t1                        :
-                            t2.kind == TY_INT     ? t2                        :
-                            t1.kind == TY_SHORT   ? t1                        :
-                            t2.kind == TY_SHORT   ? t2                        :
-                            t1.kind == TY_CHAR    ? t1                        :
-                            t2.kind == TY_CHAR    ? t2                        :
-                            t1.kind == TY_BOOL    ? t1                        :
-                            t2.kind == TY_BOOL    ? t2                        :
+  (                             t1.kind == TY_FUNC) ? pointer_to t1             :
+  (                             t2.kind == TY_FUNC) ? pointer_to t2             :
+  ( t1.kind == TY_LDOUBLE || t2.kind == TY_LDOUBLE) ? ty_ldouble                :
+  ( t1.kind == TY_DOUBLE  || t2.kind == TY_DOUBLE ) ? ty_double                 :
+  ( t1.kind == TY_FLOAT   || t2.kind == TY_FLOAT  ) ? ty_float                  :
+  (                          t1.kind == TY_LONG   ) ? t1                        :
+  (                          t2.kind == TY_LONG   ) ? t2                        :
+  (                          t1.kind == TY_INT    ) ? t1                        :
+  (                          t2.kind == TY_INT    ) ? t2                        :
+  (                          t1.kind == TY_SHORT  ) ? t1                        :
+  (                          t2.kind == TY_SHORT  ) ? t2                        :
+  (                          t1.kind == TY_CHAR   ) ? t1                        :
+  (                          t2.kind == TY_CHAR   ) ? t2                        :
+  (                          t1.kind == TY_BOOL   ) ? t1                        :
+  (                          t2.kind == TY_BOOL   ) ? t2                        :
                                                     t1                        ;;
 
 export usual_arith_conv(lhs@@ Node rhs@@ Node) = return
   get_common_type lhs.ty rhs.ty is ty
-  !type_equal lhs.ty ty && (lhs@ = new_cast lhs.tok lhs@ ty),
-  !type_equal rhs.ty ty && (rhs@ = new_cast rhs.tok rhs@ ty),
+  (!type_equal lhs.ty ty && (lhs@ = new_cast lhs.tok lhs@ ty)),
+  (!type_equal rhs.ty ty && (rhs@ = new_cast rhs.tok rhs@ ty)),
   none;;
 
 export add_type(e@ Node) =
@@ -140,46 +140,46 @@ export add_type(e@ Node) =
   add_type e.inc ;
   for (let n @ Node = e.body; n; n = n.next) add_type n;
   for (let n @ Node = e.args; n; n = n.next) add_type n;
-  e.kind == ND_NUM      ? (e.ty = ty_int)                                                                      :
-  e.kind == ND_ADD     ||
-  e.kind == ND_SUB     ||
-  e.kind == ND_MUL     ||
-  e.kind == ND_DIV     ||
-  e.kind == ND_MOD     ||
-  e.kind == ND_BITAND  ||
-  e.kind == ND_BITOR   ||
-  e.kind == ND_BITXOR   ? usual_arith_conv &e.lhs &e.rhs, (e.ty = e.lhs.ty)                            :
-  e.kind == ND_NEG      ? (e.ty = e.lhs.ty)                                                                    :
-  e.kind == ND_ASSIGN   ? e.lhs.ty.kind == TY_ARRAY                                                           ? (error_tok e.lhs.tok "not an lvalue")                   :
-                             e.lhs.ty.kind != TY_STRUCT && ! type_equal e.rhs.ty e.lhs.ty               ? (e.rhs = new_cast e.tok e.rhs e.lhs.ty)                      :
+  (e.kind == ND_NUM   )   ? (e.ty = ty_int)                                                                      :
+  (e.kind == ND_ADD      ||
+   e.kind == ND_SUB      ||
+   e.kind == ND_MUL      ||
+   e.kind == ND_DIV      ||
+   e.kind == ND_MOD      ||
+   e.kind == ND_BITAND   ||
+   e.kind == ND_BITOR    ||
+   e.kind == ND_BITXOR)   ? usual_arith_conv &e.lhs &e.rhs, (e.ty = e.lhs.ty)                            :
+  (e.kind == ND_NEG   )   ? (e.ty = e.lhs.ty)                                                                    :
+  (e.kind == ND_ASSIGN)   ? (e.lhs.ty.kind == TY_ARRAY)                                                           ? (error_tok e.lhs.tok "not an lvalue")                   :
+                             (e.lhs.ty.kind != TY_STRUCT && ! type_equal e.rhs.ty e.lhs.ty)               ? (e.rhs = new_cast e.tok e.rhs e.lhs.ty)                      :
                                                                                                                       (e.ty = e.lhs.ty)                                         :
-  e.kind == ND_EQ      ||
-  e.kind == ND_NE      ||
-  e.kind == ND_LT      ||
-  e.kind == ND_LE      ||
-  e.kind == ND_GT      ||
-  e.kind == ND_GE       ? (e.ty = ty_bool)                                                                    :
-  e.kind == ND_LOGOR   || 
-  e.kind == ND_LOGAND   ? usual_arith_conv &e.lhs &e.rhs, (e.ty = e.lhs.ty)                          :
-  e.kind == ND_FUNCALL  ? (e.ty = e.func_ty.return_ty)                                                     :
-  e.kind == ND_NOT      ? (e.ty = ty_bool)                                                                    :
-  e.kind == ND_BITNOT  ||
-  e.kind == ND_SHL     ||
-  e.kind == ND_SHR      ? (e.ty = e.lhs.ty)                                                                :
-  e.kind == ND_VAR      ? (e.ty = e.var.ty)                                                                :
-  e.kind == ND_COND     ? e.then.ty.kind == TY_VOID || e.els.ty.kind == TY_VOID                            ? (e.ty = ty_void)                                             :
+  (e.kind == ND_EQ       ||
+   e.kind == ND_NE       ||
+   e.kind == ND_LT       ||
+   e.kind == ND_LE       ||
+   e.kind == ND_GT       ||
+   e.kind == ND_GE     )  ? (e.ty = ty_bool)                                                                    :
+  (e.kind == ND_LOGOR    || 
+   e.kind == ND_LOGAND )  ? usual_arith_conv &e.lhs &e.rhs, (e.ty = e.lhs.ty)                          :
+  (e.kind == ND_FUNCALL)  ? (e.ty = e.func_ty.return_ty)                                                     :
+  (e.kind == ND_NOT    )  ? (e.ty = ty_bool)                                                                    :
+  (e.kind == ND_BITNOT   ||
+   e.kind == ND_SHL      ||
+   e.kind == ND_SHR    )  ? (e.ty = e.lhs.ty)                                                                :
+  (e.kind == ND_VAR    )  ? (e.ty = e.var.ty)                                                                :
+  (e.kind == ND_COND   )  ? (e.then.ty.kind == TY_VOID || e.els.ty.kind == TY_VOID)                            ? (e.ty = ty_void)                                             :
                                                                                                                       usual_arith_conv &e.then &e.els, (e.ty = e.then.ty):
-  e.kind == ND_COMMA    ? (e.ty = e.rhs.ty)                                                                :
+  (e.kind == ND_COMMA   ) ? (e.ty = e.rhs.ty)                                                                :
     //if e.lhs.ty/*.kind != TY_VOID*/ error_tok(e.tok "value may not be discarded by comma expression without a cast to void");
-  e.kind == ND_MEMBER   ? (e.ty = e.member.ty as @Type)                                                             :
-  e.kind == ND_ADDR     ? (e.ty = pointer_to (e.lhs.ty.kind == TY_ARRAY ? e.lhs.ty.base : e.lhs.ty)) :
-  e.kind == ND_DEREF    ? !e.lhs.ty.base ? (error_tok e.tok "invalid pointer dereference") : e.lhs.ty.base.kind == TY_VOID ? (error_tok e.tok "dereferencing a void pointer") : (e.ty = e.lhs.ty.base) :
-  e.kind == ND_CAS      ?
+  (e.kind == ND_MEMBER  ) ? (e.ty = e.member.ty as @Type)                                                             :
+  (e.kind == ND_ADDR    ) ? (e.ty = pointer_to ((e.lhs.ty.kind == TY_ARRAY) ? e.lhs.ty.base : e.lhs.ty)) :
+  (e.kind == ND_DEREF   ) ? !e.lhs.ty.base ? (error_tok e.tok "invalid pointer dereference") : (e.lhs.ty.base.kind == TY_VOID) ? (error_tok e.tok "dereferencing a void pointer") : (e.ty = e.lhs.ty.base) :
+  (e.kind == ND_CAS     ) ?
     add_type e.cas_addr,
     add_type e.cas_old ,
     add_type e.cas_new ,
     (e.ty = ty_bool)   ,
-    e.cas_addr.ty.kind != TY_PTR ? (error_tok e.cas_addr.tok "pointer expected") :
-    e.cas_old .ty.kind != TY_PTR ? (error_tok e.cas_old .tok "pointer expected") :
+    (e.cas_addr.ty.kind != TY_PTR) ? (error_tok e.cas_addr.tok "pointer expected") :
+    (e.cas_old .ty.kind != TY_PTR) ? (error_tok e.cas_old .tok "pointer expected") :
                                       none                                                   :
-  e.kind == ND_EXCH     ? e.lhs.ty.kind != TY_PTR ? (error_tok e.cas_addr.tok "pointer expected") : (e.ty = e.lhs.ty.base) : none;;;
+  (e.kind == ND_EXCH)     ? (e.lhs.ty.kind != TY_PTR) ? (error_tok e.cas_addr.tok "pointer expected") : (e.ty = e.lhs.ty.base) : none;;;

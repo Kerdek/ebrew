@@ -2,16 +2,16 @@
 
 export strarray_push(arr@ StringArray s@ char)  =
   if !arr.data {
-    arr.data = (calloc 8ul sizeof @char as @@char);
-    arr.capacity = 8;;
+    (arr.data = cast @@char calloc 8ul sizeof @char);
+    (arr.capacity = 8);;
 
   if (arr.capacity == arr.len) {
-    arr.data = realloc (arr.data to @) (sizeof@ char * arr.capacity * 2) as @@char;
-    arr.capacity *= 2;
-    for (let i int = arr.len; i < arr.capacity; (i:;i+=1))
-      arr.data[i] = 0 as @char;;
+    (arr.data = cast @@char realloc (arr.data to @) (sizeof@ char * arr.capacity * 2));
+    (arr.capacity *= 2);
+    for (let i int = arr.len; i < arr.capacity; (i:;(i+=1)))
+      (arr.data[i] = cast @char 0);;
 
-  arr.data[(arr.len:;arr.len+=1)] = s;;
+  (arr.data[(arr.len:;(arr.len+=1))] = s);;
 
 export format(fmt@ char ...)@ char =
   let buf = 0 to @char;
