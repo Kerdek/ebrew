@@ -1359,17 +1359,19 @@ conditional_a(k @@Token a @Node op @char xident (k @@Token) @char new_x (j @Toke
   equal k@ op && (advance k is j enter_scope, new_lvar xident@ k a.ty is o new_x@ j a quaternary k o :; leave_scope);;
 
 infix(k @@Token) @Node = return
-  ( logor k is a
-    add_type   a,
-    ( needs_var k a ":;"    &anonymous &new_then   &infix  ||
-      needs_var k a "is"    & nonymous &new_let    &infix  ||
-      needs_var k a "for"   & nonymous &new_repeat &infix  ||
-      ( equal k@ "?" ? advance k     is j
-                       infix   k     is b
-                       expect  k ":"    , new_conditional j a b infix k :
-        equal k@ "," ? advance k     is j new_comma       j a   infix k : 
-      a ) ) )
-  for a (equal k@ "as" && ( advance k is j new_cast j a type_suffix k ));;
+    ((logor k is a add_type a, a)
+      for a equal k@ "as" &&
+      ( advance k is j new_cast j a type_suffix k ))
+  is a
+  &conditional_a is f
+  f@ k a ":;"  &noident &new_then   ||
+  f@ k a "is"  &ident   &new_let    ||
+  f@ k a "for" &ident   &new_repeat || (
+  equal k@ "?" ? advance k     is j
+                  quaternary k     is b
+                  expect k ":"    , new_conditional j a b quaternary k :
+  equal k@ "," ? advance k     is j new_comma       j a   quaternary k :
+                                                      a            );;
 
 quaternary_a(k @@Token a @Node op @char  new_x @(j @Token a @Node b @Node) @Node) @Node = return
   equal k@ op && (advance k is j new_assign j a new_x@ j a infix k);;
