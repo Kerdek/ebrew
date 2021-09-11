@@ -56,7 +56,7 @@ new_eof(tok@Token)@Token =
   return t;;
 new_hideset(name@char)@Hideset = return
   cast @Hideset calloc 1ul sizeof Hideset is hs
-  (hs.name = name),
+  (hs.name = name) ;:
   hs;;
 hideset_union(hs1@Hideset hs2@Hideset)@Hideset =
   let
@@ -514,7 +514,7 @@ preprocess2(tok@Token include_paths@StringArray)@Token =
     else if (equal tok "pragma" && equal tok.next "once") {
       hashmap_put &pragma_once tok.file.name 1 to @;
       (tok = skip_line tok.next.next);;
-    else if equal tok "pragma" until ((tok = tok.next), tok.at_bol);
+    else if equal tok "pragma" until ((tok = tok.next) ;: tok.at_bol);
     else if equal tok "error" (error_tok tok "error");
     else if !tok.at_bol (error_tok tok "invalid preprocessor directive");;
   (cur.next = tok);

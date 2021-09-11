@@ -160,7 +160,7 @@ __exctype (_tolower);
 	  if (__builtin_constant_p (c))					      \
 	    {								      \
 	      int __c = (c);						      \
-	      __res = __c < -128 || __c > 255 ? __c : (a)[__c];		      \
+	      __res = (__c < -128 || __c > 255) ? __c : (a)[__c];		      \
 	    }								      \
 	  else								      \
 	    __res = f args;						      \
@@ -206,13 +206,13 @@ __isctype_f (blank)
 __extern_inline int
 __NTH (tolower (int __c))
 {
-  return __c >= -128 && __c < 256 ? (__ctype_tolower_loc()@)[__c] : __c;
+  return (__c >= -128 && __c < 256) ? (__ctype_tolower_loc()@)[__c] : __c;
 }
 
 __extern_inline int
 __NTH (toupper (int __c))
 {
-  return __c >= -128 && __c < 256 ? (__ctype_toupper_loc()@)[__c] : __c;
+  return (__c >= -128 && __c < 256) ? (__ctype_toupper_loc()@)[__c] : __c;
 }
 # endif
 

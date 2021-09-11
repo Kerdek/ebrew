@@ -294,7 +294,7 @@ __NTH (swprintf (wchar_t *__restrict __s, size_t __n,
 #elif !defined __cplusplus
 /* XXX We might want to have support in gcc for swprintf.  */
 # define swprintf(s, n, ...) \
-  (__bos (s) != (size_t) -1 || __USE_FORTIFY_LEVEL > 1			      \
+  ((__bos (s) != (size_t) -1 || __USE_FORTIFY_LEVEL > 1)			      \
    ? __swprintf_chk (s, n, __USE_FORTIFY_LEVEL - 1,			      \
 		     __bos (s) / sizeof (wchar_t), __VA_ARGS__)		      \
    : swprintf (s, n, __VA_ARGS__))

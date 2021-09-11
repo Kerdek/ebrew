@@ -17,8 +17,8 @@ type va_list __va_elem;
 
 __va_arg_mem(ap@ __va_elem sz int alignment int)@  =
   ap.overflow_arg_area is p
-  ((alignment > 8) && (p = (p + 15) / 16 * 16)),
-  (ap.overflow_arg_area = (p to unsigned long + sz + 7) / 8 * 8 as @),
+  ((alignment > 8) && (p = (p + 15) / 16 * 16)) ;:
+  (ap.overflow_arg_area = (p to unsigned long + sz + 7) / 8 * 8 as @) ;:
   p;;
 
 __va_arg_gp(ap@ __va_elem sz int alignment int)@ = return
@@ -34,8 +34,8 @@ __va_arg_fp(ap@ __va_elem sz int alignment int)@ = return
 #define va_arg(ap, ty)                                                  \
   ({                                                                    \
     let klass int = __builtin_reg_class(ty);                            \
-    *(ty *)(klass == 0 ? __va_arg_gp(ap, sizeof(ty), _Alignof(ty)) :    \
-            klass == 1 ? __va_arg_fp(ap, sizeof(ty), _Alignof(ty)) :    \
+    *(ty *)((klass == 0) ? __va_arg_gp(ap, sizeof(ty), _Alignof(ty)) :    \
+            (klass == 1) ? __va_arg_fp(ap, sizeof(ty), _Alignof(ty)) :    \
             __va_arg_mem(&ap, sizeof(ty), _Alignof(ty)));                \
   })
 

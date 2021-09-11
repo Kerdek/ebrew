@@ -17,9 +17,9 @@ export
 
 new_type(kind TypeKind size int alignment int) @Type = return
   cast @Type calloc 1ul sizeof Type is t
-  (t.kind      = kind),
-  (t.size      = size),
-  (t.alignment = alignment),
+  (t.kind      = kind) ;:
+  (t.size      = size) ;:
+  (t.alignment = alignment) ;:
   t;;
 export is_integer(t@ Type) bool = return
   t.kind is c
@@ -38,7 +38,7 @@ export is_numeric(t@ Type) bool = return is_integer t || is_flonum t;;
 format_function_type(p @Type s @char) = for (; p; p = p.next) format_type p s;;
 export format_type(t @Type s @char) =
   t.kind is c
-  (c == TY_VOID   ) ? strcat s "void"        :
+  ((c == TY_VOID   ) ? strcat s "void"        :
   (c == TY_BOOL   ) ? strcat s "bool"        :
   (c == TY_FLOAT  ) ? strcat s "float"       :
   (c == TY_DOUBLE ) ? strcat s "double"      :
@@ -46,20 +46,20 @@ export format_type(t @Type s @char) =
   (c == TY_ENUM   ) ? strcat s "enum"        :
   (c == TY_STRUCT ) ? strcat s "struct"      :
   (c == TY_UNION  ) ? strcat s "union"       :
-  (c == TY_CHAR   ) ? (t.is_unsigned && strcat s "unsigned ") to , strcat s "char"  :
-  (c == TY_SHORT  ) ? (t.is_unsigned && strcat s "unsigned ") to , strcat s "short" :
-  (c == TY_INT    ) ? (t.is_unsigned && strcat s "unsigned ") to , strcat s "int"   :
-  (c == TY_LONG   ) ? (t.is_unsigned && strcat s "unsigned ") to , strcat s "long"  :
-  (c == TY_ARRAY  ) ? strcat s "[]" is r format_type t.base s, r:
-  (c == TY_PTR    ) ? strcat s "@"  is r format_type t.base s, r:
+  (c == TY_CHAR   ) ? (t.is_unsigned && strcat s "unsigned ") to  ;: strcat s "char"  :
+  (c == TY_SHORT  ) ? (t.is_unsigned && strcat s "unsigned ") to  ;: strcat s "short" :
+  (c == TY_INT    ) ? (t.is_unsigned && strcat s "unsigned ") to  ;: strcat s "int"   :
+  (c == TY_LONG   ) ? (t.is_unsigned && strcat s "unsigned ") to  ;: strcat s "long"  :
+  (c == TY_ARRAY  ) ? strcat s "[]" is r format_type t.base s ;: r:
+  (c == TY_PTR    ) ? strcat s "@"  is r format_type t.base s ;: r:
   (c == TY_FUNC   ) ? 
-    (strcat s "(") to ,
+    (strcat s "(") to  ;:
     t.params is p
-      (t.is_variadic && !p && strcat s "void") to ,
-      format_function_type p s,
+      (t.is_variadic && !p && strcat s "void") to  ;:
+      format_function_type p s ;:
     strcat s ")" is r
-    format_type t.return_ty s, r :
-  strcat s "???";;;
+    format_type t.return_ty s ;: r :
+  strcat s "???");;;
 is_function_type_equal(p @Type q@Type) bool = while !(!p || !q) { if ! type_equal p q return false; (p = p.next); (q = q.next);; return p == q;;
 export type_equal(t @Type u @Type) bool = return
   t.kind is c (
@@ -86,21 +86,21 @@ export type_equal(t @Type u @Type) bool = return
 
 export copy_type(t @Type) @Type = return
   cast @Type calloc 1 to unsigned long sizeof Type is u
-  (u@ = t@),
-  (u.origin = t),
+  (u@ = t@) ;:
+  (u.origin = t) ;:
   u;;
 export pointer_to(base@ Type)@ Type = return
   new_type TY_PTR 8 8 is ty
-  (ty.base = base),
+  (ty.base = base) ;:
   ty;;
 export func_type(return_ty@ Type)@ Type = return
   new_type TY_FUNC 1 1 is ty
-  (ty.return_ty = return_ty),
+  (ty.return_ty = return_ty) ;:
   ty;;
 export array_of(base@ Type len int)@ Type = return
   new_type TY_ARRAY (base.size * len) base.alignment is ty
-  (ty.base = base),
-  (ty.array_len = len),
+  (ty.base = base) ;:
+  (ty.array_len = len) ;:
   ty;;
 export enum_type  (void) @Type = return new_type TY_ENUM 4 4;;
 export struct_type(void) @Type = return new_type TY_STRUCT 0 1;;
@@ -125,8 +125,8 @@ get_common_type(t1@ Type t2@ Type)@ Type =
 
 export usual_arith_conv(lhs@@ Node rhs@@ Node) = return
   get_common_type lhs.ty rhs.ty is ty
-  (!type_equal lhs.ty ty && (lhs@ = new_cast lhs.tok lhs@ ty)),
-  (!type_equal rhs.ty ty && (rhs@ = new_cast rhs.tok rhs@ ty)),
+  (!type_equal lhs.ty ty && (lhs@ = new_cast lhs.tok lhs@ ty)) ;:
+  (!type_equal rhs.ty ty && (rhs@ = new_cast rhs.tok rhs@ ty)) ;:
   none;;
 
 export add_type(e@ Node) =
@@ -148,7 +148,7 @@ export add_type(e@ Node) =
    e.kind == ND_MOD      ||
    e.kind == ND_BITAND   ||
    e.kind == ND_BITOR    ||
-   e.kind == ND_BITXOR)   ? usual_arith_conv &e.lhs &e.rhs, (e.ty = e.lhs.ty)                            :
+   e.kind == ND_BITXOR)   ? usual_arith_conv &e.lhs &e.rhs ;: (e.ty = e.lhs.ty)                            :
   (e.kind == ND_NEG   )   ? (e.ty = e.lhs.ty)                                                                    :
   (e.kind == ND_ASSIGN)   ? (e.lhs.ty.kind == TY_ARRAY)                                                           ? (error_tok e.lhs.tok "not an lvalue")                   :
                              (e.lhs.ty.kind != TY_STRUCT && ! type_equal e.rhs.ty e.lhs.ty)               ? (e.rhs = new_cast e.tok e.rhs e.lhs.ty)                      :
@@ -160,7 +160,7 @@ export add_type(e@ Node) =
    e.kind == ND_GT       ||
    e.kind == ND_GE     )  ? (e.ty = ty_bool)                                                                    :
   (e.kind == ND_LOGOR    || 
-   e.kind == ND_LOGAND )  ? usual_arith_conv &e.lhs &e.rhs, (e.ty = e.lhs.ty)                          :
+   e.kind == ND_LOGAND )  ? usual_arith_conv &e.lhs &e.rhs ;: (e.ty = e.lhs.ty)                          :
   (e.kind == ND_FUNCALL)  ? (e.ty = e.func_ty.return_ty)                                                     :
   (e.kind == ND_NOT    )  ? (e.ty = ty_bool)                                                                    :
   (e.kind == ND_BITNOT   ||
@@ -168,17 +168,17 @@ export add_type(e@ Node) =
    e.kind == ND_SHR    )  ? (e.ty = e.lhs.ty)                                                                :
   (e.kind == ND_VAR    )  ? (e.ty = e.var.ty)                                                                :
   (e.kind == ND_COND   )  ? (e.then.ty.kind == TY_VOID || e.els.ty.kind == TY_VOID)                            ? (e.ty = ty_void)                                             :
-                                                                                                                      usual_arith_conv &e.then &e.els, (e.ty = e.then.ty):
+                                                                                                                      usual_arith_conv &e.then &e.els ;: (e.ty = e.then.ty):
   (e.kind == ND_COMMA   ) ? (e.ty = e.rhs.ty)                                                                :
     //if e.lhs.ty/*.kind != TY_VOID*/ error_tok(e.tok "value may not be discarded by comma expression without a cast to void");
   (e.kind == ND_MEMBER  ) ? (e.ty = e.member.ty as @Type)                                                             :
   (e.kind == ND_ADDR    ) ? (e.ty = pointer_to ((e.lhs.ty.kind == TY_ARRAY) ? e.lhs.ty.base : e.lhs.ty)) :
   (e.kind == ND_DEREF   ) ? !e.lhs.ty.base ? (error_tok e.tok "invalid pointer dereference") : (e.lhs.ty.base.kind == TY_VOID) ? (error_tok e.tok "dereferencing a void pointer") : (e.ty = e.lhs.ty.base) :
   (e.kind == ND_CAS     ) ?
-    add_type e.cas_addr,
-    add_type e.cas_old ,
-    add_type e.cas_new ,
-    (e.ty = ty_bool)   ,
+    add_type e.cas_addr ;:
+    add_type e.cas_old  ;:
+    add_type e.cas_new  ;:
+    (e.ty = ty_bool)    ;:
     (e.cas_addr.ty.kind != TY_PTR) ? (error_tok e.cas_addr.tok "pointer expected") :
     (e.cas_old .ty.kind != TY_PTR) ? (error_tok e.cas_old .tok "pointer expected") :
                                       none                                                   :

@@ -31,11 +31,11 @@ println(fmt @char ...) =
 i counti int = 1;
 count(void     ) int = return counti :; (counti += 1);;
 
-push (void     )     = return (println "  push %%rax"), (depth += 1);;
-pop  (arg @char)     = return (println "  pop %s" arg), (depth -= 1);;
+push (void     )     = return (println "  push %%rax") ;: (depth += 1);;
+pop  (arg @char)     = return (println "  pop %s" arg) ;: (depth -= 1);;
 
-pushf(void     )     = return (println "  sub $8, %%rsp"             ), (println "  movsd %%xmm0, (%%rsp)"), (depth += 1);;
-popf (reg   int)     = return (println "  movsd (%%rsp), %%xmm%d" reg), (println "  add $8, %%rsp"        ), (depth -= 1);;
+pushf(void     )     = return (println "  sub $8, %%rsp"             ) ;: (println "  movsd %%xmm0, (%%rsp)") ;: (depth += 1);;
+popf (reg   int)     = return (println "  movsd (%%rsp), %%xmm%d" reg) ;: (println "  add $8, %%rsp"        ) ;: (depth -= 1);;
 
 export align_to(n int alignment int) int = return (n + alignment - 1) / alignment * alignment;;
 
@@ -54,21 +54,21 @@ gen_addr(e @Node fpic bool) = return
       (println "  lea %d(%%rbp), %%rax" e.var.offset ):
     fpic ?
       e.var.is_tls ?
-        (println "  data16 lea %s@tlsgd(%%rip), %%rdi" e.var.name),
-        (println "  .value 0x6666"),
-        (println "  rex64"),
+        (println "  data16 lea %s@tlsgd(%%rip), %%rdi" e.var.name) ;:
+        (println "  .value 0x6666") ;:
+        (println "  rex64") ;:
         (println "  call __tls_get_addr@PLT" ):
       (println "  mov %s@GOTPCREL(%%rip), %%rax" e.var.name ) :
     e.var.is_tls ?
-      (println "  mov %%fs:0, %%rax"),
+      (println "  mov %%fs:0, %%rax") ;:
       (println "  add $%s@tpoff, %%rax" e.var.name ) :
     (e.ty.kind == TY_FUNC) ?
       e.var.is_definition ?
         (println "  lea %s(%%rip), %%rax" e.var.name ):
         (println "  mov %s@GOTPCREL(%%rip), %%rax" e.var.name ):
     (println "  lea %s(%%rip), %%rax" e.var.name ):
-  ( e.kind    == ND_COMMA   ) ? gen_expr e.lhs fpic , gen_expr e.rhs fpic :
-  ( e.kind    == ND_MEMBER  ) ? gen_addr e.lhs fpic , (println "  add $%d, %%rax" e.member.offset ) :
+  ( e.kind    == ND_COMMA   ) ? gen_expr e.lhs fpic  ;: gen_expr e.rhs fpic :
+  ( e.kind    == ND_MEMBER  ) ? gen_addr e.lhs fpic  ;: (println "  add $%d, %%rax" e.member.offset ) :
   ( e.kind    == ND_THE    ||
     e.kind    == ND_DEREF   ) ? gen_expr e.lhs fpic :
   ( e.kind    == ND_FUNCALL||
@@ -78,7 +78,7 @@ gen_addr(e @Node fpic bool) = return
   ( e.ty.kind == TY_STRUCT ||
     e.ty.kind == TY_UNION   ) ? gen_expr e     fpic :
   ( error_tok e.tok "not an lvalue" );;
-load(t @Type) = return none :; (
+load(t @Type) = return cast void(
   t.kind == TY_ARRAY  ||
   t.kind == TY_STRUCT ||
   t.kind == TY_UNION  ||
@@ -87,16 +87,16 @@ load(t @Type) = return none :; (
     (t.kind == TY_DOUBLE ) ? (println "  movsd (%%rax), %%xmm0"      ) :
     (t.kind == TY_LDOUBLE) ? (println "  fldt (%%rax)"               ) :
     (t.is_unsigned ? "movz" : "movs") is insn
-    (t.size == 1         ) ? (println "  %sbl (%%rax), %%eax"   insn ) :
+    ( (t.size == 1         ) ? (println "  %sbl (%%rax), %%eax"   insn ) :
     (t.size == 2         ) ? (println "  %swl (%%rax), %%eax"   insn ) :
     (t.size == 4         ) ? (println "  movsxd (%%rax), %%rax"      ) :
-                             (println "  mov (%%rax), %%rax"         ) ) as);;
+                             (println "  mov (%%rax), %%rax"         ) ) ));;
 store_rax_struct_union(t @Type) =
   for (let i int = 0; i < t.size; i += 1) {
     (println "  mov %d(%%rax), %%r8b" i);
     (println "  mov %%r8b, %d(%%rdi)" i);;;
 store(ty@Type) =
-  pop "%rdi"     ,
+  pop "%rdi"      ;:
   (ty.kind == TY_STRUCT ||
    ty.kind == TY_UNION   ) ? store_rax_struct_union ty             :
   (ty.kind == TY_FLOAT   ) ? (println "  movss %%xmm0, (%%rdi)"  ) :
@@ -107,12 +107,12 @@ store(ty@Type) =
   (ty.size == 4          ) ? (println "  mov %%eax, (%%rdi)"     ) :
                              (println "  mov %%rax, (%%rdi)"     ) ;;
 cmp_zero(ty@Type) =
-  (ty.kind == TY_FLOAT   ) ? (println "  xorps %%xmm1, %%xmm1"   ) ,
+  (ty.kind == TY_FLOAT   ) ? (println "  xorps %%xmm1, %%xmm1"   )  ;:
                              (println "  ucomiss %%xmm1, %%xmm0" ) :
-  (ty.kind == TY_DOUBLE  ) ? (println "  xorpd %%xmm1, %%xmm1"   ) ,
+  (ty.kind == TY_DOUBLE  ) ? (println "  xorpd %%xmm1, %%xmm1"   )  ;:
                              (println "  ucomisd %%xmm1, %%xmm0" ) :
-  (ty.kind == TY_LDOUBLE ) ? (println "  fldz"                   ) ,
-                             (println "  fucomip"                ) ,
+  (ty.kind == TY_LDOUBLE ) ? (println "  fldz"                   )  ;:
+                             (println "  fucomip"                )  ;:
                              (println "  fstp %%st(0)"           ) :
   (is_integer ty        &&
    ty.size <= 4          ) ? (println "  cmp $0, %%eax"          ) :
@@ -203,12 +203,12 @@ cast_table[][11]@char = {
 gen_cast(a@Type b@Type) = return
   (b.kind == TY_VOID) ? none :
   (b.kind == TY_BOOL) ?
-    cmp_zero a                       ,
-    (println "  setne %%al"        ) ,
+    cmp_zero a                        ;:
+    (println "  setne %%al"        )  ;:
     (println "  movzx %%al, %%eax" ) :
   getTypeId a is t1
   getTypeId b is t2
-  (!!cast_table[t1][t2] && (println "  %s" cast_table[t1][t2])),
+  (!!cast_table[t1][t2] && (println "  %s" cast_table[t1][t2])) ;:
   none;;
 has_flonum(ty@Type lo int hi int offset int) bool =
   if (ty.kind == TY_STRUCT || ty.kind == TY_UNION) {
@@ -476,104 +476,104 @@ gen_expr(e@Node fpic bool) =
     (println "  neg %%rax");
     return;
   case ND_VAR: return
-    gen_addr e fpic,
+    gen_addr e fpic ;:
     load e.ty;
   case ND_MEMBER: return
-    gen_addr e fpic,
-    load e.ty,
+    gen_addr e fpic ;:
+    load e.ty ;:
     e.member is mem
-    mem.is_bitfield ?
-      (println "  shl $%d, %%rax" (64 - mem.bit_width - mem.bit_offset)),
-      (mem.ty to @Type).is_unsigned ? (println "  shr $%d, %%rax" (64 - mem.bit_width) ):
-      (println "  sar $%d, %%rax" (64 - mem.bit_width) ):
-    none;
+    ( mem.is_bitfield ?
+        (println "  shl $%d, %%rax" (64 - mem.bit_width - mem.bit_offset)) ;:
+        (mem.ty to @Type).is_unsigned ? (println "  shr $%d, %%rax" (64 - mem.bit_width) ) :
+        (println "  sar $%d, %%rax" (64 - mem.bit_width) ) :
+      none );
   case ND_DEREF: return
-    gen_expr e.lhs fpic,
+    gen_expr e.lhs fpic ;:
     load e.ty;
   case ND_ADDR: return
     gen_addr e.lhs fpic;
   case ND_ASSIGN: return
-    gen_addr e.lhs fpic,
-    push,
-    gen_expr e.rhs fpic,
-    e.lhs.kind == ND_MEMBER && e.lhs.member.is_bitfield ?
-      (println "  mov %%rax, %%r8"),
+    gen_addr e.lhs fpic ;:
+    push ;:
+    gen_expr e.rhs fpic ;:
+    (e.lhs.kind == ND_MEMBER && e.lhs.member.is_bitfield) ?
+      (println "  mov %%rax, %%r8") ;:
       e.lhs.member is mem
-      (println "  mov %%rax, %%rdi"),
-      (println "  and $%ld, %%rdi" ((1L << mem.bit_width) - 1)),
-      (println "  shl $%d, %%rdi" mem.bit_offset),
-      (println "  mov (%%rsp), %%rax"),
-      load mem.ty to @Type,
-      (println "  mov $%ld, %%r9" ~(((1L << mem.bit_width) - 1) << mem.bit_offset)),
-      (println "  and %%r9, %%rax"),
-      (println "  or %%rdi, %%rax"),
-      store e.lhs.ty,
+      (println "  mov %%rax, %%rdi") ;:
+      (println "  and $%ld, %%rdi" ((1L << mem.bit_width) - 1)) ;:
+      (println "  shl $%d, %%rdi" mem.bit_offset) ;:
+      (println "  mov (%%rsp), %%rax") ;:
+      load mem.ty to @Type ;:
+      (println "  mov $%ld, %%r9" ~(((1L << mem.bit_width) - 1) << mem.bit_offset)) ;:
+      (println "  and %%r9, %%rax") ;:
+      (println "  or %%rdi, %%rax") ;:
+      store e.lhs.ty ;:
       (println "  mov %%r8, %%rax" ):
     store e.lhs.ty;
   case ND_THE:
     return gen_expr e.lhs fpic;
   case ND_UNTIL: return
     count is c
-    (println ".L.until.%d:" c),
-    gen_expr e.lhs fpic,
-    cmp_zero e.lhs.ty,
+    (println ".L.until.%d:" c) ;:
+    gen_expr e.lhs fpic ;:
+    cmp_zero e.lhs.ty ;:
     (println "  je .L.until.%d" c);
   case ND_REPEAT: return
     count is c
-    (println "  lea %d(%%rbp), %%rax" e.var.offset ),
-    push,
-    gen_expr e.lhs fpic,
-    (println ".L.repeat.%d:" c),
-    store e.lhs.ty,
-    (println "  lea %d(%%rbp), %%rax" e.var.offset ),
-    push,
-    gen_expr e.rhs fpic,
-    cmp_zero e.rhs.ty,
-    (println "  jne .L.repeat.%d" c),
-    pop "%rax",
+    (println "  lea %d(%%rbp), %%rax" e.var.offset ) ;:
+    push ;:
+    gen_expr e.lhs fpic ;:
+    (println ".L.repeat.%d:" c) ;:
+    store e.lhs.ty ;:
+    (println "  lea %d(%%rbp), %%rax" e.var.offset ) ;:
+    push ;:
+    gen_expr e.rhs fpic ;:
+    cmp_zero e.rhs.ty ;:
+    (println "  jne .L.repeat.%d" c) ;:
+    pop "%rax" ;:
     (println "  mov 0(%%rax), %%rax");
   case ND_COMMA: return
-    gen_expr e.lhs fpic,
+    gen_expr e.lhs fpic ;:
     gen_expr e.rhs fpic;
   case ND_CAST: return
-    gen_expr e.lhs fpic,
+    gen_expr e.lhs fpic ;:
     gen_cast e.lhs.ty e.ty;
   case ND_MEMZERO: return
-    (println "  mov $%d, %%rcx" e.var.ty.size),
-    (println "  lea %d(%%rbp), %%rdi" e.var.offset),
-    (println "  mov $0, %%al"),
+    (println "  mov $%d, %%rcx" e.var.ty.size) ;:
+    (println "  lea %d(%%rbp), %%rdi" e.var.offset) ;:
+    (println "  mov $0, %%al") ;:
     (println "  rep stosb");
   case ND_COND: return
     count is c
-    gen_expr e.cond fpic,
-    cmp_zero e.cond.ty,
-    (println "  je .L.else.%d" c),
-    gen_expr e.then fpic,
-    (println "  jmp .L.end.%d" c),
-    (println ".L.else.%d:" c),
-    gen_expr e.els fpic,
+    gen_expr e.cond fpic ;:
+    cmp_zero e.cond.ty ;:
+    (println "  je .L.else.%d" c) ;:
+    gen_expr e.then fpic ;:
+    (println "  jmp .L.end.%d" c) ;:
+    (println ".L.else.%d:" c) ;:
+    gen_expr e.els fpic ;:
     (println ".L.end.%d:" c);
   case ND_NOT: return
-    gen_expr e.lhs fpic,
-    cmp_zero e.lhs.ty,
-    (println "  sete %%al"),
+    gen_expr e.lhs fpic ;:
+    cmp_zero e.lhs.ty ;:
+    (println "  sete %%al") ;:
     (println "  movzx %%al, %%rax");
   case ND_BITNOT: return
-    gen_expr e.lhs fpic,
+    gen_expr e.lhs fpic ;:
     (println "  not %%rax");
   case ND_LOGAND: return
     count is c
-    gen_expr e.lhs fpic,
-    cmp_zero e.lhs.ty,
-    (println "  je .L.end.%d" c),
-    gen_expr e.rhs fpic,
+    gen_expr e.lhs fpic ;:
+    cmp_zero e.lhs.ty ;:
+    (println "  je .L.end.%d" c) ;:
+    gen_expr e.rhs fpic ;:
     (println ".L.end.%d:" c);
   case ND_LOGOR: return
     count is c
-    gen_expr e.lhs    fpic,
-    cmp_zero e.lhs.ty         ,
-    (println "  jne .L.end.%ld" c),
-    gen_expr e.rhs fpic,
+    gen_expr e.lhs    fpic ;:
+    cmp_zero e.lhs.ty          ;:
+    (println "  jne .L.end.%ld" c) ;:
+    gen_expr e.rhs fpic ;:
     (println ".L.end.%ld:" c);
   case ND_FUNCALL: {
     let stack_args = push_args e fpic;
@@ -1190,13 +1190,13 @@ emit_text(prog@Obj fpic bool) =
     (println "  ret");;;
 
 export codegen(prog@Obj out@FILE fpic bool) = return
-  (output_file = out),
+  (output_file = out) ;:
   get_input_files is files
   0 is i
   cast until (!files[i] || (
-    (println "  .file %d \"%s\"" files[i].file_no files[i].name),
-    (i += 1),
-    none)),
-  assign_lvar_offsets prog,
-  emit_data prog fpic,
+    (println "  .file %d \"%s\"" files[i].file_no files[i].name) ;:
+    (i += 1) ;:
+    none)) ;:
+  assign_lvar_offsets prog ;:
+  emit_data prog fpic ;:
   emit_text prog fpic;;

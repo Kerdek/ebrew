@@ -43,7 +43,7 @@ export warn_tok(tok@ Token fmt@ char ...) =
   verror_at tok.file.name tok.file.contents tok.line_no tok.loc fmt ap;
   va_end(ap@);
 export equal(tok @Token op @char) bool = return ! memcmp tok.loc to @ op to @ tok.len to unsigned long && !op[tok.len];;
-export advance(k @@Token) @Token = return k@ is j (k@ = k.next), j;;
+export advance(k @@Token) @Token = return k@ is j (k@ = k.next) ;: j;;
 export expect(tok @@Token op@ char) =
   if ! equal tok@ op (error_tok tok@ "expected '%s'" op);
   (tok@ = tok.next);
@@ -84,10 +84,10 @@ from_hex(c char) int =
   if ('a' <= c && c <= 'f') return c - 'a' + 10;
   return c - 'A' + 10;;
 rpkw[]@ char = {
-  "<<=" ">>=" "..." "=="  "!="  "<="  "for"
+  "<<=" ">>=" "..." "=="  "!="  "<="  "for" 
   ">="  "+="  "-="  "*="  "/="  "%=" "&&=" "||="
   "&="  "|="  "^="  "&&"  "||"  "<<"
-  ">>"  "##"  " is "  "to"  "as"  ":;" "is" ;;
+  ">>"  "##"  " is "  "to"  "as"  ":;" ";:" "is" ;;
 read_punct(p@ char) int =
   for (let i int = 0; i < (sizeof typeof rpkw) / (sizeof typeof rpkw@); i += 1) if startswith p rpkw[i] return (strlen rpkw[i]) to int;
   return !!ispunct(p@) ? 1 : 0;;
@@ -247,9 +247,9 @@ convert_pp_int(tok@ Token) bool =
                  !!(v >> 31) ? ty_uint      :
                  ty_int                                )
   is t
-  (tok.kind = TK_NUM   ),
-  (tok.val  = v as long),
-  (tok.ty   = t as @   ),
+  (tok.kind = TK_NUM   ) ;:
+  (tok.val  = v as long) ;:
+  (tok.ty   = t as @   ) ;:
   true;;
 
 convert_pp_number(tok@ Token)  =
@@ -279,9 +279,9 @@ add_line_numbers(tok@ Token)  =
   let n = 1;
   until (
     ( (p == tok.loc) &&
-      ( (tok.line_no = n) ,
-        (tok = tok.next ) ) ) ,
-    (p@ == '\n' && (n+=1)),
+      ( (tok.line_no = n)  ;:
+        (tok = tok.next ) ) )  ;:
+    (p@ == '\n' && (n+=1)) ;:
     !(p:;(p+=1))@);;
 
 export tokenize_string_literal(tok@ Token basety@ Type)@ Token =
@@ -319,12 +319,12 @@ export tokenize(file@ File)@ Token =
     else if (isdigit(p@) || (p@ == '.' && isdigit(p[1]))) {
       let q = (p:;(p+=1));
       while (
-        !!                       p[0] &&
+        (!!                       p[0] &&
         !!                       p[1] &&
         !!strchr "eEpP" cast int p[0] &&
-        !!strchr "+-"   cast int p[1]  ? (p += 2), true  :
-        !!isalnum(p@)               ||
-        (p@ == '.')                  ? (p += 1), true  :
+        !!strchr "+-"   cast int p[1]  )? (p += 2) ;: true  :
+        ( !!isalnum(p@)               ||
+          (p@ == '.')                  ) ? (p += 1) ;: true  :
                                                  false );
       (cur.next = new_token TK_PP_NUM q p);
       (cur = cur.next);;
@@ -452,9 +452,9 @@ read_universal_char(p@ char len int) unsigned int = return
   0 is i
   cast until (
     i == len                           ||
-    !isxdigit(p[i]) && ((c = 0), true) ||
-    ( (c = (c << 4) | from_hex p[i]),
-      (i += 1))),
+    !isxdigit(p[i]) && ((c = 0) ;: true) ||
+    ( (c = (c << 4) | from_hex p[i]) ;:
+      (i += 1))) ;:
   cast unsigned int c;;
 
 convert_universal_chars(p@ char) =
@@ -481,14 +481,14 @@ convert_universal_chars(p@ char) =
 tffile_no int;
 export tokenize_file(path@ char)@ Token = return
   read_file path is p
-  !p ? cast @Token 0 :
-  (! memcmp p to @ "\xef\xbb\xbf" to @ 3 to unsigned long && (p += 3)),
-  canonicalize_newline     p,
-  remove_backslash_newline p,
-  convert_universal_chars  p,
+  (!p ? cast @Token 0 :
+  (! memcmp p to @ "\xef\xbb\xbf" to @ 3 to unsigned long && (p += 3)) ;:
+  canonicalize_newline     p ;:
+  remove_backslash_newline p ;:
+  convert_universal_chars  p ;:
   new_file path (tffile_no + 1) p is f
-  (input_files = cast @@File realloc (input_files to @) (sizeof @File * (tffile_no + 2))),
-  (input_files[tffile_no] = f),
-  (input_files[tffile_no + 1] = cast @File 0),
-  (tffile_no += 1),
-  tokenize f;;
+  (input_files = cast @@File realloc (input_files to @) (sizeof @File * (tffile_no + 2))) ;:
+  (input_files[tffile_no] = f) ;:
+  (input_files[tffile_no + 1] = cast @File 0) ;:
+  (tffile_no += 1) ;:
+  tokenize f);;
