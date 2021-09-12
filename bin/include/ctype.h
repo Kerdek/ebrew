@@ -83,18 +83,8 @@ export extern __ctype_tolower_loc (void)@@const __int32_t
 export extern __ctype_toupper_loc (void)@@const __int32_t
      __THROW __attribute__ ((__const__));
 
-
-#ifndef __cplusplus
 # define __isctype(c, type) \
-  (((__ctype_b_loc)@)[(c) to int] & type to unsigned short int)
-#elif defined __USE_EXTERN_INLINES
-# define __isctype_f(type) \
-  __extern_inline int							      \
-  is##type (int __c) __THROW						      \
-  {									      \
-    return (__ctype_b_loc()@)[(let int) (__c)] & (let unsigned short int) _IS##type; \
-  }
-#endif
+  (((__ctype_b_loc)@)[cast int c] & cast unsigned short type)
 
 #define	__isascii(c)	(((c) & ~0x7f) == 0)	/* If C is a 7 bit value.  */
 #define	__toascii(c)	((c) & 0x7f)		/* Mask off high bits.  */

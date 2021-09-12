@@ -42,11 +42,11 @@ export align_to(n int alignment int) int = return (n + alignment - 1) / alignmen
 reg_dx(sz int) @char = return (sz == 1) ? "%dl"  :
                               (sz == 2) ? "%dx"  :
                               (sz == 4) ? "%edx" :
-                              (sz == 8) ? "%rdx" : 0 to @char ;;
+                              (sz == 8) ? "%rdx" : cast @char 0 ;;
 reg_ax(sz int) @char = return (sz == 1) ? "%al"  :
                               (sz == 2) ? "%ax"  :
                               (sz == 4) ? "%eax" :
-                              (sz == 8) ? "%rax" : 0 to @char ;;
+                              (sz == 8) ? "%rax" : cast @char 0 ;;
 
 gen_addr(e @Node fpic bool) = return
   (e.kind == ND_VAR) ?
@@ -212,7 +212,7 @@ gen_cast(a@Type b@Type) = return
   none;;
 has_flonum(ty@Type lo int hi int offset int) bool =
   if (ty.kind == TY_STRUCT || ty.kind == TY_UNION) {
-    for (let mem@Member = ty.members; mem; mem = mem.next) if !has_flonum mem.ty to @Type lo hi (offset + mem.offset) return false;
+    for (let mem@Member = ty.members; mem; mem = mem.next) if !has_flonum cast @Type mem.ty lo hi (offset + mem.offset) return false;
     return true;;
   if (ty.kind == TY_ARRAY) {
     for (let i int = 0; i < ty.array_len; i += 1) if !has_flonum ty.base lo hi (offset + ty.base.size * i) return false;
@@ -345,7 +345,7 @@ copy_ret_buffer(var@Obj) =
     else (println "  movsd %%xmm0, %d(%%rbp)" var.offset);
     (fp += 1);
   ; else {
-    for (let i int = 0; i < minl 8 to long ty.size to long; i += 1) {
+    for (let i int = 0; i < minl 8l cast long ty.size; i += 1) {
       (println "  mov %%al, %d(%%rbp)" (var.offset + i));
       (println "  shr $8, %%rax");
     ;
@@ -360,7 +360,7 @@ copy_ret_buffer(var@Obj) =
     ; else {
       let reg1 = (!gp ? "%al" : "%dl");
       let reg2 = (!gp ? "%rax" : "%rdx");
-      for (let i int = 8; i < minl 16 to long ty.size to long; i += 1) {
+      for (let i int = 8; i < minl 16l cast long ty.size; i += 1) {
         (println "  mov %s, %d(%%rbp)" reg1 (var.offset + i));
         (println "  shr $8, %s" reg2);
       ;
@@ -380,7 +380,7 @@ copy_struct_reg(void) =
     (fp += 1);
   ; else {
     (println "  mov $0, %%rax");
-    for (let i int = (minl 8 to long ty.size to long - 1) to int; i >= 0; i -= 1) {
+    for (let i int = (minl 8l cast long ty.size - 1 as int); i >= 0; i -= 1) {
       (println "  shl $8, %%rax");
       (println "  mov %d(%%rdi), %%al" i);
     ;
@@ -396,7 +396,7 @@ copy_struct_reg(void) =
       let reg1 = (!gp ? "%al" : "%dl");
       let reg2 = (!gp ? "%rax" : "%rdx");
       (println "  mov $0, %s" reg2);
-      for (let i int = (minl 16 to long ty.size to long - 1) to int; i >= 8; i -= 1) {
+      for (let i int = (minl 16l cast long ty.size - 1 as int); i >= 8; i -= 1) {
         (println "  shl $8, %s" reg2);
         (println "  mov %d(%%rdi), %s" i reg1);
       ;
@@ -427,20 +427,20 @@ gen_expr(e@Node fpic bool) =
   case ND_NUM: {
     switch  e.ty.kind {
     case TY_FLOAT: {
-      let u union { f32 float; u32 uint32_t; } = { e.fval to float ;
+      let u union { f32 float; u32 uint32_t; } = { cast float e.fval ;
       (println "  mov $%u, %%eax  # float %Lf" u.u32 e.fval);
       (println "  movq %%rax, %%xmm0");
       return;
     ;
     case TY_DOUBLE: {
-      let u union { f64 double u64 uint64_t; } = { e.fval to double ;
+      let u union { f64 double u64 uint64_t; } = { cast double e.fval ;
       (println "  mov $%lu, %%rax  # double %Lf" u.u64 e.fval);
       (println "  movq %%rax, %%xmm0");
       return;
     ;
     case TY_LDOUBLE: {
       let u union { f80 long double; u64[2]uint64_t; };
-      memset (&u) to @ 0 sizeof typeof u;
+      memset cast @ &u 0 sizeof typeof u;
       (u.f80 = e.fval);
       (println "  mov $%lu, %%rax  # long double %Lf" u.u64[0] e.fval);
       (println "  mov %%rax, -16(%%rsp)");
@@ -484,7 +484,7 @@ gen_expr(e@Node fpic bool) =
     e.member is mem
     ( mem.is_bitfield ?
         (println "  shl $%d, %%rax" (64 - mem.bit_width - mem.bit_offset)) ;:
-        (mem.ty to @Type).is_unsigned ? (println "  shr $%d, %%rax" (64 - mem.bit_width) ) :
+        (cast @Type mem.ty).is_unsigned ? (println "  shr $%d, %%rax" (64 - mem.bit_width) ) :
         (println "  sar $%d, %%rax" (64 - mem.bit_width) ) :
       none );
   case ND_DEREF: return
@@ -503,7 +503,7 @@ gen_expr(e@Node fpic bool) =
       (println "  and $%ld, %%rdi" ((1L << mem.bit_width) - 1)) ;:
       (println "  shl $%d, %%rdi" mem.bit_offset) ;:
       (println "  mov (%%rsp), %%rax") ;:
-      load mem.ty to @Type ;:
+      load cast @Type mem.ty ;:
       (println "  mov $%ld, %%r9" ~(((1L << mem.bit_width) - 1) << mem.bit_offset)) ;:
       (println "  and %%r9, %%rax") ;:
       (println "  or %%rdi, %%rax") ;:
@@ -780,7 +780,7 @@ gen_expr(e@Node fpic bool) =
   gen_expr e.lhs fpic;
   pop "%rdi";
 
-  let ax = 0 to @ char di = 0 to @char dx = 0 to @char;
+  let ax = cast @char 0 di = cast @char 0 dx = cast @char 0;
 
   if (e.lhs.ty.kind == TY_LONG || !!e.lhs.ty.base) {
     (ax = "%rax");
@@ -1024,7 +1024,7 @@ emit_data(prog @Obj fpic bool) =
     else (println "  .globl %s" var.name);
 
     let alignment = ((var.ty.kind == TY_ARRAY && var.ty.size >= 16)
-      ? maxl 16l var.alignment to long : var.alignment to long);
+      ? maxl 16l cast long var.alignment : cast long var.alignment);
 
     // .data or .tdata
     if var.init_data{
@@ -1181,9 +1181,9 @@ emit_text(prog@Obj fpic bool) =
           break;
         default:
           store_gp ((gp :; (gp+=1))) var.offset ty.size;;;;
-    gen_stmt fn.body to @Node fpic;
+    gen_stmt cast @Node fn.body fpic;
     assert(!depth);
-    if ! strcmp fn.name to @ "main" (println "  mov $0, %%rax");
+    if ! strcmp cast @ fn.name "main" (println "  mov $0, %%rax");
     (println ".L.return.%s:" fn.name);
     (println "  mov %%rbp, %%rsp");
     (println "  pop %%rbp");

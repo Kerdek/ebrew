@@ -36,30 +36,30 @@ export is_flonum(t@ Type) bool = return
    c == TY_LDOUBLE   );;
 export is_numeric(t@ Type) bool = return is_integer t || is_flonum t;;
 format_function_type(p @Type s @char) = for (; p; p = p.next) format_type p s;;
-export format_type(t @Type s @char) =
+export format_type(t @Type s @char) = return
   t.kind is c
-  ((c == TY_VOID   ) ? strcat s "void"        :
-  (c == TY_BOOL   ) ? strcat s "bool"        :
-  (c == TY_FLOAT  ) ? strcat s "float"       :
-  (c == TY_DOUBLE ) ? strcat s "double"      :
-  (c == TY_LDOUBLE) ? strcat s "long double" :
-  (c == TY_ENUM   ) ? strcat s "enum"        :
-  (c == TY_STRUCT ) ? strcat s "struct"      :
-  (c == TY_UNION  ) ? strcat s "union"       :
-  (c == TY_CHAR   ) ? (t.is_unsigned && strcat s "unsigned ") to  ;: strcat s "char"  :
-  (c == TY_SHORT  ) ? (t.is_unsigned && strcat s "unsigned ") to  ;: strcat s "short" :
-  (c == TY_INT    ) ? (t.is_unsigned && strcat s "unsigned ") to  ;: strcat s "int"   :
-  (c == TY_LONG   ) ? (t.is_unsigned && strcat s "unsigned ") to  ;: strcat s "long"  :
-  (c == TY_ARRAY  ) ? strcat s "[]" is r format_type t.base s ;: r:
-  (c == TY_PTR    ) ? strcat s "@"  is r format_type t.base s ;: r:
+  (c == TY_VOID   ) ? cast void strcat s "void"        :
+  (c == TY_BOOL   ) ? cast void strcat s "bool"        :
+  (c == TY_FLOAT  ) ? cast void strcat s "float"       :
+  (c == TY_DOUBLE ) ? cast void strcat s "double"      :
+  (c == TY_LDOUBLE) ? cast void strcat s "long double" :
+  (c == TY_ENUM   ) ? cast void strcat s "enum"        :
+  (c == TY_STRUCT ) ? cast void strcat s "struct"      :
+  (c == TY_UNION  ) ? cast void strcat s "union"       :
+  (c == TY_CHAR   ) ? (t.is_unsigned && cast void strcat s "unsigned ") ;: cast void strcat s "char"  :
+  (c == TY_SHORT  ) ? (t.is_unsigned && cast void strcat s "unsigned ") ;: cast void strcat s "short" :
+  (c == TY_INT    ) ? (t.is_unsigned && cast void strcat s "unsigned ") ;: cast void strcat s "int"   :
+  (c == TY_LONG   ) ? (t.is_unsigned && cast void strcat s "unsigned ") ;: cast void strcat s "long"  :
+  (c == TY_ARRAY  ) ? cast void strcat s "[]" is r format_type t.base s ;: r:
+  (c == TY_PTR    ) ? cast void strcat s "@"  is r format_type t.base s ;: r:
   (c == TY_FUNC   ) ? 
-    (strcat s "(") to  ;:
+    (cast void strcat s "(")  ;:
     t.params is p
-      (t.is_variadic && !p && strcat s "void") to  ;:
+      (t.is_variadic && !p && cast void strcat s "void") ;:
       format_function_type p s ;:
-    strcat s ")" is r
+    cast void strcat s ")" is r
     format_type t.return_ty s ;: r :
-  strcat s "???");;;
+  cast void strcat s "???";;
 is_function_type_equal(p @Type q@Type) bool = while !(!p || !q) { if ! type_equal p q return false; (p = p.next); (q = q.next);; return p == q;;
 export type_equal(t @Type u @Type) bool = return
   t.kind is c (
@@ -85,7 +85,7 @@ export type_equal(t @Type u @Type) bool = return
                           false                                             )))));;
 
 export copy_type(t @Type) @Type = return
-  cast @Type calloc 1 to unsigned long sizeof Type is u
+  cast @Type calloc 1ul sizeof Type is u
   (u@ = t@) ;:
   (u.origin = t) ;:
   u;;

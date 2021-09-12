@@ -16,7 +16,7 @@ export encode_utf8(p@ char c unsigned int) int = return
                   f@ p c 0l 0xf0 18u 0xffu  ;: 4) ;;
 
 export decode_utf8(new_pos@@ char p@char) unsigned int = return
-  the char p@ to unsigned int is q
+  cast unsigned the char p@ is q
   ((q < 128) ? (new_pos@ = p + 1l) ;: q :
   (q & ( (q >= 0xF0) ? 0x67u :
          (q >= 0xE0) ? 0x4Fu :
@@ -40,14 +40,14 @@ in_range(range@ uint32_t c uint32_t) bool =
   return false;;
 
 ii1range []uint32_t = {
-  the int '_' to unsigned int
-  the int '_' to unsigned int
-  the int 'a' to unsigned int
-  the int 'z' to unsigned int
-  the int 'A' to unsigned int
-  the int 'Z' to unsigned int
-  the int '$' to unsigned int
-  the int '$' to unsigned int
+  cast unsigned int the int '_'
+  cast unsigned int the int '_'
+  cast unsigned int the int 'a'
+  cast unsigned int the int 'z'
+  cast unsigned int the int 'A'
+  cast unsigned int the int 'Z'
+  cast unsigned int the int '$'
+  cast unsigned int the int '$'
   0x000A8u 0x000A8u 0x000AAu 0x000AAu 0x000ADu 0x000ADu 0x000AFu 0x000AFu
   0x000B2u 0x000B5u 0x000B7u 0x000BAu 0x000BCu 0x000BEu 0x000C0u 0x000D6u
   0x000D8u 0x000F6u 0x000F8u 0x000FFu 0x00100u 0x002FFu 0x00370u 0x0167Fu
@@ -62,12 +62,12 @@ ii1range []uint32_t = {
   0xA0000u 0xAFFFDu 0xB0000u 0xBFFFDu 0xC0000u 0xCFFFDu 0xD0000u 0xDFFFDu
   0xE0000u 0xEFFFDu 0xFFFFFFFFu;;
 export is_ident1(c uint32_t) bool =
-  return c!= '@' && in_range the typeof ii1range ii1range to @unsigned int c;;
+  return c != '@' && in_range cast @unsigned int the typeof ii1range ii1range c;;
 ii2range[] uint32_t = {
   0x0030u 0x0039u 0x0024u 0x0024u
   0x0300u 0x036Fu 0x1DC0u 0x1DFFu 0x20D0u 0x20FFu 0xFE20u 0xFE2Fu -1u;;
 export is_ident2(c uint32_t) bool =
-  return c!= '@' && (is_ident1 c || in_range the typeof ii2range ii2range to @unsigned int c);;
+  return c != '@' && (is_ident1 c || in_range cast @unsigned int the typeof ii2range ii2range c);;
 cwrange1[] uint32_t = {
   0x00000u 0x0001Fu 0x0007fu 0x000a0u 0x00300u 0x0036Fu 0x00483u 0x00486u
   0x00488u 0x00489u 0x00591u 0x005BDu 0x005BFu 0x005BFu 0x005C1u 0x005C2u
@@ -113,9 +113,9 @@ cwrange2[] uint32_t = {
   0x20000u 0x2FFFDu 0x30000u 0x3FFFDu
   0xFFFFFFFFu;;
 char_width(c uint32_t) int = return
-  in_range the typeof cwrange1 cwrange1 to @uint32_t c ? 0 :
-  in_range the typeof cwrange2 cwrange2 to @uint32_t c ? 2 :
-                                                         1 ;;
+  in_range cast @uint32_t the typeof cwrange1 cwrange1 c ? 0 :
+  in_range cast @uint32_t the typeof cwrange2 cwrange2 c ? 2 :
+                                                           1 ;;
 export display_width(p@ char len int) int = return
   p is q
   0 is w

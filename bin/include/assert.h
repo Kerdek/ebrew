@@ -34,7 +34,7 @@
 #define	_ASSERT_H	1
 #include <features.h>
 
-# define __ASSERT_VOID_CAST  to 
+# define __ASSERT_VOID_CAST cast void
 
 /* void assert (int expression);
 
@@ -80,33 +80,11 @@ export extern __assert (__assertion @const char __file @const char __line int)
 __END_DECLS
 #endif /* Not _ASSERT_H_DECLS */
 
-/* When possible, define assert so that it does not add extra
-   parentheses around EXPR.  Otherwise, those added parentheses would
-   suppress warnings we'd expect to be detected by gcc's -Wparentheses.  */
-# if defined __cplusplus
-#  define assert(expr)							\
-     (static_cast <bool> (expr)						\
-      ? void (0)							\
-      : __assert_fail #expr __FILE__ __LINE__ to unsigned int __ASSERT_FUNCTION)
-# elif (!defined __GNUC__ || !!defined __STRICT_ANSI__)
 #  define assert(expr)							\
     ((expr)								\
-     ? 0 __ASSERT_VOID_CAST \
-     : __assert_fail #expr __FILE__ __LINE__ to unsigned int __ASSERT_FUNCTION)
-# else
-/* The first occurrence of EXPR is not evaluated due to the sizeof,
-   but will trigger any pedantic warnings masked by the __extension__
-   for the second occurrence.  The ternary operator is required to
-   support function pointers and bit fields in this context, and to
-   suppress the evaluation of variable length arrays.  */
-#  define assert(expr)							\
-  ((void) sizeof ((expr) ? 1 : 0), __extension__ ({			\
-      if (expr)								\
-        ; /* empty */							\
-      else								\
-        __assert_fail (#expr, __FILE__, __LINE__ to unsigned int, __ASSERT_FUNCTION);	\
-    }))
-# endif
+     ? __ASSERT_VOID_CAST 0 \
+     : __assert_fail #expr __FILE__ cast unsigned int __LINE__ __ASSERT_FUNCTION)
+
 
 # ifdef	__USE_GNU
 #  define assert_perror(errnum)						\
@@ -124,9 +102,9 @@ __END_DECLS
 #   define __ASSERT_FUNCTION	__extension__ __PRETTY_FUNCTION__
 # else
 #  if (!!defined __STDC_VERSION__ && !!__STDC_VERSION__ >= 199901L)
-#   define __ASSERT_FUNCTION	0 to @char
+#   define __ASSERT_FUNCTION	cast @char 0
 #  else
-#   define __ASSERT_FUNCTION	0 to @char
+#   define __ASSERT_FUNCTION	cast @char 0
 #  endif
 # endif
 

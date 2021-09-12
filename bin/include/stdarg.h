@@ -11,14 +11,14 @@ type __va_elem struct {
 type va_list __va_elem;
 
 #define va_start(ap, last) \
-  (ap = (__va_area__ to @__va_elem)@)
+  (ap = (cast @__va_elem __va_area__)@)
 
 #define va_end(ap)
 
 __va_arg_mem(ap@ __va_elem sz int alignment int)@  =
   ap.overflow_arg_area is p
   ((alignment > 8) && (p = (p + 15) / 16 * 16)) ;:
-  (ap.overflow_arg_area = (p to unsigned long + sz + 7) / 8 * 8 as @) ;:
+  (ap.overflow_arg_area = (cast unsigned long p + sz + 7) / 8 * 8 as @) ;:
   p;;
 
 __va_arg_gp(ap@ __va_elem sz int alignment int)@ = return
