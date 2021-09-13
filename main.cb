@@ -70,7 +70,7 @@ find_gcc_libpath(void)@ char =
     "/usr/lib/gcc/x86_64-linux-gnu/*/crtbegin.o"
     "/usr/lib/gcc/x86_64-pc-linux-gnu/*/crtbegin.o" // For Gentoo
     "/usr/lib/gcc/x86_64-redhat-linux/*/crtbegin.o";; // For Fedora;;
-  for (let i int = 0; i < (sizeof typeof paths) / (sizeof typeof paths@); i+=1) {
+  for (let i int = 0; i < (sizeof typeof paths) / (sizeof typeof paths[0]); i+=1) {
     let path = find_file paths[i];
     if path return dirname path;;
   (error "gcc library path is not found");;

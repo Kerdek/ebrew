@@ -25,12 +25,12 @@ export decode_utf8(new_pos@@ char p@char) unsigned int = return
   (!len_c && (error_at p "invalid UTF-8 sequence")) ;:
   (len_c & 0x60u) is len
   (len_c & 0x1Fu) is c
-  1l is i
-  until ((i != len) ? c : 0u :;
-    cast unsigned int the char p[i] is q
-    (((q & 0b11000000u) != 0b01000000) ? (error_at p "invalid UTF-8 sequence") :
-    (c = c << 6u | q & 0b00111111u) ;:
-    (i += 1l))) :;
+  cast void ( 1l for i (i < len && (i + 1l) :;
+      cast unsigned int the char p[i] is q
+      ( ((q & 0b11000000u) != 0b01000000) ?
+          (error_at p "invalid UTF-8 sequence") :
+        (c = c << 6u | q & 0b00111111u)))) ;:
+  c :;
   (new_pos@ = p + the unsigned int len));;
 
 in_range(range@ uint32_t c uint32_t) bool =
@@ -118,8 +118,4 @@ char_width(c uint32_t) int = return
                                                            1 ;;
 export display_width(p@ char len int) int = return
   p is q
-  0 is w
-  cast void until !((p - q < len) && (
-    decode_utf8 &p p is c
-    (w += char_width c))) ;:
-  w;;
+  0 for w (p - q < len && w + char_width decode_utf8 &p p);;

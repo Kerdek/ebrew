@@ -514,7 +514,7 @@ preprocess2(tok@Token include_paths@StringArray)@Token =
     else if (equal tok "pragma" && equal tok.next "once") {
       hashmap_put &pragma_once tok.file.name cast @ 1;
       (tok = skip_line tok.next.next);;
-    else if equal tok "pragma" until ((tok = tok.next) ;: tok.at_bol);
+    else if equal tok "pragma" (tok = tok for j (!j.at_bol && j.next));
     else if equal tok "error" (error_tok tok "error");
     else if !tok.at_bol (error_tok tok "invalid preprocessor directive");;
   (cur.next = tok);
@@ -541,9 +541,9 @@ type stat_type struct stat;;
 timestamp_macro(tmpl@Token)@Token =
   let st = new stat_type {;;
   if (stat tmpl.file.name &st != 0) return new_str_token "??? ??? ?? ??:??:?? ????" tmpl;
-  ctime_r &st.st_mtime &tmbuf@;
+  ctime_r &st.st_mtime &tmbuf[0];
   (tmbuf[24] = cast char '\0');
-  return new_str_token &tmbuf@ &tmpl@;;
+  return new_str_token &tmbuf[0] &tmpl[0];;
 fmmon[][4]char = {
   "Jan" "Feb" "Mar" "Apr" "May" "Jun"
   "Jul" "Aug" "Sep" "Oct" "Nov" "Dec";;

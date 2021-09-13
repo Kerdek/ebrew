@@ -89,7 +89,7 @@ rpkw[]@ char = {
   "&="  "|="  "^="  "&&"  "||"  "<<"
   ">>"  "##"  "as"  ":;" ";:" "is" ;;
 read_punct(p@ char) int =
-  for (let i int = 0; i < (sizeof typeof rpkw) / (sizeof typeof rpkw@); i += 1) if startswith p rpkw[i] return cast int strlen rpkw[i];
+  for (let i int = 0; i < (sizeof typeof rpkw) / (sizeof typeof rpkw[0]); i += 1) if startswith p rpkw[i] return cast int strlen rpkw[i];
   return !!ispunct(p@) ? 1 : 0;;
 ikmap HashMap
 ikkw[]@ char = {
@@ -105,7 +105,7 @@ ikkw[]@ char = {
   "__thread" "_Atomic"  "bool"      "true"
   "false"    "none"     "cast"      "not";;
 is_keyword(tok@ Token) bool =
-  if !ikmap.capacity for (let i int = 0; i < (sizeof typeof ikkw) / (sizeof typeof ikkw@); i += 1) hashmap_put &ikmap ikkw[i] cast @ 1;
+  if !ikmap.capacity for (let i int = 0; i < (sizeof typeof ikkw) / (sizeof typeof ikkw[0]); i += 1) hashmap_put &ikmap ikkw[i] cast @ 1;
   return cast bool hashmap_get2 &ikmap tok.loc tok.len;;
 read_escaped_char(new_pos@@ char p@ char) int =
   if ('0' <= p@ && p@ <= '7') {
@@ -274,15 +274,17 @@ export convert_pp_tokens(tok@ Token)  =
     if is_keyword t (t.kind = TK_KEYWORD);
     else if (t.kind == TK_PP_NUM) convert_pp_number t;;;
 
-add_line_numbers(tok@ Token)  =
-  let p = current_file.contents;
-  let n = 1;
-  until (
-    ( (p == tok.loc) &&
-      ( (tok.line_no = n)  ;:
-        (tok = tok.next ) ) )  ;:
-    (p@ == '\n' && (n+=1)) ;:
-    !(p:;(p+=1))@);;
+add_line_numbers(j@ Token) = return
+  1 is n
+  cast void 
+  ( current_file.contents for p
+    ( !!p@
+    && ( p + 1 )
+    :; ( p == j.loc
+       && (j.line_no = n)
+       :; (j = j.next) )
+    :; ( p@ == '\n'
+       && (n += 1) )));;
 
 export tokenize_string_literal(tok@ Token basety@ Type)@ Token =
   let t = cast @Token 0;
@@ -448,14 +450,8 @@ remove_backslash_newline(p@ char)  =
   (p[j] = cast char '\0');;
 
 read_universal_char(p@ char len int) unsigned int = return
-  0 is c
-  0 is i
-  cast until (
-    i == len                           ||
-    !isxdigit(p[i]) && ((c = 0) ;: true) ||
-    ( (c = (c << 4) | from_hex p[i]) ;:
-      (i += 1))) ;:
-  cast unsigned int c;;
+  0u is i
+  0u for c (i != len && !!isxdigit(p[i]) && ((c << 4u) | from_hex p[i] :; (i += 1u)));;
 
 convert_universal_chars(p@ char) =
   let q = p;

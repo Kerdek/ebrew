@@ -68,6 +68,7 @@ gen_addr(e @Node fpic bool) = return
         (println "  mov %s@GOTPCREL(%%rip), %%rax" e.var.name ):
     (println "  lea %s(%%rip), %%rax" e.var.name ):
   ( e.kind    == ND_COMMA   ) ? gen_expr e.lhs fpic  ;: gen_expr e.rhs fpic :
+  ( e.kind    == ND_THEN    ) ? gen_expr e.lhs fpic  ;: push ;: gen_expr e.rhs fpic ;: pop "%rax" :
   ( e.kind    == ND_MEMBER  ) ? gen_addr e.lhs fpic  ;: (println "  add $%d, %%rax" e.member.offset ) :
   ( e.kind    == ND_THE    ||
     e.kind    == ND_DEREF   ) ? gen_expr e.lhs fpic :
@@ -535,6 +536,11 @@ gen_expr(e@Node fpic bool) =
   case ND_COMMA: return
     gen_expr e.lhs fpic ;:
     gen_expr e.rhs fpic;
+  case ND_THEN: return
+    gen_expr e.lhs fpic ;:
+    push ;:
+    gen_expr e.rhs fpic ;:
+    pop "%rax";
   case ND_CAST: return
     gen_expr e.lhs fpic ;:
     gen_cast e.lhs.ty e.ty;

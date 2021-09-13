@@ -75,6 +75,7 @@ type
     ND_UNTIL
     ND_REPEAT
     ND_THE
+    ND_THEN
   ;
 
   TypeKind enum 
