@@ -785,6 +785,8 @@ gen_expr(e @Node) =
 
   switch  e.kind {
   case ND_ADD:
+    ((e.a.ty.kind == TY_PTR || e.a.ty.kind == TY_ARRAY) && (println "  imul $%d, %s" e.a.ty.base.size di) as void) ;:
+    ((e.b.ty.kind == TY_PTR || e.b.ty.kind == TY_ARRAY) && (println "  imul $%d, %s" e.b.ty.base.size ax) as void) ;:
     (println "  add %s, %s" di ax);
     return;
   case ND_SUB:

@@ -379,16 +379,16 @@ new_pointer_add(j @Token a @Node b @Node) @Node = return
   new_binary ND_ADD a new_mul j b new_long cast long a.ty.base.size  j j;;
 new_add(j @Token a @Node b @Node) @Node = return
   add_type a ;: add_type b ;:
-  (!!a.ty.base && !!b.ty.base) ?
+  ((a.ty.kind == TY_PTR || a.ty.kind == TY_ARRAY) && (b.ty.kind == TY_PTR || b.ty.kind == TY_ARRAY)) ?
     format_types a.ty b.ty ;:
     (error_tok j "(%s + %s) you may not add two pointers") ;: cast @Node 0  :
-  ( (is_numeric a.ty && is_numeric b.ty) ?
-      usual_arith_conv &a &b ;:
-      new_binary ND_ADD a b j :
-    !!a.ty.base ?
-      new_pointer_add j a b :
-    new_pointer_add j b a ) is e
-  (e.ty = a.ty) ;:
+  (  a.ty.kind != TY_PTR
+  && a.ty.kind != TY_ARRAY
+  && a.ty.kind != TY_PTR
+  && a.ty.kind != TY_ARRAY
+  && usual_arith_conv &a &b as void ) ;:
+  new_binary ND_ADD a b j is e
+  (e.ty = (a.ty.kind == TY_PTR || a.ty.kind == TY_ARRAY) ? pointer_to(a.ty.base) : (b.ty.kind == TY_PTR || b.ty.kind == TY_ARRAY) ? pointer_to(b.ty.base) : a.ty) ;:
   e;;
 new_sub(j @Token a @Node b @Node) @Node = return
   add_type a ;: add_type b ;:
