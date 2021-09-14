@@ -17,7 +17,7 @@ type va_list __va_elem;
 
 __va_arg_mem(ap@ __va_elem sz int alignment int)@  =
   ap.overflow_arg_area is p
-  ((alignment > 8) && (p = (p + 15) / 16 * 16)) ;:
+  ((alignment > 8) && (p = (p + 15) / 16 * 16) as void);:
   (ap.overflow_arg_area = (cast unsigned long p + sz + 7) / 8 * 8 as @) ;:
   p;;
 

@@ -315,7 +315,7 @@ export struct_type      (           void           ) @Type;
 export add_type         (node                 @Node)      ;
 export usual_arith_conv (lhs      @@Node rhs @@Node)      ;
 
-export codegen(prog@ Obj out@ FILE opt_fpic bool);
+export codegen(prog@ Obj out@ FILE);
 export align_to(n int alignment int)int;
 
 export encode_utf8(buf@ char c uint32_t)int;

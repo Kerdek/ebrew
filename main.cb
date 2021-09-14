@@ -23,14 +23,14 @@ endswith(p@ char q@ char) bool = return
 replace_extn(tmpl@ char extn@ char) @char = return
   basename strdup tmpl is filename
   strrchr filename '.' is dot
-  (!!dot && (dot@ = '\0' as char)) ;:
+  (!!dot && (dot@ = '\0' as char) as void) ;:
   (format "%s%s" filename extn);;
 wait_subprocess(status @int) = while (wait status > 0);;
 run_subprocess(argv@@char) =
   (!fork &&
     ( (execvp argv[0] argv as) ;:
       cast void (fprintf stderr "exec failed: %s: %s\n" argv[0] strerror errno) ;:
-      exit 1)) ;:
+      exit 1) as void) ;:
   0 is status
   wait_subprocess &status ;:
   (!!status && exit 1);;
@@ -41,13 +41,13 @@ append_tokens(tok1@ Token tok2@ Token)@ Token =
   while (t.next.kind != TK_EOF) (t = t.next);
   (t.next = tok2);
   return tok1;;
-cc1(input @char output @char opt_fpic bool include_paths @StringArray) =
+cc1(input @char output @char include_paths @StringArray) =
   init_macros ;:
   must_tokenize_file input is tok
   (tok = preprocess tok include_paths) ;:
   parse tok is obj
   open_file output is out
-  codegen obj out opt_fpic ;:
+  codegen obj out ;:
   fclose out;;
 assemble(input@ char output@ char) =
   let cmd[]@ char = {"as" "-c" input "-o" output cast @char 0;;
@@ -56,7 +56,7 @@ find_file( pattern@ char)@ char =
   cast @char 0 is path
   new glob_t {; is buf
   cast void glob pattern 0 cast @(c @char k int) int 0 &buf ;:
-  (buf.gl_pathc > 0 && (path = strdup buf.gl_pathv[buf.gl_pathc - 1])) ;:
+  (buf.gl_pathc > 0 && (path = strdup buf.gl_pathv[buf.gl_pathc - 1]) as void) ;:
   globfree &buf ;:
   path;;
 type stat_type struct stat;;
@@ -131,7 +131,6 @@ export main(argc int argv@@char) int =
   let p = 4;
   let 
     opt_c         = false
-    opt_fpic      = false
     opt_static    = false
     opt_shared    = false
     opt_o         = cast @char 0
@@ -143,8 +142,6 @@ export main(argc int argv@@char) int =
   strarray_push include_paths default_include_path;
   for (let i int = 1; i < argc; (i+=1) ;:i) {
     if !  strcmp  cast @ argv[i] "-c"                                          (     opt_c = true          )                                          ;  else
-    if !  strcmp  cast @ argv[i] "-fpic"                                       (  opt_fpic = true          )                                          ;  else
-    if !  strcmp  cast @ argv[i] "-fPIC"                                       (  opt_fpic = true          )                                          ;  else
     if !  strcmp  cast @ argv[i] "-static"                                   { (opt_static = true          );       strarray_push ldflags       "-static";; else
     if !  strcmp  cast @ argv[i] "-shared"                                   { (opt_shared = true          );       strarray_push ldflags       "-shared";; else
     if !  strcmp  cast @ argv[i] "-o"                                          (     opt_o = argv[(i+=1) ;:i])                                               ;  else
@@ -165,7 +162,7 @@ export main(argc int argv@@char) int =
     if (t == FILE_OBJ || t == FILE_AR || t == FILE_DSO) strarray_push ldset input; else {
       let output_o = replace_extn input ".o";
       let output_a = replace_extn input ".a";
-      cc1 input output_a opt_fpic include_paths;
+      cc1 input output_a include_paths;
       assemble output_a output_o;
       if !opt_c strarray_push ldset output_o;;;
   let c = (opt_o || "a.out");

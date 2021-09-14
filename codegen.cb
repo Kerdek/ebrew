@@ -17,8 +17,8 @@ argreg32[]@char = {"%edi" "%esi" "%edx" "%ecx" "%r8d" "%r9d";
 argreg64[]@char = {"%rdi" "%rsi" "%rdx" "%rcx" "%r8"  "%r9" ;
 current_fn@Obj;
 
-gen_expr(e @Node fpic bool);
-gen_stmt(e @Node fpic bool);
+gen_expr(e @Node);
+gen_stmt(e @Node);
 
 __attribute__((format(printf, 1, 2)))
 println(fmt @char ...) =
@@ -48,36 +48,22 @@ reg_ax(sz int) @char = return (sz == 1) ? "%al"  :
                               (sz == 4) ? "%eax" :
                               (sz == 8) ? "%rax" : cast @char 0 ;;
 
-gen_addr(e @Node fpic bool) = return
-  (e.kind == ND_VAR) ?
-    e.var.is_local ?
-      (println "  lea %d(%%rbp), %%rax" e.var.offset ):
-    fpic ?
-      e.var.is_tls ?
-        (println "  data16 lea %s@tlsgd(%%rip), %%rdi" e.var.name) ;:
-        (println "  .value 0x6666") ;:
-        (println "  rex64") ;:
-        (println "  call __tls_get_addr@PLT" ):
-      (println "  mov %s@GOTPCREL(%%rip), %%rax" e.var.name ) :
-    e.var.is_tls ?
-      (println "  mov %%fs:0, %%rax") ;:
-      (println "  add $%s@tpoff, %%rax" e.var.name ) :
-    (e.ty.kind == TY_FUNC) ?
-      e.var.is_definition ?
-        (println "  lea %s(%%rip), %%rax" e.var.name ):
-        (println "  mov %s@GOTPCREL(%%rip), %%rax" e.var.name ):
-    (println "  lea %s(%%rip), %%rax" e.var.name ):
-  ( e.kind    == ND_COMMA   ) ? gen_expr e.lhs fpic  ;: gen_expr e.rhs fpic :
-  ( e.kind    == ND_THEN    ) ? gen_expr e.lhs fpic  ;: push ;: gen_expr e.rhs fpic ;: pop "%rax" :
-  ( e.kind    == ND_MEMBER  ) ? gen_addr e.lhs fpic  ;: (println "  add $%d, %%rax" e.member.offset ) :
+gen_addr(e @Node) = return
+  ( e.kind    == ND_VAR     ) ?
+  (  e.var.is_local
+  && (println "  lea %d(%%rbp), %%rax" e.var.offset)
+  || (println "  mov %s@GOTPCREL(%%rip), %%rax" e.var.name) as void) :
+  ( e.kind    == ND_COMMA   ) ? gen_expr e.lhs   ;: gen_expr e.rhs  :
+  ( e.kind    == ND_THEN    ) ? gen_expr e.lhs   ;: push ;: gen_expr e.rhs  ;: pop "%rax" :
+  ( e.kind    == ND_MEMBER  ) ? gen_addr e.lhs   ;: (println "  add $%d, %%rax" e.member.offset ) :
   ( e.kind    == ND_THE    ||
-    e.kind    == ND_DEREF   ) ? gen_expr e.lhs fpic :
+    e.kind    == ND_DEREF   ) ? gen_expr e.lhs  :
   ( e.kind    == ND_FUNCALL||
     e.kind    == ND_COND   ||
     e.kind    == ND_UNTIL  ||
-    e.kind    == ND_REPEAT  ) ? gen_expr e     fpic :
+    e.kind    == ND_REPEAT  ) ? gen_expr e      :
   ( e.ty.kind == TY_STRUCT ||
-    e.ty.kind == TY_UNION   ) ? gen_expr e     fpic :
+    e.ty.kind == TY_UNION   ) ? gen_expr e      :
   ( error_tok e.tok "not an lvalue" );;
 load(t @Type) = return cast void(
   t.kind == TY_ARRAY  ||
@@ -209,7 +195,7 @@ gen_cast(a@Type b@Type) = return
     (println "  movzx %%al, %%eax" ) :
   getTypeId a is t1
   getTypeId b is t2
-  (!!cast_table[t1][t2] && (println "  %s" cast_table[t1][t2])) ;:
+  (!!cast_table[t1][t2] && (println "  %s" cast_table[t1][t2]) as void) ;:
   none;;
 has_flonum(ty@Type lo int hi int offset int) bool =
   if (ty.kind == TY_STRUCT || ty.kind == TY_UNION) {
@@ -228,11 +214,11 @@ push_struct(ty@Type) =
   for (let i int = 0; i < ty.size; i += 1) {
     (println "  mov %d(%%rax), %%r10b" i);
     (println "  mov %%r10b, %d(%%rsp)" i);;;
-push_args2(args@Node first_pass bool fpic bool) =
+push_args2(args@Node first_pass bool) =
   if !args return;
-  push_args2 args.next first_pass fpic;
+  push_args2 args.next first_pass ;
   if ((first_pass && !args.pass_by_stack) || (!first_pass && args.pass_by_stack)) return;
-  gen_expr args fpic;
+  gen_expr args ;
   switch  args.ty.kind {
   case TY_STRUCT:
   case TY_UNION:
@@ -269,7 +255,7 @@ push_args2(args@Node first_pass bool fpic bool) =
 //
 // - If a function is variadic, set the number of floating-point type
 //   arguments to RAX.
-push_args(e@Node fpic bool)int =
+push_args(e@Node)int =
   let stack = 0 gp = 0 fp = 0;
 
   // If the return type is a large struct/union, the caller passes
@@ -324,8 +310,8 @@ push_args(e@Node fpic bool)int =
     (stack += 1);
   ;
 
-  push_args2 e.args true fpic;
-  push_args2 e.args false fpic;
+  push_args2 e.args true ;
+  push_args2 e.args false ;
 
   // If the return type is a large struct/union, the caller passes
   // a pointer to a buffer as if it were the first argument.
@@ -416,15 +402,14 @@ copy_struct_mem(void) =
   ;
 ;
 
-// Generate code for a given e.
-gen_expr(e@Node fpic bool) =
+gen_expr(e @Node) =
   (println "  .loc %d %d" e.tok.file.file_no e.tok.line_no);
 
   switch  e.kind {
   case ND_NULL_EXPR:
     return;
   case ND_THE:
-    return gen_expr e.lhs fpic;
+    return gen_expr e.lhs ;
   case ND_NUM: {
     switch  e.ty.kind {
     case TY_FLOAT: {
@@ -456,7 +441,7 @@ gen_expr(e@Node fpic bool) =
     return;
   ;
   case ND_NEG:
-    gen_expr e.lhs fpic;
+    gen_expr e.lhs ;
     switch  e.ty.kind {
     case TY_FLOAT:
       (println "  mov $1, %%rax");
@@ -477,10 +462,10 @@ gen_expr(e@Node fpic bool) =
     (println "  neg %%rax");
     return;
   case ND_VAR: return
-    gen_addr e fpic ;:
+    gen_addr e  ;:
     load e.ty;
   case ND_MEMBER: return
-    gen_addr e fpic ;:
+    gen_addr e  ;:
     load e.ty ;:
     e.member is mem
     ( mem.is_bitfield ?
@@ -489,14 +474,14 @@ gen_expr(e@Node fpic bool) =
         (println "  sar $%d, %%rax" (64 - mem.bit_width) ) :
       none );
   case ND_DEREF: return
-    gen_expr e.lhs fpic ;:
+    gen_expr e.lhs  ;:
     load e.ty;
   case ND_ADDR: return
-    gen_addr e.lhs fpic;
+    gen_addr e.lhs ;
   case ND_ASSIGN: return
-    gen_addr e.lhs fpic ;:
+    gen_addr e.lhs  ;:
     push ;:
-    gen_expr e.rhs fpic ;:
+    gen_expr e.rhs  ;:
     (e.lhs.kind == ND_MEMBER && e.lhs.member.is_bitfield) ?
       (println "  mov %%rax, %%r8") ;:
       e.lhs.member is mem
@@ -512,37 +497,37 @@ gen_expr(e@Node fpic bool) =
       (println "  mov %%r8, %%rax" ):
     store e.lhs.ty;
   case ND_THE:
-    return gen_expr e.lhs fpic;
+    return gen_expr e.lhs ;
   case ND_UNTIL: return
     count is c
     (println ".L.until.%d:" c) ;:
-    gen_expr e.lhs fpic ;:
+    gen_expr e.lhs  ;:
     cmp_zero e.lhs.ty ;:
     (println "  je .L.until.%d" c);
   case ND_REPEAT: return
     count is c
     (println "  lea %d(%%rbp), %%rax" e.var.offset ) ;:
     push ;:
-    gen_expr e.lhs fpic ;:
+    gen_expr e.lhs  ;:
     (println ".L.repeat.%d:" c) ;:
     store e.lhs.ty ;:
     (println "  lea %d(%%rbp), %%rax" e.var.offset ) ;:
     push ;:
-    gen_expr e.rhs fpic ;:
+    gen_expr e.rhs  ;:
     cmp_zero e.rhs.ty ;:
     (println "  jne .L.repeat.%d" c) ;:
     pop "%rax" ;:
     (println "  mov 0(%%rax), %%rax");
   case ND_COMMA: return
-    gen_expr e.lhs fpic ;:
-    gen_expr e.rhs fpic;
+    gen_expr e.lhs  ;:
+    gen_expr e.rhs ;
   case ND_THEN: return
-    gen_expr e.lhs fpic ;:
+    gen_expr e.lhs  ;:
     push ;:
-    gen_expr e.rhs fpic ;:
+    gen_expr e.rhs  ;:
     pop "%rax";
   case ND_CAST: return
-    gen_expr e.lhs fpic ;:
+    gen_expr e.lhs  ;:
     gen_cast e.lhs.ty e.ty;
   case ND_MEMZERO: return
     (println "  mov $%d, %%rcx" e.var.ty.size) ;:
@@ -551,39 +536,39 @@ gen_expr(e@Node fpic bool) =
     (println "  rep stosb");
   case ND_COND: return
     count is c
-    gen_expr e.cond fpic ;:
+    gen_expr e.cond  ;:
     cmp_zero e.cond.ty ;:
     (println "  je .L.else.%d" c) ;:
-    gen_expr e.then fpic ;:
+    gen_expr e.then  ;:
     (println "  jmp .L.end.%d" c) ;:
     (println ".L.else.%d:" c) ;:
-    gen_expr e.els fpic ;:
+    gen_expr e.els  ;:
     (println ".L.end.%d:" c);
   case ND_NOT: return
-    gen_expr e.lhs fpic ;:
+    gen_expr e.lhs  ;:
     cmp_zero e.lhs.ty ;:
     (println "  sete %%al") ;:
     (println "  movzx %%al, %%rax");
   case ND_BITNOT: return
-    gen_expr e.lhs fpic ;:
+    gen_expr e.lhs  ;:
     (println "  not %%rax");
   case ND_LOGAND: return
     count is c
-    gen_expr e.lhs fpic ;:
+    gen_expr e.lhs  ;:
     cmp_zero e.lhs.ty ;:
     (println "  je .L.end.%d" c) ;:
-    gen_expr e.rhs fpic ;:
+    gen_expr e.rhs  ;:
     (println ".L.end.%d:" c);
   case ND_LOGOR: return
     count is c
-    gen_expr e.lhs    fpic ;:
+    gen_expr e.lhs     ;:
     cmp_zero e.lhs.ty          ;:
     (println "  jne .L.end.%ld" c) ;:
-    gen_expr e.rhs fpic ;:
+    gen_expr e.rhs  ;:
     (println ".L.end.%ld:" c);
   case ND_FUNCALL: {
-    let stack_args = push_args e fpic;
-    gen_expr e.lhs fpic;
+    let stack_args = push_args e ;
+    gen_expr e.lhs ;
 
     let gp = 0 fp = 0;
 
@@ -654,11 +639,11 @@ gen_expr(e@Node fpic bool) =
     (println "  lea %s(%%rip), %%rax" e.unique_label);
     return;
   case ND_CAS: {
-    gen_expr e.cas_addr fpic;
+    gen_expr e.cas_addr ;
     push ;
-    gen_expr e.cas_new fpic;
+    gen_expr e.cas_new ;
     push ;
-    gen_expr e.cas_old fpic;
+    gen_expr e.cas_old ;
     (println "  mov %%rax, %%r8");
     load e.cas_old.ty.base;
     pop "%rdx"; // new
@@ -674,9 +659,9 @@ gen_expr(e@Node fpic bool) =
     return;
   ;
   case ND_EXCH: {
-    gen_expr e.lhs fpic;
+    gen_expr e.lhs ;
     push ;
-    gen_expr e.rhs fpic;
+    gen_expr e.rhs ;
     pop "%rdi";
 
     let sz = e.lhs.ty.base.size;
@@ -688,9 +673,9 @@ gen_expr(e@Node fpic bool) =
   switch  e.lhs.ty.kind {
   case TY_FLOAT:
   case TY_DOUBLE: {
-    gen_expr e.rhs fpic;
+    gen_expr e.rhs ;
     pushf ;
-    gen_expr e.lhs fpic;
+    gen_expr e.lhs ;
     popf 1;
 
     let sz = ((e.lhs.ty.kind == TY_FLOAT) ? "ss" : "sd");
@@ -739,8 +724,8 @@ gen_expr(e@Node fpic bool) =
     (error_tok e.tok "invalid expression");
   ;
   case TY_LDOUBLE: {
-    gen_expr e.lhs fpic;
-    gen_expr e.rhs fpic;
+    gen_expr e.lhs ;
+    gen_expr e.rhs ;
 
     switch  e.kind {
     case ND_ADD:
@@ -781,9 +766,9 @@ gen_expr(e@Node fpic bool) =
     (error_tok e.tok "invalid expression");
   ;;
 
-  gen_expr e.rhs fpic;
+  gen_expr e.rhs ;
   push ;
-  gen_expr e.lhs fpic;
+  gen_expr e.lhs ;
   pop "%rdi";
 
   let ax = cast @char 0 di = cast @char 0 dx = cast @char 0;
@@ -882,34 +867,34 @@ gen_expr(e@Node fpic bool) =
   (error_tok e.tok "invalid expression");
 ;
 
-gen_stmt(e@Node fpic bool) =
+gen_stmt(e@Node) =
   (println "  .loc %d %d" e.tok.file.file_no e.tok.line_no);
 
   switch  e.kind {
   case ND_IF: {
     let c = count ;
-    gen_expr e.cond fpic;
+    gen_expr e.cond ;
     cmp_zero e.cond.ty;
     (println "  je  .L.else.%d" c);
-    gen_stmt e.then fpic;
+    gen_stmt e.then ;
     (println "  jmp .L.end.%d" c);
     (println ".L.else.%d:" c);
-    if e.els gen_stmt e.els fpic;
+    if e.els gen_stmt e.els ;
     (println ".L.end.%d:" c);
     return;
   ;
   case ND_FOR: {
     let c = count ;
-    if e.init gen_stmt e.init fpic;
+    if e.init gen_stmt e.init ;
     (println ".L.begin.%d:" c);
     if e.cond{
-      gen_expr e.cond fpic;
+      gen_expr e.cond ;
       cmp_zero e.cond.ty;
       (println "  je %s" e.brk_label);
     ;
-    gen_stmt e.then fpic;
+    gen_stmt e.then ;
     (println "%s:" e.cont_label);
-    if e.inc gen_expr e.inc fpic;
+    if e.inc gen_expr e.inc ;
     (println "  jmp .L.begin.%d" c);
     (println "%s:" e.brk_label);
     return;
@@ -917,16 +902,16 @@ gen_stmt(e@Node fpic bool) =
   case ND_DO: {
     let c = count ;
     (println ".L.begin.%d:" c);
-    gen_stmt e.then fpic;
+    gen_stmt e.then ;
     (println "%s:" e.cont_label);
-    gen_expr e.cond fpic;
+    gen_expr e.cond ;
     cmp_zero e.cond.ty;
     (println "  jne .L.begin.%d" c);
     (println "%s:" e.brk_label);
     return;
   ;
   case ND_SWITCH:
-    gen_expr e.cond fpic;
+    gen_expr e.cond ;
 
     for (let n@Node = e.case_next; n; n = n.case_next) {
       let ax = ((e.cond.ty.size == 8) ? "%rax" : "%eax");
@@ -938,30 +923,30 @@ gen_stmt(e@Node fpic bool) =
 
     if e.default_case (println "  jmp %s" e.default_case.label);
     (println "  jmp %s" e.brk_label);
-    gen_stmt e.then fpic;
+    gen_stmt e.then ;
     (println "%s:" e.brk_label);
     return;
   case ND_CASE:
     (println "%s:" e.label);
-    gen_stmt e.lhs fpic;
+    gen_stmt e.lhs ;
     return;
   case ND_BLOCK:
-    for (let n@Node = e.body; n; n = n.next) gen_stmt n fpic;
+    for (let n@Node = e.body; n; n = n.next) gen_stmt n ;
     return;
   case ND_GOTO:
     (println "  jmp %s" e.unique_label);
     return;
   case ND_GOTO_EXPR:
-    gen_expr e.lhs fpic;
+    gen_expr e.lhs ;
     (println "  jmp *%%rax");
     return;
   case ND_LABEL:
     (println "%s:" e.unique_label);
-    gen_stmt e.lhs fpic;
+    gen_stmt e.lhs ;
     return;
   case ND_RETURN:
     if e.lhs{
-      gen_expr e.lhs fpic;
+      gen_expr e.lhs ;
       let ty = e.lhs.ty;
       switch  ty.kind {
       case TY_STRUCT:
@@ -975,7 +960,7 @@ gen_stmt(e@Node fpic bool) =
     ((println "  jmp .L.return.%s" current_fn.name));
     return;
   case ND_EXPR_STMT:
-    gen_expr e.lhs fpic;
+    gen_expr e.lhs ;
     return;
   case ND_ASM:
     (println "  %s" e.asm_str);
@@ -1023,7 +1008,7 @@ assign_lvar_offsets(prog @Obj) =
   for (let fn @Obj = prog; fn; fn = fn.next)
     assign_one_lvar_offset fn;;
 
-emit_data(prog @Obj fpic bool) =
+emit_data(prog @Obj) =
   for (let var@Obj = prog; var; var = var.next)
     if !(var.is_function || !var.is_definition) {
     if !var.is_export (println "  .local %s" var.name);
@@ -1098,7 +1083,7 @@ store_gp(r int offset int sz int) =
   ;
 ;
 
-emit_text(prog@Obj fpic bool) =
+emit_text(prog@Obj) =
   for (let fn@Obj = prog; fn; fn = fn.next)
     if (!(!fn.is_function || !fn.is_definition) && fn.is_live) {
 
@@ -1156,53 +1141,44 @@ emit_text(prog@Obj fpic bool) =
       (b += 8); (println "  movsd %%xmm7, %d(%%rbp)" b);
     ;
 
-    // Save passed-by-register arguments to the stack
-    let gp = 0 fp = 0;
-    for (let var@Obj = fn.params; var; var = var.next) {
-      if !(var.offset > 0) {
+    (  0 is gp
+       0 is fp
+       fn.params for o
+      (  !!o
+      && o.next
+      :;(  o.offset <= 0
+        && o.ty is t
+          (  t.kind == TY_STRUCT
+          || t.kind == TY_UNION ) ?
+            cast int minl cast long t.size 8l is b
+            (  has_flonum t 0 8 0
+              ?  store_fp (fp :; (fp+=1)) o.offset b
+              :  store_gp (gp :; (gp+=1)) o.offset b )
+            ;:(  (t.size   > 8)
+              && (o.offset + 8) is b
+                 (t.size   - 8) is c
+                 has_flonum t 8 16 0
+                ?  store_fp (fp :; (fp+=1)) b c
+                :  store_gp (gp :; (gp+=1)) b c as void) :
+          (  t.kind == TY_FLOAT
+          || t.kind == TY_DOUBLE )
+            ?  store_fp ((fp :; (fp+=1))) o.offset t.size
+            :  store_gp ((gp :; (gp+=1))) o.offset t.size
+        as void ) )
+    as void )
+    ;: gen_stmt cast @Node fn.body
+    ;: (! strcmp cast @ fn.name "main" && (println "  mov $0, %%rax") as void)
+    ;: (println ".L.return.%s:" fn.name)
+    ;: (println "  mov %%rbp, %%rsp")
+    ;: (println "  pop %%rbp")
+    ;: (println "  ret");;;
 
-        let ty = var.ty;
-
-        switch  ty.kind {
-        case TY_STRUCT:
-        case TY_UNION:
-          assert(ty.size <= 16);
-          let b = ((ty.size < 8) ? ty.size : 8);
-          if has_flonum ty 0 8 0
-            store_fp (fp :; (fp+=1)) var.offset b;
-          else
-            store_gp (gp :; (gp+=1)) var.offset b;
-
-          if (ty.size > 8) {
-            let b = (var.offset + 8) c = (ty.size - 8);
-            if has_flonum ty 8 16 0
-              store_fp (fp :; (fp+=1)) b c;
-            else
-              store_gp (gp :; (gp+=1)) b c;
-          ;
-          break;
-        case TY_FLOAT:
-        case TY_DOUBLE:
-          store_fp ((fp :; (fp+=1))) var.offset ty.size;
-          break;
-        default:
-          store_gp ((gp :; (gp+=1))) var.offset ty.size;;;;
-    gen_stmt cast @Node fn.body fpic;
-    assert(!depth);
-    if ! strcmp cast @ fn.name "main" (println "  mov $0, %%rax");
-    (println ".L.return.%s:" fn.name);
-    (println "  mov %%rbp, %%rsp");
-    (println "  pop %%rbp");
-    (println "  ret");;;
-
-export codegen(prog@Obj out@FILE fpic bool) = return
+export codegen(prog@Obj out@FILE) = return
   (output_file = out) ;:
   get_input_files is files
-  0 is i
-  cast until (!files[i] || (
-    (println "  .file %d \"%s\"" files[i].file_no files[i].name) ;:
-    (i += 1) ;:
-    none)) ;:
+  (  0 for i 
+    (  !!files[i] && (i + 1) :;
+    (println "  .file %d \"%s\"" files[i].file_no files[i].name) ) as void) ;:
   assign_lvar_offsets prog ;:
-  emit_data prog fpic ;:
-  emit_text prog fpic;;
+  emit_data prog  ;:
+  emit_text prog ;;

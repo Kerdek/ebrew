@@ -16,50 +16,55 @@ export
   ty_ldouble  @Type = &new Type { TY_LDOUBLE 16 16     ;;
 
 new_type(kind TypeKind size int alignment int) @Type = return
-  cast @Type calloc 1ul sizeof Type is t
-  (t.kind      = kind) ;:
-  (t.size      = size) ;:
-  (t.alignment = alignment) ;:
-  t;;
+cast @Type calloc 1ul sizeof Type is t t
+:; (t.kind      = kind     )
+:; (t.size      = size     )
+:; (t.alignment = alignment)
+;;
+
 export is_integer(t@ Type) bool = return
-  t.kind is c
-  (c == TY_BOOL  ||
-   c == TY_CHAR  ||
-   c == TY_SHORT ||
-   c == TY_INT   ||
-   c == TY_LONG  ||
-   c == TY_ENUM   );;
+t.kind is c
+(  c == TY_BOOL
+|| c == TY_CHAR
+|| c == TY_SHORT
+|| c == TY_INT
+|| c == TY_LONG
+|| c == TY_ENUM
+ ) ;;
+
 export is_flonum(t@ Type) bool = return
-  t.kind is c
-  (c == TY_FLOAT    ||
-   c == TY_DOUBLE   ||
-   c == TY_LDOUBLE   );;
+t.kind is c
+(  c == TY_FLOAT
+|| c == TY_DOUBLE
+|| c == TY_LDOUBLE
+ ) ;;
+
 export is_numeric(t@ Type) bool = return is_integer t || is_flonum t;;
 format_function_type(p @Type s @char) = for (; p; p = p.next) format_type p s;;
 export format_type(t @Type s @char) = return
-  t.kind is c
-  (c == TY_VOID   ) ? cast void strcat s "void"        :
-  (c == TY_BOOL   ) ? cast void strcat s "bool"        :
-  (c == TY_FLOAT  ) ? cast void strcat s "float"       :
-  (c == TY_DOUBLE ) ? cast void strcat s "double"      :
-  (c == TY_LDOUBLE) ? cast void strcat s "long double" :
-  (c == TY_ENUM   ) ? cast void strcat s "enum"        :
-  (c == TY_STRUCT ) ? cast void strcat s "struct"      :
-  (c == TY_UNION  ) ? cast void strcat s "union"       :
-  (c == TY_CHAR   ) ? (t.is_unsigned && cast void strcat s "unsigned ") ;: cast void strcat s "char"  :
-  (c == TY_SHORT  ) ? (t.is_unsigned && cast void strcat s "unsigned ") ;: cast void strcat s "short" :
-  (c == TY_INT    ) ? (t.is_unsigned && cast void strcat s "unsigned ") ;: cast void strcat s "int"   :
-  (c == TY_LONG   ) ? (t.is_unsigned && cast void strcat s "unsigned ") ;: cast void strcat s "long"  :
-  (c == TY_ARRAY  ) ? cast void strcat s "[]" is r format_type t.base s ;: r:
-  (c == TY_PTR    ) ? cast void strcat s "@"  is r format_type t.base s ;: r:
-  (c == TY_FUNC   ) ? 
-    (cast void strcat s "(")  ;:
-    t.params is p
-      (t.is_variadic && !p && cast void strcat s "void") ;:
-      format_function_type p s ;:
-    cast void strcat s ")" is r
-    format_type t.return_ty s ;: r :
-  cast void strcat s "???";;
+t.kind is c
+( c == TY_VOID    ) ? strcat s "void"        :
+( c == TY_BOOL    ) ? strcat s "bool"        :
+( c == TY_FLOAT   ) ? strcat s "float"       :
+( c == TY_DOUBLE  ) ? strcat s "double"      :
+( c == TY_LDOUBLE ) ? strcat s "long double" :
+( c == TY_ENUM    ) ? strcat s "enum"        :
+( c == TY_STRUCT  ) ? strcat s "struct"      :
+( c == TY_UNION   ) ? strcat s "union"       :
+( c == TY_ARRAY   ) ? strcat s "[]" :; format_type t.base s :
+( c == TY_PTR     ) ? strcat s "@"  :; format_type t.base s :
+( c == TY_CHAR    ) ? (t.is_unsigned && strcat s "unsigned " as void) ;: strcat s "char"  :
+( c == TY_SHORT   ) ? (t.is_unsigned && strcat s "unsigned " as void) ;: strcat s "short" :
+( c == TY_INT     ) ? (t.is_unsigned && strcat s "unsigned " as void) ;: strcat s "int"   :
+( c == TY_LONG    ) ? (t.is_unsigned && strcat s "unsigned " as void) ;: strcat s "long"  :
+( c == TY_FUNC    ) ? 
+  (cast void strcat s "(")  ;:
+  t.params is p
+    (t.is_variadic && !p && strcat s "void" as void) ;:
+    format_function_type p s ;:
+  strcat s ")" :;
+  format_type t.return_ty s :
+strcat s "???" as void;;
 is_function_type_equal(p @Type q@Type) bool = while !(!p || !q) { if ! type_equal p q return false; (p = p.next); (q = q.next);; return p == q;;
 export type_equal(t @Type u @Type) bool = return
   t.kind is c (
@@ -125,8 +130,8 @@ get_common_type(t1@ Type t2@ Type)@ Type =
 
 export usual_arith_conv(lhs@@ Node rhs@@ Node) = return
   get_common_type lhs.ty rhs.ty is ty
-  (!type_equal lhs.ty ty && (lhs@ = new_cast lhs.tok lhs@ ty)) ;:
-  (!type_equal rhs.ty ty && (rhs@ = new_cast rhs.tok rhs@ ty)) ;:
+  (!type_equal lhs.ty ty && (lhs@ = new_cast lhs.tok lhs@ ty) as void) ;:
+  (!type_equal rhs.ty ty && (rhs@ = new_cast rhs.tok rhs@ ty) as void) ;:
   none;;
 
 export add_type(e@ Node) =

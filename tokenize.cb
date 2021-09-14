@@ -276,15 +276,14 @@ export convert_pp_tokens(tok@ Token)  =
 
 add_line_numbers(j@ Token) = return
   1 is n
-  cast void 
   ( current_file.contents for p
     ( !!p@
     && ( p + 1 )
     :; ( p == j.loc
        && (j.line_no = n)
-       :; (j = j.next) )
+       :; (j = j.next) as void)
     :; ( p@ == '\n'
-       && (n += 1) )));;
+       && (n += 1) as void)) as void);;
 
 export tokenize_string_literal(tok@ Token basety@ Type)@ Token =
   let t = cast @Token 0;
@@ -478,7 +477,7 @@ tffile_no int;
 export tokenize_file(path@ char)@ Token = return
   read_file path is p
   (!p ? cast @Token 0 :
-  (! memcmp cast @ p cast @ "\xef\xbb\xbf" 3ul && (p += 3)) ;:
+  (! memcmp cast @ p cast @ "\xef\xbb\xbf" 3ul && (p += 3) as void) ;:
   canonicalize_newline     p ;:
   remove_backslash_newline p ;:
   convert_universal_chars  p ;:

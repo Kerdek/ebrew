@@ -22,7 +22,7 @@ export decode_utf8(new_pos@@ char p@char) unsigned int = return
          (q >= 0xE0) ? 0x4Fu :
          (q >= 0xB0) ? 0x3Fu :
                        0x00u ) ) is len_c
-  (!len_c && (error_at p "invalid UTF-8 sequence")) ;:
+  (!len_c && (error_at p "invalid UTF-8 sequence") as void) ;:
   (len_c & 0x60u) is len
   (len_c & 0x1Fu) is c
   cast void ( 1l for i (i < len && (i + 1l) :;
