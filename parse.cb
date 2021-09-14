@@ -92,8 +92,8 @@ eval2              (node  @Node   label @@@char                               ) 
 eval_rval          (node  @Node   label @@@char                               ) int64_t
 is_const_expr      (node  @Node                                               ) bool
 eval_double        (node  @Node                                               ) double
-new_add            (lhs   @Node   rhs @Node  tok@ Token                       ) @Node
-new_sub            (lhs   @Node   rhs @Node  tok@ Token                       ) @Node
+new_add            (a   @Node   b @Node  tok@ Token                       ) @Node
+new_sub            (a   @Node   b @Node  tok@ Token                       ) @Node
 get_struct_member  (ty    @Type   tok @Token                                  ) @Member;
 
 s1 [1024]char s2 [1024]char;
@@ -171,7 +171,7 @@ just_a(j @Token a @Node b @Node) @Node = return a;;
 just_b(j @Token a @Node b @Node) @Node = return b;;
 
 new_node            (c NodeKind                 j @Token) @Node = return cast @Node calloc 1ul sizeof Node is e (e.kind = c) ;: (e.tok = j) ;: e;;
-new_binary          (c NodeKind a @Node b @Node j @Token) @Node = return new_node c j is e (e.lhs = a) ;: (e.rhs = b) ;: e;;
+new_binary          (c NodeKind a @Node b @Node j @Token) @Node = return new_node c j is e (e.a = a) ;: (e.b = b) ;: e;;
 new_unary           (c NodeKind a @Node j @Token        ) @Node = return new_binary c a cast @Node 0  j;;
 new_nullary         (c NodeKind         j @Token        ) @Node = return new_unary c cast @Node 0  j;;
 new_lit             (l long             j @Token t @Type) @Node = return new_nullary ND_NUM j is e (e.val = l) ;: (e.ty = t) ;: e;;
@@ -866,13 +866,13 @@ stmt(k @@Token) @Node = return
   (consume k k@ "return" ?
     new_node ND_RETURN j is e
     (consume k k@ ";" ? e :
-    (e.lhs = infix k)     ;:
+    (e.a = infix k)     ;:
     expect k ";"          ;:
-    add_type e.lhs        ;:
+    add_type e.a        ;:
     current_fn.ty.return_ty is t
-    (!type_equal current_fn.ty.return_ty e.lhs.ty &&
-      ( format_types e.lhs.ty current_fn.ty.return_ty ;:
-        (error_tok e.lhs.tok "asymmetric return from %s to %s" s1 s2)) as void) ;:
+    (!type_equal current_fn.ty.return_ty e.a.ty &&
+      ( format_types e.a.ty current_fn.ty.return_ty ;:
+        (error_tok e.a.tok "asymmetric return from %s to %s" s1 s2)) as void) ;:
     e) :
   consume k k@ "if" ?
     new_node ND_IF j is e
@@ -899,7 +899,7 @@ stmt(k @@Token) @Node = return
     begin is end
     expect k ":" ;:
     (e.label = new_unique_name) ;:
-    (e.lhs = stmt k) ;:
+    (e.a = stmt k) ;:
     (e.begin = begin) ;:
     (e.end = end) ;:
     (e.case_next = current_switch.case_next) ;:
@@ -911,7 +911,7 @@ stmt(k @@Token) @Node = return
     new_node ND_CASE j is e
     expect k ":" ;:
     (e.label = new_unique_name) ;:
-    (e.lhs = stmt k) ;:
+    (e.a = stmt k) ;:
     (current_switch.default_case = e) ;:
     e :
   consume k k@ "for" ?
@@ -1018,7 +1018,7 @@ expr_stmt(k @@Token)@ Node = return
     (k@ = k.next) ;:
     e :
   new_node ND_EXPR_STMT k@ is e
-  (e.lhs = quaternary k) ;:
+  (e.a = quaternary k) ;:
   expect k ";" ;:
   e;;
 
@@ -1036,54 +1036,54 @@ expr_stmt(k @@Token)@ Node = return
 eval2(e@ Node label @@@char) int64_t = return
   add_type e ;:
   is_flonum e.ty        ? cast long eval_double e            :
-  (e.kind == ND_NOT   ) ? cast long !eval e.lhs              :
-  (e.kind == ND_ADD   ) ? (eval2 e.lhs label + eval e.rhs)   :
-  (e.kind == ND_SUB   ) ? (eval2 e.lhs label - eval e.rhs)   :
-  (e.kind == ND_NEG   ) ? -eval e.lhs                        :
-  (e.kind == ND_MUL   ) ? (eval e.lhs *  eval e.rhs)         :
-  (e.kind == ND_BITAND) ? (eval e.lhs &  eval e.rhs)         :
-  (e.kind == ND_BITOR ) ? (eval e.lhs |  eval e.rhs)         :
-  (e.kind == ND_BITXOR) ? (eval e.lhs ^  eval e.rhs)         :
-  (e.kind == ND_SHL   ) ? (eval e.lhs << eval e.rhs)         :
-  (e.kind == ND_EQ    ) ? (eval e.lhs == eval e.rhs as long) :
-  (e.kind == ND_NE    ) ? (eval e.lhs != eval e.rhs as long) :
-  (e.kind == ND_SHR   ) ? (e.lhs.ty.is_unsigned &&
-                           e.ty.size == 8        )  ? (cast unsigned long eval e.lhs >> cast unsigned long eval e.rhs as long) :
-                                                      (                   eval e.lhs >>                    eval e.rhs        ) :
-  (e.kind == ND_DIV   ) ?  e.lhs.ty.is_unsigned     ? (cast unsigned long eval e.lhs /  cast unsigned long eval e.rhs as long) :
-                                                      (                   eval e.lhs /                     eval e.rhs        ) :
-  (e.kind == ND_MOD   ) ?  e.lhs.ty.is_unsigned     ? (cast unsigned long eval e.lhs %  cast unsigned long eval e.rhs as long) :
-                                                      (                   eval e.lhs %                     eval e.rhs        ) :
-  (e.kind == ND_LT    ) ?  e.lhs.ty.is_unsigned     ? (cast unsigned long eval e.lhs <  cast unsigned long eval e.rhs as long) :
-                                                      (                   eval e.lhs <                     eval e.rhs as long) :
-  (e.kind == ND_LE    ) ?  e.lhs.ty.is_unsigned     ? (cast unsigned long eval e.lhs <= cast unsigned long eval e.rhs as long) :
-                                                      (                   eval e.lhs <=                    eval e.rhs as long) :
-  (e.kind == ND_GT    ) ?  e.lhs.ty.is_unsigned     ? (cast unsigned long eval e.lhs >  cast unsigned long eval e.rhs as long) :
-                                                      (                   eval e.lhs >                     eval e.rhs as long) :
-  (e.kind == ND_GE    ) ?  e.lhs.ty.is_unsigned     ? (cast unsigned long eval e.lhs >= cast unsigned long eval e.rhs as long) :
-                                                      (                   eval e.lhs >=                    eval e.rhs as long) :
+  (e.kind == ND_NOT   ) ? cast long !eval e.a              :
+  (e.kind == ND_ADD   ) ? (eval2 e.a label + eval e.b)   :
+  (e.kind == ND_SUB   ) ? (eval2 e.a label - eval e.b)   :
+  (e.kind == ND_NEG   ) ? -eval e.a                        :
+  (e.kind == ND_MUL   ) ? (eval e.a *  eval e.b)         :
+  (e.kind == ND_BITAND) ? (eval e.a &  eval e.b)         :
+  (e.kind == ND_BITOR ) ? (eval e.a |  eval e.b)         :
+  (e.kind == ND_BITXOR) ? (eval e.a ^  eval e.b)         :
+  (e.kind == ND_SHL   ) ? (eval e.a << eval e.b)         :
+  (e.kind == ND_EQ    ) ? (eval e.a == eval e.b as long) :
+  (e.kind == ND_NE    ) ? (eval e.a != eval e.b as long) :
+  (e.kind == ND_SHR   ) ? (e.a.ty.is_unsigned &&
+                           e.ty.size == 8        )  ? (cast unsigned long eval e.a >> cast unsigned long eval e.b as long) :
+                                                      (                   eval e.a >>                    eval e.b        ) :
+  (e.kind == ND_DIV   ) ?  e.a.ty.is_unsigned     ? (cast unsigned long eval e.a /  cast unsigned long eval e.b as long) :
+                                                      (                   eval e.a /                     eval e.b        ) :
+  (e.kind == ND_MOD   ) ?  e.a.ty.is_unsigned     ? (cast unsigned long eval e.a %  cast unsigned long eval e.b as long) :
+                                                      (                   eval e.a %                     eval e.b        ) :
+  (e.kind == ND_LT    ) ?  e.a.ty.is_unsigned     ? (cast unsigned long eval e.a <  cast unsigned long eval e.b as long) :
+                                                      (                   eval e.a <                     eval e.b as long) :
+  (e.kind == ND_LE    ) ?  e.a.ty.is_unsigned     ? (cast unsigned long eval e.a <= cast unsigned long eval e.b as long) :
+                                                      (                   eval e.a <=                    eval e.b as long) :
+  (e.kind == ND_GT    ) ?  e.a.ty.is_unsigned     ? (cast unsigned long eval e.a >  cast unsigned long eval e.b as long) :
+                                                      (                   eval e.a >                     eval e.b as long) :
+  (e.kind == ND_GE    ) ?  e.a.ty.is_unsigned     ? (cast unsigned long eval e.a >= cast unsigned long eval e.b as long) :
+                                                      (                   eval e.a >=                    eval e.b as long) :
   (e.kind == ND_COND  ) ? !!eval e.cond ? eval2 e.then label :
                                           eval2 e.els  label :
-  (e.kind == ND_COMMA ) ? eval2 e.rhs label :
-  (e.kind == ND_THE   ) ? eval2 e.lhs label :
-  (e.kind == ND_BITNOT) ? ~ eval e.lhs      :
-  (e.kind == ND_LOGAND) ? (!!eval e.lhs &&
-                             eval e.rhs  )  :
-  (e.kind == ND_LOGOR ) ? (  eval e.lhs ||
-                             eval e.rhs  )  :
+  (e.kind == ND_COMMA ) ? eval2 e.b label :
+  (e.kind == ND_THE   ) ? eval2 e.a label :
+  (e.kind == ND_BITNOT) ? ~ eval e.a      :
+  (e.kind == ND_LOGAND) ? (!!eval e.a &&
+                             eval e.b  )  :
+  (e.kind == ND_LOGOR ) ? (  eval e.a ||
+                             eval e.b  )  :
   (e.kind == ND_CAST  ) ?
-    eval2 e.lhs label is l
+    eval2 e.a label is l
     (!is_integer e.ty ? l :
     (e.ty.size == 1) ? (e.ty.is_unsigned ? cast long cast uint8_t  the long l : cast long cast int8_t  the long l) :
     (e.ty.size == 2) ? (e.ty.is_unsigned ? cast long cast uint16_t the long l : cast long cast int16_t the long l) :
     (e.ty.size == 4) ? (e.ty.is_unsigned ? cast long cast uint32_t the long l : cast long cast int32_t the long l) :
                                                                             l)                                      :
-  (e.kind == ND_ADDR     ) ? eval_rval e.lhs label :
+  (e.kind == ND_ADDR     ) ? eval_rval e.a label :
   (e.kind == ND_LABEL_VAL) ? (label@ = &e.unique_label) ;: 0l :
   (e.kind == ND_MEMBER   ) ?
     !label ? (error_tok e.tok "not a compile-time constant") ;: 0l :
     (e.ty.kind != TY_ARRAY) ? (error_tok e.tok "invalid initializer") ;: 0l :
-    (eval_rval e.lhs label + e.member.offset) :
+    (eval_rval e.a label + e.member.offset) :
   (e.kind == ND_VAR      ) ?
     !label ? (error_tok e.tok "not a compile-time constant") ;: 0l :
     (e.var.ty.kind != TY_ARRAY && e.var.ty.kind != TY_FUNC) ? (error_tok e.tok "invalid initializer") ;: 0l :
@@ -1096,8 +1096,8 @@ eval_rval(e@ Node label @@@char) long = return
   (e.kind == ND_VAR) ?
     e.var.is_local ? (error_tok e.tok "not a compile-time constant") ;: 0l :
     (label@ = &e.var.name) ;: 0l :
-  (e.kind == ND_DEREF ) ? (eval2     e.lhs label                  ) :
-  (e.kind == ND_MEMBER) ? (eval_rval e.lhs label + e.member.offset) :
+  (e.kind == ND_DEREF ) ? (eval2     e.a label                  ) :
+  (e.kind == ND_MEMBER) ? (eval_rval e.a label + e.member.offset) :
   (error_tok e.tok "invalid initializer") ;:
   0l;;
 is_const_expr(e@ Node) bool = return
@@ -1106,7 +1106,7 @@ is_const_expr(e@ Node) bool = return
     e.kind == ND_NOT    ||
     e.kind == ND_BITNOT ||
     e.kind == ND_THE    ||
-    e.kind == ND_CAST    )  ? is_const_expr e.lhs :
+    e.kind == ND_CAST    )  ? is_const_expr e.a :
   ( e.kind == ND_ADD    ||
     e.kind == ND_SUB    ||
     e.kind == ND_MUL    ||
@@ -1123,24 +1123,24 @@ is_const_expr(e@ Node) bool = return
     e.kind == ND_GT     ||
     e.kind == ND_GE     ||
     e.kind == ND_LOGAND ||
-    e.kind == ND_LOGOR   )  ? (is_const_expr e.lhs  && is_const_expr e.rhs                           ) :
+    e.kind == ND_LOGOR   )  ? (is_const_expr e.a  && is_const_expr e.b                           ) :
   ( e.kind == ND_COND    )  ? (is_const_expr e.cond && is_const_expr (!!eval e.cond ? e.then : e.els)) :
   ( e.kind == ND_NUM     ) ;;
 export const_expr(k@@ Token) int64_t = return eval tertiary k;;
 eval_double(e@ Node) double = return
   add_type e ;:
   is_integer e.ty ? cast double eval e :
-  (e.kind == ND_ADD  )  ? (  eval_double e.lhs  + eval_double      e.rhs ) :
-  (e.kind == ND_SUB  )  ? (  eval_double e.lhs  - eval_double      e.rhs ) :
-  (e.kind == ND_MUL  )  ? (  eval_double e.lhs  * eval_double      e.rhs ) :
-  (e.kind == ND_DIV  )  ? (  eval_double e.lhs  / eval_double      e.rhs ) :
-  (e.kind == ND_NEG  )  ?   -eval_double e.lhs                             :
+  (e.kind == ND_ADD  )  ? (  eval_double e.a  + eval_double      e.b ) :
+  (e.kind == ND_SUB  )  ? (  eval_double e.a  - eval_double      e.b ) :
+  (e.kind == ND_MUL  )  ? (  eval_double e.a  * eval_double      e.b ) :
+  (e.kind == ND_DIV  )  ? (  eval_double e.a  / eval_double      e.b ) :
+  (e.kind == ND_NEG  )  ?   -eval_double e.a                             :
   (e.kind == ND_NUM  )  ?    cast double e.fval                            :
   (e.kind == ND_COND )  ?  !!eval_double e.cond ? eval_double      e.then  :
                                                   eval_double      e.els   :
   (e.kind == ND_THE ||
-   e.kind == ND_CAST )  ?  is_flonum e.lhs.ty   ? eval_double      e.lhs   :
-                                                  cast double eval e.lhs   :
+   e.kind == ND_CAST )  ?  is_flonum e.a.ty   ? eval_double      e.a   :
+                                                  cast double eval e.a   :
   (error_tok e.tok "not a compile-time constant") ;:
   0.0;;
 
@@ -1165,7 +1165,7 @@ nullary_type   (k @@Token          op @char                                 new_
 unary          (k @@Token          op @char                                 new_@ (j @Token a @Node                       ) @Node next@ (k @@Token) @Node) @Node = return equal k@ op && (advance k is j                                 new_@ j   next@ k                   );;
 
 unary_type     (k @@Token          op @char                                 new_@ (j @Token a @Node         t @Type       ) @Node next@ (k @@Token) @Node) @Node = return equal k@ op && (advance k is j type_suffix k is t              new_@ j   next@ k t                 );;
-binary_right   (k @@Token a @@Node op @char                                 new_@ (j @Token a @Node b @Node               ) @Node rhs @ (k @@Token) @Node) bool  = return equal k@ op && (advance k is j                          (a@ =  new_@ j a@ rhs@ k) ;: true            );;
+binary_right   (k @@Token a @@Node op @char                                 new_@ (j @Token a @Node b @Node               ) @Node b @ (k @@Token) @Node) bool  = return equal k@ op && (advance k is j                          (a@ =  new_@ j a@ b@ k) ;: true            );;
 binary_left    (k @@Token a @Node  op @char                                 new_@ (j @Token a @Node b @Node               ) @Node next@ (k @@Token) @Node) @Node = return equal k@ op && (advance k is j                                 new_@ j a next@ k                   );;
 binary_left_var(k @@Token a @Node  op @char lvar_@ (k @@Token t @Type) @Obj new_@ (j @Token a @Node b @Node         o @Obj) @Node next@ (k @@Token) @Node) @Node = return equal k@ op && (advance k is j enter_scope ;: lvar_@ k a.ty is o new_@ j a next@ k   o :; leave_scope);;
 

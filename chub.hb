@@ -22,78 +22,33 @@ maxul(a unsigned long b unsigned long) unsigned long = (a > b) ? a : b;;
 minul(a unsigned long b unsigned long) unsigned long = (a < b) ? a : b;;
 
 type
-  NodeKind enum 
-    ND_NULL_EXPR
-    ND_ADD
-    ND_SUB
-    ND_MUL
-    ND_DIV
-    ND_NEG
-    ND_MOD
-    ND_BITAND
-    ND_BITOR
-    ND_BITXOR
-    ND_SHL
-    ND_SHR
-    ND_EQ
-    ND_NE
-    ND_LT
-    ND_LE
-    ND_GT
-    ND_GE
-    ND_ASSIGN
-    ND_COND
-    ND_COMMA
-    ND_MEMBER
-    ND_ADDR
-    ND_DEREF
-    ND_NOT
-    ND_BITNOT
-    ND_LOGAND
-    ND_LOGOR
-    ND_RETURN
-    ND_IF
-    ND_FOR
-    ND_DO
-    ND_SWITCH
-    ND_CASE
-    ND_BLOCK
-    ND_GOTO
-    ND_GOTO_EXPR
-    ND_LABEL
-    ND_LABEL_VAL
-    ND_FUNCALL
-    ND_EXPR_STMT
-    ND_STMT_EXPR
-    ND_VAR
-    ND_NUM
-    ND_CAST
-    ND_MEMZERO
-    ND_ASM
-    ND_CAS
-    ND_EXCH
-    ND_UNTIL
-    ND_REPEAT
-    ND_THE
-    ND_THEN
+  NodeKind enum
+    ND_NULL_EXPR  ND_ADD        ND_SUB     ND_MUL        ND_DIV
+    ND_NEG        ND_MOD        ND_BITAND  ND_BITOR      ND_BITXOR
+    ND_SHL        ND_SHR        ND_EQ      ND_NE         ND_LT
+    ND_LE         ND_GT         ND_GE      ND_ASSIGN     ND_COND
+    ND_COMMA      ND_MEMBER     ND_ADDR    ND_DEREF      ND_NOT
+    ND_BITNOT     ND_LOGAND     ND_LOGOR   ND_RETURN     ND_IF
+    ND_FOR        ND_DO         ND_SWITCH  ND_CASE       ND_BLOCK
+    ND_GOTO       ND_GOTO_EXPR  ND_LABEL   ND_LABEL_VAL  ND_FUNCALL
+    ND_EXPR_STMT  ND_STMT_EXPR  ND_VAR     ND_NUM        ND_CAST
+    ND_MEMZERO    ND_ASM        ND_CAS     ND_EXCH       ND_UNTIL
+    ND_REPEAT     ND_THE        ND_THEN
   ;
 
-  TypeKind enum 
-    TY_VOID
-    TY_BOOL
-    TY_CHAR
-    TY_SHORT
-    TY_INT
-    TY_LONG
-    TY_FLOAT
-    TY_DOUBLE
-    TY_LDOUBLE
-    TY_FUNC
-    TY_ARRAY
-    TY_ENUM
-    TY_STRUCT
-    TY_UNION
-    TY_PTR
+  TypeKind enum
+    TY_VOID    TY_BOOL    TY_CHAR
+    TY_SHORT   TY_INT     TY_LONG
+    TY_FLOAT   TY_DOUBLE  TY_LDOUBLE
+    TY_FUNC    TY_ARRAY   TY_ENUM
+    TY_STRUCT  TY_UNION   TY_PTR
+  ;
+
+  TokenKind enum
+    TK_IDENT   TK_PUNCT
+    TK_KEYWORD TK_STR
+    TK_NUM     TK_PP_NUM
+    TK_EOF
   ;
 
   StringArray struct {
@@ -116,14 +71,7 @@ type
   }
 
   Token struct {
-    kind        enum 
-      TK_IDENT
-      TK_PUNCT
-      TK_KEYWORD
-      TK_STR
-      TK_NUM
-      TK_PP_NUM
-      TK_EOF;
+    kind        TokenKind
     next       @same
     val         int64_t
     fval        long double
@@ -213,8 +161,8 @@ type
     next          @same
     ty            @Type
     tok           @Token
-    lhs           @same
-    rhs           @same
+    a             @same
+    b             @same
     cond          @same
     then          @same
     els           @same
@@ -313,7 +261,7 @@ export array_of         (base      @Type size  int ) @Type;
 export enum_type        (           void           ) @Type;
 export struct_type      (           void           ) @Type;
 export add_type         (node                 @Node)      ;
-export usual_arith_conv (lhs      @@Node rhs @@Node)      ;
+export usual_arith_conv (a      @@Node b @@Node)      ;
 
 export codegen(prog@ Obj out@ FILE);
 export align_to(n int alignment int)int;

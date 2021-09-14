@@ -128,16 +128,16 @@ get_common_type(t1@ Type t2@ Type)@ Type =
   (                          t2.kind == TY_BOOL   ) ? t2                        :
                                                     t1                        ;;
 
-export usual_arith_conv(lhs@@ Node rhs@@ Node) = return
-  get_common_type lhs.ty rhs.ty is ty
-  (!type_equal lhs.ty ty && (lhs@ = new_cast lhs.tok lhs@ ty) as void) ;:
-  (!type_equal rhs.ty ty && (rhs@ = new_cast rhs.tok rhs@ ty) as void) ;:
+export usual_arith_conv(a@@ Node b@@ Node) = return
+  get_common_type a.ty b.ty is ty
+  (!type_equal a.ty ty && (a@ = new_cast a.tok a@ ty) as void) ;:
+  (!type_equal b.ty ty && (b@ = new_cast b.tok b@ ty) as void) ;:
   none;;
 
 export add_type(e@ Node) =
   if (!e || !!e.ty) return;
-  add_type e.lhs ;
-  add_type e.rhs ;
+  add_type e.a ;
+  add_type e.b ;
   add_type e.cond;
   add_type e.then;
   add_type e.els ;
@@ -153,11 +153,11 @@ export add_type(e@ Node) =
    e.kind == ND_MOD      ||
    e.kind == ND_BITAND   ||
    e.kind == ND_BITOR    ||
-   e.kind == ND_BITXOR)   ? usual_arith_conv &e.lhs &e.rhs ;: (e.ty = e.lhs.ty)                            :
-  (e.kind == ND_NEG   )   ? (e.ty = e.lhs.ty)                                                                    :
-  (e.kind == ND_ASSIGN)   ? (e.lhs.ty.kind == TY_ARRAY)                                                           ? (error_tok e.lhs.tok "not an lvalue")                   :
-                             (e.lhs.ty.kind != TY_STRUCT && ! type_equal e.rhs.ty e.lhs.ty)               ? (e.rhs = new_cast e.tok e.rhs e.lhs.ty)                      :
-                                                                                                                      (e.ty = e.lhs.ty)                                         :
+   e.kind == ND_BITXOR)   ? usual_arith_conv &e.a &e.b ;: (e.ty = e.a.ty)                            :
+  (e.kind == ND_NEG   )   ? (e.ty = e.a.ty)                                                                    :
+  (e.kind == ND_ASSIGN)   ? (e.a.ty.kind == TY_ARRAY)                                                           ? (error_tok e.a.tok "not an lvalue")                   :
+                             (e.a.ty.kind != TY_STRUCT && ! type_equal e.b.ty e.a.ty)               ? (e.b = new_cast e.tok e.b e.a.ty)                      :
+                                                                                                                      (e.ty = e.a.ty)                                         :
   (e.kind == ND_EQ       ||
    e.kind == ND_NE       ||
    e.kind == ND_LT       ||
@@ -165,20 +165,20 @@ export add_type(e@ Node) =
    e.kind == ND_GT       ||
    e.kind == ND_GE     )  ? (e.ty = ty_bool)                                                                    :
   (e.kind == ND_LOGOR    || 
-   e.kind == ND_LOGAND )  ? usual_arith_conv &e.lhs &e.rhs ;: (e.ty = e.lhs.ty)                          :
+   e.kind == ND_LOGAND )  ? usual_arith_conv &e.a &e.b ;: (e.ty = e.a.ty)                          :
   (e.kind == ND_FUNCALL)  ? (e.ty = e.func_ty.return_ty)                                                     :
   (e.kind == ND_NOT    )  ? (e.ty = ty_bool)                                                                    :
   (e.kind == ND_BITNOT   ||
    e.kind == ND_SHL      ||
-   e.kind == ND_SHR    )  ? (e.ty = e.lhs.ty)                                                                :
+   e.kind == ND_SHR    )  ? (e.ty = e.a.ty)                                                                :
   (e.kind == ND_VAR    )  ? (e.ty = e.var.ty)                                                                :
   (e.kind == ND_COND   )  ? (e.then.ty.kind == TY_VOID || e.els.ty.kind == TY_VOID)                            ? (e.ty = ty_void)                                             :
                                                                                                                       usual_arith_conv &e.then &e.els ;: (e.ty = e.then.ty):
-  (e.kind == ND_COMMA   ) ? (e.ty = e.rhs.ty)                                                                :
-    //if e.lhs.ty/*.kind != TY_VOID*/ error_tok(e.tok "value may not be discarded by comma expression without a cast to void");
+  (e.kind == ND_COMMA   ) ? (e.ty = e.b.ty)                                                                :
+    //if e.a.ty/*.kind != TY_VOID*/ error_tok(e.tok "value may not be discarded by comma expression without a cast to void");
   (e.kind == ND_MEMBER  ) ? (e.ty = e.member.ty as @Type)                                                             :
-  (e.kind == ND_ADDR    ) ? (e.ty = pointer_to ((e.lhs.ty.kind == TY_ARRAY) ? e.lhs.ty.base : e.lhs.ty)) :
-  (e.kind == ND_DEREF   ) ? !e.lhs.ty.base ? (error_tok e.tok "invalid pointer dereference") : (e.lhs.ty.base.kind == TY_VOID) ? (error_tok e.tok "dereferencing a void pointer") : (e.ty = e.lhs.ty.base) :
+  (e.kind == ND_ADDR    ) ? (e.ty = pointer_to ((e.a.ty.kind == TY_ARRAY) ? e.a.ty.base : e.a.ty)) :
+  (e.kind == ND_DEREF   ) ? !e.a.ty.base ? (error_tok e.tok "invalid pointer dereference") : (e.a.ty.base.kind == TY_VOID) ? (error_tok e.tok "dereferencing a void pointer") : (e.ty = e.a.ty.base) :
   (e.kind == ND_CAS     ) ?
     add_type e.cas_addr ;:
     add_type e.cas_old  ;:
@@ -187,4 +187,4 @@ export add_type(e@ Node) =
     (e.cas_addr.ty.kind != TY_PTR) ? (error_tok e.cas_addr.tok "pointer expected") :
     (e.cas_old .ty.kind != TY_PTR) ? (error_tok e.cas_old .tok "pointer expected") :
                                       none                                                   :
-  (e.kind == ND_EXCH)     ? (e.lhs.ty.kind != TY_PTR) ? (error_tok e.cas_addr.tok "pointer expected") : (e.ty = e.lhs.ty.base) : none;;;
+  (e.kind == ND_EXCH)     ? (e.a.ty.kind != TY_PTR) ? (error_tok e.cas_addr.tok "pointer expected") : (e.ty = e.a.ty.base) : none;;;

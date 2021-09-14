@@ -289,10 +289,10 @@ join_tokens(tok@Token end@Token)@char =
 stringize(hash@Token arg@Token)@Token =
   let s = join_tokens arg cast @Token 0;
   return new_str_token s hash;;
-paste(lhs@Token rhs@Token)@Token =
-  let buf = (format "%.*s%.*s" lhs.len lhs.loc rhs.len rhs.loc);
-  let tok = tokenize new_file lhs.file.name lhs.file.file_no buf;
-  if (tok.next.kind != TK_EOF) (error_tok lhs "pasting forms '%s', an invalid token" buf);
+paste(a@Token b@Token)@Token =
+  let buf = (format "%.*s%.*s" a.len a.loc b.len b.loc);
+  let tok = tokenize new_file a.file.name a.file.file_no buf;
+  if (tok.next.kind != TK_EOF) (error_tok a "pasting forms '%s', an invalid token" buf);
   return tok;;
 has_varargs(args @MacroArg) bool =
   for (let a @MacroArg = args; a; a = a.next) if ! strcmp cast @ a.name "__VA_ARGS__" return a.tok.kind != TK_EOF;
@@ -323,12 +323,12 @@ subst(tok@Token args @MacroArg include_paths@StringArray)@ Token =
     else {
       let arg = find_arg args tok;
       if (!!arg && equal tok.next "##") {
-        let rhs = tok.next.next;
+        let b = tok.next.next;
         if (arg.tok.kind == TK_EOF) {
-          let arg2 = find_arg args rhs;
+          let arg2 = find_arg args b;
           if arg2 for (let t @Token= arg2.tok; t.kind != TK_EOF; t = t.next) { (cur.next = copy_token t); (cur = cur.next);;
-          else { (cur.next = copy_token rhs); (cur = cur.next);;
-          (tok = rhs.next);;
+          else { (cur.next = copy_token b); (cur = cur.next);;
+          (tok = b.next);;
         else {
           for (let t @Token= arg.tok; t.kind != TK_EOF; t = t.next) { (cur.next = copy_token t); (cur = cur.next);;
           (tok = tok.next);;;

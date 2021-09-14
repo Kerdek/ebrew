@@ -53,11 +53,11 @@ gen_addr(e @Node) = return
   (  e.var.is_local
   && (println "  lea %d(%%rbp), %%rax" e.var.offset)
   || (println "  mov %s@GOTPCREL(%%rip), %%rax" e.var.name) as void) :
-  ( e.kind    == ND_COMMA   ) ? gen_expr e.lhs   ;: gen_expr e.rhs  :
-  ( e.kind    == ND_THEN    ) ? gen_expr e.lhs   ;: push ;: gen_expr e.rhs  ;: pop "%rax" :
-  ( e.kind    == ND_MEMBER  ) ? gen_addr e.lhs   ;: (println "  add $%d, %%rax" e.member.offset ) :
+  ( e.kind    == ND_COMMA   ) ? gen_expr e.a   ;: gen_expr e.b  :
+  ( e.kind    == ND_THEN    ) ? gen_expr e.a   ;: push ;: gen_expr e.b  ;: pop "%rax" :
+  ( e.kind    == ND_MEMBER  ) ? gen_addr e.a   ;: (println "  add $%d, %%rax" e.member.offset ) :
   ( e.kind    == ND_THE    ||
-    e.kind    == ND_DEREF   ) ? gen_expr e.lhs  :
+    e.kind    == ND_DEREF   ) ? gen_expr e.a  :
   ( e.kind    == ND_FUNCALL||
     e.kind    == ND_COND   ||
     e.kind    == ND_UNTIL  ||
@@ -409,7 +409,7 @@ gen_expr(e @Node) =
   case ND_NULL_EXPR:
     return;
   case ND_THE:
-    return gen_expr e.lhs ;
+    return gen_expr e.a ;
   case ND_NUM: {
     switch  e.ty.kind {
     case TY_FLOAT: {
@@ -441,7 +441,7 @@ gen_expr(e @Node) =
     return;
   ;
   case ND_NEG:
-    gen_expr e.lhs ;
+    gen_expr e.a ;
     switch  e.ty.kind {
     case TY_FLOAT:
       (println "  mov $1, %%rax");
@@ -474,17 +474,17 @@ gen_expr(e @Node) =
         (println "  sar $%d, %%rax" (64 - mem.bit_width) ) :
       none );
   case ND_DEREF: return
-    gen_expr e.lhs  ;:
+    gen_expr e.a  ;:
     load e.ty;
   case ND_ADDR: return
-    gen_addr e.lhs ;
+    gen_addr e.a ;
   case ND_ASSIGN: return
-    gen_addr e.lhs  ;:
+    gen_addr e.a  ;:
     push ;:
-    gen_expr e.rhs  ;:
-    (e.lhs.kind == ND_MEMBER && e.lhs.member.is_bitfield) ?
+    gen_expr e.b  ;:
+    (e.a.kind == ND_MEMBER && e.a.member.is_bitfield) ?
       (println "  mov %%rax, %%r8") ;:
-      e.lhs.member is mem
+      e.a.member is mem
       (println "  mov %%rax, %%rdi") ;:
       (println "  and $%ld, %%rdi" ((1L << mem.bit_width) - 1)) ;:
       (println "  shl $%d, %%rdi" mem.bit_offset) ;:
@@ -493,42 +493,42 @@ gen_expr(e @Node) =
       (println "  mov $%ld, %%r9" ~(((1L << mem.bit_width) - 1) << mem.bit_offset)) ;:
       (println "  and %%r9, %%rax") ;:
       (println "  or %%rdi, %%rax") ;:
-      store e.lhs.ty ;:
+      store e.a.ty ;:
       (println "  mov %%r8, %%rax" ):
-    store e.lhs.ty;
+    store e.a.ty;
   case ND_THE:
-    return gen_expr e.lhs ;
+    return gen_expr e.a ;
   case ND_UNTIL: return
     count is c
     (println ".L.until.%d:" c) ;:
-    gen_expr e.lhs  ;:
-    cmp_zero e.lhs.ty ;:
+    gen_expr e.a  ;:
+    cmp_zero e.a.ty ;:
     (println "  je .L.until.%d" c);
   case ND_REPEAT: return
     count is c
     (println "  lea %d(%%rbp), %%rax" e.var.offset ) ;:
     push ;:
-    gen_expr e.lhs  ;:
+    gen_expr e.a  ;:
     (println ".L.repeat.%d:" c) ;:
-    store e.lhs.ty ;:
+    store e.a.ty ;:
     (println "  lea %d(%%rbp), %%rax" e.var.offset ) ;:
     push ;:
-    gen_expr e.rhs  ;:
-    cmp_zero e.rhs.ty ;:
+    gen_expr e.b  ;:
+    cmp_zero e.b.ty ;:
     (println "  jne .L.repeat.%d" c) ;:
     pop "%rax" ;:
     (println "  mov 0(%%rax), %%rax");
   case ND_COMMA: return
-    gen_expr e.lhs  ;:
-    gen_expr e.rhs ;
+    gen_expr e.a  ;:
+    gen_expr e.b ;
   case ND_THEN: return
-    gen_expr e.lhs  ;:
+    gen_expr e.a  ;:
     push ;:
-    gen_expr e.rhs  ;:
+    gen_expr e.b  ;:
     pop "%rax";
   case ND_CAST: return
-    gen_expr e.lhs  ;:
-    gen_cast e.lhs.ty e.ty;
+    gen_expr e.a  ;:
+    gen_cast e.a.ty e.ty;
   case ND_MEMZERO: return
     (println "  mov $%d, %%rcx" e.var.ty.size) ;:
     (println "  lea %d(%%rbp), %%rdi" e.var.offset) ;:
@@ -545,30 +545,30 @@ gen_expr(e @Node) =
     gen_expr e.els  ;:
     (println ".L.end.%d:" c);
   case ND_NOT: return
-    gen_expr e.lhs  ;:
-    cmp_zero e.lhs.ty ;:
+    gen_expr e.a  ;:
+    cmp_zero e.a.ty ;:
     (println "  sete %%al") ;:
     (println "  movzx %%al, %%rax");
   case ND_BITNOT: return
-    gen_expr e.lhs  ;:
+    gen_expr e.a  ;:
     (println "  not %%rax");
   case ND_LOGAND: return
     count is c
-    gen_expr e.lhs  ;:
-    cmp_zero e.lhs.ty ;:
+    gen_expr e.a  ;:
+    cmp_zero e.a.ty ;:
     (println "  je .L.end.%d" c) ;:
-    gen_expr e.rhs  ;:
+    gen_expr e.b  ;:
     (println ".L.end.%d:" c);
   case ND_LOGOR: return
     count is c
-    gen_expr e.lhs     ;:
-    cmp_zero e.lhs.ty          ;:
+    gen_expr e.a     ;:
+    cmp_zero e.a.ty          ;:
     (println "  jne .L.end.%ld" c) ;:
-    gen_expr e.rhs  ;:
+    gen_expr e.b  ;:
     (println ".L.end.%ld:" c);
   case ND_FUNCALL: {
     let stack_args = push_args e ;
-    gen_expr e.lhs ;
+    gen_expr e.a ;
 
     let gp = 0 fp = 0;
 
@@ -659,26 +659,26 @@ gen_expr(e @Node) =
     return;
   ;
   case ND_EXCH: {
-    gen_expr e.lhs ;
+    gen_expr e.a ;
     push ;
-    gen_expr e.rhs ;
+    gen_expr e.b ;
     pop "%rdi";
 
-    let sz = e.lhs.ty.base.size;
+    let sz = e.a.ty.base.size;
     (println "  xchg %s, (%%rdi)" reg_ax sz);
     return;
   ;
   ;
 
-  switch  e.lhs.ty.kind {
+  switch  e.a.ty.kind {
   case TY_FLOAT:
   case TY_DOUBLE: {
-    gen_expr e.rhs ;
+    gen_expr e.b ;
     pushf ;
-    gen_expr e.lhs ;
+    gen_expr e.a ;
     popf 1;
 
-    let sz = ((e.lhs.ty.kind == TY_FLOAT) ? "ss" : "sd");
+    let sz = ((e.a.ty.kind == TY_FLOAT) ? "ss" : "sd");
 
     switch  e.kind {
     case ND_ADD:
@@ -724,8 +724,8 @@ gen_expr(e @Node) =
     (error_tok e.tok "invalid expression");
   ;
   case TY_LDOUBLE: {
-    gen_expr e.lhs ;
-    gen_expr e.rhs ;
+    gen_expr e.a ;
+    gen_expr e.b ;
 
     switch  e.kind {
     case ND_ADD:
@@ -766,14 +766,14 @@ gen_expr(e @Node) =
     (error_tok e.tok "invalid expression");
   ;;
 
-  gen_expr e.rhs ;
+  gen_expr e.b ;
   push ;
-  gen_expr e.lhs ;
+  gen_expr e.a ;
   pop "%rdi";
 
   let ax = cast @char 0 di = cast @char 0 dx = cast @char 0;
 
-  if (e.lhs.ty.kind == TY_LONG || !!e.lhs.ty.base) {
+  if (e.a.ty.kind == TY_LONG || !!e.a.ty.base) {
     (ax = "%rax");
     (di = "%rdi");
     (dx = "%rdx");
@@ -799,7 +799,7 @@ gen_expr(e @Node) =
       (println "  mov $0, %s" dx);
       (println "  div %s" di);
     ; else {
-      if (e.lhs.ty.size == 8) (println "  cqo");
+      if (e.a.ty.size == 8) (println "  cqo");
       else (println "  cdq");
       (println "  idiv %s" di);
     ;
@@ -828,22 +828,22 @@ gen_expr(e @Node) =
     ; else if (e.kind == ND_NE) {
       (println "  setne %%al");
     ; else if (e.kind == ND_LT) {
-      if e.lhs.ty.is_unsigned
+      if e.a.ty.is_unsigned
         (println "  setb %%al");
       else
         (println "  setl %%al");
     ; else if (e.kind == ND_LE){
-      if e.lhs.ty.is_unsigned
+      if e.a.ty.is_unsigned
         (println "  setbe %%al");
       else
         (println "  setle %%al");
     ; else if (e.kind == ND_GT){
-      if e.lhs.ty.is_unsigned
+      if e.a.ty.is_unsigned
         (println "  seta %%al");
       else
         (println "  setg %%al");
     ; else if (e.kind == ND_GE){
-      if e.lhs.ty.is_unsigned
+      if e.a.ty.is_unsigned
         (println "  setae %%al");
       else
         (println "  setge %%al");
@@ -857,7 +857,7 @@ gen_expr(e @Node) =
     return;
   case ND_SHR:
     (println "  mov %%rdi, %%rcx");
-    if e.lhs.ty.is_unsigned
+    if e.a.ty.is_unsigned
       (println "  shr %%cl, %s" ax);
     else
       (println "  sar %%cl, %s" ax);
@@ -928,7 +928,7 @@ gen_stmt(e@Node) =
     return;
   case ND_CASE:
     (println "%s:" e.label);
-    gen_stmt e.lhs ;
+    gen_stmt e.a ;
     return;
   case ND_BLOCK:
     for (let n@Node = e.body; n; n = n.next) gen_stmt n ;
@@ -937,17 +937,17 @@ gen_stmt(e@Node) =
     (println "  jmp %s" e.unique_label);
     return;
   case ND_GOTO_EXPR:
-    gen_expr e.lhs ;
+    gen_expr e.a ;
     (println "  jmp *%%rax");
     return;
   case ND_LABEL:
     (println "%s:" e.unique_label);
-    gen_stmt e.lhs ;
+    gen_stmt e.a ;
     return;
   case ND_RETURN:
-    if e.lhs{
-      gen_expr e.lhs ;
-      let ty = e.lhs.ty;
+    if e.a{
+      gen_expr e.a ;
+      let ty = e.a.ty;
       switch  ty.kind {
       case TY_STRUCT:
       case TY_UNION:
@@ -960,7 +960,7 @@ gen_stmt(e@Node) =
     ((println "  jmp .L.return.%s" current_fn.name));
     return;
   case ND_EXPR_STMT:
-    gen_expr e.lhs ;
+    gen_expr e.a ;
     return;
   case ND_ASM:
     (println "  %s" e.asm_str);

@@ -115,7 +115,7 @@ struct COFF_filehdr {
 #endif
 
 #define	COFF_FILHDR	struct COFF_filehdr
-#define	COFF_FILHSZ	sizeof(COFF_FILHDR)
+#define	COFF_FIaZ	sizeof(COFF_FILHDR)
 
 /********************** AOUT "OPTIONAL HEADER" **********************/
 
