@@ -183,8 +183,8 @@ type
     begin          long
     end            long
     val            long
-    fval           long double;
-    pass_by_stack  bool
+    fval           long double
+    pass_by_stack  bool;
   }
 
   HashEntry struct {
