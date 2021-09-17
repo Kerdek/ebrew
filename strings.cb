@@ -6,7 +6,7 @@ export strarray_push(arr@ StringArray s@ char)  =
     (arr.capacity = 8);;
 
   if (arr.capacity == arr.len) {
-    (arr.data = cast @@char realloc (cast @ arr.data) (sizeof@ char * arr.capacity * 2));
+    (arr.data = cast @@char realloc (cast @ arr.data) (sizeof@ char * cast unsigned long arr.capacity * 2ul));
     (arr.capacity *= 2);
     for (let i int = arr.len; i < arr.capacity; (i:;(i+=1)))
       (arr.data[i] = cast @char 0);;

@@ -80,9 +80,9 @@ read_ident(start@ char) int =
     if !is_ident2 c return p - start as int;
     (p = q);;;
 from_hex(c char) int =
-  if ('0' <= c && c <= '9') return c - '0';
-  if ('a' <= c && c <= 'f') return c - 'a' + 10;
-  return c - 'A' + 10;;
+  if ('0' <= c && c <= '9') return cast int c - '0';
+  if ('a' <= c && c <= 'f') return cast int c - 'a' + 10;
+  return cast int c - 'A' + 10;;
 rpkw[]@ char = {
   "<<=" ">>=" "..." "=="  "!="  "<="  "for" 
   ">="  "+="  "-="  "*="  "/="  "%=" "&&=" "||="
@@ -109,10 +109,10 @@ is_keyword(j@ Token) bool =
   return cast bool hashmap_get2 &ikmap j.loc j.len;;
 read_escaped_char(new_pos@@ char p@ char) int =
   if ('0' <= p@ && p@ <= '7') {
-    let c = ((p:;(p+=1))@ - '0');
+    let c = (cast int (p:;(p+=1))@ - '0');
     if ('0' <= p@ && p@ <= '7') {
-      (c = (c << 3) + ((p:;(p+=1))@ - '0'));
-      if ('0' <= p@ && p@ <= '7') (c = (c << 3) + ((p:;(p+=1))@ - '0'));;
+      (c = (c << 3) + (cast int (p:;(p+=1))@ - '0'));
+      if ('0' <= p@ && p@ <= '7') (c = (c << 3) + (cast int (p:;(p+=1))@ - '0'));;
     (new_pos@ = p);
     return c;;
   if (p@ == 'x') {
@@ -161,9 +161,9 @@ read_utf16_string_literal(start@ char quote@ char)@ Token =
       let c = decode_utf8 &p p;
       if (c < 0x10000) (buf[(len:;(len+=1))] = c as unsigned short);
       else {
-        (c -= 0x10000);
-        (buf[(len:;(len+=1))] = 0xd800 + ((c >> 10) & 0x3ff) as unsigned short);
-        (buf[(len:;(len+=1))] = 0xdc00 + (c & 0x3ff) as unsigned short);;;;
+        (c -= 0x10000u);
+        (buf[(len:;(len+=1))] = 0xd800u + ((c >> 10u) & 0x3ffu) as unsigned short);
+        (buf[(len:;(len+=1))] = 0xdc00u + (c & 0x3ffu) as unsigned short);;;;
   let j = new_token TK_STR start (end + 1);
   (j.t = array_of ty_ushort (len + 1) as @);
   (j.str = cast @char buf);
@@ -232,19 +232,19 @@ convert_pp_int(j@ Token) bool =
   return
   ( (base == 10) ? (l && u)      ? ty_ulong     :
                  l           ? ty_long      :
-                 u           ? !!(v >> 32)  ? ty_ulong :
+                 u           ? !!(v >> 32ul)  ? ty_ulong :
                                               ty_uint  :
-                 !!(v >> 31) ? ty_long      :
+                 !!(v >> 31ul) ? ty_long      :
                                ty_int       :
 
                  (l && u)      ? ty_ulong     :
-                 l           ?  !!(v >> 63) ? ty_ulong :
+                 l           ?  !!(v >> 63ul) ? ty_ulong :
                                               ty_long  :
-                 u           ?  !!(v >> 32) ? ty_ulong :
+                 u           ?  !!(v >> 32ul) ? ty_ulong :
                                               ty_uint  :
-                 !!(v >> 63) ? ty_ulong     :
-                 !!(v >> 32) ? ty_long      :
-                 !!(v >> 31) ? ty_uint      :
+                 !!(v >> 63ul) ? ty_ulong     :
+                 !!(v >> 32ul) ? ty_long      :
+                 !!(v >> 31ul) ? ty_uint      :
                  ty_int                                )
   is t
   (j.kind = TK_NUM   ) ;:
@@ -357,7 +357,7 @@ export tokenize(file@ File)@ Token =
     else if startswith p "u'" {
       (cur.s = read_char_literal p (p + 1) ty_ushort);
       (cur = cur.s);
-      (cur.val &= 0xffff);
+      (cur.val &= 0xffffl);
       (p += cur.len);;
     else if startswith p "L'" {
       (cur.s = read_char_literal p (p + 1) ty_int);
@@ -402,7 +402,7 @@ read_file(path@ char)@ char =
     else fwrite cast @ rfbuf2 1ul n out;;
   if (fp != stdin) fclose fp;
   fflush out;
-  if (buflen == 0 || buf[buflen - 1] != '\n') fputc '\n' out;
+  if (buflen == 0 || buf[buflen - 1ul] != '\n') fputc '\n' out;
   fputc '\0' out;
   fclose out;
   return buf;;
@@ -450,7 +450,7 @@ remove_backslash_newline(p@ char)  =
 
 read_universal_char(p@ char len int) unsigned int = return
   0u is i
-  0u for c (i != len && !!isxdigit(p[i]) && ((c << 4u) | from_hex p[i] :; (i += 1u)));;
+  0u for c (i != len && !!isxdigit(p[i]) && ((c << 4u) | cast unsigned int from_hex p[i] :; (i += 1u)));;
 
 convert_universal_chars(p@ char) =
   let q = p;
@@ -482,7 +482,7 @@ export tokenize_file(path@ char)@ Token = return
   remove_backslash_newline p ;:
   convert_universal_chars  p ;:
   new_file path (tffile_no + 1) p is f
-  (input_files = cast @@File realloc (cast @ input_files) (sizeof @File * (tffile_no + 2))) ;:
+  (input_files = cast @@File realloc (cast @ input_files) (sizeof @File * cast unsigned long (tffile_no + 2))) ;:
   (input_files[tffile_no] = f) ;:
   (input_files[tffile_no + 1] = cast @File 0) ;:
   (tffile_no += 1) ;:

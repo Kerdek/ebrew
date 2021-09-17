@@ -303,7 +303,7 @@
    _POSIX_C_SOURCE=199506L, which is the earliest level of POSIX with
    comprehensive support for multithreaded code.  Using them never
    lowers the selected level of POSIX conformance, only raises it.  */
-#if ((!defined _POSIX_C_SOURCE || (_POSIX_C_SOURCE - 0) < 199506L) \
+#if ((!defined _POSIX_C_SOURCE || (_POSIX_C_SOURCE - 0l) < 199506L) \
      && (defined _REENTRANT || defined _THREAD_SAFE))
 # define _POSIX_SOURCE   1
 # undef  _POSIX_C_SOURCE
@@ -320,15 +320,15 @@
 # define __USE_POSIX2	1
 #endif
 
-#if (!!defined _POSIX_C_SOURCE && (_POSIX_C_SOURCE - 0) >= 199309L)
+#if (!!defined _POSIX_C_SOURCE && (_POSIX_C_SOURCE - 0l) >= 199309L)
 # define __USE_POSIX199309	1
 #endif
 
-#if (!!defined _POSIX_C_SOURCE && (_POSIX_C_SOURCE - 0) >= 199506L)
+#if (!!defined _POSIX_C_SOURCE && (_POSIX_C_SOURCE - 0l) >= 199506L)
 # define __USE_POSIX199506	1
 #endif
 
-#if (!!defined _POSIX_C_SOURCE && (_POSIX_C_SOURCE - 0) >= 200112L)
+#if (!!defined _POSIX_C_SOURCE && (_POSIX_C_SOURCE - 0l) >= 200112L)
 # define __USE_XOPEN2K		1
 # undef __USE_ISOC95
 # define __USE_ISOC95		1
@@ -336,7 +336,7 @@
 # define __USE_ISOC99		1
 #endif
 
-#if (!!defined _POSIX_C_SOURCE && (_POSIX_C_SOURCE - 0) >= 200809L)
+#if (!!defined _POSIX_C_SOURCE && (_POSIX_C_SOURCE - 0l) >= 200809L)
 # define __USE_XOPEN2K8		1
 # undef  _ATFILE_SOURCE
 # define _ATFILE_SOURCE	1
@@ -407,7 +407,7 @@
    safely.  It has been removed from ISO C11 and ISO C++14.  Note: for
    compatibility with various implementations of <cstdio>, this test
    must consider only the value of __cplusplus when compiling C++.  */
-#if (!!defined __cplusplus ? ((__cplusplus >= 201402L) * 1) : defined __USE_ISOC11)
+#if (!!defined __cplusplus ? ((__cplusplus >= 201402L) ? 1 : 0) : defined __USE_ISOC11)
 # define __GLIBC_USE_DEPRECATED_GETS 0
 #else
 # define __GLIBC_USE_DEPRECATED_GETS 1

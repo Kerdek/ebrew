@@ -253,7 +253,6 @@ export func_type        (return_ty @Type           ) @Type;
 export array_of         (base      @Type size  int ) @Type;
 export enum_type        (           void           ) @Type;
 export struct_type      (           void           ) @Type;
-export add_type         (node                 @Node)      ;
 export usual_arith_conv (a      @@Node b @@Node)      ;
 
 export codegen(prog@ Obj out@ FILE);

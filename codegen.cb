@@ -273,12 +273,12 @@ push_args(e@Node)int =
         (arg.pass_by_stack = true);
         (stack += align_to t.size 8 / 8);
       ; else {
-        let fp1 = has_flonum1 t;
-        let fp2 = has_flonum2 t;
+        let fp1 = cast int has_flonum1 t;
+        let fp2 = cast int has_flonum2 t;
 
-        if (fp + fp1 + fp2 < FP_MAX && gp + !fp1 + !fp2 < GP_MAX) {
+        if (fp + fp1 + fp2 < FP_MAX && gp + cast int !fp1 + cast int !fp2 < GP_MAX) {
           (fp = fp + fp1 + fp2);
-          (gp = gp + !fp1 + !fp2);
+          (gp = gp + cast int !fp1 + cast int !fp2);
         ; else {
           (arg.pass_by_stack = true);
           (stack += align_to t.size 8 / 8);
@@ -367,7 +367,7 @@ copy_struct_reg(void) =
     (fp += 1);
   ; else {
     (println "  mov $0, %%rax");
-    for (let i int = (minl 8l cast long t.size - 1 as int); i >= 0; i -= 1) {
+    for (let i int = (minl 8l cast long t.size - 1l as int); i >= 0; i -= 1) {
       (println "  shl $8, %%rax");
       (println "  mov %d(%%rdi), %%al" i);
     ;
@@ -383,7 +383,7 @@ copy_struct_reg(void) =
       let reg1 = (!gp ? "%al" : "%dl");
       let reg2 = (!gp ? "%rax" : "%rdx");
       (println "  mov $0, %s" reg2);
-      for (let i int = (minl 16l cast long t.size - 1 as int); i >= 8; i -= 1) {
+      for (let i int = (minl 16l cast long t.size - 1l as int); i >= 8; i -= 1) {
         (println "  shl $8, %s" reg2);
         (println "  mov %d(%%rdi), %s" i reg1);
       ;
@@ -486,11 +486,11 @@ gen_expr(e @Node) =
       (println "  mov %%rax, %%r8") ;:
       e.a.a.member is mem
       (println "  mov %%rax, %%rdi") ;:
-      (println "  and $%ld, %%rdi" ((1L << mem.bit_width) - 1)) ;:
+      (println "  and $%ld, %%rdi" ((1 << mem.bit_width) - 1)) ;:
       (println "  shl $%d, %%rdi" mem.bit_offset) ;:
       (println "  mov (%%rsp), %%rax") ;:
       load cast @Type mem.t ;:
-      (println "  mov $%ld, %%r9" ~(((1L << mem.bit_width) - 1) << mem.bit_offset)) ;:
+      (println "  mov $%ld, %%r9" ~(((1 << mem.bit_width) - 1) << mem.bit_offset)) ;:
       (println "  and %%r9, %%rax") ;:
       (println "  or %%rdi, %%rax") ;:
       store e.a.a.t ;:
@@ -504,11 +504,11 @@ gen_expr(e @Node) =
       (println "  mov %%rax, %%r8") ;:
       e.a.member is mem
       (println "  mov %%rax, %%rdi") ;:
-      (println "  and $%ld, %%rdi" ((1L << mem.bit_width) - 1)) ;:
+      (println "  and $%ld, %%rdi" ((1 << mem.bit_width) - 1)) ;:
       (println "  shl $%d, %%rdi" mem.bit_offset) ;:
       (println "  mov (%%rsp), %%rax") ;:
       load cast @Type mem.t ;:
-      (println "  mov $%ld, %%r9" ~(((1L << mem.bit_width) - 1) << mem.bit_offset)) ;:
+      (println "  mov $%ld, %%r9" ~(((1 << mem.bit_width) - 1) << mem.bit_offset)) ;:
       (println "  and %%r9, %%rax") ;:
       (println "  or %%rdi, %%rax") ;:
       store e.a.t ;:
@@ -600,9 +600,9 @@ gen_expr(e @Node) =
       case TY_STRUCT:
       case TY_UNION:
         if !(t.size > 16) {
-          let fp1 = has_flonum1 t;
-          let fp2 = has_flonum2 t;
-          if (fp + fp1 + fp2 < FP_MAX && gp + !fp1 + !fp2 < GP_MAX) {
+          let fp1 = cast int has_flonum1 t;
+          let fp2 = cast int has_flonum2 t;
+          if (fp + fp1 + fp2 < FP_MAX && gp + cast int !fp1 + cast int !fp2 < GP_MAX) {
             if fp1 popf (fp :; (fp += 1));
             else pop argreg64[((gp :; (gp+=1)))];
             if (t.size > 8) {
@@ -960,11 +960,11 @@ assign_one_param_offset(var @Obj top @int gp @int fp @int) =
   switch  t.kind {
     case TY_STRUCT:
     case TY_UNION:none;
-      let fp1 = has_flonum t 0 8 0;
-      let fp2 = has_flonum t 8 16 8;
-      if (!(fp@ + fp1 + fp2 < FP_MAX && gp@ + !fp1 + !fp2 < GP_MAX) && t.size > 16) {
-        (fp@ = fp@ +  fp1 +  fp2);
-        (gp@ = gp@ + !fp1 + !fp2);
+      let fp1 = cast int has_flonum t 0 8 0;
+      let fp2 = cast int has_flonum t 8 16 8;
+      if (!(fp@ + fp1 + fp2 < FP_MAX && gp@ + cast int !fp1 + cast int !fp2 < GP_MAX) && t.size > 16) {
+        (fp@ = fp@ +           fp1 +           fp2);
+        (gp@ = gp@ + cast int !fp1 + cast int !fp2);
         return;;
     case TY_DOUBLE: if ((fp@ :; (fp@ += 1)) < FP_MAX) return;
     default       : if ((gp@ :; (gp@ += 1)) < GP_MAX) return;

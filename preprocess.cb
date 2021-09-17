@@ -437,7 +437,7 @@ read_line_marker(rest@@Token j@Token include_paths@StringArray)  =
   let start = j;
   (j = preprocess copy_line rest j include_paths);
   if (j.kind != TK_NUM || (cast @Type j.t).kind != TY_INT) (error_tok j "invalid line marker");
-  (start.file.line_delta = j.val - start.line_no as int);
+  (start.file.line_delta = j.val - cast long start.line_no as int);
   (j = j.s);
   if (j.kind == TK_EOF) return;
   if (j.kind != TK_STR) (error_tok j "filename expected");

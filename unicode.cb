@@ -1,7 +1,7 @@
 #include "chub.hb"
 
 encode_utf8_byte(p @char c unsigned int i long p int s unsigned int m unsigned int) =
-  (p[i] = cast char the unsigned int (the char p[i] | c >> s & m));;
+  (p[i] = cast char the unsigned int (cast unsigned int the char p[i] | c >> s & m));;
 export encode_utf8(p@ char c unsigned int) int = return
   &encode_utf8_byte is f
   ((c < 0x00080) ? f@ p c 0l 0x00  0u 0xffu  ;: 1 :
@@ -22,10 +22,10 @@ export decode_utf8(new_pos@@ char p@char) unsigned int = return
          (q >= 0xE0) ? 0x4Fu :
          (q >= 0xB0) ? 0x3Fu :
                        0x00u ) ) is len_c
-  (!len_c && (error_at p "invalid UTF-8 sequence") as void) ;:
+  (!len_c && (error_at p "invalid UTF-8 sequence") from bool as void) ;:
   (len_c & 0x60u) is len
   (len_c & 0x1Fu) is c
-  cast void ( 1l for i (i < len && (i + 1l) :;
+  cast void the long ( 1l for i (i < len && (i + 1l) :;
       cast unsigned int the char p[i] is q
       ( ((q & 0b11000000u) != 0b01000000) ?
           (error_at p "invalid UTF-8 sequence") :

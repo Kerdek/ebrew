@@ -56,7 +56,7 @@ find_file( pattern@ char)@ char =
   cast @char 0 is path
   new glob_t {; is buf
   cast void glob pattern 0 cast @(c @char k int) int 0 &buf ;:
-  (buf.gl_pathc > 0 && (path = strdup buf.gl_pathv[buf.gl_pathc - 1]) as void) ;:
+  (buf.gl_pathc > 0 && (path = strdup buf.gl_pathv[buf.gl_pathc - 1ul]) as void) ;:
   globfree &buf ;:
   path;;
 type stat_type struct stat;;

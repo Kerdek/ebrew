@@ -14,11 +14,11 @@
 // Represents a deleted hash entry
 #define TOMBSTONE cast @char -1
 
-fnv_hash(s@ char len int) uint64_t =
+fnv_hash(s@ char len int) unsigned long =
   let hash = 0xcbf29ce484222325;
   for (let i int = 0; i < len; i += 1) {
-    (hash *= 0x100000001b3);
-    (hash ^= cast unsigned char s[i]);
+    (hash *= 0x100000001b3ul);
+    (hash ^= cast unsigned long cast unsigned char s[i]);
   ;
   return hash;
 ;
@@ -55,7 +55,7 @@ get_entry(map@ HashMap key@ char keylen int)@ HashEntry =
   if !map.buckets return cast @HashEntry 0;
   let hash = fnv_hash key keylen;
   for (let i int = 0; i < map.capacity; i += 1) {
-    let ent = &map.buckets[(hash + i) % map.capacity];
+    let ent = &map.buckets[(hash + cast unsigned long i) % cast unsigned long map.capacity];
     if match ent key keylen return ent;
     if !ent.key return cast @HashEntry 0;;
   unreachable;;
@@ -66,7 +66,7 @@ get_or_insert_entry(map@ HashMap key@ char keylen int)@ HashEntry =
   else if ((map.used * 100) / map.capacity >= HIGH_WATERMARK) rehash map;
   let hash = fnv_hash key keylen;
   for (let i int = 0; i < map.capacity; i += 1) {
-    let ent = &map.buckets[(hash + i) % map.capacity];
+    let ent = &map.buckets[(hash + cast unsigned long i) % cast unsigned long map.capacity];
     if match ent key keylen return ent;
     if (ent.key == TOMBSTONE) {
       (ent.key = key);
