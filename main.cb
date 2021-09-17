@@ -38,14 +38,14 @@ must_tokenize_file(path @char) @Token = return tokenize_file path || ((error "%s
 append_tokens(tok1@ Token tok2@ Token)@ Token =
   if (!tok1 || tok1.kind == TK_EOF) return tok2;
   let t = tok1;
-  while (t.next.kind != TK_EOF) (t = t.next);
-  (t.next = tok2);
+  while (t.s.kind != TK_EOF) (t = t.s);
+  (t.s = tok2);
   return tok1;;
 cc1(input @char output @char include_paths @StringArray) =
   init_macros ;:
-  must_tokenize_file input is tok
-  (tok = preprocess tok include_paths) ;:
-  parse tok is obj
+  must_tokenize_file input is j
+  (j = preprocess j include_paths) ;:
+  parse j is obj
   open_file output is out
   codegen obj out ;:
   fclose out;;

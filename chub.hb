@@ -66,18 +66,18 @@ type
   }
 
   Hideset struct {
-    next        @same
+    s        @same
     name        @char;
   }
 
   Token struct {
     kind        TokenKind
-    next       @same
+    s       @same
     val         int64_t
     fval        long double
     loc        @char
     len         int
-    ty         @
+    t         @
     str        @char
     file       @File
     filename   @char
@@ -90,9 +90,9 @@ type
   }
 
   Member struct {
-    next         @same
-    ty           @
-    tok          @Token
+    s         @same
+    t           @
+    j          @Token
     name         @Token
     idx           int
     alignment     int
@@ -107,7 +107,7 @@ type
     size          int
     alignment     int
     is_unsigned   bool
-    next         @same
+    s         @same
     is_atomic     bool
     origin       @same
     base         @same
@@ -123,17 +123,17 @@ type
   }
 
   Relocation struct {
-    next       @same
+    s       @same
     offset      int
     label     @@char
     addend      long;
   }
 
   Obj struct {
-    next            @same
+    s            @same
     name            @char
-    ty              @Type
-    tok             @Token
+    t              @Type
+    j             @Token
     is_local         bool
     alignment        int
     offset           int
@@ -158,9 +158,9 @@ type
 
   Node struct {
     kind           NodeKind
-    next          @same
-    ty            @Type
-    tok           @Token
+    s             @same
+    t             @Type
+    j             @Token
     a             @same
     b             @same
     cond          @same
@@ -211,16 +211,16 @@ export strarray_push(arr@ StringArray s@ char);
 export format(fmt@ char ...)@ char __attribute__((format(printf 1 2)));
 export error(fmt@ char ...) __attribute__((format(printf, 1, 2)));
 export error_at(loc@ char fmt@ char ...) __attribute__((format(printf, 2, 3)));
-export error_tok(tok@ Token fmt@ char ...) __attribute__((format(printf, 2, 3)));
-export warn_tok(tok@ Token fmt@ char ...) __attribute__((format(printf, 2, 3)));
-export equal(tok@ Token op@ char)bool;
-export expect(tok@@ Token op@ char);
-export skip(tok@ Token op@ char)@ Token;
-export consume(rest@@ Token tok@ Token str@ char)bool;
-export convert_pp_tokens(tok@ Token);
+export error_tok(j@ Token fmt@ char ...) __attribute__((format(printf, 2, 3)));
+export warn_tok(j@ Token fmt@ char ...) __attribute__((format(printf, 2, 3)));
+export equal(j@ Token op@ char)bool;
+export expect(j@@ Token op@ char);
+export skip(j@ Token op@ char)@ Token;
+export consume(rest@@ Token j@ Token str@ char)bool;
+export convert_pp_tokens(j@ Token);
 export get_input_files(void)@@ File;
 export new_file(name@ char file_no int contents@ char)@ File;
-export tokenize_string_literal(tok@ Token basety@ Type)@ Token;
+export tokenize_string_literal(j@ Token basety@ Type)@ Token;
 export tokenize(file@ File)@ Token;
 export tokenize_file(filename@ char)@ Token;
 inline unreachable(void) = return (error "internal error at %s:%d" __FILE__ __LINE__);;
@@ -228,10 +228,10 @@ export search_include_paths(filename@ char include_paths @StringArray)@ char;
 export init_macros(void);
 export define_macro(name@ char buf@ char);
 export undef_macro(name@ char);
-export preprocess(tok@ Token include_paths @StringArray)@ Token;
-export new_cast(j @Token expr@ Node ty@ Type)@ Node;
+export preprocess(j@ Token include_paths @StringArray)@ Token;
+export new_cast(j @Token expr@ Node t@ Type)@ Node;
 export const_expr(k @@Token) int64_t;
-export parse(tok@ Token)@ Obj;
+export parse(j@ Token)@ Obj;
 
 export extern
   ty_void       @Type
