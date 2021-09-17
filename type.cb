@@ -144,7 +144,6 @@ export add_type(e@ Node) =
   add_type e.init;
   add_type e.inc ;
   add_type e.body;
-  add_type e.args;
   (e.kind == ND_NUM   )   ? (e.t = ty_int)                                                                      :
   (e.kind == ND_ADD      ||
    e.kind == ND_SUB      ||
@@ -172,19 +171,10 @@ export add_type(e@ Node) =
    e.kind == ND_SHL      ||
    e.kind == ND_SHR    )  ? (e.t = e.a.t)                                                                :
   (e.kind == ND_VAR    )  ? (e.t = e.var.t)                                                                :
-  (e.kind == ND_COND   )  ? (e.then.t.kind == TY_VOID || e.els.t.kind == TY_VOID)                            ? (e.t = ty_void)                                             :
-                                                                                                                      usual_arith_conv &e.then &e.els ;: (e.t = e.then.t):
+  (e.kind == ND_COND   )  ? (e.a.s.t.kind == TY_VOID || e.a.s.s.t.kind == TY_VOID)                            ? (e.t = ty_void)                                             :
+                                                                                                                      usual_arith_conv &e.a.s &e.a.s.s ;: (e.t = e.a.s.t):
   (e.kind == ND_COMMA   ) ? (e.t = e.a.s.t)                                                                :
     //if e.a.t/*.kind != TY_VOID*/ error_tok(e.j "value may not be discarded by comma expression without a cast to void");
   (e.kind == ND_MEMBER  ) ? (e.t = e.member.t as @Type)                                                             :
   (e.kind == ND_ADDR    ) ? (e.t = pointer_to ((e.a.t.kind == TY_ARRAY) ? e.a.t.base : e.a.t)) :
-  (e.kind == ND_DEREF   ) ? !e.a.t.base ? (error_tok e.j "invalid pointer dereference") : (e.a.t.base.kind == TY_VOID) ? (error_tok e.j "dereferencing a void pointer") : (e.t = e.a.t.base) :
-  (e.kind == ND_CAS     ) ?
-    add_type e.cas_addr ;:
-    add_type e.cas_old  ;:
-    add_type e.cas_new  ;:
-    (e.t = ty_bool)    ;:
-    (e.cas_addr.t.kind != TY_PTR) ? (error_tok e.cas_addr.j "pointer expected") :
-    (e.cas_old .t.kind != TY_PTR) ? (error_tok e.cas_old .j "pointer expected") :
-                                      none                                                   :
-  (e.kind == ND_EXCH)     ? (e.a.t.kind != TY_PTR) ? (error_tok e.cas_addr.j "pointer expected") : (e.t = e.a.t.base) : none;;;
+  (e.kind == ND_DEREF   ) ? !e.a.t.base ? (error_tok e.j "invalid pointer dereference") : (e.a.t.base.kind == TY_VOID) ? (error_tok e.j "dereferencing a void pointer") : (e.t = e.a.t.base) : none;;;

@@ -30,9 +30,9 @@ type
     ND_COMMA      ND_MEMBER     ND_ADDR    ND_DEREF      ND_NOT
     ND_BITNOT     ND_LOGAND     ND_LOGOR   ND_RETURN     ND_IF
     ND_FOR        ND_DO         ND_SWITCH  ND_CASE       ND_BLOCK
-    ND_GOTO       ND_GOTO_EXPR  ND_LABEL   ND_LABEL_VAL  ND_FUNCALL
-    ND_EXPR_STMT  ND_STMT_EXPR  ND_VAR     ND_NUM        ND_CAST
-    ND_MEMZERO    ND_ASM        ND_CAS     ND_EXCH       ND_UNTIL
+    ND_GOTO       ND_LABEL      ND_FUNCALL
+    ND_EXPR_STMT  ND_VAR        ND_NUM     ND_CAST
+    ND_MEMZERO    ND_ASM        ND_UNTIL
     ND_REPEAT     ND_THE        ND_THEN    ND_CASSIGN
   ;
 
@@ -159,37 +159,31 @@ type
   Node struct {
     kind           NodeKind
     s             @same
-    t             @Type
-    j             @Token
     a             @same
     cond          @same
     then          @same
     els           @same
     init          @same
     inc           @same
+    body          @same
+    goto_next     @same
+    case_next     @same
+    default_case  @same
+    t             @Type
+    j             @Token
     brk_label     @char
     cont_label    @char
-    body          @same
     member        @Member
     func_ty       @Type
-    args          @same
     pass_by_stack  bool
     ret_buffer    @Obj
     label         @char
     unique_label  @char
-    goto_next     @same
-    case_next     @same
-    default_case  @same
     begin          long
     end            long
     asm_str       @char
-    cas_addr      @same
-    cas_old       @same
-    cas_new       @same
-    atomic_addr   @Obj
-    atomic_expr   @same
     var           @Obj
-    val            int64_t
+    val            long
     fval           long double;
   }
 

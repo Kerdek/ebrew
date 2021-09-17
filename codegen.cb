@@ -263,7 +263,7 @@ push_args(e@Node)int =
   if (!!e.ret_buffer && e.t.size > 16) (gp += 1);
 
   // Load as many arguments to the registers as possible.
-  for (let arg@Node = e.args; arg; arg = arg.s) {
+  for (let arg@Node = e.a.s; arg; arg = arg.s) {
     let t = arg.t;
 
     switch  t.kind {
@@ -310,8 +310,8 @@ push_args(e@Node)int =
     (stack += 1);
   ;
 
-  push_args2 e.args true ;
-  push_args2 e.args false ;
+  push_args2 e.a.s true ;
+  push_args2 e.a.s false ;
 
   // If the return type is a large struct/union, the caller passes
   // a pointer to a buffer as if it were the first argument.
@@ -554,13 +554,13 @@ gen_expr(e @Node) =
     (println "  rep stosb");
   case ND_COND: return
     count is c
-    gen_expr e.cond  ;:
-    cmp_zero e.cond.t ;:
+    gen_expr e.a  ;:
+    cmp_zero e.a.t ;:
     (println "  je .L.else.%d" c) ;:
-    gen_expr e.then  ;:
+    gen_expr e.a.s  ;:
     (println "  jmp .L.end.%d" c) ;:
     (println ".L.else.%d:" c) ;:
-    gen_expr e.els  ;:
+    gen_expr e.a.s.s  ;:
     (println ".L.end.%d:" c);
   case ND_NOT: return
     gen_expr e.a  ;:
@@ -594,7 +594,7 @@ gen_expr(e @Node) =
     // a pointer to a buffer as if it were the first argument.
     if (!!e.ret_buffer && e.t.size > 16) pop argreg64[gp :; (gp += 1)];
 
-    for (let arg @Node = e.args; arg; arg = arg.s) {
+    for (let arg @Node = e.a.s; arg; arg = arg.s) {
       let t = arg.t;
       switch  t.kind {
       case TY_STRUCT:
@@ -651,39 +651,6 @@ gen_expr(e @Node) =
       (println "  lea %d(%%rbp), %%rax" e.ret_buffer.offset);
     ;
 
-    return;
-  ;
-  case ND_LABEL_VAL:
-    (println "  lea %s(%%rip), %%rax" e.unique_label);
-    return;
-  case ND_CAS: {
-    gen_expr e.cas_addr ;
-    push ;
-    gen_expr e.cas_new ;
-    push ;
-    gen_expr e.cas_old ;
-    (println "  mov %%rax, %%r8");
-    load e.cas_old.t.base;
-    pop "%rdx"; // new
-    pop "%rdi"; // addr
-
-    let sz = e.cas_addr.t.base.size;
-    (println "  lock cmpxchg %s,  %%(rdi)" reg_dx sz);
-    (println "  sete %%cl");
-    (println "  je 1f");
-    (println "  mov %s,  %%(r8)" reg_ax sz);
-    (println "1:");
-    (println "  movzbl %%cl, %%eax");
-    return;
-  ;
-  case ND_EXCH: {
-    gen_expr e.a ;
-    push ;
-    gen_expr e.a.s ;
-    pop "%rdi";
-
-    let sz = e.a.t.base.size;
-    (println "  xchg %s, (%%rdi)" reg_ax sz);
     return;
   ;
   ;
@@ -957,10 +924,6 @@ gen_stmt(e@Node) =
     return;
   case ND_GOTO:
     (println "  jmp %s" e.unique_label);
-    return;
-  case ND_GOTO_EXPR:
-    gen_expr e.a ;
-    (println "  jmp *%%rax");
     return;
   case ND_LABEL:
     (println "%s:" e.unique_label);
