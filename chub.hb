@@ -157,9 +157,6 @@ type
   }
 
   Node struct {
-    kind           NodeKind
-    s             @same
-    a             @same
     cond          @same
     then          @same
     els           @same
@@ -169,22 +166,25 @@ type
     goto_next     @same
     case_next     @same
     default_case  @same
+    s             @same
+    a             @same
     t             @Type
     j             @Token
     brk_label     @char
     cont_label    @char
     member        @Member
     func_ty       @Type
-    pass_by_stack  bool
     ret_buffer    @Obj
     label         @char
     unique_label  @char
-    begin          long
-    end            long
     asm_str       @char
     var           @Obj
+    kind           NodeKind
+    begin          long
+    end            long
     val            long
     fval           long double;
+    pass_by_stack  bool
   }
 
   HashEntry struct {
