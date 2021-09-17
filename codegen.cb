@@ -785,13 +785,15 @@ gen_expr(e @Node) =
 
   switch  e.kind {
   case ND_ADD:
+    return
     ((e.a.ty.kind == TY_PTR || e.a.ty.kind == TY_ARRAY) && (println "  imul $%d, %s" e.a.ty.base.size di) as void) ;:
     ((e.b.ty.kind == TY_PTR || e.b.ty.kind == TY_ARRAY) && (println "  imul $%d, %s" e.b.ty.base.size ax) as void) ;:
     (println "  add %s, %s" di ax);
-    return;
   case ND_SUB:
-    (println "  sub %s, %s" di ax);
-    return;
+    return
+    ((e.a.ty.kind == TY_PTR || e.a.ty.kind == TY_ARRAY) && !(e.b.ty.kind == TY_PTR || e.b.ty.kind == TY_ARRAY) && (println "  imul $%d, %s" e.a.ty.base.size di) as void) ;:
+    (println "  sub %s, %s" di ax) ;:
+    ((e.b.ty.kind == TY_PTR || e.b.ty.kind == TY_ARRAY) && (println "  mov $%d,%s" e.b.ty.base.size di) ;: (println "  mov $0, %s" dx) ;: (println "  div %s" di) as void);
   case ND_MUL:
     (println "  imul %s, %s" di ax);
     return;

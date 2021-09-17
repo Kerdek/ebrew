@@ -239,10 +239,10 @@ new_let(j @Token a @Node b @Node o @Obj) @Node = return
 :; (e.ty = b.ty);;
 new_deref(j @Token a @Node) @Node = return
    add_type a
-;:( a.ty.kind != TY_PTR
+;:(  a.ty.kind != TY_PTR
   && format_types a.ty ty_void
   ;: (error_tok j "(%s @) must be (@T @)" s1) as void)
-;:( a.ty.base.kind == TY_VOID
+;:(  a.ty.base.kind == TY_VOID
   && format_types a.ty ty_void
   ;: (error_tok j "(%s @) may not be (@void @)") as void )
 ;: new_unary ND_DEREF a j is e
@@ -375,8 +375,6 @@ new_mod(j @Token a @Node b @Node) @Node = return
   new_binary ND_MOD a b j is e
   (e.ty = a.ty) ;:
   e;;
-new_pointer_add(j @Token a @Node b @Node) @Node = return
-  new_binary ND_ADD a new_mul j b new_long cast long a.ty.base.size  j j;;
 new_add(j @Token a @Node b @Node) @Node = return
   add_type a ;: add_type b ;:
   ((a.ty.kind == TY_PTR || a.ty.kind == TY_ARRAY) && (b.ty.kind == TY_PTR || b.ty.kind == TY_ARRAY)) ?
@@ -384,23 +382,24 @@ new_add(j @Token a @Node b @Node) @Node = return
     (error_tok j "(%s + %s) you may not add two pointers") ;: cast @Node 0  :
   (  a.ty.kind != TY_PTR
   && a.ty.kind != TY_ARRAY
-  && a.ty.kind != TY_PTR
-  && a.ty.kind != TY_ARRAY
+  && b.ty.kind != TY_PTR
+  && b.ty.kind != TY_ARRAY
   && usual_arith_conv &a &b as void ) ;:
-  new_binary ND_ADD a b j is e
-  (e.ty = (a.ty.kind == TY_PTR || a.ty.kind == TY_ARRAY) ? pointer_to(a.ty.base) : (b.ty.kind == TY_PTR || b.ty.kind == TY_ARRAY) ? pointer_to(b.ty.base) : a.ty) ;:
-  e;;
+  new_binary ND_ADD a b j is e e :;
+  (e.ty = (a.ty.kind == TY_PTR || a.ty.kind == TY_ARRAY) ? pointer_to(a.ty.base) : (b.ty.kind == TY_PTR || b.ty.kind == TY_ARRAY) ? pointer_to(b.ty.base) : a.ty);;
 new_sub(j @Token a @Node b @Node) @Node = return
   add_type a ;: add_type b ;:
-  (!a.ty.base && !!b.ty.base) ?
+  (!(a.ty.kind == TY_PTR || a.ty.kind == TY_ARRAY) && (b.ty.kind == TY_PTR || b.ty.kind == TY_ARRAY)) ?
     format_types a.ty b.ty ;:
-    (error_tok j "(%s - %s) you may not subtract a pointer from a number" s1 s2) ;: cast @Node 0  :
-  (is_numeric a.ty && is_numeric b.ty) ? new_binary ND_SUB a b j :
-  (!!a.ty.base && is_integer b.ty) ?
-    new_binary ND_SUB a new_mul j b new_long cast long a.ty.base.size  j j is e (e.ty = a.ty) ;: e :
-  new_binary ND_SUB a b j is e
-  (e.ty = ty_long) ;:
-  new_div j e new_long cast long a.ty.base.size  j;;
+    (error_tok j "(%s - %s) you may not subtract a pointer from a number" s1 s2) ;: cast @Node 0 :
+  (  a.ty.kind != TY_PTR
+  && a.ty.kind != TY_ARRAY
+  && b.ty.kind != TY_PTR
+  && b.ty.kind != TY_ARRAY
+  && usual_arith_conv &a &b as void ) ;:
+  new_binary ND_SUB a b j is e e :;
+  (e.ty = (a.ty.kind == TY_PTR || a.ty.kind == TY_ARRAY) ? pointer_to(a.ty.base) : (b.ty.kind == TY_PTR || b.ty.kind == TY_ARRAY) ? ty_long : a.ty)
+  ;;
 new_neg(j @Token a @Node) @Node = return
   add_type a ;:
   new_unary ND_NEG a j is e
