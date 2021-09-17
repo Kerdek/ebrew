@@ -171,9 +171,9 @@ just_a(j @Token a @Node b @Node) @Node = return a;;
 just_b(j @Token a @Node b @Node) @Node = return b;;
 
 new_node            (c NodeKind                 j @Token) @Node = return cast @Node calloc 1ul sizeof Node is e (e.kind = c) ;: (e.j = j) ;: e;;
-new_binary          (c NodeKind a @Node b @Node j @Token) @Node = return new_node c j is e (e.a = a) ;: (e.b = b) ;: e;;
-new_unary           (c NodeKind a @Node j @Token        ) @Node = return new_binary c a cast @Node 0  j;;
-new_nullary         (c NodeKind         j @Token        ) @Node = return new_unary c cast @Node 0  j;;
+new_binary          (c NodeKind a @Node b @Node j @Token) @Node = return new_node c j is e (e.a = a) ;: (e.a.s = b) ;: e;;
+new_unary           (c NodeKind a @Node j @Token        ) @Node = return new_node c j is e (e.a = a) ;: e;;
+new_nullary         (c NodeKind         j @Token        ) @Node = return new_node c j;;
 new_lit             (l long             j @Token t @Type) @Node = return new_nullary ND_NUM j is e (e.val = l) ;: (e.t = t) ;: e;;
 new_none            (j @Token) @Node = return new_lit 0l j ty_void;;
 new_bool            (l long j @Token) @Node = return new_lit l j ty_bool;;
@@ -212,6 +212,13 @@ new_assign(j @Token a @Node b @Node) @Node = return
   &&(  format_types a.t b.t
     ;: error_tok j "(%s = %s) must be (T = T)" s1 s2) as void)
 ;: new_binary ND_ASSIGN a b j is e e
+:; (e.t = ty_void);;
+new_cassign(j @Token a @Node) @Node = return
+   add_type a
+;:(  !type_equal    a.t a.a.t 
+  &&(  format_types a.t a.a.t
+    ;: error_tok j "(%s = %s) must be (T = T)" s1 s2) as void)
+;: new_unary ND_CASSIGN a j is e e
 :; (e.t = ty_void);;
 new_until(j @Token a @Node) @Node = return 
    (warn_tok j "asdf")
@@ -1036,40 +1043,40 @@ eval2(e@ Node label @@@char) int64_t = return
   add_type e ;:
   is_flonum e.t        ? cast long eval_double e            :
   (e.kind == ND_NOT   ) ? cast long !eval e.a              :
-  (e.kind == ND_ADD   ) ? (eval2 e.a label + eval e.b)   :
-  (e.kind == ND_SUB   ) ? (eval2 e.a label - eval e.b)   :
+  (e.kind == ND_ADD   ) ? (eval2 e.a label + eval e.a.s)   :
+  (e.kind == ND_SUB   ) ? (eval2 e.a label - eval e.a.s)   :
   (e.kind == ND_NEG   ) ? -eval e.a                        :
-  (e.kind == ND_MUL   ) ? (eval e.a *  eval e.b)         :
-  (e.kind == ND_BITAND) ? (eval e.a &  eval e.b)         :
-  (e.kind == ND_BITOR ) ? (eval e.a |  eval e.b)         :
-  (e.kind == ND_BITXOR) ? (eval e.a ^  eval e.b)         :
-  (e.kind == ND_SHL   ) ? (eval e.a << eval e.b)         :
-  (e.kind == ND_EQ    ) ? (eval e.a == eval e.b as long) :
-  (e.kind == ND_NE    ) ? (eval e.a != eval e.b as long) :
+  (e.kind == ND_MUL   ) ? (eval e.a *  eval e.a.s)         :
+  (e.kind == ND_BITAND) ? (eval e.a &  eval e.a.s)         :
+  (e.kind == ND_BITOR ) ? (eval e.a |  eval e.a.s)         :
+  (e.kind == ND_BITXOR) ? (eval e.a ^  eval e.a.s)         :
+  (e.kind == ND_SHL   ) ? (eval e.a << eval e.a.s)         :
+  (e.kind == ND_EQ    ) ? (eval e.a == eval e.a.s as long) :
+  (e.kind == ND_NE    ) ? (eval e.a != eval e.a.s as long) :
   (e.kind == ND_SHR   ) ? (e.a.t.is_unsigned &&
-                           e.t.size == 8        )  ? (cast unsigned long eval e.a >> cast unsigned long eval e.b as long) :
-                                                      (                   eval e.a >>                    eval e.b        ) :
-  (e.kind == ND_DIV   ) ?  e.a.t.is_unsigned     ? (cast unsigned long eval e.a /  cast unsigned long eval e.b as long) :
-                                                      (                   eval e.a /                     eval e.b        ) :
-  (e.kind == ND_MOD   ) ?  e.a.t.is_unsigned     ? (cast unsigned long eval e.a %  cast unsigned long eval e.b as long) :
-                                                      (                   eval e.a %                     eval e.b        ) :
-  (e.kind == ND_LT    ) ?  e.a.t.is_unsigned     ? (cast unsigned long eval e.a <  cast unsigned long eval e.b as long) :
-                                                      (                   eval e.a <                     eval e.b as long) :
-  (e.kind == ND_LE    ) ?  e.a.t.is_unsigned     ? (cast unsigned long eval e.a <= cast unsigned long eval e.b as long) :
-                                                      (                   eval e.a <=                    eval e.b as long) :
-  (e.kind == ND_GT    ) ?  e.a.t.is_unsigned     ? (cast unsigned long eval e.a >  cast unsigned long eval e.b as long) :
-                                                      (                   eval e.a >                     eval e.b as long) :
-  (e.kind == ND_GE    ) ?  e.a.t.is_unsigned     ? (cast unsigned long eval e.a >= cast unsigned long eval e.b as long) :
-                                                      (                   eval e.a >=                    eval e.b as long) :
+                           e.t.size == 8        )  ? (cast unsigned long eval e.a >> cast unsigned long eval e.a.s as long) :
+                                                      (                   eval e.a >>                    eval e.a.s        ) :
+  (e.kind == ND_DIV   ) ?  e.a.t.is_unsigned     ? (cast unsigned long eval e.a /  cast unsigned long eval e.a.s as long) :
+                                                      (                   eval e.a /                     eval e.a.s        ) :
+  (e.kind == ND_MOD   ) ?  e.a.t.is_unsigned     ? (cast unsigned long eval e.a %  cast unsigned long eval e.a.s as long) :
+                                                      (                   eval e.a %                     eval e.a.s        ) :
+  (e.kind == ND_LT    ) ?  e.a.t.is_unsigned     ? (cast unsigned long eval e.a <  cast unsigned long eval e.a.s as long) :
+                                                      (                   eval e.a <                     eval e.a.s as long) :
+  (e.kind == ND_LE    ) ?  e.a.t.is_unsigned     ? (cast unsigned long eval e.a <= cast unsigned long eval e.a.s as long) :
+                                                      (                   eval e.a <=                    eval e.a.s as long) :
+  (e.kind == ND_GT    ) ?  e.a.t.is_unsigned     ? (cast unsigned long eval e.a >  cast unsigned long eval e.a.s as long) :
+                                                      (                   eval e.a >                     eval e.a.s as long) :
+  (e.kind == ND_GE    ) ?  e.a.t.is_unsigned     ? (cast unsigned long eval e.a >= cast unsigned long eval e.a.s as long) :
+                                                      (                   eval e.a >=                    eval e.a.s as long) :
   (e.kind == ND_COND  ) ? !!eval e.cond ? eval2 e.then label :
                                           eval2 e.els  label :
-  (e.kind == ND_COMMA ) ? eval2 e.b label :
+  (e.kind == ND_COMMA ) ? eval2 e.a.s label :
   (e.kind == ND_THE   ) ? eval2 e.a label :
   (e.kind == ND_BITNOT) ? ~ eval e.a      :
   (e.kind == ND_LOGAND) ? (!!eval e.a &&
-                             eval e.b  )  :
+                             eval e.a.s  )  :
   (e.kind == ND_LOGOR ) ? (  eval e.a ||
-                             eval e.b  )  :
+                             eval e.a.s  )  :
   (e.kind == ND_CAST  ) ?
     eval2 e.a label is l
     (!is_integer e.t ? l :
@@ -1122,17 +1129,17 @@ is_const_expr(e@ Node) bool = return
     e.kind == ND_GT     ||
     e.kind == ND_GE     ||
     e.kind == ND_LOGAND ||
-    e.kind == ND_LOGOR   )  ? (is_const_expr e.a  && is_const_expr e.b                           ) :
+    e.kind == ND_LOGOR   )  ? (is_const_expr e.a  && is_const_expr e.a.s                           ) :
   ( e.kind == ND_COND    )  ? (is_const_expr e.cond && is_const_expr (!!eval e.cond ? e.then : e.els)) :
   ( e.kind == ND_NUM     ) ;;
 export const_expr(k@@ Token) int64_t = return eval tertiary k;;
 eval_double(e@ Node) double = return
   add_type e ;:
   is_integer e.t ? cast double eval e :
-  (e.kind == ND_ADD  )  ? (  eval_double e.a  + eval_double      e.b ) :
-  (e.kind == ND_SUB  )  ? (  eval_double e.a  - eval_double      e.b ) :
-  (e.kind == ND_MUL  )  ? (  eval_double e.a  * eval_double      e.b ) :
-  (e.kind == ND_DIV  )  ? (  eval_double e.a  / eval_double      e.b ) :
+  (e.kind == ND_ADD  )  ? (  eval_double e.a  + eval_double      e.a.s ) :
+  (e.kind == ND_SUB  )  ? (  eval_double e.a  - eval_double      e.a.s ) :
+  (e.kind == ND_MUL  )  ? (  eval_double e.a  * eval_double      e.a.s ) :
+  (e.kind == ND_DIV  )  ? (  eval_double e.a  / eval_double      e.a.s ) :
   (e.kind == ND_NEG  )  ?   -eval_double e.a                             :
   (e.kind == ND_NUM  )  ?    cast double e.fval                            :
   (e.kind == ND_COND )  ?  !!eval_double e.cond ? eval_double      e.then  :
@@ -1246,8 +1253,7 @@ seq(k @@Token) @Node = return
 
 quaternary_right(k @@Token a @@Node) bool = return
 &binary_right is f
-(  f@ k a   "=" &just_b     &infix 
-|| f@ k a  "+=" &new_add    &infix
+(  f@ k a  "+=" &new_add    &infix
 || f@ k a  "-=" &new_sub    &infix
 || f@ k a  "*=" &new_mul    &infix
 || f@ k a  "/=" &new_div    &infix
@@ -1347,7 +1353,8 @@ infix(k @@Token) @Node = return
 quaternary(k @@Token) @Node = return
    infix k is a
         k@ is j
-  ((a is e (quaternary_right k &e && new_assign j a e)) || a);;
+  equal j "=" ? advance k is j new_assign j a infix k :
+  (quaternary_right k &a && new_cassign j a || a);;
 
 
 

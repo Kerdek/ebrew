@@ -137,14 +137,14 @@ export usual_arith_conv(a@@ Node b@@ Node) = return
 export add_type(e@ Node) =
   if (!e || !!e.t) return;
   add_type e.a ;
-  add_type e.b ;
+  add_type e.s ;
   add_type e.cond;
   add_type e.then;
   add_type e.els ;
   add_type e.init;
   add_type e.inc ;
-  for (let n @ Node = e.body; n; n = n.s) add_type n;
-  for (let n @ Node = e.args; n; n = n.s) add_type n;
+  add_type e.body;
+  add_type e.args;
   (e.kind == ND_NUM   )   ? (e.t = ty_int)                                                                      :
   (e.kind == ND_ADD      ||
    e.kind == ND_SUB      ||
@@ -153,10 +153,10 @@ export add_type(e@ Node) =
    e.kind == ND_MOD      ||
    e.kind == ND_BITAND   ||
    e.kind == ND_BITOR    ||
-   e.kind == ND_BITXOR)   ? usual_arith_conv &e.a &e.b ;: (e.t = e.a.t)                            :
+   e.kind == ND_BITXOR)   ? usual_arith_conv &e.a &e.a.s ;: (e.t = e.a.t)                            :
   (e.kind == ND_NEG   )   ? (e.t = e.a.t)                                                                    :
   (e.kind == ND_ASSIGN)   ? (e.a.t.kind == TY_ARRAY)                                                           ? (error_tok e.a.j "not an lvalue")                   :
-                             (e.a.t.kind != TY_STRUCT && ! type_equal e.b.t e.a.t)               ? (e.b = new_cast e.j e.b e.a.t)                      :
+                             (e.a.t.kind != TY_STRUCT && ! type_equal e.a.s.t e.a.t)               ? (e.a.s = new_cast e.j e.a.s e.a.t)                      :
                                                                                                                       (e.t = e.a.t)                                         :
   (e.kind == ND_EQ       ||
    e.kind == ND_NE       ||
@@ -165,7 +165,7 @@ export add_type(e@ Node) =
    e.kind == ND_GT       ||
    e.kind == ND_GE     )  ? (e.t = ty_bool)                                                                    :
   (e.kind == ND_LOGOR    || 
-   e.kind == ND_LOGAND )  ? usual_arith_conv &e.a &e.b ;: (e.t = e.a.t)                          :
+   e.kind == ND_LOGAND )  ? usual_arith_conv &e.a &e.a.s ;: (e.t = e.a.t)                          :
   (e.kind == ND_FUNCALL)  ? (e.t = e.func_ty.return_ty)                                                     :
   (e.kind == ND_NOT    )  ? (e.t = ty_bool)                                                                    :
   (e.kind == ND_BITNOT   ||
@@ -174,7 +174,7 @@ export add_type(e@ Node) =
   (e.kind == ND_VAR    )  ? (e.t = e.var.t)                                                                :
   (e.kind == ND_COND   )  ? (e.then.t.kind == TY_VOID || e.els.t.kind == TY_VOID)                            ? (e.t = ty_void)                                             :
                                                                                                                       usual_arith_conv &e.then &e.els ;: (e.t = e.then.t):
-  (e.kind == ND_COMMA   ) ? (e.t = e.b.t)                                                                :
+  (e.kind == ND_COMMA   ) ? (e.t = e.a.s.t)                                                                :
     //if e.a.t/*.kind != TY_VOID*/ error_tok(e.j "value may not be discarded by comma expression without a cast to void");
   (e.kind == ND_MEMBER  ) ? (e.t = e.member.t as @Type)                                                             :
   (e.kind == ND_ADDR    ) ? (e.t = pointer_to ((e.a.t.kind == TY_ARRAY) ? e.a.t.base : e.a.t)) :

@@ -53,8 +53,8 @@ gen_addr(e @Node) = return
   (  e.var.is_local
   && (println "  lea %d(%%rbp), %%rax" e.var.offset)
   || (println "  mov %s@GOTPCREL(%%rip), %%rax" e.var.name) as void) :
-  ( e.kind    == ND_COMMA   ) ? gen_expr e.a   ;: gen_expr e.b  :
-  ( e.kind    == ND_THEN    ) ? gen_expr e.a   ;: push ;: gen_expr e.b  ;: pop "%rax" :
+  ( e.kind    == ND_COMMA   ) ? gen_expr e.a   ;: gen_expr e.a.s  :
+  ( e.kind    == ND_THEN    ) ? gen_expr e.a   ;: push ;: gen_expr e.a.s  ;: pop "%rax" :
   ( e.kind    == ND_MEMBER  ) ? gen_addr e.a   ;: (println "  add $%d, %%rax" e.member.offset ) :
   ( e.kind    == ND_THE    ||
     e.kind    == ND_DEREF   ) ? gen_expr e.a  :
@@ -478,10 +478,28 @@ gen_expr(e @Node) =
     load e.t;
   case ND_ADDR: return
     gen_addr e.a ;
+  case ND_CASSIGN: return
+    gen_addr e.a.a  ;:
+    push ;:
+    gen_expr e.a  ;:
+    (e.a.a.kind == ND_MEMBER && e.a.a.member.is_bitfield) ?
+      (println "  mov %%rax, %%r8") ;:
+      e.a.a.member is mem
+      (println "  mov %%rax, %%rdi") ;:
+      (println "  and $%ld, %%rdi" ((1L << mem.bit_width) - 1)) ;:
+      (println "  shl $%d, %%rdi" mem.bit_offset) ;:
+      (println "  mov (%%rsp), %%rax") ;:
+      load cast @Type mem.t ;:
+      (println "  mov $%ld, %%r9" ~(((1L << mem.bit_width) - 1) << mem.bit_offset)) ;:
+      (println "  and %%r9, %%rax") ;:
+      (println "  or %%rdi, %%rax") ;:
+      store e.a.a.t ;:
+      (println "  mov %%r8, %%rax" ):
+    store e.a.a.t;
   case ND_ASSIGN: return
     gen_addr e.a  ;:
     push ;:
-    gen_expr e.b  ;:
+    gen_expr e.a.s  ;:
     (e.a.kind == ND_MEMBER && e.a.member.is_bitfield) ?
       (println "  mov %%rax, %%r8") ;:
       e.a.member is mem
@@ -513,18 +531,18 @@ gen_expr(e @Node) =
     store e.a.t ;:
     (println "  lea %d(%%rbp), %%rax" e.var.offset ) ;:
     push ;:
-    gen_expr e.b  ;:
-    cmp_zero e.b.t ;:
+    gen_expr e.a.s  ;:
+    cmp_zero e.a.s.t ;:
     (println "  jne .L.repeat.%d" c) ;:
     pop "%rax" ;:
     (println "  mov 0(%%rax), %%rax");
   case ND_COMMA: return
     gen_expr e.a  ;:
-    gen_expr e.b ;
+    gen_expr e.a.s ;
   case ND_THEN: return
     gen_expr e.a  ;:
     push ;:
-    gen_expr e.b  ;:
+    gen_expr e.a.s  ;:
     pop "%rax";
   case ND_CAST: return
     gen_expr e.a  ;:
@@ -557,14 +575,14 @@ gen_expr(e @Node) =
     gen_expr e.a  ;:
     cmp_zero e.a.t ;:
     (println "  je .L.end.%d" c) ;:
-    gen_expr e.b  ;:
+    gen_expr e.a.s  ;:
     (println ".L.end.%d:" c);
   case ND_LOGOR: return
     count is c
     gen_expr e.a     ;:
     cmp_zero e.a.t          ;:
     (println "  jne .L.end.%ld" c) ;:
-    gen_expr e.b  ;:
+    gen_expr e.a.s  ;:
     (println ".L.end.%ld:" c);
   case ND_FUNCALL: {
     let stack_args = push_args e ;
@@ -661,7 +679,7 @@ gen_expr(e @Node) =
   case ND_EXCH: {
     gen_expr e.a ;
     push ;
-    gen_expr e.b ;
+    gen_expr e.a.s ;
     pop "%rdi";
 
     let sz = e.a.t.base.size;
@@ -673,7 +691,7 @@ gen_expr(e @Node) =
   switch  e.a.t.kind {
   case TY_FLOAT:
   case TY_DOUBLE: {
-    gen_expr e.b ;
+    gen_expr e.a.s ;
     pushf ;
     gen_expr e.a ;
     popf 1;
@@ -725,7 +743,7 @@ gen_expr(e @Node) =
   ;
   case TY_LDOUBLE: {
     gen_expr e.a ;
-    gen_expr e.b ;
+    gen_expr e.a.s ;
 
     switch  e.kind {
     case ND_ADD:
@@ -766,7 +784,7 @@ gen_expr(e @Node) =
     (error_tok e.j "invalid expression");
   ;;
 
-  gen_expr e.b ;
+  gen_expr e.a.s ;
   push ;
   gen_expr e.a ;
   pop "%rdi";
@@ -787,13 +805,13 @@ gen_expr(e @Node) =
   case ND_ADD:
     return
     ((e.a.t.kind == TY_PTR || e.a.t.kind == TY_ARRAY) && (println "  imul $%d, %s" e.a.t.base.size di) as void) ;:
-    ((e.b.t.kind == TY_PTR || e.b.t.kind == TY_ARRAY) && (println "  imul $%d, %s" e.b.t.base.size ax) as void) ;:
+    ((e.a.s.t.kind == TY_PTR || e.a.s.t.kind == TY_ARRAY) && (println "  imul $%d, %s" e.a.s.t.base.size ax) as void) ;:
     (println "  add %s, %s" di ax);
   case ND_SUB:
     return
-    ((e.a.t.kind == TY_PTR || e.a.t.kind == TY_ARRAY) && !(e.b.t.kind == TY_PTR || e.b.t.kind == TY_ARRAY) && (println "  imul $%d, %s" e.a.t.base.size di) as void) ;:
+    ((e.a.t.kind == TY_PTR || e.a.t.kind == TY_ARRAY) && !(e.a.s.t.kind == TY_PTR || e.a.s.t.kind == TY_ARRAY) && (println "  imul $%d, %s" e.a.t.base.size di) as void) ;:
     (println "  sub %s, %s" di ax) ;:
-    ((e.b.t.kind == TY_PTR || e.b.t.kind == TY_ARRAY) && (println "  mov $%d,%s" e.b.t.base.size di) ;: (println "  mov $0, %s" dx) ;: (println "  div %s" di) as void);
+    ((e.a.s.t.kind == TY_PTR || e.a.s.t.kind == TY_ARRAY) && (println "  mov $%d,%s" e.a.s.t.base.size di) ;: (println "  mov $0, %s" dx) ;: (println "  div %s" di) as void);
   case ND_MUL:
     (println "  imul %s, %s" di ax);
     return;

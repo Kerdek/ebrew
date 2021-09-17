@@ -33,7 +33,7 @@ type
     ND_GOTO       ND_GOTO_EXPR  ND_LABEL   ND_LABEL_VAL  ND_FUNCALL
     ND_EXPR_STMT  ND_STMT_EXPR  ND_VAR     ND_NUM        ND_CAST
     ND_MEMZERO    ND_ASM        ND_CAS     ND_EXCH       ND_UNTIL
-    ND_REPEAT     ND_THE        ND_THEN
+    ND_REPEAT     ND_THE        ND_THEN    ND_CASSIGN
   ;
 
   TypeKind enum
@@ -162,7 +162,6 @@ type
     t             @Type
     j             @Token
     a             @same
-    b             @same
     cond          @same
     then          @same
     els           @same
