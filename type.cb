@@ -42,6 +42,7 @@ t.kind is c
 export is_numeric(t@ Type) bool = return is_integer t || is_flonum t;;
 format_function_type(p @Type s @char) = for (; p; p = p.s) format_type p s;;
 export format_type(t @Type s @char) = return
+!t ? strcat s "undefined" :
 t.kind is c
 ( c == TY_VOID    ) ? strcat s "void"        :
 ( c == TY_BOOL    ) ? strcat s "bool"        :
@@ -67,6 +68,8 @@ t.kind is c
 strcat s "???" as void;;
 is_function_type_equal(p @Type q@Type) bool = while !(!p || !q) { if ! type_equal p q return false; (p = p.s); (q = q.s);; return p == q;;
 export type_equal(t @Type u @Type) bool = return
+  !!t &&
+  !!u &&
   t.kind is c (
     t == u || (
       !!t.origin      ? type_equal t.origin u :

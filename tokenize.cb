@@ -314,7 +314,7 @@ export tokenize(file@ File)@ Token =
       (p:;(p+=1));
       (at_bol = true);
       (has_space = false);;
-    else if isspace cast int p@ {
+    else if cast bool isspace cast int p@ {
       (p:;(p+=1));
       (has_space = true);;
     else if (isdigit(p@) || (p@ == '.' && isdigit(p[1]))) {

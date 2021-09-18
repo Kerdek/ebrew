@@ -425,7 +425,7 @@ detect_include_guard(j@Token)@char =
   return cast @char 0;;
 ifinclude_guards HashMap;
 include_file(j@Token path@char filename_tok@Token)@Token =
-  if hashmap_get &pragma_once path return j;
+  if cast bool hashmap_get &pragma_once path return j;
   let guard_name = (hashmap_get &ifinclude_guards path as @char);
   if (!!guard_name && hashmap_get &macros guard_name) return j;
   let tok2 = tokenize_file path;

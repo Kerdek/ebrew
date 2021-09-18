@@ -173,7 +173,6 @@ type
     brk_label     @char
     cont_label    @char
     member        @Member
-    func_ty       @Type
     ret_buffer    @Obj
     label         @char
     unique_label  @char
@@ -222,7 +221,6 @@ export init_macros(void);
 export define_macro(name@ char buf@ char);
 export undef_macro(name@ char);
 export preprocess(j@ Token include_paths @StringArray)@ Token;
-export new_cast(j @Token expr@ Node t@ Type)@ Node;
 export const_expr(k @@Token) int64_t;
 export parse(j@ Token)@ Obj;
 
