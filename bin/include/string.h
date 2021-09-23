@@ -52,43 +52,43 @@ export extern memmove (__dest@__src@ const __n size_t)@
    or NULL if C was not found in the first N bytes of SRC.  */
 #if (!!defined __USE_MISC || !!defined __USE_XOPEN || !!__GLIBC_USE (ISOC2X))
 export extern memccpy (__restrict __dest@ __restrict __src@const 
-		      __c int size_t __n)@ 
+		      __c i32 size_t __n)@ 
      __THROW __nonnull ((1, 2));
 #endif /* Misc || X/Open.  */
 
 
 /* Set N bytes of S to C.  */
-export extern memset (__s@ __c int __n size_t)@  __THROW __nonnull ((1));
+export extern memset (__s@ __c i32 __n size_t)@  __THROW __nonnull ((1));
 
 /* Compare N bytes of S1 and S2.  */
-export extern memcmp (__s1@ const __s2@ const __n size_t)int
+export extern memcmp (__s1@ const __s2@ const __n size_t)i32
      __THROW __attribute_pure__ __nonnull ((1 2));
 
 /* Search N bytes of S for C.  */
 #ifdef __CORRECT_ISO_CPP_STRING_H_PROTO
 export extern "C++"
 {
-export extern memchr (__s@void __c int size_t __n)@void 
+export extern memchr (__s@void __c i32 size_t __n)@void 
       __THROW __asm ("memchr") __attribute_pure__ __nonnull ((1));
-export extern memchr (__s@const void __c int size_t __n)@const void 
+export extern memchr (__s@const void __c i32 size_t __n)@const void 
       __THROW __asm ("memchr") __attribute_pure__ __nonnull ((1));
 
 # ifdef __OPTIMIZE__
 __extern_always_inline void *
-memchr (__s@void __c int size_t __n) __THROW
+memchr (__s@void __c i32 size_t __n) __THROW
 {
   return __builtin_memchr (__s, __c, __n);
 }
 
 __extern_always_inline
-memchr (__s@const __c int size_t __n)@ const __THROW
+memchr (__s@const __c i32 size_t __n)@ const __THROW
 {
   return __builtin_memchr (__s, __c, __n);
 }
 # endif
 }
 #else
-export extern memchr (__s@const __c int __n size_t)@ 
+export extern memchr (__s@const __c i32 __n size_t)@ 
       __THROW __attribute_pure__ __nonnull ((1));
 #endif
 
@@ -96,23 +96,23 @@ export extern memchr (__s@const __c int __n size_t)@
 /* Search in S for C.  This is similar to `memchr' but there is no
    length limit.  */
 # ifdef __CORRECT_ISO_CPP_STRING_H_PROTO
-export extern "C++" void *rawmemchr (__s@void __c int)
+export extern "C++" void *rawmemchr (__s@void __c i32)
      __THROW __asm ("rawmemchr") __attribute_pure__ __nonnull ((1));
-export extern "C++" const void *rawmemchr (__s@const void __c int)
+export extern "C++" const void *rawmemchr (__s@const void __c i32)
      __THROW __asm ("rawmemchr") __attribute_pure__ __nonnull ((1));
 # else
-export extern rawmemchr (__s@const void __c int)@void 
+export extern rawmemchr (__s@const void __c i32)@void 
      __THROW __attribute_pure__ __nonnull ((1));
 # endif
 
 /* Search N bytes of S for the final occurrence of C.  */
 # ifdef __CORRECT_ISO_CPP_STRING_H_PROTO
-export extern "C++" void *memrchr (__s@void __c int size_t __n)
+export extern "C++" void *memrchr (__s@void __c i32 size_t __n)
       __THROW __asm ("memrchr") __attribute_pure__ __nonnull ((1));
-export extern "C++" const void *memrchr (__s@const void __c int size_t __n)
+export extern "C++" const void *memrchr (__s@const void __c i32 size_t __n)
       __THROW __asm ("memrchr") __attribute_pure__ __nonnull ((1));
 # else
-export extern memrchr (__s@const void __c int size_t __n)@void 
+export extern memrchr (__s@const void __c i32 size_t __n)@void 
       __THROW __attribute_pure__ __nonnull ((1));
 # endif
 #endif
@@ -134,14 +134,14 @@ export extern strncat (__restrict __dest@char __restrict __src@const char
 		      __n size_t)@char  __THROW __nonnull ((1, 2));
 
 /* Compare S1 and S2.  */
-export extern strcmp (__s1@const char__s2@ const char)int
+export extern strcmp (__s1@const char__s2@ const char)i32
      __THROW __attribute_pure__ __nonnull ((1, 2));
 /* Compare N characters of S1 and S2.  */
-export extern strncmp (__s1@const char__s2@ const char __n size_t)int
+export extern strncmp (__s1@const char__s2@ const char __n size_t)i32
      __THROW __attribute_pure__ __nonnull ((1, 2));
 
 /* Compare the collated forms of S1 and S2.  */
-export extern strcoll (__s1@const char__s2@ const char)int
+export extern strcoll (__s1@const char__s2@ const char)i32
      __THROW __attribute_pure__ __nonnull ((1, 2));
 /* Put a transformation of SRC into no more than N bytes of DEST.  */
 export extern strxfrm (__restrict __dest@char
@@ -153,7 +153,7 @@ export extern strxfrm (__restrict __dest@char
 # include <bits/types/locale_t.h>
 
 /* Compare the collated forms of S1 and S2, using sorting rules from L.  */
-export extern strcoll_l (__s1@const char__s2@ const char __l locale_t)int
+export extern strcoll_l (__s1@const char__s2@ const char __l locale_t)i32
      __THROW __attribute_pure__ __nonnull ((1, 2, 3));
 /* Put a transformation of SRC into no more than N bytes of DEST,
    using sorting rules from L.  */
@@ -203,54 +203,54 @@ export extern strndup (__string@const char __n size_t)@char
 #ifdef __CORRECT_ISO_CPP_STRING_H_PROTO
 export extern "C++"
 {
-export extern strchr (__s@char __c int)@char 
+export extern strchr (__s@char __c i32)@char 
      __THROW __asm ("strchr") __attribute_pure__ __nonnull ((1));
-export extern strchr (__s@const char __c int)@const char 
+export extern strchr (__s@const char __c i32)@const char 
      __THROW __asm ("strchr") __attribute_pure__ __nonnull ((1));
 
 # ifdef __OPTIMIZE__
 __extern_always_inline char *
-strchr (__s@char __c int) __THROW
+strchr (__s@char __c i32) __THROW
 {
   return __builtin_strchr (__s, __c);
 }
 
 __extern_always_inline const char *
-strchr (__s@const char __c int) __THROW
+strchr (__s@const char __c i32) __THROW
 {
   return __builtin_strchr (__s, __c);
 }
 # endif
 }
 #else
-export extern strchr (__s@const char __c int)@char 
+export extern strchr (__s@const char __c i32)@char 
      __THROW __attribute_pure__ __nonnull ((1));
 #endif
 /* Find the last occurrence of C in S.  */
 #ifdef __CORRECT_ISO_CPP_STRING_H_PROTO
 export extern "C++"
 {
-export extern strrchr (__s@char __c int)@char 
+export extern strrchr (__s@char __c i32)@char 
      __THROW __asm ("strrchr") __attribute_pure__ __nonnull ((1));
-export extern strrchr (__s@const char __c int)@const char 
+export extern strrchr (__s@const char __c i32)@const char 
      __THROW __asm ("strrchr") __attribute_pure__ __nonnull ((1));
 
 # ifdef __OPTIMIZE__
 __extern_always_inline char *
-strrchr (__s@char __c int) __THROW
+strrchr (__s@char __c i32) __THROW
 {
   return __builtin_strrchr (__s, __c);
 }
 
 __extern_always_inline const char *
-strrchr (__s@const char __c int) __THROW
+strrchr (__s@const char __c i32) __THROW
 {
   return __builtin_strrchr (__s, __c);
 }
 # endif
 }
 #else
-export extern strrchr (__s@const char __c int)@char 
+export extern strrchr (__s@const char __c i32)@char 
      __THROW __attribute_pure__ __nonnull ((1));
 #endif
 
@@ -258,12 +258,12 @@ export extern strrchr (__s@const char __c int)@char
 /* This function is similar to `strchr'.  But it returns a pointer to
    the closing NUL byte in case C is not found in S.  */
 # ifdef __CORRECT_ISO_CPP_STRING_H_PROTO
-export extern "C++" char *strchrnul (__s@char __c int)
+export extern "C++" char *strchrnul (__s@char __c i32)
      __THROW __asm ("strchrnul") __attribute_pure__ __nonnull ((1));
-export extern "C++" const char *strchrnul (__s@const char __c int)
+export extern "C++" const char *strchrnul (__s@const char __c i32)
      __THROW __asm ("strchrnul") __attribute_pure__ __nonnull ((1));
 # else
-export extern strchrnul (__s@const char __c int)@char 
+export extern strchrnul (__s@const char __c i32)@char 
      __THROW __attribute_pure__ __nonnull ((1));
 # endif
 #endif
@@ -364,8 +364,8 @@ export extern strcasestr (__haystack@const char,__needle@ const char)@char
 
 #ifdef __USE_GNU
 /* Find the first occurrence of NEEDLE in HAYSTACK.
-   NEEDLE is NEEDLELEN bytes long;
-   HAYSTACK is HAYSTACKLEN bytes long.  */
+   NEEDLE is NEEDLELEN bytes i64;
+   HAYSTACK is HAYSTACKLEN bytes i64.  */
 export extern memmem (__haystack@const void, __haystacklen size_t,__needle@
 		     const void, __needlelen size_t)@void 
      __THROW __attribute_pure__ __nonnull ((1, 3));
@@ -394,7 +394,7 @@ export extern strnlen (__string@const char __maxlen size_t)size_t
 
 
 /* Return a string describing the meaning of the `errno' code in ERRNUM.  */
-export extern strerror (__errnum int)@char  __THROW;
+export extern strerror (__errnum i32)@char  __THROW;
 #ifdef __USE_XOPEN2K
 /* Reentrant version of `strerror'.
    There are 2 flavors of `strerror_r', GNU which returns the string
@@ -409,23 +409,23 @@ export extern strerror (__errnum int)@char  __THROW;
 #  ifdef __REDIRECT_NTH
 export extern __REDIRECT_NTH (strerror_r
 			   (__errnum int__buf@ char __buflen size_t)
-			   __xpg_strerror_r)int __nonnull ((2));
+			   __xpg_strerror_r)i32 __nonnull ((2));
 #  else
-export extern __xpg_strerror_r (__errnum int __buf@ char __buflen size_t)int
+export extern __xpg_strerror_r (__errnum i32 __buf@ char __buflen size_t)i32
      __THROW __nonnull ((2));
 #   define strerror_r __xpg_strerror_r
 #  endif
 # else
 /* If a temporary buffer is required, at most BUFLEN bytes of BUF will be
    used.  */
-export extern strerror_r (__errnum int __buf@char __buflen size_t)@char 
+export extern strerror_r (__errnum i32 __buf@char __buflen size_t)@char 
      __THROW __nonnull ((2)) __wur;
 # endif
 #endif
 
 #ifdef __USE_XOPEN2K8
 /* Translate error number to string according to the locale L.  */
-export extern strerror_l (__errnum int __l locale_t)@char  __THROW;
+export extern strerror_l (__errnum i32 __l locale_t)@char  __THROW;
 #endif
 
 #ifdef __USE_MISC
@@ -444,7 +444,7 @@ export extern strsep (char **__restrict __stringp
 
 #ifdef	__USE_XOPEN2K8
 /* Return a string describing the meaning of the signal number in SIG.  */
-export extern strsignal (__sig int)@char  __THROW;
+export extern strsignal (__sig i32)@char  __THROW;
 
 /* Copy SRC to DEST, returning the address of the terminating '\0' in DEST.  */
 export extern __stpcpy (__restrict __dest@char __restrict __src@const char)@char 
@@ -464,7 +464,7 @@ export extern stpncpy (__restrict __dest@char
 
 #ifdef	__USE_GNU
 /* Compare S1 and S2 as strings holding name & indices/version numbers.  */
-export extern strverscmp (__s1@const char __s2@ const char)int
+export extern strverscmp (__s1@const char __s2@ const char)i32
      __THROW __attribute_pure__ __nonnull ((1, 2));
 
 /* Sautee STRING briskly.  */

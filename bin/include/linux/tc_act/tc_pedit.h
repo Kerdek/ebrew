@@ -60,8 +60,8 @@ struct tc_pedit_key {
 
 struct tc_pedit_sel {
 	tc_gen;
-	unsigned char           nkeys;
-	unsigned char           flags;
+	unsigned i8           nkeys;
+	unsigned i8           flags;
 	struct tc_pedit_key     keys[0];
 };
 

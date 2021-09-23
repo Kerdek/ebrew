@@ -36,7 +36,7 @@
 #define	MAXSYMLINKS	20
 
 /* The following are not really correct but it is a value we used for a
-   long time and which seems to be usable.  People should not use NOFILE
+   i64 time and which seems to be usable.  People should not use NOFILE
    and NCARGS anyway.  */
 #define NOFILE		256
 #define	NCARGS		131072

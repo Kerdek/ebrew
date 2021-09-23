@@ -43,40 +43,40 @@ typedef enum {
 #define ATMLEC_MSG_TYPE_MAX l_should_bridge
 
 struct atmlec_config_msg {
-	unsigned int maximum_unknown_frame_count;
-	unsigned int max_unknown_frame_time;
-	unsigned short max_retry_count;
-	unsigned int aging_time;
-	unsigned int forward_delay_time;
-	unsigned int arp_response_time;
-	unsigned int flush_timeout;
-	unsigned int path_switching_delay;
-	unsigned int lane_version;	/* LANE2: 1 for LANEv1, 2 for LANEv2 */
-	int mtu;
-	int is_proxy;
+	unsigned i32 maximum_unknown_frame_count;
+	unsigned i32 max_unknown_frame_time;
+	unsigned i16 max_retry_count;
+	unsigned i32 aging_time;
+	unsigned i32 forward_delay_time;
+	unsigned i32 arp_response_time;
+	unsigned i32 flush_timeout;
+	unsigned i32 path_switching_delay;
+	unsigned i32 lane_version;	/* LANE2: 1 for LANEv1, 2 for LANEv2 */
+	i32 mtu;
+	i32 is_proxy;
 };
 
 struct atmlec_msg {
 	atmlec_msg_type type;
-	int sizeoftlvs;		/* LANE2: if != 0, tlvs follow */
+	i32 sizeoftlvs;		/* LANE2: if != 0, tlvs follow */
 	union {
 		struct {
-			unsigned char mac_addr[ETH_ALEN];
-			unsigned char atm_addr[ATM_ESA_LEN];
-			unsigned int flag;	/*
+			unsigned i8 mac_addr[ETH_ALEN];
+			unsigned i8 atm_addr[ATM_ESA_LEN];
+			unsigned i32 flag;	/*
 						 * Topology_change flag,
 						 * remoteflag, permanent flag,
 						 * lecid, transaction id
 						 */
-			unsigned int targetless_le_arp;	/* LANE2 */
-			unsigned int no_source_le_narp;	/* LANE2 */
+			unsigned i32 targetless_le_arp;	/* LANE2 */
+			unsigned i32 no_source_le_narp;	/* LANE2 */
 		} normal;
 		struct atmlec_config_msg config;
 		struct {
 			__u16 lec_id;				/* requestor lec_id  */
 			__u32 tran_id;				/* transaction id    */
-			unsigned char mac_addr[ETH_ALEN];	/* dst mac addr      */
-			unsigned char atm_addr[ATM_ESA_LEN];	/* reqestor ATM addr */
+			unsigned i8 mac_addr[ETH_ALEN];	/* dst mac addr      */
+			unsigned i8 atm_addr[ATM_ESA_LEN];	/* reqestor ATM addr */
 		} proxy;	/*
 				 * For mapping LE_ARP requests to responses. Filled by
 				 * zeppelin, returned by kernel. Used only when proxying
@@ -85,8 +85,8 @@ struct atmlec_msg {
 } __ATM_API_ALIGN;
 
 struct atmlec_ioc {
-	int dev_num;
-	unsigned char atm_addr[ATM_ESA_LEN];
-	unsigned char receive;	/* 1= receive vcc, 0 = send vcc */
+	i32 dev_num;
+	unsigned i8 atm_addr[ATM_ESA_LEN];
+	unsigned i8 receive;	/* 1= receive vcc, 0 = send vcc */
 };
 #endif /* _ATMLEC_H_ */

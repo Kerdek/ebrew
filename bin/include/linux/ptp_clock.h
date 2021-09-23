@@ -85,23 +85,23 @@ struct ptp_clock_time {
 };
 
 struct ptp_clock_caps {
-	int max_adj;   /* Maximum frequency adjustment in parts per billon. */
-	int n_alarm;   /* Number of programmable alarms. */
-	int n_ext_ts;  /* Number of external time stamp channels. */
-	int n_per_out; /* Number of programmable periodic signals. */
-	int pps;       /* Whether the clock supports a PPS callback. */
-	int n_pins;    /* Number of input/output pins. */
+	i32 max_adj;   /* Maximum frequency adjustment in parts per billon. */
+	i32 n_alarm;   /* Number of programmable alarms. */
+	i32 n_ext_ts;  /* Number of external time stamp channels. */
+	i32 n_per_out; /* Number of programmable periodic signals. */
+	i32 pps;       /* Whether the clock supports a PPS callback. */
+	i32 n_pins;    /* Number of input/output pins. */
 	/* Whether the clock supports precise system-device cross timestamps */
-	int cross_timestamping;
+	i32 cross_timestamping;
 	/* Whether the clock supports adjust phase */
-	int adjust_phase;
-	int rsv[12];   /* Reserved for future use. */
+	i32 adjust_phase;
+	i32 rsv[12];   /* Reserved for future use. */
 };
 
 struct ptp_extts_request {
-	unsigned int index;  /* Which channel to configure. */
-	unsigned int flags;  /* Bit field for PTP_xxx flags. */
-	unsigned int rsv[2]; /* Reserved for future use. */
+	unsigned i32 index;  /* Which channel to configure. */
+	unsigned i32 flags;  /* Bit field for PTP_xxx flags. */
+	unsigned i32 rsv[2]; /* Reserved for future use. */
 };
 
 struct ptp_perout_request {
@@ -120,8 +120,8 @@ struct ptp_perout_request {
 		struct ptp_clock_time phase;
 	};
 	struct ptp_clock_time period; /* Desired period, zero means disable. */
-	unsigned int index;           /* Which channel to configure. */
-	unsigned int flags;
+	unsigned i32 index;           /* Which channel to configure. */
+	unsigned i32 flags;
 	union {
 		/*
 		 * The "on" time of the signal.
@@ -130,15 +130,15 @@ struct ptp_perout_request {
 		 */
 		struct ptp_clock_time on;
 		/* Reserved for future use. */
-		unsigned int rsv[4];
+		unsigned i32 rsv[4];
 	};
 };
 
 #define PTP_MAX_SAMPLES 25 /* Maximum allowed offset measurement samples. */
 
 struct ptp_sys_offset {
-	unsigned int n_samples; /* Desired number of measurements. */
-	unsigned int rsv[3];    /* Reserved for future use. */
+	unsigned i32 n_samples; /* Desired number of measurements. */
+	unsigned i32 rsv[3];    /* Reserved for future use. */
 	/*
 	 * Array of interleaved system/phc time stamps. The kernel
 	 * will provide 2*n_samples + 1 time stamps, with the last
@@ -148,8 +148,8 @@ struct ptp_sys_offset {
 };
 
 struct ptp_sys_offset_extended {
-	unsigned int n_samples; /* Desired number of measurements. */
-	unsigned int rsv[3];    /* Reserved for future use. */
+	unsigned i32 n_samples; /* Desired number of measurements. */
+	unsigned i32 rsv[3];    /* Reserved for future use. */
 	/*
 	 * Array of [system, phc, system] time stamps. The kernel will provide
 	 * 3*n_samples time stamps.
@@ -161,7 +161,7 @@ struct ptp_sys_offset_precise {
 	struct ptp_clock_time device;
 	struct ptp_clock_time sys_realtime;
 	struct ptp_clock_time sys_monoraw;
-	unsigned int rsv[4];    /* Reserved for future use. */
+	unsigned i32 rsv[4];    /* Reserved for future use. */
 };
 
 enum ptp_pin_function {
@@ -181,21 +181,21 @@ struct ptp_pin_desc {
 	/*
 	 * Pin index in the range of zero to ptp_clock_caps.n_pins - 1.
 	 */
-	unsigned int index;
+	unsigned i32 index;
 	/*
 	 * Which of the PTP_PF_xxx functions to use on this pin.
 	 */
-	unsigned int func;
+	unsigned i32 func;
 	/*
 	 * The specific channel to use for this function.
 	 * This corresponds to the 'index' field of the
 	 * PTP_EXTTS_REQUEST and PTP_PEROUT_REQUEST ioctls.
 	 */
-	unsigned int chan;
+	unsigned i32 chan;
 	/*
 	 * Reserved for future use.
 	 */
-	unsigned int rsv[5];
+	unsigned i32 rsv[5];
 };
 
 #define PTP_CLK_MAGIC '='
@@ -203,7 +203,7 @@ struct ptp_pin_desc {
 #define PTP_CLOCK_GETCAPS  _IOR(PTP_CLK_MAGIC, 1, struct ptp_clock_caps)
 #define PTP_EXTTS_REQUEST  _IOW(PTP_CLK_MAGIC, 2, struct ptp_extts_request)
 #define PTP_PEROUT_REQUEST _IOW(PTP_CLK_MAGIC, 3, struct ptp_perout_request)
-#define PTP_ENABLE_PPS     _IOW(PTP_CLK_MAGIC, 4, int)
+#define PTP_ENABLE_PPS     _IOW(PTP_CLK_MAGIC, 4, i32)
 #define PTP_SYS_OFFSET     _IOW(PTP_CLK_MAGIC, 5, struct ptp_sys_offset)
 #define PTP_PIN_GETFUNC    _IOWR(PTP_CLK_MAGIC, 6, struct ptp_pin_desc)
 #define PTP_PIN_SETFUNC    _IOW(PTP_CLK_MAGIC, 7, struct ptp_pin_desc)
@@ -215,7 +215,7 @@ struct ptp_pin_desc {
 #define PTP_CLOCK_GETCAPS2  _IOR(PTP_CLK_MAGIC, 10, struct ptp_clock_caps)
 #define PTP_EXTTS_REQUEST2  _IOW(PTP_CLK_MAGIC, 11, struct ptp_extts_request)
 #define PTP_PEROUT_REQUEST2 _IOW(PTP_CLK_MAGIC, 12, struct ptp_perout_request)
-#define PTP_ENABLE_PPS2     _IOW(PTP_CLK_MAGIC, 13, int)
+#define PTP_ENABLE_PPS2     _IOW(PTP_CLK_MAGIC, 13, i32)
 #define PTP_SYS_OFFSET2     _IOW(PTP_CLK_MAGIC, 14, struct ptp_sys_offset)
 #define PTP_PIN_GETFUNC2    _IOWR(PTP_CLK_MAGIC, 15, struct ptp_pin_desc)
 #define PTP_PIN_SETFUNC2    _IOW(PTP_CLK_MAGIC, 16, struct ptp_pin_desc)
@@ -226,9 +226,9 @@ struct ptp_pin_desc {
 
 struct ptp_extts_event {
 	struct ptp_clock_time t; /* Time event occured. */
-	unsigned int index;      /* Which channel produced the event. */
-	unsigned int flags;      /* Reserved for future use. */
-	unsigned int rsv[2];     /* Reserved for future use. */
+	unsigned i32 index;      /* Which channel produced the event. */
+	unsigned i32 flags;      /* Reserved for future use. */
+	unsigned i32 rsv[2];     /* Reserved for future use. */
 };
 
 #endif

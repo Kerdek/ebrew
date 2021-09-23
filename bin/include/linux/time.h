@@ -9,7 +9,7 @@
 #define _STRUCT_TIMESPEC
 struct timespec {
 	__kernel_old_time_t	tv_sec;		/* seconds */
-	long			tv_nsec;	/* nanoseconds */
+	i64			tv_nsec;	/* nanoseconds */
 };
 #endif
 
@@ -29,8 +29,8 @@ struct itimerval {
 };
 
 struct timezone {
-	int	tz_minuteswest;	/* minutes west of Greenwich */
-	int	tz_dsttime;	/* type of dst correction */
+	i32	tz_minuteswest;	/* minutes west of Greenwich */
+	i32	tz_dsttime;	/* type of dst correction */
 };
 
 /*

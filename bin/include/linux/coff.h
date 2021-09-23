@@ -25,25 +25,25 @@
  * nice to have it "endian" independent.
  */
  
-/* Load a short int from the following tables with little-endian formats */
-#define COFF_SHORT_L(ps) ((short)(((unsigned short)((unsigned char)ps[1])<<8)|\
-				  ((unsigned short)((unsigned char)ps[0]))))
+/* Load a i16 i32 from the following tables with little-endian formats */
+#define COFF_SHORT_L(ps) ((i16)(((unsigned i16)((unsigned i8)ps[1])<<8)|\
+				  ((unsigned i16)((unsigned i8)ps[0]))))
 
-/* Load a long int from the following tables with little-endian formats */
-#define COFF_LONG_L(ps) (((long)(((unsigned long)((unsigned char)ps[3])<<24) |\
-				 ((unsigned long)((unsigned char)ps[2])<<16) |\
-				 ((unsigned long)((unsigned char)ps[1])<<8)  |\
-				 ((unsigned long)((unsigned char)ps[0])))))
+/* Load a i64 from the following tables with little-endian formats */
+#define COFF_LONG_L(ps) (((i64)(((unsigned i64)((unsigned i8)ps[3])<<24) |\
+				 ((unsigned i64)((unsigned i8)ps[2])<<16) |\
+				 ((unsigned i64)((unsigned i8)ps[1])<<8)  |\
+				 ((unsigned i64)((unsigned i8)ps[0])))))
  
-/* Load a short int from the following tables with big-endian formats */
-#define COFF_SHORT_H(ps) ((short)(((unsigned short)((unsigned char)ps[0])<<8)|\
-				  ((unsigned short)((unsigned char)ps[1]))))
+/* Load a i16 i32 from the following tables with big-endian formats */
+#define COFF_SHORT_H(ps) ((i16)(((unsigned i16)((unsigned i8)ps[0])<<8)|\
+				  ((unsigned i16)((unsigned i8)ps[1]))))
 
-/* Load a long int from the following tables with big-endian formats */
-#define COFF_LONG_H(ps) (((long)(((unsigned long)((unsigned char)ps[0])<<24) |\
-				 ((unsigned long)((unsigned char)ps[1])<<16) |\
-				 ((unsigned long)((unsigned char)ps[2])<<8)  |\
-				 ((unsigned long)((unsigned char)ps[3])))))
+/* Load a i64 from the following tables with big-endian formats */
+#define COFF_LONG_H(ps) (((i64)(((unsigned i64)((unsigned i8)ps[0])<<24) |\
+				 ((unsigned i64)((unsigned i8)ps[1])<<16) |\
+				 ((unsigned i64)((unsigned i8)ps[2])<<8)  |\
+				 ((unsigned i64)((unsigned i8)ps[3])))))
 
 /* These may be overridden later by brain dead implementations which generate
    a big-endian header with little-endian data. In that case, generate a
@@ -232,7 +232,7 @@ struct COFF_lineno {
 
 /********************** SYMBOLS **********************/
 
-#define COFF_E_SYMNMLEN	 8	/* # characters in a short symbol name	*/
+#define COFF_E_SYMNMLEN	 8	/* # characters in a i16 symbol name	*/
 #define COFF_E_FILNMLEN	14	/* # characters in a file name		*/
 #define COFF_E_DIMNUM	 4	/* # array dimensions in auxiliary entry */
 

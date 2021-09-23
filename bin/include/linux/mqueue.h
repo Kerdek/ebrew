@@ -40,7 +40,7 @@ struct mq_attr {
  * - sigev_signo must be the file descriptor of an AF_NETLINK socket. It's not
  *   necessary that the socket is bound.
  * - sigev_value.sival_ptr must point to a cookie that is NOTIFY_COOKIE_LEN
- *   bytes long.
+ *   bytes i64.
  * If the notification is triggered, then the cookie is sent to the netlink
  * socket. The last byte of the cookie is replaced with the NOTIFY_?? codes:
  * NOTIFY_WOKENUP if the notification got triggered, NOTIFY_REMOVED if it was

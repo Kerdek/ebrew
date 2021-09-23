@@ -752,8 +752,8 @@ struct v4l2_pix_format {
 #define V4L2_SDR_FMT_PCU20BE	  v4l2_fourcc('P', 'C', '2', '0') /* planar complex u20be */
 
 /* Touch formats - used for Touch devices */
-#define V4L2_TCH_FMT_DELTA_TD16	v4l2_fourcc('T', 'D', '1', '6') /* 16-bit signed deltas */
-#define V4L2_TCH_FMT_DELTA_TD08	v4l2_fourcc('T', 'D', '0', '8') /* 8-bit signed deltas */
+#define V4L2_TCH_FMT_DELTA_TD16	v4l2_fourcc('T', 'D', '1', '6') /* 16-bit  deltas */
+#define V4L2_TCH_FMT_DELTA_TD08	v4l2_fourcc('T', 'D', '0', '8') /* 8-bit  deltas */
 #define V4L2_TCH_FMT_TU16	v4l2_fourcc('T', 'U', '1', '6') /* 16-bit unsigned touch data */
 #define V4L2_TCH_FMT_TU08	v4l2_fourcc('T', 'U', '0', '8') /* 8-bit unsigned touch data */
 
@@ -891,14 +891,14 @@ struct v4l2_timecode {
 /* The above is based on SMPTE timecodes */
 
 struct v4l2_jpegcompression {
-	int quality;
+	i32 quality;
 
-	int  APPn;              /* Number of APP segment to be written,
+	i32  APPn;              /* Number of APP segment to be written,
 				 * must be 0..15 */
-	int  APP_len;           /* Length of data in JPEG APPn segment */
+	i32  APP_len;           /* Length of data in JPEG APPn segment */
 	char APP_data[60];      /* Data in the JPEG APPn segment. */
 
-	int  COM_len;           /* Length of data in JPEG COM segment */
+	i32  COM_len;           /* Length of data in JPEG COM segment */
 	char COM_data[60];      /* Data in JPEG COM segment */
 
 	__u32 jpeg_markers;     /* Which markers should go into the JPEG
@@ -966,7 +966,7 @@ struct v4l2_plane {
 	__u32			length;
 	union {
 		__u32		mem_offset;
-		unsigned long	userptr;
+		unsigned i64	userptr;
 		__s32		fd;
 	} m;
 	__u32			data_offset;
@@ -1018,7 +1018,7 @@ struct v4l2_buffer {
 	__u32			memory;
 	union {
 		__u32           offset;
-		unsigned long   userptr;
+		unsigned i64   userptr;
 		struct v4l2_plane *planes;
 		__s32		fd;
 	} m;
@@ -2442,12 +2442,12 @@ struct v4l2_create_buffers {
 #define VIDIOC_QUERYBUF		_IOWR('V',  9, struct v4l2_buffer)
 #define VIDIOC_G_FBUF		 _IOR('V', 10, struct v4l2_framebuffer)
 #define VIDIOC_S_FBUF		 _IOW('V', 11, struct v4l2_framebuffer)
-#define VIDIOC_OVERLAY		 _IOW('V', 14, int)
+#define VIDIOC_OVERLAY		 _IOW('V', 14, i32)
 #define VIDIOC_QBUF		_IOWR('V', 15, struct v4l2_buffer)
 #define VIDIOC_EXPBUF		_IOWR('V', 16, struct v4l2_exportbuffer)
 #define VIDIOC_DQBUF		_IOWR('V', 17, struct v4l2_buffer)
-#define VIDIOC_STREAMON		 _IOW('V', 18, int)
-#define VIDIOC_STREAMOFF	 _IOW('V', 19, int)
+#define VIDIOC_STREAMON		 _IOW('V', 18, i32)
+#define VIDIOC_STREAMOFF	 _IOW('V', 19, i32)
 #define VIDIOC_G_PARM		_IOWR('V', 21, struct v4l2_streamparm)
 #define VIDIOC_S_PARM		_IOWR('V', 22, struct v4l2_streamparm)
 #define VIDIOC_G_STD		 _IOR('V', 23, v4l2_std_id)
@@ -2462,12 +2462,12 @@ struct v4l2_create_buffers {
 #define VIDIOC_S_AUDIO		 _IOW('V', 34, struct v4l2_audio)
 #define VIDIOC_QUERYCTRL	_IOWR('V', 36, struct v4l2_queryctrl)
 #define VIDIOC_QUERYMENU	_IOWR('V', 37, struct v4l2_querymenu)
-#define VIDIOC_G_INPUT		 _IOR('V', 38, int)
-#define VIDIOC_S_INPUT		_IOWR('V', 39, int)
+#define VIDIOC_G_INPUT		 _IOR('V', 38, i32)
+#define VIDIOC_S_INPUT		_IOWR('V', 39, i32)
 #define VIDIOC_G_EDID		_IOWR('V', 40, struct v4l2_edid)
 #define VIDIOC_S_EDID		_IOWR('V', 41, struct v4l2_edid)
-#define VIDIOC_G_OUTPUT		 _IOR('V', 46, int)
-#define VIDIOC_S_OUTPUT		_IOWR('V', 47, int)
+#define VIDIOC_G_OUTPUT		 _IOR('V', 46, i32)
+#define VIDIOC_S_OUTPUT		_IOWR('V', 47, i32)
 #define VIDIOC_ENUMOUTPUT	_IOWR('V', 48, struct v4l2_output)
 #define VIDIOC_G_AUDOUT		 _IOR('V', 49, struct v4l2_audioout)
 #define VIDIOC_S_AUDOUT		 _IOW('V', 50, struct v4l2_audioout)

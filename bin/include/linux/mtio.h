@@ -18,8 +18,8 @@
 
 /* structure for MTIOCTOP - mag tape op command */
 struct	mtop {
-	short	mt_op;		/* operations defined below */
-	int	mt_count;	/* how many of them */
+	i16	mt_op;		/* operations defined below */
+	i32	mt_count;	/* how many of them */
 };
 
 /* Magnetic Tape operations [Not all operations supported by all drivers]: */
@@ -69,16 +69,16 @@ struct	mtop {
 /* structure for MTIOCGET - mag tape get status command */
 
 struct	mtget {
-	long	mt_type;	/* type of magtape device */
-	long	mt_resid;	/* residual count: (not sure)
+	i64	mt_type;	/* type of magtape device */
+	i64	mt_resid;	/* residual count: (not sure)
 				 *	number of bytes ignored, or
 				 *	number of files not skipped, or
 				 *	number of records not skipped.
 				 */
 	/* the following registers are device dependent */
-	long	mt_dsreg;	/* status register */
-	long	mt_gstat;	/* generic (device independent) status */
-	long	mt_erreg;	/* error register */
+	i64	mt_dsreg;	/* status register */
+	i64	mt_gstat;	/* generic (device independent) status */
+	i64	mt_erreg;	/* error register */
 	/* The next two fields are not always used */
 	__kernel_daddr_t mt_fileno;	/* number of current file on tape */
 	__kernel_daddr_t mt_blkno;	/* current block number */
@@ -121,7 +121,7 @@ struct	mtget {
 /* structure for MTIOCPOS - mag tape get position command */
 
 struct	mtpos {
-	long 	mt_blkno;	/* current block number */
+	i64 	mt_blkno;	/* current block number */
 };
 
 

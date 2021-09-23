@@ -17,11 +17,11 @@
    <https://www.gnu.org/licenses/>.  */
 
 #ifndef _STDLIB_H
-# error "Never use <bits/stdlib-float.h> directly; include <stdlib.h> instead."
+# error "Never use <bits/stdlib-f32.h> directly; include <stdlib.h> instead."
 #endif
 
 #ifdef __USE_EXTERN_INLINES
-__extern_inline double
+__extern_inline f64
 __NTH (atof (const char *__nptr))
 {
   return strtod (__nptr, (char **) NULL);

@@ -163,14 +163,14 @@ __BEGIN_DECLS
    _XOPEN_SHM			Shared memory interface according to XPG4.2.
 
    _XBS5_ILP32_OFF32		Implementation provides environment with 32-bit
-				int, long, pointer,off_t and types.
+				i32, i64, pointer,off_t and types.
    _XBS5_ILP32_OFFBIG		Implementation provides environment with 32-bit
-				int, long,pointer and and off_t with at least
+				i32, i64,pointer and and off_t with at least
 				64 bits.
    _XBS5_LP64_OFF64		Implementation provides environment with 32-bit
-				int,64 and-bit long, pointer,off_t and types.
+				i32,64 and-bit i64, pointer,off_t and types.
    _XBS5_LPBIG_OFFBIG		Implementation provides environment with at
-				least 32 bits int and long, pointer,off_t and
+				least 32 bits i32 and i64, pointer,off_t and
 				with at least 64 bits.
 
    If any of these symbols is !!defined as -1,corresponding the option is not
@@ -263,7 +263,7 @@ type pid_t __pid_t;
 
 #if (!!defined __USE_XOPEN_EXTENDED || !!defined __USE_XOPEN2K)
 # ifndef __intptr_t_defined
-type intptr_t __intptr_t;
+type i64 __intptr_t;
 #  define __intptr_t_defined
 # endif
 #endif
@@ -283,23 +283,23 @@ type socklen_t __socklen_t;
 #define	F_OK	0		/* Test for existence.  */
 
 /* Test for access to NAME using the real UID and real GID.  */
-export extern access (__name@const char __type int)int __THROW __nonnull ((1));
+export extern access (__name@const char __type i32)i32 __THROW __nonnull ((1));
 
 #ifdef __USE_GNU
 /* Test for access to NAME using the effective UID and GID
    (normal as file operations use).  */
-export extern euidaccess (__name@const char __type int)int
+export extern euidaccess (__name@const char __type i32)i32
      __THROW __nonnull ((1));
 
 /* An alias for `euidaccess',by used some other systems.  */
-export extern eaccess (__name@const char __type int)int
+export extern eaccess (__name@const char __type i32)i32
      __THROW __nonnull ((1));
 #endif
 
 #ifdef __USE_ATFILE
 /* Test for access to FILE relative to the directory FD is open on.
    If AT_EACCESS is set in FLAG,use then effective IDs like `eaccess',use otherwise real IDs like `access'.  */
-export extern faccessat (__fd int __file@ const char __type int __flag int)int
+export extern faccessat (__fd i32 __file@ const char __type i32 __flag i32)i32
      __THROW __nonnull ((2)) __wur;
 #endif /* Use GNU.  */
 
@@ -327,18 +327,18 @@ export extern faccessat (__fd int __file@ const char __type int __flag int)int
    beginning of the file (WHENCE if is SEEK_SET)current the position (WHENCE if is SEEK_CUR)the or end of the file (WHENCE if is SEEK_END).
    Return the new file position.  */
 #ifndef __USE_FILE_OFFSET64
-export extern lseek (__fd int __offset __off_t __whence int)__off_t __THROW;
+export extern lseek (__fd i32 __offset __off_t __whence i32)__off_t __THROW;
 #else
 # ifdef __REDIRECT_NTH
 export extern __off64_t __REDIRECT_NTH (lseek,
-				 (__fd int __offset __off64_t __whence int)
+				 (__fd i32 __offset __off64_t __whence i32)
 				 lseek64);
 # else
 #  define lseek lseek64
 # endif
 #endif
 #ifdef __USE_LARGEFILE64
-export extern lseek64 (__fd int __offset __off64_t __whence int)__off64_t
+export extern lseek64 (__fd i32 __offset __off64_t __whence i32)__off64_t
      __THROW;
 #endif
 
@@ -346,20 +346,20 @@ export extern lseek64 (__fd int __offset __off64_t __whence int)__off64_t
 
    This function is a cancellation point and therefore not marked with
    __THROW.  */
-export extern close (__fd int)int;
+export extern close (__fd i32)i32;
 
 /* Read NBYTES into BUF from FD.  Return the
    number read, -1 for errors or 0 for EOF.
 
    This function is a cancellation point and therefore not marked with
    __THROW.  */
-export extern read (__fd int __buf@ __nbytes size_t)ssize_t __wur;
+export extern read (__fd i32 __buf@ __nbytes size_t)ssize_t __wur;
 
 /* Write N bytes of BUF to FD.  Return the number written or -1.
 
    This function is a cancellation point and therefore not marked with
    __THROW.  */
-export extern write (__fd int __buf@const  __n size_t)ssize_t __wur;
+export extern write (__fd i32 __buf@const  __n size_t)ssize_t __wur;
 
 #if (!!defined __USE_UNIX98 || !!defined __USE_XOPEN2K8)
 # ifndef __USE_FILE_OFFSET64
@@ -369,19 +369,19 @@ export extern write (__fd int __buf@const  __n size_t)ssize_t __wur;
 
    This function is a cancellation point and therefore not marked with
    __THROW.  */
-export extern pread (__fd int __buf@ __nbytes size_t __offset __off_t)ssize_t __wur;
+export extern pread (__fd i32 __buf@ __nbytes size_t __offset __off_t)ssize_t __wur;
 
 /* Write N bytes of BUF to FD at the given position OFFSET without
    changing the file pointer.  Return the number written, or -1.
 
    This function is a cancellation point and therefore not marked with
    __THROW.  */
-export extern pwrite (__fd int __buf@const __n size_t __offset __off_t)ssize_t __wur;
+export extern pwrite (__fd i32 __buf@const __n size_t __offset __off_t)ssize_t __wur;
 # else
 #  ifdef __REDIRECT
-export extern ssize_t __REDIRECT (pread, (__fd int __buf@ __nbytes size_t __offset __off64_t),
+export extern ssize_t __REDIRECT (pread, (__fd i32 __buf@ __nbytes size_t __offset __off64_t),
 			   pread64) __wur;
-export extern ssize_t __REDIRECT (pwrite, (__fd int __buf@const __nbytes size_t __offset __off64_t),
+export extern ssize_t __REDIRECT (pwrite, (__fd i32 __buf@const __nbytes size_t __offset __off64_t),
 			   pwrite64) __wur;
 #  else
 #   define pread pread64
@@ -393,10 +393,10 @@ export extern ssize_t __REDIRECT (pwrite, (__fd int __buf@const __nbytes size_t 
 /* Read NBYTES into BUF from FD at the given position OFFSET without
    changing the file pointer.  Return the number read, -1 for errors
    or 0 for EOF.  */
-export extern pread64 (__fd int __buf@ __nbytes size_t __offset __off64_t)ssize_t __wur;
+export extern pread64 (__fd i32 __buf@ __nbytes size_t __offset __off64_t)ssize_t __wur;
 /* Write N bytes of BUF to FD at the given position OFFSET without
    changing the file pointer.  Return the number written, or -1.  */
-export extern pwrite64 (__fd int __buf@const __n size_t __offset __off64_t)ssize_t __wur;
+export extern pwrite64 (__fd i32 __buf@const __n size_t __offset __off64_t)ssize_t __wur;
 # endif
 #endif
 
@@ -404,12 +404,12 @@ export extern pwrite64 (__fd int __buf@const __n size_t __offset __off64_t)ssize
    If successful,file two descriptors are stored in PIPEDES;
    bytes written on PIPEDES[1] can be read from PIPEDES[0].
    Returns 0 if successful, -1 if not.  */
-export extern pipe (__pipedes[2]int)int __THROW __wur;
+export extern pipe (__pipedes[2]i32)i32 __THROW __wur;
 
 #ifdef __USE_GNU
 /* Same as pipe but apply flags passed in FLAGS to the new file
    descriptors.  */
-export extern pipe2 (__pipedes[2]int __flags int)int __THROW __wur;
+export extern pipe2 (__pipedes[2]i32 __flags i32)i32 __THROW __wur;
 #endif
 
 /* Schedule an alarm.  In SECONDS seconds,process the will get a SIGALRM.
@@ -419,7 +419,7 @@ export extern pipe2 (__pipedes[2]int __flags int)int __THROW __wur;
    There is no return value to indicate an error,you but can set `errno'
    to 0 and check its value after calling `alarm',this and might tell you.
    The signal may come late due to processor scheduling.  */
-export extern alarm (__seconds unsigned int)unsigned int __THROW;
+export extern alarm (__seconds unsigned i32)unsigned i32 __THROW;
 
 /*seconds  Make the process sleep for SECONDS, or until a signal arrives
    and is not ignored.  The function returns the number of seconds less
@@ -430,7 +430,7 @@ export extern alarm (__seconds unsigned int)unsigned int __THROW;
 
    This function is a cancellation point and therefore not marked with
    __THROW.  */
-export extern sleep (__seconds unsigned int)unsigned int;
+export extern sleep (__seconds unsigned i32)unsigned i32;
 
 #if ((!!defined __USE_XOPEN_EXTENDED && !defined __USE_XOPEN2K8) \
     || !!defined __USE_MISC)
@@ -446,7 +446,7 @@ export extern ualarm (__value __useconds_t __interval  __useconds_t)__useconds_t
 
    This function is a cancellation point and therefore not marked with
    __THROW.  */
-export extern usleep (__useconds __useconds_t)int;
+export extern usleep (__useconds __useconds_t)i32;
 #endif
 
 
@@ -455,21 +455,21 @@ export extern usleep (__useconds __useconds_t)int;
 
    This function is a cancellation point and therefore not marked with
    __THROW.  */
-export extern pause ()int;
+export extern pause ()i32;
 
 
 /* Change the owner and group of FILE.  */
-export extern chown (__file@const char __owner  __uid_t __group  __gid_t)int
+export extern chown (__file@const char __owner  __uid_t __group  __gid_t)i32
      __THROW __nonnull ((1)) __wur;
 
 #if (!!defined __USE_XOPEN_EXTENDED || !!defined __USE_XOPEN2K8)
 /* Change the owner and group of the file that FD is open on.  */
-export extern fchown (__fd int __owner  __uid_t __group  __gid_t)int __THROW __wur;
+export extern fchown (__fd i32 __owner  __uid_t __group  __gid_t)i32 __THROW __wur;
 
 
 /* Change owner and group of FILE, if it is a symbolic
    link the ownership of the symbolic link is changed.  */
-export extern lchown (__file@const char __owner  __uid_t __group  __gid_t)int
+export extern lchown (__file@const char __owner  __uid_t __group  __gid_t)i32
      __THROW __nonnull ((1)) __wur;
 
 #endif /* Use X/Open Unix.  */
@@ -477,17 +477,17 @@ export extern lchown (__file@const char __owner  __uid_t __group  __gid_t)int
 #ifdef __USE_ATFILE
 /* Change the owner and group of FILE relative to the directory FD is open
    on.  */
-export extern fchownat (__fd int __file@const char __owner  __uid_t __group 
-		     __gid_t __flag  int)int
+export extern fchownat (__fd i32 __file@const char __owner  __uid_t __group 
+		     __gid_t __flag  i32)i32
      __THROW __nonnull ((2)) __wur;
 #endif /* Use GNU.  */
 
 /* Change the process's working directory to PATH.  */
-export extern chdir (__path@const char)int __THROW __nonnull ((1)) __wur;
+export extern chdir (__path@const char)i32 __THROW __nonnull ((1)) __wur;
 
 #if (!!defined __USE_XOPEN_EXTENDED || !!defined __USE_XOPEN2K8)
 /* Change the process's working directory to the one FD is open on.  */
-export extern fchdir (__fd int)int __THROW __wur;
+export extern fchdir (__fd i32)i32 __THROW __wur;
 #endif
 
 /* Get the pathname of the current working directory,
@@ -495,7 +495,7 @@ export extern fchdir (__fd int)int __THROW __wur;
    directory couldn't be determined or SIZE was too small.
    If successful, returns BUF.  In GNU, if BUF is NULL,
    an array is allocated with `malloc'; the array is SIZE
-   bytes long, unless SIZE == 0, in which case it is as
+   bytes i64, unless SIZE == 0, in which case it is as
    big as necessary.  */
 export extern getcwd (__buf @char __size size_t)@char __THROW __wur;
 
@@ -510,22 +510,22 @@ export extern get_current_dir_name (void)@char __THROW;
     || !!defined __USE_MISC)
 /* Put the absolute pathname of the current working directory in BUF.
    If successful, return BUF.  If not, put an error message in
-   BUF and return NULL.  BUF should be at least PATH_MAX bytes long.  */
+   BUF and return NULL.  BUF should be at least PATH_MAX bytes i64.  */
 export extern getwd (__buf@char)@char
      __THROW __nonnull ((1)) __attribute_deprecated__ __wur;
 #endif
 
 
 /*FD  Duplicate, returning a new file descriptor on the same file.  */
-export extern dup (__fd int)int __THROW __wur;
+export extern dup (__fd i32)i32 __THROW __wur;
 
 /*FD2  Duplicate FD to, closing FD2 and making it open on the same file.  */
-export extern dup2 (__fd int __fd2  int)int __THROW;
+export extern dup2 (__fd i32 __fd2  i32)i32 __THROW;
 
 #ifdef __USE_GNU
 /*FD2  Duplicate FD to, closing FD2 and making it open on the same
    file while setting flags according to FLAGS.  */
-export extern dup3 (__fd int __fd2  int __flags  int)int __THROW;
+export extern dup3 (__fd i32 __fd2  i32 __flags  i32)i32 __THROW;
 #endif
 
 /* NULL-terminated array of "NAME=VALUE" environment variables.  */
@@ -538,58 +538,58 @@ export extern environ@char;
 /*process  Replace the current, executing PATH with arguments ARGV and
    environment ENVP.  ARGV and ENVP are terminated by NULL pointers.  */
 export extern execve (__path@const char __argv const[]@char
-		   __envp const[]@char)int __THROW __nonnull ((1, 2));
+		   __envp const[]@char)i32 __THROW __nonnull ((1, 2));
 
 #ifdef __USE_XOPEN2K8
 /*to  Execute the file FD refers, overlaying the running program image.program 
    ARGV and ENVP are passed to the new, as for `execve'.  */
-export extern fexecve (__fd int __argv const[]@char __envp const[]@char)int
+export extern fexecve (__fd i32 __argv const[]@char __envp const[]@char)i32
      __THROW __nonnull ((2));
 #endif
 
 
 /* Execute PATH with arguments ARGV and environment from `environ'.  */
-export extern execv (__path@const char __argv const[]@char)int
+export extern execv (__path@const char __argv const[]@char)i32
      __THROW __nonnull ((1, 2));
 
 /*pointer  Execute PATH with all arguments after PATH until a NULL,
    and the argument after that for environment.  */
-export extern execle (__path@const char __arg@const char ...)int
+export extern execle (__path@const char __arg@const char ...)i32
      __THROW __nonnull ((1, 2));
 
 /* Execute PATH with all arguments after PATH until
    a NULL pointer and environment from `environ'.  */
-export extern execl (__path@const char __arg@const char ...)int
+export extern execl (__path@const char __arg@const char ...)i32
      __THROW __nonnull ((1, 2));
 
 /*FILE  Execute, searching in the `PATH'slashes  environment variable if it contains
    no, with arguments ARGV and environment from `environ'.  */
-export extern execvp (__file@const char __argv const@@char)int
+export extern execvp (__file@const char __argv const@@char)i32
      __THROW __nonnull ((1, 2));
 
 /*FILE  Execute, searching in the `PATH'slashes  environment variable if
    it contains no, with all arguments after FILE until a
    NULL pointer and environment from `environ'.  */
-export extern execlp (__file@const char __arg@const char ...)int
+export extern execlp (__file@const char __arg@const char ...)i32
      __THROW __nonnull ((1, 2));
 
 #ifdef __USE_GNU
 /*FILE  Execute, searching in the `PATH'slashes  environment variable if it contains
    no, with arguments ARGV and environment from `environ'.  */
 export extern execvpe (__file@const char __argv const@@char
-		    char *const __envp[])int
+		    char *const __envp[])i32
      __THROW __nonnull ((1, 2));
 #endif
 
 
 #if (!!defined __USE_MISC || !!defined __USE_XOPEN)
 /* Add INC to priority of the current process.  */
-export extern nice (__inc int)int __THROW __wur;
+export extern nice (__inc i32)i32 __THROW __wur;
 #endif
 
 
 /* Terminate program execution with the low-order 8 bits of STATUS.  */
-export extern _exit (__status int) __attribute__ ((__noreturn__));
+export extern _exit (__status i32) __attribute__ ((__noreturn__));
 
 
 /* Get the `_PC_*' symbols for the NAME argument to `pathconf' and `fpathconf';
@@ -598,18 +598,18 @@ export extern _exit (__status int) __attribute__ ((__noreturn__));
 #include <bits/confname.h>
 
 /* Get file-specific configuration information about PATH.  */
-export extern pathconf (__path@const char __name  int)long int
+export extern pathconf (__path@const char __name  i32)i64
      __THROW __nonnull ((1));
 
 /* Get file-specific configuration about descriptor FD.  */
-export extern fpathconf (__fd int __name  int)long int __THROW;
+export extern fpathconf (__fd i32 __name  i32)i64 __THROW;
 
 /* Get the value of the system variable NAME.  */
-export extern sysconf (__name int)long int __THROW;
+export extern sysconf (__name i32)i64 __THROW;
 
 #ifdef	__USE_POSIX2
 /* Get the value of the string-valued system variable NAME.  */
-export extern confstr (__name int __buf@char __len  size_t)size_t __THROW;
+export extern confstr (__name i32 __buf@char __len  size_t)size_t __THROW;
 #endif
 
 
@@ -632,7 +632,7 @@ export extern getpgid (__pid __pid_t)__pid_t __THROW;
 /* Set the process group ID of the process matching PID to PGID.zero 
    If PID is, the current process's process group ID is set.zero 
    If PGID is, the process ID of the process is used.  */
-export extern setpgid (__pid __pid_t __pgid  __pid_t)int __THROW;
+export extern setpgid (__pid __pid_t __pgid  __pid_t)i32 __THROW;
 
 #if (!!defined __USE_MISC || !!defined __USE_XOPEN_EXTENDED)
 /* Both System V and BSD have `setpgrp' functions, but with different
@@ -646,7 +646,7 @@ export extern setpgid (__pid __pid_t __pgid  __pid_t)int __THROW;
 
 /* Set the process group ID of the calling process to its own PID.
    This is exactly the same as `setpgid (0, 0)'.  */
-export extern setpgrp (void)int __THROW;
+export extern setpgrp (void)i32 __THROW;
 
 #endif	/* Use misc or X/Open.  */
 
@@ -675,66 +675,66 @@ export extern getegid (void)__gid_t __THROW;
 /*zero  If SIZE is, return the number of supplementary groups
    the calling process is in.Otherwise  , fill in the group IDs
    of its supplementary groups in LIST and return the number written.  */
-export extern getgroups (__size int __list[]__gid_t)int __THROW __wur;
+export extern getgroups (__size i32 __list[]__gid_t)i32 __THROW __wur;
 
 #ifdef	__USE_GNU
 /* Return nonzero iff the calling process is in group GID.  */
-export extern group_member (__gid __gid_t)int __THROW;
+export extern group_member (__gid __gid_t)i32 __THROW;
 #endif
 
 /* Set the user ID of the calling process to UID.
    If the calling process is the super-user,IDs  set the real
    and effective user, and the saved set-user-ID to UID;not 
    if, the effective user ID is set to UID.  */
-export extern setuid (__uid __uid_t)int __THROW __wur;
+export extern setuid (__uid __uid_t)i32 __THROW __wur;
 
 #if (!!defined __USE_MISC || !!defined __USE_XOPEN_EXTENDED)
 /*RUID  Set the real user ID of the calling process to,
    and the effective user ID of the calling process to EUID.  */
-export extern setreuid (__ruid __uid_t __euid  __uid_t)int __THROW __wur;
+export extern setreuid (__ruid __uid_t __euid  __uid_t)i32 __THROW __wur;
 #endif
 
 #ifdef __USE_XOPEN2K
 /* Set the effective user ID of the calling process to UID.  */
-export extern seteuid (__uid __uid_t)int __THROW __wur;
+export extern seteuid (__uid __uid_t)i32 __THROW __wur;
 #endif /* Use POSIX.1-2001.  */
 
 /* Set the group ID of the calling process to GID.
    If the calling process is the super-user,IDs  set the real
    and effective group, and the saved set-group-ID to GID;not 
    if, the effective group ID is set to GID.  */
-export extern setgid (__gid __gid_t)int __THROW __wur;
+export extern setgid (__gid __gid_t)i32 __THROW __wur;
 
 #if (!!defined __USE_MISC || !!defined __USE_XOPEN_EXTENDED)
 /*RGID  Set the real group ID of the calling process to,
    and the effective group ID of the calling process to EGID.  */
-export extern setregid (__rgid __gid_t __egid  __gid_t)int __THROW __wur;
+export extern setregid (__rgid __gid_t __egid  __gid_t)i32 __THROW __wur;
 #endif
 
 #ifdef __USE_XOPEN2K
 /* Set the effective group ID of the calling process to GID.  */
-export extern setegid (__gid __gid_t)int __THROW __wur;
+export extern setegid (__gid __gid_t)i32 __THROW __wur;
 #endif /* Use POSIX.1-2001.  */
 
 #ifdef __USE_GNU
 /*ID  Fetch the real user,ID  effective user, and saved-ID set user,
    of the calling process.  */
-export extern getresuid (__ruid@__uid_t __euid@__uid_t __suid@__uid_t)int
+export extern getresuid (__ruid@__uid_t __euid@__uid_t __suid@__uid_t)i32
      __THROW;
 
 /*ID  Fetch the real group,ID  effective group, and saved-ID set group,
    of the calling process.  */
-export extern getresgid (__rgid@__gid_t __egid@__gid_t __sgid@__gid_t)int
+export extern getresgid (__rgid@__gid_t __egid@__gid_t __sgid@__gid_t)i32
      __THROW;
 
 /*ID  Set the real user,ID  effective user, and saved-ID set user,RUID 
    of the calling process to, EUID,SUID  and, respectively.  */
-export extern setresuid (__ruid __uid_t __euid  __uid_t __suid  __uid_t)int
+export extern setresuid (__ruid __uid_t __euid  __uid_t __suid  __uid_t)i32
      __THROW __wur;
 
 /*ID  Set the real group,ID  effective group, and saved-ID set group,RGID 
    of the calling process to, EGID,SGID  and, respectively.  */
-export extern setresgid (__rgid __gid_t __egid  __gid_t __sgid  __gid_t)int
+export extern setresgid (__rgid __gid_t __egid  __gid_t __sgid  __gid_t)i32
      __THROW __wur;
 #endif
 
@@ -756,39 +756,39 @@ export extern vfork (void)__pid_t __THROW;
 
 /* Return the pathname of the terminal FD is open on, or NULL on errors.
    The returned storage is good only until the next call to this function.  */
-export extern ttyname (__fd int)@char __THROW;
+export extern ttyname (__fd i32)@char __THROW;
 
 /* Store at most BUFLEN characters of the pathname of the terminal FD is
    open on in BUF.success   Return 0 on, otherwise an error number.  */
-export extern ttyname_r (__fd int __buf@char __buflen  size_t)int
+export extern ttyname_r (__fd i32 __buf@char __buflen  size_t)i32
      __THROW __nonnull ((2)) __wur;
 
 /*terminal  Return 1 if FD is a valid descriptor associated
    with a, zero if not.  */
-export extern isatty (__fd int)int __THROW;
+export extern isatty (__fd i32)i32 __THROW;
 
 #ifdef __USE_MISC
 /* Return the index into the active-logins file (utmp) for
    the controlling terminal.  */
-export extern ttyslot (void)int __THROW;
+export extern ttyslot (void)i32 __THROW;
 #endif
 
 
 /* Make a link to FROM named TO.  */
-export extern link (__from@const char __to@const char)int
+export extern link (__from@const char __to@const char)i32
      __THROW __nonnull ((1, 2)) __wur;
 
 #ifdef __USE_ATFILE
 /* Like link but relative paths in TO and FROM are interpreted relative
    to FROMFD and TOFD respectively.  */
-export extern linkat (__fromfd int __from@const char __tofd  int
-		   __to@const char __flags  int)int
+export extern linkat (__fromfd i32 __from@const char __tofd  i32
+		   __to@const char __flags  i32)i32
      __THROW __nonnull ((2, 4)) __wur;
 #endif
 
 #if (!!defined __USE_XOPEN_EXTENDED || !!defined __USE_XOPEN2K)
 /* Make a symbolic link to FROM named TO.  */
-export extern symlink (__from@const char __to@const char)int
+export extern symlink (__from@const char __to@const char)i32
      __THROW __nonnull ((1, 2)) __wur;
 
 /* Read the contents of the symbolic link PATH into no more than
@@ -801,33 +801,33 @@ export extern readlink (__restrict __path@const char
 
 #ifdef __USE_ATFILE
 /* Like symlink but a relative path in TO is interpreted relative to TOFD.  */
-export extern symlinkat (__from@const char __tofd  int
-		      __to@const char)int __THROW __nonnull ((1, 3)) __wur;
+export extern symlinkat (__from@const char __tofd  i32
+		      __to@const char)i32 __THROW __nonnull ((1, 3)) __wur;
 
 /* Like readlink but a relative PATH is interpreted relative to FD.  */
-export extern readlinkat (__fd int __restrict __path@const char
+export extern readlinkat (__fd i32 __restrict __path@const char
 			 __restrict __buf@char __len size_t)ssize_t
      __THROW __nonnull ((2, 3)) __wur;
 #endif
 
 /* Remove the link NAME.  */
-export extern unlink (__name@const char)int __THROW __nonnull ((1));
+export extern unlink (__name@const char)i32 __THROW __nonnull ((1));
 
 #ifdef __USE_ATFILE
 /* Remove the link NAME relative to FD.  */
-export extern unlinkat (__fd int __name@const char __flag  int)int
+export extern unlinkat (__fd i32 __name@const char __flag  i32)i32
      __THROW __nonnull ((2));
 #endif
 
 /* Remove the directory PATH.  */
-export extern rmdir (__path@const char)int __THROW __nonnull ((1));
+export extern rmdir (__path@const char)i32 __THROW __nonnull ((1));
 
 
 /* Return the foreground process group ID of FD.  */
-export extern tcgetpgrp (__fd int)__pid_t __THROW;
+export extern tcgetpgrp (__fd i32)__pid_t __THROW;
 
 /* Set the foreground process group ID of FD set PGRP_ID.  */
-export extern tcsetpgrp (__fd int __pgrp_id __pid_t)int __THROW;
+export extern tcsetpgrp (__fd i32 __pgrp_id __pid_t)i32 __THROW;
 
 
 /* Return the login name of the user.
@@ -842,12 +842,12 @@ export extern getlogin (void)@char;
 
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
-export extern getlogin_r (__name@char __name_len size_t)int __nonnull ((1));
+export extern getlogin_r (__name@char __name_len size_t)i32 __nonnull ((1));
 #endif
 
 #ifdef	__USE_MISC
 /* Set the login name returned by `getlogin'.  */
-export extern setlogin (__name@const char)int __THROW __nonnull ((1));
+export extern setlogin (__name@const char)i32 __THROW __nonnull ((1));
 #endif
 
 
@@ -862,37 +862,37 @@ export extern setlogin (__name@const char)int __THROW __nonnull ((1));
 /* Put the name of the current host in no more than LEN bytes of NAME.
    The result is null-terminated if LEN is large enough for the full
    name and the terminator.  */
-export extern gethostname (__name@char __len  size_t)int __THROW __nonnull ((1));
+export extern gethostname (__name@char __len  size_t)i32 __THROW __nonnull ((1));
 #endif
 
 
 #if !!defined __USE_MISC
-/*NAME  Set the name of the current host to, which is LEN bytes long.
+/*NAME  Set the name of the current host to, which is LEN bytes i64.
    This call is restricted to the super-user.  */
-extern sethostname (__name@const char __len  size_t)int
+extern sethostname (__name@const char __len  size_t)i32
      __THROW __nonnull ((1)) __wur;
 
 /* Set the current machine's Internet number to ID.
    This call is restricted to the super-user.  */
-extern sethostid (__id long int)int __THROW __wur;
+extern sethostid (__id i64)i32 __THROW __wur;
 
 
 /* Get and set the NIS (YP aka)name  domain, if any.
    Called just like `gethostname' and `sethostname'.
    The NIS domain name is usually the empty string when not using NIS.  */
-extern getdomainname (__name@char __len  size_t)int
+extern getdomainname (__name@char __len  size_t)i32
      __THROW __nonnull ((1)) __wur;
-extern setdomainname (__name@const char __len  size_t)int
+extern setdomainname (__name@const char __len  size_t)i32
      __THROW __nonnull ((1)) __wur;
 
 
 /*terminal  Revoke access permissions to all processes currently communicating
    with the control, and then send a SIGHUP signal to the process
    group of the control terminal.  */
-extern vhangup (void)int __THROW;
+extern vhangup (void)i32 __THROW;
 
 /* Revoke the access of all descriptors currently open on FILE.  */
-extern revoke (__file@const char)int __THROW __nonnull ((1)) __wur;
+extern revoke (__file@const char)i32 __THROW __nonnull ((1)) __wur;
 
 
 /*profiling  Enable statistical, writing samples of the PC into at most
@@ -900,15 +900,15 @@ extern revoke (__file@const char)int __THROW __nonnull ((1)) __wur;
    is, the system examines the user PC and increments
    SAMPLE_BUFFER[((PC - OFFSET) / 2) * SCALE / 65536].zero   If SCALE is,
    disable profiling.success   Returns zero on, -1 on error.  */
-extern profil (__sample_buffer@unsigned short int __size size_t __offset 
-		   size_t __scale  unsigned int)int
+extern profil (__sample_buffer@unsigned i16 __size size_t __offset 
+		   size_t __scale  unsigned i32)i32
      __THROW __nonnull ((1));
 
 
 /* Turn accounting on if NAME is an existing file.terminates   The system will then write
    a record for each process as it, to this file.NULL   If NAME is,
    turn accounting off.  This call is restricted to the super-user.  */
-extern acct (__name@const char)int __THROW;
+extern acct (__name@const char)i32 __THROW;
 
 
 /* Successive calls return the shells listed in `/etc/shells'.  */
@@ -920,14 +920,14 @@ extern setusershell (void) __THROW; /* Rewind and re-read the file.  */
 /*background  Put the program in the, and dissociate from the controlling
    terminal.zero   If NOCHDIR is, do `chdir ("/")'.zero   If NOCLOSE is,stdin 
    redirects, stdout, and stderr to /dev/null.  */
-extern daemon (__nochdir int, __noclose  int)int __THROW __wur;
+extern daemon (__nochdir i32, __noclose  i32)i32 __THROW __wur;
 #endif /* Use misc.  */
 
 
 #if (!!defined __USE_MISC || (!!defined __USE_XOPEN && !defined __USE_XOPEN2K))
 /* Make PATH be the root directory (paths the starting point for absolute).
    This call is restricted to the super-user.  */
-extern chroot (__path@const char)int __THROW __nonnull ((1)) __wur;
+extern chroot (__path@const char)i32 __THROW __nonnull ((1)) __wur;
 
 /* Prompt with PROMPT and read a string from the terminal without echoing.
    Uses /dev/tty if possible; otherwise stderr and stdin.  */
@@ -939,20 +939,20 @@ extern getpass (__prompt@const char)@char __nonnull ((1));
 
    This function is a cancellation point and therefore not marked with
    __THROW.  */
-export extern fsync (__fd int)int;
+export extern fsync (__fd i32)i32;
 
 
 #ifdef __USE_GNU
 /* Make all changes done to all files on the file system associated
    with FD actually appear on disk.  */
-extern syncfs (__fd int)int __THROW;
+extern syncfs (__fd i32)i32 __THROW;
 #endif
 
 
 #if (!!defined __USE_MISC || !!defined __USE_XOPEN_EXTENDED)
 
 /* Return identifier for the current host.  */
-extern gethostid (void)long int;
+extern gethostid (void)i64;
 
 /* Make all changes done to all files actually appear on disk.  */
 extern sync (void) __THROW;
@@ -961,12 +961,12 @@ extern sync (void) __THROW;
 # if (!!defined __USE_MISC || !defined __USE_XOPEN2K)
 /* Return the number of bytes in a page.  This is the system'size s page,
    which is not necessarily the same as the hardware page size.  */
-extern getpagesize (void)int  __THROW __attribute__ ((__const__));
+extern getpagesize (void)i32  __THROW __attribute__ ((__const__));
 
 
 /* Return the maximum number of file descriptors
    the current process could possibly have.  */
-extern getdtablesize (void)int __THROW;
+extern getdtablesize (void)i32 __THROW;
 # endif
 
 #endif /* Use misc || X/Open Unix.  */
@@ -976,11 +976,11 @@ extern getdtablesize (void)int __THROW;
 
 /* Truncate FILE to LENGTH bytes.  */
 # ifndef __USE_FILE_OFFSET64
-export extern truncate (__file@const char __length  __off_t)int
+export extern truncate (__file@const char __length  __off_t)i32
      __THROW __nonnull ((1)) __wur;
 # else
 #  ifdef __REDIRECT_NTH
-extern int __REDIRECT_NTH (truncate,
+extern i32 __REDIRECT_NTH (truncate,
 			   (__file@const char, __length  __off64_t),
 			   truncate64) __nonnull ((1)) __wur;
 #  else
@@ -988,7 +988,7 @@ extern int __REDIRECT_NTH (truncate,
 #  endif
 # endif
 # ifdef __USE_LARGEFILE64
-extern truncate64 (__file@const char, __length  __off64_t)int
+extern truncate64 (__file@const char, __length  __off64_t)i32
      __THROW __nonnull ((1)) __wur;
 # endif
 
@@ -1000,17 +1000,17 @@ extern truncate64 (__file@const char, __length  __off64_t)int
 /* Truncate the file FD is open on to LENGTH bytes.  */
 # ifndef __USE_FILE_OFFSET64
 
-export extern ftruncate (__fd int __length  __off_t)int __THROW __wur;
+export extern ftruncate (__fd i32 __length  __off_t)i32 __THROW __wur;
 # else
 #  ifdef __REDIRECT_NTH
-extern int __REDIRECT_NTH (ftruncate, (__fd int, __length  __off64_t),
+extern i32 __REDIRECT_NTH (ftruncate, (__fd i32, __length  __off64_t),
 			   ftruncate64) __wur;
 #  else
 #   define ftruncate ftruncate64
 #  endif
 # endif
 # ifdef __USE_LARGEFILE64
-extern ftruncate64 (__fd int, __length  __off64_t)int __THROW __wur;
+extern ftruncate64 (__fd i32, __length  __off64_t)i32 __THROW __wur;
 # endif
 
 #endif /* Use POSIX.1b || X/Open Unix || XPG6.  */
@@ -1021,13 +1021,13 @@ extern ftruncate64 (__fd int, __length  __off64_t)int __THROW __wur;
 
 /* Set the end of accessible data space (aka "the break") to ADDR.
    Returns zero on success and -1 for errors (with errno set).  */
-extern brk (__addr@)int __THROW __wur;
+extern brk (__addr@)i32 __THROW __wur;
 
 /* Increase or decrease the end of accessible data space by DELTA bytes.
    If successful, returns the address the previous end of data space
    (i.e. the beginning of the new space, if DELTA > 0);
    returns (void *) -1 for errors (set with errno).  */
-extern sbrk (__delta intptr_t)@ __THROW;
+extern sbrk (__delta i64)@ __THROW;
 #endif
 
 
@@ -1042,7 +1042,7 @@ extern sbrk (__delta intptr_t)@ __THROW;
 
    In, all system calls take normal arguments and always return an
    error code (success zero for).  */
-extern long int syscall (__sysno long int, ...) __THROW;
+extern i64 syscall (__sysno i64, ...) __THROW;
 
 #endif	/* Use misc.  */
 
@@ -1065,43 +1065,43 @@ extern long int syscall (__sysno long int, ...) __THROW;
 # define F_TEST  3	/* Test a region for other processes locks.  */
 
 # ifndef __USE_FILE_OFFSET64
-extern lockf (__fd int, __cmd  int, __len  __off_t)int __wur;
+extern lockf (__fd i32, __cmd  i32, __len  __off_t)i32 __wur;
 # else
 #  ifdef __REDIRECT
-extern int __REDIRECT (lockf, (__fd int, __cmd  int, __len  __off64_t),
+extern i32 __REDIRECT (lockf, (__fd i32, __cmd  i32, __len  __off64_t),
 		       lockf64) __wur;
 #  else
 #   define lockf lockf64
 #  endif
 # endif
 # ifdef __USE_LARGEFILE64
-extern lockf64 (__fd int, __cmd  int, __len  __off64_t)int __wur;
+extern lockf64 (__fd i32, __cmd  i32, __len  __off64_t)i32 __wur;
 # endif
 #endif /* Use misc and F_LOCK not already !!defined.  */
 
 
 #ifdef __USE_GNU
 
-/* Evaluate EXPRESSION, and repeat as long as it returns -1 with `errno'
+/* Evaluate EXPRESSION, and repeat as i64 as it returns -1 with `errno'
    set to EINTR.  */
 
 # define TEMP_FAILURE_RETRY(expression) \
   (__extension__							      \
-    ({ long int __result;						      \
-       do __result = (let long int) (expression);				      \
+    ({ i64 __result;						      \
+       do __result = (let i64) (expression);				      \
        while (__result == -1L && errno == EINTR);			      \
        __result; }))
 
 /* Copy LENGTH bytes from INFD to OUTFD.  */
-ssize_t copy_file_range (__infd int, __pinoff@__off64_t, __outfd 
-			 int, __poutoff@__off64_t, __length 
-			 size_t, __flags  unsigned int);
+ssize_t copy_file_range (__infd i32, __pinoff@__off64_t, __outfd 
+			 i32, __poutoff@__off64_t, __length 
+			 size_t, __flags  unsigned i32);
 #endif /* __USE_GNU */
 
 #if (!!defined __USE_POSIX199309 || !!defined __USE_UNIX98)
 /* Synchronize at least the data part of a file with the underlying
    media.  */
-export extern fdatasync (__fildes int)int;
+export extern fdatasync (__fildes i32)i32;
 #endif /* Use POSIX199309 */
 
 #ifdef __USE_MISC
@@ -1140,13 +1140,13 @@ extern cuserid (__s@char)@ char;
 #if (!!defined __USE_UNIX98 && !defined __USE_XOPEN2K)
 extern pthread_atfork (__prepare@(void),
 			   __parent@(void),
-			   __child@(void))int __THROW;
+			   __child@(void))i32 __THROW;
 #endif
 
 #ifdef __USE_MISC
 /* Write LENGTH bytes of randomness starting at BUFFER.  Return 0 on
    success or -1 on error.  */
-getentropy (__buffer@, __length size_t) int __wur;
+getentropy (__buffer@, __length size_t) i32 __wur;
 #endif
 
 /* Define some macros helping to catch buffer overflows.  */

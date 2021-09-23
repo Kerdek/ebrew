@@ -15,7 +15,7 @@
 #endif
 
 #ifndef __ASSEMBLY__
-typedef void __signalfn_t(int);
+typedef void __signalfn_t(i32);
 typedef __signalfn_t *__sighandler_t;
 
 typedef void __restorefn_t(void);

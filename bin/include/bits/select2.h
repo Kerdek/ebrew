@@ -21,13 +21,13 @@
 #endif
 
 /* Helper functions to issue warnings and errors when needed.  */
-extern long int __fdelt_chk (long int __d);
-extern long int __fdelt_warn (long int __d)
+extern i64 __fdelt_chk (i64 __d);
+extern i64 __fdelt_warn (i64 __d)
   __warnattr ("bit outside of fd_set selected");
 #undef __FD_ELT
 #define	__FD_ELT(d) \
   __extension__								    \
-  ({ long int __d = (d);						    \
+  ({ i64 __d = (d);						    \
      (__builtin_constant_p (__d)					    \
       ? ((0 <= __d && __d < __FD_SETSIZE)					    \
 	 ? (__d / __NFDBITS)						    \

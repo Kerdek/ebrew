@@ -62,7 +62,7 @@ struct arpt_arp {
 	 */
 
 	char iniface[IFNAMSIZ], outiface[IFNAMSIZ];
-	unsigned char iniface_mask[IFNAMSIZ], outiface_mask[IFNAMSIZ];
+	unsigned i8 iniface_mask[IFNAMSIZ], outiface_mask[IFNAMSIZ];
 
 	/* Flags word */
 	__u8 flags;
@@ -101,13 +101,13 @@ struct arpt_entry
 	__u16 next_offset;
 
 	/* Back pointer */
-	unsigned int comefrom;
+	unsigned i32 comefrom;
 
 	/* Packet and byte counters. */
 	struct xt_counters counters;
 
 	/* The matches (if any), then the target. */
-	unsigned char elems[0];
+	unsigned i8 elems[0];
 };
 
 /*
@@ -136,19 +136,19 @@ struct arpt_getinfo {
 
 	/* Kernel fills these in. */
 	/* Which hook entry points are valid: bitmask */
-	unsigned int valid_hooks;
+	unsigned i32 valid_hooks;
 
 	/* Hook entry points: one per netfilter hook. */
-	unsigned int hook_entry[NF_ARP_NUMHOOKS];
+	unsigned i32 hook_entry[NF_ARP_NUMHOOKS];
 
 	/* Underflow points. */
-	unsigned int underflow[NF_ARP_NUMHOOKS];
+	unsigned i32 underflow[NF_ARP_NUMHOOKS];
 
 	/* Number of entries */
-	unsigned int num_entries;
+	unsigned i32 num_entries;
 
 	/* Size of entries. */
-	unsigned int size;
+	unsigned i32 size;
 };
 
 /* The argument to ARPT_SO_SET_REPLACE. */
@@ -158,23 +158,23 @@ struct arpt_replace {
 
 	/* Which hook entry points are valid: bitmask.  You can't
            change this. */
-	unsigned int valid_hooks;
+	unsigned i32 valid_hooks;
 
 	/* Number of entries */
-	unsigned int num_entries;
+	unsigned i32 num_entries;
 
 	/* Total size of new entries */
-	unsigned int size;
+	unsigned i32 size;
 
 	/* Hook entry points. */
-	unsigned int hook_entry[NF_ARP_NUMHOOKS];
+	unsigned i32 hook_entry[NF_ARP_NUMHOOKS];
 
 	/* Underflow points. */
-	unsigned int underflow[NF_ARP_NUMHOOKS];
+	unsigned i32 underflow[NF_ARP_NUMHOOKS];
 
 	/* Information about old entries: */
 	/* Number of counters (must be equal to current number of entries). */
-	unsigned int num_counters;
+	unsigned i32 num_counters;
 	/* The old entries' counters. */
 	struct xt_counters *counters;
 
@@ -188,7 +188,7 @@ struct arpt_get_entries {
 	char name[XT_TABLE_MAXNAMELEN];
 
 	/* User fills this in: total entry size. */
-	unsigned int size;
+	unsigned i32 size;
 
 	/* The entries. */
 	struct arpt_entry entrytable[0];

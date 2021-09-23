@@ -53,8 +53,8 @@
 __BEGIN_DECLS
 
 /* Fill *BUF with information about PATH in DIRFD.  */
-int statx (int __dirfd, const char *__restrict __path, int __flags,
-           unsigned int __mask, struct statx *__restrict __buf)
+i32 statx (i32 __dirfd, const char *__restrict __path, i32 __flags,
+           unsigned i32 __mask, struct statx *__restrict __buf)
   __THROW __nonnull ((2, 5));
 
 __END_DECLS

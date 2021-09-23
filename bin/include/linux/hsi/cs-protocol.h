@@ -112,9 +112,9 @@ struct cs_mmap_config_block {
 #define CS_IOWR(num, dtype)	_IOWR(CS_IO_MAGIC, num, dtype)
 #define CS_IO(num)		_IO(CS_IO_MAGIC, num)
 
-#define CS_GET_STATE		CS_IOR(21, unsigned int)
-#define CS_SET_WAKELINE		CS_IOW(23, unsigned int)
-#define CS_GET_IF_VERSION	CS_IOR(30, unsigned int)
+#define CS_GET_STATE		CS_IOR(21, unsigned i32)
+#define CS_SET_WAKELINE		CS_IOW(23, unsigned i32)
+#define CS_GET_IF_VERSION	CS_IOR(30, unsigned i32)
 #define CS_CONFIG_BUFS		CS_IOW(31, struct cs_buffer_config)
 
 #endif /* _CS_PROTOCOL_H */

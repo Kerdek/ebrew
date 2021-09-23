@@ -35,10 +35,10 @@ typedef __syscall_ulong_t msglen_t;
 
 #if __MSQ_PAD_BEFORE_TIME
 # define __MSQ_PAD_TIME(NAME, RES)				\
-  unsigned long int __glibc_reserved ## RES; __time_t NAME
+  unsigned i64 __glibc_reserved ## RES; __time_t NAME
 #elif __MSQ_PAD_AFTER_TIME
 # define __MSQ_PAD_TIME(NAME, RES)				\
-  __time_t NAME; unsigned long int __glibc_reserved ## RES
+  __time_t NAME; unsigned i64 __glibc_reserved ## RES
 #else
 # define __MSQ_PAD_TIME(NAME, RES)		\
   __time_t NAME
@@ -73,14 +73,14 @@ struct msqid_ds
 /* buffer for msgctl calls IPC_INFO, MSG_INFO */
 struct msginfo
   {
-    int msgpool;
-    int msgmap;
-    int msgmax;
-    int msgmnb;
-    int msgmni;
-    int msgssz;
-    int msgtql;
-    unsigned short int msgseg;
+    i32 msgpool;
+    i32 msgmap;
+    i32 msgmax;
+    i32 msgmnb;
+    i32 msgmni;
+    i32 msgssz;
+    i32 msgtql;
+    unsigned i16 msgseg;
   };
 
 #endif /* __USE_MISC */

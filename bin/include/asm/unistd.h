@@ -4,8 +4,8 @@
 
 /*
  * x32 syscall flag bit.  Some user programs expect syscall NR macros
- * and __X32_SYSCALL_BIT to have type int, even though syscall numbers
- * are, for practical purposes, unsigned long.
+ * and __X32_SYSCALL_BIT to have type i32, even though syscall numbers
+ * are, for practical purposes, unsigned i64.
  *
  * Fortunately, expressions like (nr & ~__X32_SYSCALL_BIT) do the right
  * thing regardless.

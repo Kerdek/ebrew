@@ -47,33 +47,33 @@ __BEGIN_DECLS
 
 /* Create a new memory file descriptor.  NAME is a name for debugging.
    FLAGS is a combination of the MFD_* constants.  */
-int memfd_create (const char *__name, unsigned int __flags) __THROW;
+i32 memfd_create (const char *__name, unsigned i32 __flags) __THROW;
 
 /* Lock pages from ADDR (inclusive) to ADDR + LENGTH (exclusive) into
    memory.  FLAGS is a combination of the MLOCK_* flags above.  */
-int mlock2 (const void *__addr, size_t __length, unsigned int __flags) __THROW;
+i32 mlock2 (const void *__addr, size_t __length, unsigned i32 __flags) __THROW;
 
 /* Allocate a new protection key, with the PKEY_DISABLE_* bits
    specified in ACCESS_RIGHTS.  The protection key mask for the
    current thread is updated to match the access privilege for the new
    key.  */
-int pkey_alloc (unsigned int __flags, unsigned int __access_rights) __THROW;
+i32 pkey_alloc (unsigned i32 __flags, unsigned i32 __access_rights) __THROW;
 
 /* Update the access rights for the current thread for KEY, which must
    have been allocated using pkey_alloc.  */
-int pkey_set (int __key, unsigned int __access_rights) __THROW;
+i32 pkey_set (i32 __key, unsigned i32 __access_rights) __THROW;
 
 /* Return the access rights for the current thread for KEY, which must
    have been allocated using pkey_alloc.  */
-int pkey_get (int __key) __THROW;
+i32 pkey_get (i32 __key) __THROW;
 
 /* Free an allocated protection key, which must have been allocated
    using pkey_alloc.  */
-int pkey_free (int __key) __THROW;
+i32 pkey_free (i32 __key) __THROW;
 
 /* Apply memory protection flags for KEY to the specified address
    range.  */
-int pkey_mprotect (void *__addr, size_t __len, int __prot, int __pkey) __THROW;
+i32 pkey_mprotect (void *__addr, size_t __len, i32 __prot, i32 __pkey) __THROW;
 
 __END_DECLS
 

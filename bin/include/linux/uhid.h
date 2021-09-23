@@ -173,8 +173,8 @@ struct uhid_feature_answer_req {
  * All UHID events from and to the kernel are encoded as "struct uhid_event".
  * The "type" field contains a UHID_* type identifier. All payload depends on
  * that type and can be accessed via ev->u.XYZ accordingly.
- * If user-space writes short events, they're extended with 0s by the kernel. If
- * the kernel writes short events, user-space shall extend them with 0s.
+ * If user-space writes i16 events, they're extended with 0s by the kernel. If
+ * the kernel writes i16 events, user-space shall extend them with 0s.
  */
 
 struct uhid_event {

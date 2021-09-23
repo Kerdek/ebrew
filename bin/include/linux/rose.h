@@ -51,7 +51,7 @@ struct sockaddr_rose {
 	__kernel_sa_family_t srose_family;
 	rose_address	srose_addr;
 	ax25_address	srose_call;
-	int		srose_ndigis;
+	i32		srose_ndigis;
 	ax25_address	srose_digi;
 };
 
@@ -59,31 +59,31 @@ struct full_sockaddr_rose {
 	__kernel_sa_family_t srose_family;
 	rose_address	srose_addr;
 	ax25_address	srose_call;
-	unsigned int	srose_ndigis;
+	unsigned i32	srose_ndigis;
 	ax25_address	srose_digis[ROSE_MAX_DIGIS];
 };
 
 struct rose_route_struct {
 	rose_address	address;
-	unsigned short	mask;
+	unsigned i16	mask;
 	ax25_address	neighbour;
 	char		device[16];
-	unsigned char	ndigis;
+	unsigned i8	ndigis;
 	ax25_address	digipeaters[AX25_MAX_DIGIS];
 };
 
 struct rose_cause_struct {
-	unsigned char	cause;
-	unsigned char	diagnostic;
+	unsigned i8	cause;
+	unsigned i8	diagnostic;
 };
 
 struct rose_facilities_struct {
 	rose_address	source_addr,   dest_addr;
 	ax25_address	source_call,   dest_call;
-	unsigned char	source_ndigis, dest_ndigis;
+	unsigned i8	source_ndigis, dest_ndigis;
 	ax25_address	source_digis[ROSE_MAX_DIGIS];
 	ax25_address	dest_digis[ROSE_MAX_DIGIS];
-	unsigned int	rand;
+	unsigned i32	rand;
 	rose_address	fail_addr;
 	ax25_address	fail_call;
 };

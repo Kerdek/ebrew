@@ -47,7 +47,7 @@
 
 struct ip_tunnel_parm {
 	char			name[IFNAMSIZ];
-	int			link;
+	i32			link;
 	__be16			i_flags;
 	__be16			o_flags;
 	__be32			i_key;

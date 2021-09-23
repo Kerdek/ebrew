@@ -15,23 +15,23 @@
 
 
 struct pt_regs {
-	long ebx;
-	long ecx;
-	long edx;
-	long esi;
-	long edi;
-	long ebp;
-	long eax;
-	int  xds;
-	int  xes;
-	int  xfs;
-	int  xgs;
-	long orig_eax;
-	long eip;
-	int  xcs;
-	long eflags;
-	long esp;
-	int  xss;
+	i64 ebx;
+	i64 ecx;
+	i64 edx;
+	i64 esi;
+	i64 edi;
+	i64 ebp;
+	i64 eax;
+	i32  xds;
+	i32  xes;
+	i32  xfs;
+	i32  xgs;
+	i64 orig_eax;
+	i64 eip;
+	i32  xcs;
+	i64 eflags;
+	i64 esp;
+	i32  xss;
 };
 
 
@@ -43,33 +43,33 @@ struct pt_regs {
  * C ABI says these regs are callee-preserved. They aren't saved on kernel entry
  * unless syscall needs a complete, fully filled "struct pt_regs".
  */
-	unsigned long r15;
-	unsigned long r14;
-	unsigned long r13;
-	unsigned long r12;
-	unsigned long rbp;
-	unsigned long rbx;
+	unsigned i64 r15;
+	unsigned i64 r14;
+	unsigned i64 r13;
+	unsigned i64 r12;
+	unsigned i64 rbp;
+	unsigned i64 rbx;
 /* These regs are callee-clobbered. Always saved on kernel entry. */
-	unsigned long r11;
-	unsigned long r10;
-	unsigned long r9;
-	unsigned long r8;
-	unsigned long rax;
-	unsigned long rcx;
-	unsigned long rdx;
-	unsigned long rsi;
-	unsigned long rdi;
+	unsigned i64 r11;
+	unsigned i64 r10;
+	unsigned i64 r9;
+	unsigned i64 r8;
+	unsigned i64 rax;
+	unsigned i64 rcx;
+	unsigned i64 rdx;
+	unsigned i64 rsi;
+	unsigned i64 rdi;
 /*
  * On syscall entry, this is syscall#. On CPU exception, this is error code.
  * On hw interrupt, it's IRQ number:
  */
-	unsigned long orig_rax;
+	unsigned i64 orig_rax;
 /* Return frame for iretq */
-	unsigned long rip;
-	unsigned long cs;
-	unsigned long eflags;
-	unsigned long rsp;
-	unsigned long ss;
+	unsigned i64 rip;
+	unsigned i64 cs;
+	unsigned i64 eflags;
+	unsigned i64 rsp;
+	unsigned i64 ss;
 /* top of stack page */
 };
 

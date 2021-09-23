@@ -16,7 +16,7 @@
  */
 
 /* ioctl's command */
-#define REISERFS_IOC_UNPACK		_IOW(0xCD,1,long)
+#define REISERFS_IOC_UNPACK		_IOW(0xCD,1,i64)
 /* define following flags to be the same as in ext2, so that chattr(1),
    lsattr(1) will work with us. */
 #define REISERFS_IOC_GETFLAGS		FS_IOC_GETFLAGS

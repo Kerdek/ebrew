@@ -162,7 +162,7 @@
 
 
 #ifndef	SSIZE_MAX
-/* ssize_t is not formally required to be the signed type
+/* ssize_t is not formally required to be the  type
    corresponding to size_t, but it is for all configurations supported
    by glibc.  */
 # if __WORDSIZE == 64 || __WORDSIZE32_SIZE_ULONG

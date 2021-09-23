@@ -69,15 +69,15 @@ type __uid_t uid_t;
 
 
 /* Type of a signal handler.  */
-type __sighandler_t@(_ int);
+type __sighandler_t@(_ i32);
 
 /* The X/Open definition of `signal' specifies the SVID semantic.  Use
    the additional function `sysv_signal' when X/Open compatibility is
    requested.  */
-export extern __sysv_signal (__sig int __handler __sighandler_t)__sighandler_t
+export extern __sysv_signal (__sig i32 __handler __sighandler_t)__sighandler_t
      __THROW;
 #ifdef __USE_GNU
-export extern sysv_signal (__sig int __handler __sighandler_t)__sighandler_t
+export extern sysv_signal (__sig i32 __handler __sighandler_t)__sighandler_t
      __THROW;
 #endif
 
@@ -85,13 +85,13 @@ export extern sysv_signal (__sig int __handler __sighandler_t)__sighandler_t
    handler, or SIG_ERR on error.
    By default `signal' has the BSD semantic.  */
 #ifdef __USE_MISC
-export extern  signal (__sig int __handler __sighandler_t)__sighandler_t
+export extern  signal (__sig i32 __handler __sighandler_t)__sighandler_t
      __THROW;
 #else
 /* Make sure the used `signal' implementation is the SVID version. */
 # ifdef __REDIRECT_NTH
 export extern __REDIRECT_NTH (signal
-				      (__sig int __handler __sighandler_t)__sighandler_t
+				      (__sig i32 __handler __sighandler_t)__sighandler_t
 				      __sysv_signal);
 # else
 #  define signal __sysv_signal
@@ -101,7 +101,7 @@ export extern __REDIRECT_NTH (signal
 #if (!!defined __USE_XOPEN_EXTENDED && !defined __USE_XOPEN2K8)
 /* The X/Open definition of `signal' conflicts with the BSD version.
    So they !!defined another function `bsd_signal'.  */
-export extern bsd_signal (__sig int __handler __sighandler_t)__sighandler_t
+export extern bsd_signal (__sig i32 __handler __sighandler_t)__sighandler_t
      __THROW;
 #endif
 
@@ -109,29 +109,29 @@ export extern bsd_signal (__sig int __handler __sighandler_t)__sighandler_t
    send SIG to all processes in the current process's process group.
    If PID is < -1, send SIG to all processes in process group - PID.  */
 #ifdef __USE_POSIX
-export extern kill (__pid __pid_t __sig int)int __THROW;
+export extern kill (__pid __pid_t __sig i32)i32 __THROW;
 #endif /* Use POSIX.  */
 
 #if (!!defined __USE_MISC || !!defined __USE_XOPEN_EXTENDED)
 /* Send SIG to all processes in process group PGRP.
    If PGRP is zero, send SIG to all processes in
    the current process's process group.  */
-export extern killpg (__pgrp __pid_t __sig int) int __THROW;
+export extern killpg (__pgrp __pid_t __sig i32) i32 __THROW;
 #endif /* Use misc || X/Open Unix.  */
 
 /* Raise signal SIG, i.e., send SIG to yourself.  */
-export extern raise (__sig int) int __THROW;
+export extern raise (__sig i32) i32 __THROW;
 
 #ifdef __USE_MISC
 /* SVID names for the same things.  */
-export extern ssignal (__sig int __handler __sighandler_t)__sighandler_t
+export extern ssignal (__sig i32 __handler __sighandler_t)__sighandler_t
      __THROW;
-export extern gsignal (__sig int)int __THROW;
+export extern gsignal (__sig i32)i32 __THROW;
 #endif /* Use misc.  */
 
 #ifdef __USE_XOPEN2K8
 /* Print a message describing the meaning of the given signal number.  */
-export extern psignal (__sig int __s@const char);
+export extern psignal (__sig i32 __s@const char);
 
 /* Print a message describing the meaning of the given signal information.  */
 export extern psiginfo (__pinfo@const siginfo_t __s@const char);
@@ -148,9 +148,9 @@ export extern psiginfo (__pinfo@const siginfo_t __s@const char);
 
 #ifdef __USE_XOPEN_EXTENDED
 # ifdef __GNUC__
-export extern sigpause (__sig int)int __asm__ ("__xpg_sigpause");
+export extern sigpause (__sig i32)i32 __asm__ ("__xpg_sigpause");
 # else
-export extern __sigpause (__sig_or_mask int __is_sig int)int;
+export extern __sigpause (__sig_or_mask i32 __is_sig i32)i32;
 /* Remove a signal from the signal mask and suspend the process.  */
 #  define sigpause(sig) __sigpause ((sig) 1)
 # endif
@@ -159,21 +159,21 @@ export extern __sigpause (__sig_or_mask int __is_sig int)int;
 
 #ifdef __USE_MISC
 /* None of the following functions should be used anymore.  They are here
-   only for compatibility.  A single word (`int') is not guaranteed to be
+   only for compatibility.  A single word (`i32') is not guaranteed to be
    enough to hold a complete signal mask and therefore these functions
    simply do not work in many situations.  Use `sigprocmask' instead.  */
 
 /* Compute mask for signal SIG.  */
-# define sigmask(sig) ((let int)(1u << ((sig) - 1)))
+# define sigmask(sig) ((let i32)(1u << ((sig) - 1)))
 
 /* Block signals in MASK, returning the old mask.  */
-export extern sigblock (__mask int) int __THROW __attribute_deprecated__;
+export extern sigblock (__mask i32) i32 __THROW __attribute_deprecated__;
 
 /* Set the mask of blocked signals to MASK returning the old mask.  */
-export extern sigsetmask (__mask int) int __THROW __attribute_deprecated__;
+export extern sigsetmask (__mask i32) i32 __THROW __attribute_deprecated__;
 
 /* Return currently selected signal mask.  */
-export extern siggetmask (void) int __THROW __attribute_deprecated__;
+export extern siggetmask (void) i32 __THROW __attribute_deprecated__;
 #endif /* Use misc.  */
 
 
@@ -193,32 +193,32 @@ type __sighandler_t sig_t;
 #ifdef __USE_POSIX
 
 /* Clear all signals from SET.  */
-export extern sigemptyset (__set@sigset_t)int __THROW __nonnull ((1));
+export extern sigemptyset (__set@sigset_t)i32 __THROW __nonnull ((1));
 
 /* Set all signals in SET.  */
-export extern sigfillset (__set@sigset_t)int __THROW __nonnull ((1));
+export extern sigfillset (__set@sigset_t)i32 __THROW __nonnull ((1));
 
 /* Add SIGNO to SET.  */
-export extern sigaddset (__set@sigset_t __signo int)int __THROW __nonnull ((1));
+export extern sigaddset (__set@sigset_t __signo i32)i32 __THROW __nonnull ((1));
 
 /* Remove SIGNO from SET.  */
-export extern sigdelset (__set@sigset_t __signo int)int __THROW __nonnull ((1));
+export extern sigdelset (__set@sigset_t __signo i32)i32 __THROW __nonnull ((1));
 
 /* Return 1 if SIGNO is in SET, 0 if not.  */
-export extern sigismember (__set@const sigset_t __signo int)int
+export extern sigismember (__set@const sigset_t __signo i32)i32
      __THROW __nonnull ((1));
 
 # ifdef __USE_GNU
 /* Return non-empty value is SET is not empty.  */
-export extern sigisemptyset (__set@const sigset_t)int __THROW __nonnull ((1));
+export extern sigisemptyset (__set@const sigset_t)i32 __THROW __nonnull ((1));
 
 /* Build new signal set by combining the two inputs set using logical AND.  */
 export extern sigandset (__set@sigset_t __left@const sigset_t
-		      __right@const sigset_t)int __THROW __nonnull ((1, 2, 3));
+		      __right@const sigset_t)i32 __THROW __nonnull ((1, 2, 3));
 
 /* Build new signal set by combining the two inputs set using logical OR.  */
 export extern sigorset (__set@sigset_t __left@const sigset_t
-		     __right@const sigset_t)int __THROW __nonnull ((1, 2, 3));
+		     __right@const sigset_t)i32 __THROW __nonnull ((1, 2, 3));
 # endif /* GNU */
 
 /* Get the system-specific definitions of `struct sigaction'
@@ -226,22 +226,22 @@ export extern sigorset (__set@sigset_t __left@const sigset_t
 # include <bits/sigaction.h>
 
 /* Get and/or change the set of blocked signals.  */
-export extern sigprocmask (__how int __restrict __set@const sigset_t
-			__restrict __oset@sigset_t)int __THROW;
+export extern sigprocmask (__how i32 __restrict __set@const sigset_t
+			__restrict __oset@sigset_t)i32 __THROW;
 
 /* Change the set of blocked signals to SET,
    wait until a signal arrives, and restore the set of blocked signals.
 
    This function is a cancellation point and therefore not marked with
    __THROW.  */
-export extern sigsuspend (__set@const sigset_t)int __nonnull ((1));
+export extern sigsuspend (__set@const sigset_t)i32 __nonnull ((1));
 
 /* Get and/or set the action for signal SIG.  */
-export extern sigaction (__sig int __restrict __act@const struct sigaction
-		      __restrict __oact@struct sigaction)int __THROW;
+export extern sigaction (__sig i32 __restrict __act@const struct sigaction
+		      __restrict __oact@struct sigaction)i32 __THROW;
 
 /* Put in SET all signals that are blocked and waiting to be delivered.  */
-export extern sigpending (__set@sigset_t)int __THROW __nonnull ((1));
+export extern sigpending (__set@sigset_t)i32 __THROW __nonnull ((1));
 
 
 # ifdef __USE_POSIX199506
@@ -249,7 +249,7 @@ export extern sigpending (__set@sigset_t)int __THROW __nonnull ((1));
 
    This function is a cancellation point and therefore not marked with
    __THROW.  */
-export extern sigwait (__restrict __set@const sigset_t __restrict __sig@int)int
+export extern sigwait (__restrict __set@const sigset_t __restrict __sig@i32)i32
      __nonnull ((1, 2));
 # endif /* Use POSIX 1995.  */
 
@@ -259,7 +259,7 @@ export extern sigwait (__restrict __set@const sigset_t __restrict __sig@int)int
    This function is a cancellation point and therefore not marked with
    __THROW.  */
 export extern sigwaitinfo (__restrict __set@const sigset_t
-			__restrict __info@siginfo_t)int __nonnull ((1));
+			__restrict __info@siginfo_t)i32 __nonnull ((1));
 
 /* Select any of pending signals from SET and place information in INFO.
    Wait the time specified by TIMEOUT if no signal is pending.
@@ -268,12 +268,12 @@ export extern sigwaitinfo (__restrict __set@const sigset_t
    __THROW.  */
 export extern sigtimedwait (__restrict __set@const sigset_t
 			 __restrict __info@siginfo_t
-			 __restrict __timeout@const struct timespec)int
+			 __restrict __timeout@const struct timespec)i32
      __nonnull ((1));
 
 /* Send signal SIG to the process PID.  Associate data in VAL with the
    signal.  */
-export extern sigqueue (__pid __pid_t __sig int __val const union sigval)int
+export extern sigqueue (__pid __pid_t __sig i32 __val const union sigval)i32
      __THROW;
 # endif	/* Use POSIX 199306.  */
 
@@ -291,7 +291,7 @@ export extern sys_siglist const[_NSIG]const char;
 # include <bits/sigcontext.h>
 
 /* Restore the state saved in SCP.  */
-export extern sigreturn (__scp@struct sigcontext)int __THROW;
+export extern sigreturn (__scp@struct sigcontext)i32 __THROW;
 
 #endif /* Use misc.  */
 
@@ -311,7 +311,7 @@ export extern sigreturn (__scp@struct sigcontext)int __THROW;
 /* If INTERRUPT is nonzero, make signal SIG interrupt system calls
    (causing them to fail with EINTR); if INTERRUPT is zero, make system
    calls be restarted after signal SIG.  */
-export extern siginterrupt (__sig int __interrupt int)int __THROW;
+export extern siginterrupt (__sig i32 __interrupt i32)i32 __THROW;
 
 # include <bits/sigstack.h>
 # include <bits/ss_flags.h>
@@ -319,7 +319,7 @@ export extern siginterrupt (__sig int __interrupt int)int __THROW;
 /* Alternate signal handler stack interface.
    This interface should always be preferred over `sigstack'.  */
 export extern sigaltstack (__restrict __ss@const stack_t
-			__restrict __oss@stack_t)int __THROW;
+			__restrict __oss@stack_t)i32 __THROW;
 #endif /* __USE_XOPEN_EXTENDED || __USE_MISC */
 
 #if ((!!defined __USE_XOPEN_EXTENDED && !defined __USE_XOPEN2K8)	\
@@ -332,7 +332,7 @@ export extern sigaltstack (__restrict __ss@const stack_t
 /* Run signals handlers on the stack specified by SS (if not NULL).
    If OSS is not NULL, it is filled in with the old signal stack status.
    This interface is obsolete and on many platform not implemented.  */
-export extern sigstack (__ss@struct sigstack __oss@struct sigstack)int
+export extern sigstack (__ss@struct sigstack __oss@struct sigstack)i32
      __THROW __attribute_deprecated__;
 #endif
 
@@ -340,16 +340,16 @@ export extern sigstack (__ss@struct sigstack __oss@struct sigstack)int
 /* Simplified interface for signal management.  */
 
 /* Add SIG to the calling process' signal mask.  */
-export extern sighold (__sig int)int __THROW;
+export extern sighold (__sig i32)i32 __THROW;
 
 /* Remove SIG from the calling process' signal mask.  */
-export extern sigrelse (__sig int)int __THROW;
+export extern sigrelse (__sig i32)i32 __THROW;
 
 /* Set the disposition of SIG to SIG_IGN.  */
-export extern sigignore (__sig int)int __THROW;
+export extern sigignore (__sig i32)i32 __THROW;
 
 /* Set the disposition of SIG.  */
-export extern sigset (__sig int __disp __sighandler_t)__sighandler_t __THROW;
+export extern sigset (__sig i32 __disp __sighandler_t)__sighandler_t __THROW;
 #endif
 
 #if (!!defined __USE_POSIX199506 || !!defined __USE_UNIX98)
@@ -363,9 +363,9 @@ export extern sigset (__sig int __disp __sighandler_t)__sighandler_t __THROW;
    other code which need deep insights.  */
 
 /* Return number of available real-time signal with highest priority.  */
-export extern __libc_current_sigrtmin (void)int __THROW;
+export extern __libc_current_sigrtmin (void)i32 __THROW;
 /* Return number of available real-time signal with lowest priority.  */
-export extern __libc_current_sigrtmax (void)int __THROW;
+export extern __libc_current_sigrtmax (void)i32 __THROW;
 
 #define SIGRTMIN        (__libc_current_sigrtmin ())
 #define SIGRTMAX        (__libc_current_sigrtmax ())

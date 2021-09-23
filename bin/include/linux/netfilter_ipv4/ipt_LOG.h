@@ -12,8 +12,8 @@
 #define IPT_LOG_MASK		0x2f
 
 struct ipt_log_info {
-	unsigned char level;
-	unsigned char logflags;
+	unsigned i8 level;
+	unsigned i8 logflags;
 	char prefix[30];
 };
 

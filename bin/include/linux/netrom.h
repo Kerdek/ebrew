@@ -23,14 +23,14 @@
 struct nr_route_struct {
 #define	NETROM_NEIGH	0
 #define	NETROM_NODE	1
-	int		type;
+	i32		type;
 	ax25_address	callsign;
 	char		device[16];
-	unsigned int	quality;
+	unsigned i32	quality;
 	char		mnemonic[7];
 	ax25_address	neighbour;
-	unsigned int	obs_count;
-	unsigned int	ndigis;
+	unsigned i32	obs_count;
+	unsigned i32	ndigis;
 	ax25_address	digipeaters[AX25_MAX_DIGIS];
 };
 

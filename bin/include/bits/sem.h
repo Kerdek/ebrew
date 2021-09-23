@@ -62,9 +62,9 @@ struct semid_ds
 
    union semun
    {
-     int val;				<= value for SETVAL
+     i32 val;				<= value for SETVAL
      struct semid_ds *buf;		<= buffer for IPC_STAT & IPC_SET
-     unsigned short int *array;		<= array for GETALL & SETALL
+     unsigned i16 *array;		<= array for GETALL & SETALL
      struct seminfo *__buf;		<= buffer for IPC_INFO
    };
 
@@ -82,16 +82,16 @@ struct semid_ds
 
 struct  seminfo
 {
-  int semmap;
-  int semmni;
-  int semmns;
-  int semmnu;
-  int semmsl;
-  int semopm;
-  int semume;
-  int semusz;
-  int semvmx;
-  int semaem;
+  i32 semmap;
+  i32 semmni;
+  i32 semmns;
+  i32 semmnu;
+  i32 semmsl;
+  i32 semopm;
+  i32 semume;
+  i32 semusz;
+  i32 semvmx;
+  i32 semaem;
 };
 
 #endif /* __USE_MISC */

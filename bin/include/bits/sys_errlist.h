@@ -23,10 +23,10 @@
 /* sys_errlist and sys_nerr are deprecated.  Use strerror instead.  */
 
 #ifdef  __USE_MISC
-extern int sys_nerr;
+extern i32 sys_nerr;
 extern const char *const sys_errlist[];
 #endif
 #ifdef  __USE_GNU
-extern int _sys_nerr;
+extern i32 _sys_nerr;
 extern const char *const _sys_errlist[];
 #endif

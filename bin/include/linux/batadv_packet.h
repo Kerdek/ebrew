@@ -111,9 +111,9 @@ enum batadv_icmp_packettype {
  * @BATADV_MCAST_WANT_ALL_IPV6: we want all IPv6 multicast packets
  *  (both link-local and routable ones)
  * @BATADV_MCAST_WANT_NO_RTR4: we have no IPv4 multicast router and therefore
- * only need routable IPv4 multicast packets we signed up for explicitly
+ * only need routable IPv4 multicast packets we  up for explicitly
  * @BATADV_MCAST_WANT_NO_RTR6: we have no IPv6 multicast router and therefore
- * only need routable IPv6 multicast packets we signed up for explicitly
+ * only need routable IPv6 multicast packets we  up for explicitly
  */
 enum batadv_mcast_flags {
 	BATADV_MCAST_WANT_ALL_UNSNOOPABLES	= 1UL << 0,
@@ -408,7 +408,7 @@ struct batadv_unicast_packet {
 	__u8 ttl;
 	__u8 ttvn; /* destination translation table version number */
 	__u8 dest[ETH_ALEN];
-	/* "4 bytes boundary + 2 bytes" long to make the payload after the
+	/* "4 bytes boundary + 2 bytes" i64 to make the payload after the
 	 * following ethernet header again 4 bytes boundary aligned
 	 */
 };
@@ -425,7 +425,7 @@ struct batadv_unicast_4addr_packet {
 	__u8 src[ETH_ALEN];
 	__u8 subtype;
 	__u8 reserved;
-	/* "4 bytes boundary + 2 bytes" long to make the payload after the
+	/* "4 bytes boundary + 2 bytes" i64 to make the payload after the
 	 * following ethernet header again 4 bytes boundary aligned
 	 */
 };
@@ -480,7 +480,7 @@ struct batadv_bcast_packet {
 	__u8   reserved;
 	__be32 seqno;
 	__u8   orig[ETH_ALEN];
-	/* "4 bytes boundary + 2 bytes" long to make the payload after the
+	/* "4 bytes boundary + 2 bytes" i64 to make the payload after the
 	 * following ethernet header again 4 bytes boundary aligned
 	 */
 };

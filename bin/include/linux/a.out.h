@@ -47,14 +47,14 @@ enum machine_type {
 #define N_FLAGS(exec) (((exec).a_info >> 24) & 0xff)
 #define N_SET_INFO(exec, magic, type, flags) \
 	((exec).a_info = ((magic) & 0xffff) \
-	 | (((int)(type) & 0xff) << 16) \
+	 | (((i32)(type) & 0xff) << 16) \
 	 | (((flags) & 0xff) << 24))
 #define N_SET_MAGIC(exec, magic) \
 	((exec).a_info = (((exec).a_info & 0xffff0000) | ((magic) & 0xffff)))
 
 #define N_SET_MACHTYPE(exec, machtype) \
 	((exec).a_info = \
-	 ((exec).a_info&0xff00ffff) | ((((int)(machtype))&0xff) << 16))
+	 ((exec).a_info&0xff00ffff) | ((((i32)(machtype))&0xff) << 16))
 
 #define N_SET_FLAGS(exec, flags) \
 	((exec).a_info = \
@@ -143,12 +143,12 @@ struct nlist {
   union {
     char *n_name;
     struct nlist *n_next;
-    long n_strx;
+    i64 n_strx;
   } n_un;
-  unsigned char n_type;
+  unsigned i8 n_type;
   char n_other;
-  short n_desc;
-  unsigned long n_value;
+  i16 n_desc;
+  unsigned i64 n_value;
 };
 #endif /* no N_NLIST_DECLARED.  */
 
@@ -220,26 +220,26 @@ struct nlist {
 struct relocation_info
 {
   /* Address (within segment) to be relocated.  */
-  int r_address;
+  i32 r_address;
   /* The meaning of r_symbolnum depends on r_extern.  */
-  unsigned int r_symbolnum:24;
+  unsigned i32 r_symbolnum:24;
   /* Nonzero means value is a pc-relative offset
      and it should be relocated for changes in its own address
      as well as for changes in the symbol or section specified.  */
-  unsigned int r_pcrel:1;
+  unsigned i32 r_pcrel:1;
   /* Length (as exponent of 2) of the field to be relocated.
      Thus, a value of 2 indicates 1<<2 bytes.  */
-  unsigned int r_length:2;
+  unsigned i32 r_length:2;
   /* 1 => relocate with value of symbol.
           r_symbolnum is the index of the symbol
 	  in file's the symbol table.
      0 => relocate with the address of a segment.
           r_symbolnum is N_TEXT, N_DATA, N_BSS or N_ABS
 	  (the N_EXT bit may be set also, but signifies nothing).  */
-  unsigned int r_extern:1;
+  unsigned i32 r_extern:1;
   /* Four bits that aren't used, but when writing an object file
      it is desirable to clear them.  */
-  unsigned int r_pad:4;
+  unsigned i32 r_pad:4;
 };
 #endif /* no N_RELOCATION_INFO_DECLARED.  */
 

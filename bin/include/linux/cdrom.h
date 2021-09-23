@@ -163,7 +163,7 @@ struct cdrom_msf0
 union cdrom_addr		
 {
 	struct cdrom_msf0	msf;
-	int			lba;
+	i32			lba;
 };
 
 /* This struct is used by the CDROMPLAYMSF ioctl */ 
@@ -230,9 +230,9 @@ struct cdrom_tocentry
 /* This struct is used by the CDROMREADMODE1, and CDROMREADMODE2 ioctls */
 struct cdrom_read      
 {
-	int	cdread_lba;
+	i32	cdread_lba;
 	char 	*cdread_bufaddr;
-	int	cdread_buflen;
+	i32	cdread_buflen;
 };
 
 /* This struct is used by the CDROMREADAUDIO ioctl */
@@ -240,7 +240,7 @@ struct cdrom_read_audio
 {
 	union cdrom_addr addr; /* frame address */
 	__u8 addr_format;      /* CDROM_LBA or CDROM_MSF */
-	int nframes;           /* number of 2352-byte-frames to read at once */
+	i32 nframes;           /* number of 2352-byte-frames to read at once */
 	__u8 *buf;      /* frame buffer (size: nframes*2352 bytes) */
 };
 
@@ -268,7 +268,7 @@ struct cdrom_mcn
 struct cdrom_blk 
 {
 	unsigned from;
-	unsigned short len;
+	unsigned i16 len;
 };
 
 #define CDROM_PACKET_SIZE	12
@@ -281,14 +281,14 @@ struct cdrom_blk
 /* for CDROM_PACKET_COMMAND ioctl */
 struct cdrom_generic_command
 {
-	unsigned char 		cmd[CDROM_PACKET_SIZE];
-	unsigned char		*buffer;
-	unsigned int 		buflen;
-	int			stat;
+	unsigned i8 		cmd[CDROM_PACKET_SIZE];
+	unsigned i8		*buffer;
+	unsigned i32 		buflen;
+	i32			stat;
 	struct request_sense	*sense;
-	unsigned char		data_direction;
-	int			quiet;
-	int			timeout;
+	unsigned i8		data_direction;
+	i32			quiet;
+	i32			timeout;
 	union {
 		void		*reserved[1];	/* unused, actually */
 		void            *unused;
@@ -297,7 +297,7 @@ struct cdrom_generic_command
 
 /*
  * A CD-ROM physical sector size is 2048, 2052, 2056, 2324, 2332, 2336, 
- * 2340, or 2352 bytes long.  
+ * 2340, or 2352 bytes i64.  
 
 *         Sector types of the standard CD-ROM data formats:
  *
@@ -569,7 +569,7 @@ struct dvd_disckey {
 struct dvd_bca {
 	__u8 type;
 
-	int len;
+	i32 len;
 	__u8 value[188];
 };
 
@@ -577,7 +577,7 @@ struct dvd_manufact {
 	__u8 type;
 
 	__u8 layer_num;
-	int len;
+	i32 len;
 	__u8 value[2048];
 };
 
@@ -658,7 +658,7 @@ struct dvd_lu_send_title_key {
 	unsigned agid		: 2;
 
 	dvd_key title_key;
-	int lba;
+	i32 lba;
 	unsigned cpm		: 1;
 	unsigned cp_sec		: 1;
 	unsigned cgms		: 2;

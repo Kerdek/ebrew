@@ -23,7 +23,7 @@
 struct sigstack
   {
     void *ss_sp;		/* Signal stack pointer.  */
-    int ss_onstack;		/* Nonzero if executing on this stack.  */
+    i32 ss_onstack;		/* Nonzero if executing on this stack.  */
   };
 
 #endif

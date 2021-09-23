@@ -356,10 +356,10 @@ struct f_owner_ex
 /* File handle structure.  */
 struct file_handle
 {
-  unsigned int handle_bytes;
-  int handle_type;
+  unsigned i32 handle_bytes;
+  i32 handle_type;
   /* File identifier.  */
-  unsigned char f_handle[0];
+  unsigned i8 f_handle[0];
 };
 
 /* Maximum handle size (for now).  */
@@ -394,7 +394,7 @@ __BEGIN_DECLS
 #ifdef __USE_GNU
 
 /* Provide kernel hint to read ahead.  */
-extern __ssize_t readahead (int __fd, __off64_t __offset, size_t __count)
+extern __ssize_t readahead (i32 __fd, __off64_t __offset, size_t __count)
     __THROW;
 
 
@@ -402,41 +402,41 @@ extern __ssize_t readahead (int __fd, __off64_t __offset, size_t __count)
 
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
-extern int sync_file_range (int __fd, __off64_t __offset, __off64_t __count,
-			    unsigned int __flags);
+extern i32 sync_file_range (i32 __fd, __off64_t __offset, __off64_t __count,
+			    unsigned i32 __flags);
 
 
 /* Splice address range into a pipe.
 
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
-extern __ssize_t vmsplice (int __fdout, const struct iovec *__iov,
-			   size_t __count, unsigned int __flags);
+extern __ssize_t vmsplice (i32 __fdout, const struct iovec *__iov,
+			   size_t __count, unsigned i32 __flags);
 
 /* Splice two files together.
 
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
-extern __ssize_t splice (int __fdin, __off64_t *__offin, int __fdout,
+extern __ssize_t splice (i32 __fdin, __off64_t *__offin, i32 __fdout,
 			 __off64_t *__offout, size_t __len,
-			 unsigned int __flags);
+			 unsigned i32 __flags);
 
 /* In-kernel implementation of tee for pipe buffers.
 
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
-extern __ssize_t tee (int __fdin, int __fdout, size_t __len,
-		      unsigned int __flags);
+extern __ssize_t tee (i32 __fdin, i32 __fdout, size_t __len,
+		      unsigned i32 __flags);
 
 /* Reserve storage for the data of the file associated with FD.
 
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
 # ifndef __USE_FILE_OFFSET64
-extern int fallocate (int __fd, int __mode, __off_t __offset, __off_t __len);
+extern i32 fallocate (i32 __fd, i32 __mode, __off_t __offset, __off_t __len);
 # else
 #  ifdef __REDIRECT
-extern int __REDIRECT (fallocate, (int __fd, int __mode, __off64_t __offset,
+extern i32 __REDIRECT (fallocate, (i32 __fd, i32 __mode, __off64_t __offset,
 				   __off64_t __len),
 		       fallocate64);
 #  else
@@ -444,22 +444,22 @@ extern int __REDIRECT (fallocate, (int __fd, int __mode, __off64_t __offset,
 #  endif
 # endif
 # ifdef __USE_LARGEFILE64
-extern int fallocate64 (int __fd, int __mode, __off64_t __offset,
+extern i32 fallocate64 (i32 __fd, i32 __mode, __off64_t __offset,
 			__off64_t __len);
 # endif
 
 
 /* Map file name to file handle.  */
-extern int name_to_handle_at (int __dfd, const char *__name,
-			      struct file_handle *__handle, int *__mnt_id,
-			      int __flags) __THROW;
+extern i32 name_to_handle_at (i32 __dfd, const char *__name,
+			      struct file_handle *__handle, i32 *__mnt_id,
+			      i32 __flags) __THROW;
 
 /* Open file using the file handle.
 
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
-extern int open_by_handle_at (int __mountdirfd, struct file_handle *__handle,
-			      int __flags);
+extern i32 open_by_handle_at (i32 __mountdirfd, struct file_handle *__handle,
+			      i32 __flags);
 
 #endif	/* use GNU */
 

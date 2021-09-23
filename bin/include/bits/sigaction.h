@@ -33,7 +33,7 @@ _ struct sigaction
 	/* Used if SA_SIGINFO is not set.  */
 	sa_handler __sighandler_t
 	/* Used if SA_SIGINFO is set.  */
-	sa_sigaction@(_ int _@siginfo_t _@);
+	sa_sigaction@(_ i32 _@siginfo_t _@);
       }
 # define sa_handler	__sigaction_handler.sa_handler
 # define sa_sigaction	__sigaction_handler.sa_sigaction
@@ -45,7 +45,7 @@ _ struct sigaction
     sa_mask __sigset_t
 
     /* Special flags.  */
-    sa_flags int
+    sa_flags i32
 
     /* Restore handler.  */
     sa_restorer@(void);

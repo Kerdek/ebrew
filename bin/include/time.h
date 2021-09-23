@@ -75,7 +75,7 @@ export extern clock (void)clock_t __THROW;
 export extern time (__timer@time_t)time_t __THROW;
 
 /* Return the difference between TIME1 and TIME0.  */
-export extern difftime (__time1 time_t __time0 time_t)double
+export extern difftime (__time1 time_t __time0 time_t)f64
      __THROW __attribute__ ((__const__));
 
 /* Return the `time_t' representation of TP and normalize TP.  */
@@ -157,8 +157,8 @@ export extern ctime_r (__restrict __timer@const time_t
 
 /* Defined in localtime.c.  */
 export extern __tzname[2]@char;	/* Current timezone names.  */
-export extern __daylight int;		/* If daylight-saving time is ever in use.  */
-export extern __timezone long int;	/* Seconds west of UTC.  */
+export extern __daylight i32;		/* If daylight-saving time is ever in use.  */
+export extern __timezone i64;	/* Seconds west of UTC.  */
 
 
 #ifdef	__USE_POSIX
@@ -171,8 +171,8 @@ export extern tzset (void) __THROW;
 #endif
 
 #if (defined __USE_MISC || defined __USE_XOPEN)
-export extern daylight int;
-export extern timezone long int;
+export extern daylight i32;
+export extern timezone i64;
 #endif
 
 
@@ -193,7 +193,7 @@ export extern timegm (__tp@struct tm)time_t __THROW;
 export extern timelocal (__tp@struct tm)time_t __THROW;
 
 /* Return the number of days in YEAR.  */
-export extern dysize (__year int)int __THROW  __attribute__ ((__const__));
+export extern dysize (__year i32)i32 __THROW  __attribute__ ((__const__));
 #endif
 
 
@@ -203,17 +203,17 @@ export extern dysize (__year int)int __THROW  __attribute__ ((__const__));
    This function is a cancellation point and therefore not marked with
    __THROW.  */
 export extern nanosleep (__requested_time@const struct timespec
-		      __remaining@struct timespec)int;
+		      __remaining@struct timespec)i32;
 
 
 /* Get resolution of clock CLOCK_ID.  */
-export extern clock_getres (__clock_id clockid_t __res@const struct timespec)int __THROW;
+export extern clock_getres (__clock_id clockid_t __res@const struct timespec)i32 __THROW;
 
 /* Get current value of clock CLOCK_ID and store it in TP.  */
-export extern clock_gettime (__clock_id clockid_t __req@const struct timespec)int __THROW;
+export extern clock_gettime (__clock_id clockid_t __req@const struct timespec)i32 __THROW;
 
 /* Set clock CLOCK_ID to value TP.  */
-export extern clock_settime (__clock_id clockid_t __req@const struct timespec)int
+export extern clock_settime (__clock_id clockid_t __req@const struct timespec)i32
      __THROW;
 
 # ifdef __USE_XOPEN2K
@@ -221,40 +221,40 @@ export extern clock_settime (__clock_id clockid_t __req@const struct timespec)in
 
    This function is a cancellation point and therefore not marked with
    __THROW.  */
-export extern clock_nanosleep (__clock_id clockid_t __flags int
+export extern clock_nanosleep (__clock_id clockid_t __flags i32
 			    __req@const struct timespec
-			    __rem@struct timespec)int;
+			    __rem@struct timespec)i32;
 
 /* Return clock ID for CPU-time clock.  */
-export extern clock_getcpuclockid (__pid pid_t __clock_id@clockid_t)int __THROW;
+export extern clock_getcpuclockid (__pid pid_t __clock_id@clockid_t)i32 __THROW;
 # endif
 
 
 /* Create new per-process timer using CLOCK_ID.  */
 export extern timer_create (__clock_id clockid_t
 			 __restrict __evp@struct sigevent
-			 __restrict __timerid@timer_t)int __THROW;
+			 __restrict __timerid@timer_t)i32 __THROW;
 
 /* Delete timer TIMERID.  */
-export extern timer_delete (__timerid timer_t)int __THROW;
+export extern timer_delete (__timerid timer_t)i32 __THROW;
 
 /* Set timer TIMERID to VALUE returning old value in OVALUE.  */
-export extern timer_settime (__timerid timer_t __flags int
+export extern timer_settime (__timerid timer_t __flags i32
 			  __restrict __ovalue@struct itimerspec
-			  __restrict __ovalue@struct itimerspec)int __THROW;
+			  __restrict __ovalue@struct itimerspec)i32 __THROW;
 
 /* Get current value of timer TIMERID and store it in VALUE.  */
-export extern timer_gettime (__timerid timer_t __value@struct itimerspec)int
+export extern timer_gettime (__timerid timer_t __value@struct itimerspec)i32
      __THROW;
 
 /* Get expiration overrun for timer TIMERID.  */
-export extern timer_getoverrun (__timerid timer_t)int __THROW;
+export extern timer_getoverrun (__timerid timer_t)i32 __THROW;
 #endif
 
 
 #ifdef __USE_ISOC11
 /* Set TS to calendar time based in time base BASE.  */
-export extern timespec_get (__ts@struct timespec __base int)int
+export extern timespec_get (__ts@struct timespec __base i32)i32
      __THROW __nonnull ((1));
 #endif
 
@@ -271,7 +271,7 @@ export extern timespec_get (__ts@struct timespec __base int)int
      8  invalid input specification Example: February 31 or a time is
 	specified that can not be represented in a time_t (representing
 	the time in seconds since 00:00:00 UTC, January 1, 1970) */
-export extern getdate_err int;
+export extern getdate_err i32;
 
 /* Parse the given string as a date specification and return a value
    representing the value.  The templates from the file identified by
@@ -295,7 +295,7 @@ export extern getdate (__string@const char)@struct tm;
    or due to the implementation it is a cancellation point and
    therefore not marked with __THROW.  */
 export extern getdate_r (__restrict __string@const char
-		      __restrict __resbufp@struct tm)int;
+		      __restrict __resbufp@struct tm)i32;
 #endif
 
 __END_DECLS

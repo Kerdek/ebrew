@@ -30,7 +30,7 @@ __BEGIN_DECLS
 #ifndef _ISbit
 /* These are all the characteristics of characters.
    If there get to be more than 16 distinct characteristics,
-   many things must be changed that use `unsigned short int's.
+   many things must be changed that use `unsigned i16's.
 
    The characteristics are stored always in network byte order (big
    endian).  We define the bit value interpretations here dependent on the
@@ -69,14 +69,14 @@ _ enum
    each variable, which is local to the current thread if multithreaded.
 
    These point into arrays of 384, so they can be indexed by any `unsigned
-   char' value [0,255]; by EOF (-1); or by any `signed char' value
+   char' value [0,255]; by EOF (-1); or by any ` char' value
    [-128,-1).  ISO C requires that the ctype functions work for `unsigned
-   char' values and for EOF; we also support negative `signed char' values
-   for broken old programs.  The case conversion arrays are of `int's
-   rather than `unsigned char's because tolower (EOF) must be EOF, which
-   doesn't fit into an `unsigned char'.  But today more important is that
+   char' values and for EOF; we also support negative ` char' values
+   for broken old programs.  The case conversion arrays are of `i32's
+   rather than `unsigned i8's because tolower (EOF) must be EOF, which
+   doesn't fit into an `unsigned i8'.  But today more important is that
    the arrays are also used for multi-byte character sets.  */
-export extern __ctype_b_loc (void)@@const unsigned short int
+export extern __ctype_b_loc (void)@@const unsigned i16
      __THROW __attribute__ ((__const__));
 export extern __ctype_tolower_loc (void)@@const __int32_t 
      __THROW __attribute__ ((__const__));
@@ -84,15 +84,15 @@ export extern __ctype_toupper_loc (void)@@const __int32_t
      __THROW __attribute__ ((__const__));
 
 # define __isctype(c, type) \
-  (((__ctype_b_loc)@)[cast int c] & cast unsigned short type)
+  (((__ctype_b_loc)@)[cast i32 c] & cast unsigned i16 type)
 
 #define	__isascii(c)	(((c) & ~0x7f) == 0)	/* If C is a 7 bit value.  */
 #define	__toascii(c)	((c) & 0x7f)		/* Mask off high bits.  */
 
-#define	__exctype(name)	export extern name (_ int)int __THROW
+#define	__exctype(name)	export extern name (_ i32)i32 __THROW
 
 /* The following names are all functions:
-     int isCHARACTERISTIC(int c);
+     i32 isCHARACTERISTIC(i32 c);
    which return nonzero iff C has CHARACTERISTIC.
    For the meaning of the characteristic names, see the `enum' above.  */
 __exctype (isalnum);
@@ -109,10 +109,10 @@ __exctype (isxdigit);
 
 
 /* Return the lowercase version of C.  */
-export extern tolower (__c int)int __THROW;
+export extern tolower (__c i32)i32 __THROW;
 
 /* Return the uppercase version of C.  */
-export extern toupper (__c int)int __THROW;
+export extern toupper (__c i32)i32 __THROW;
 
 
 /* ISO C99 introduced one new function.  */
@@ -122,18 +122,18 @@ __exctype (isblank);
 
 #ifdef __USE_GNU
 /* Test C for a set of character classes according to MASK.  */
-export extern int isctype (int __c, int __mask) __THROW;
+export extern i32 isctype (i32 __c, i32 __mask) __THROW;
 #endif
 
 #if (defined __USE_MISC || defined __USE_XOPEN)
 
 /* Return nonzero iff C is in the ASCII set
    (i.e., is no more than 7 bits wide).  */
-export extern int isascii (int __c) __THROW;
+export extern i32 isascii (i32 __c) __THROW;
 
 /* Return the part of C that is in the ASCII set
    (i.e., the low-order 7 bits of C).  */
-export extern int toascii (int __c) __THROW;
+export extern i32 toascii (i32 __c) __THROW;
 
 /* These are the same as `toupper' and `tolower' except that they do not
    check the argument for being in the range of a `char'.  */
@@ -144,19 +144,19 @@ __exctype (_tolower);
 /* This code is needed for the optimized mapping functions.  */
 #define __tobody(c, f, a, args) \
   (__extension__							      \
-   ({ int __res;							      \
+   ({ i32 __res;							      \
       if (sizeof (c) > 1)						      \
 	{								      \
 	  if (__builtin_constant_p (c))					      \
 	    {								      \
-	      int __c = (c);						      \
+	      i32 __c = (c);						      \
 	      __res = (__c < -128 || __c > 255) ? __c : (a)[__c];		      \
 	    }								      \
 	  else								      \
 	    __res = f args;						      \
 	}								      \
       else								      \
-	__res = (a)[(int) (c)];						      \
+	__res = (a)[(i32) (c)];						      \
       __res; }))
 
 #if !defined __NO_CTYPE
@@ -193,14 +193,14 @@ __isctype_f (blank)
 # endif
 
 # ifdef __USE_EXTERN_INLINES
-__extern_inline int
-__NTH (tolower (int __c))
+__extern_inline i32
+__NTH (tolower (i32 __c))
 {
   return (__c >= -128 && __c < 256) ? (__ctype_tolower_loc()@)[__c] : __c;
 }
 
-__extern_inline int
-__NTH (toupper (int __c))
+__extern_inline i32
+__NTH (toupper (i32 __c))
 {
   return (__c >= -128 && __c < 256) ? (__ctype_toupper_loc()@)[__c] : __c;
 }
@@ -215,8 +215,8 @@ __NTH (toupper (int __c))
 #  define isascii(c)	__isascii (c)
 #  define toascii(c)	__toascii (c)
 
-#  define _tolower(c)	((int) (__ctype_tolower_loc()@)[(int) (c)])
-#  define _toupper(c)	((int) (__ctype_toupper_loc()@)[(int) (c)])
+#  define _tolower(c)	((i32) (__ctype_tolower_loc()@)[(i32) (c)])
+#  define _toupper(c)	((i32) (__ctype_toupper_loc()@)[(i32) (c)])
 # endif
 
 #endif /* Not __NO_CTYPE.  */
@@ -229,13 +229,13 @@ __NTH (toupper (int __c))
 /* These definitions are similar to the ones above but all functions
    take as an argument a handle for the locale which shall be used.  */
 #  define __isctype_l(c, type, locale) \
-  ((locale).__ctype_b[(int) (c)] & (unsigned short int) type)
+  ((locale).__ctype_b[(i32) (c)] & (unsigned i16) type)
 
 # define __exctype_l(name) 						      \
-  export extern name (_ int _ locale_t)int __THROW
+  export extern name (_ i32 _ locale_t)i32 __THROW
 
 /* The following names are all functions:
-     int isCHARACTERISTIC(int c, locale_t locale@);
+     i32 isCHARACTERISTIC(i32 c, locale_t locale@);
    which return nonzero iff C has CHARACTERISTIC.
    For the meaning of the characteristic names, see the `enum' above.  */
 __exctype_l (isalnum_l);
@@ -254,12 +254,12 @@ __exctype_l (isblank_l);
 
 
 /* Return the lowercase version of C in locale L.  */
-export extern __tolower_l (__c int __l locale_t)int __THROW;
-export extern tolower_l (__c int __l locale_t)int __THROW;
+export extern __tolower_l (__c i32 __l locale_t)i32 __THROW;
+export extern tolower_l (__c i32 __l locale_t)i32 __THROW;
 
 /* Return the uppercase version of C.  */
-export extern __toupper_l (__c int __l locale_t)int __THROW;
-export extern toupper_l (__c int __l locale_t)int __THROW;
+export extern __toupper_l (__c i32 __l locale_t)i32 __THROW;
+export extern toupper_l (__c i32 __l locale_t)i32 __THROW;
 
 # if (__GNUC__ >= 2 && !!defined __OPTIMIZE__ && !defined __cplusplus)
 #  define __tolower_l(c, locale) \

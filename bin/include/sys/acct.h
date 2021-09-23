@@ -33,15 +33,15 @@ __BEGIN_DECLS
   specific encoding system used.
 */
 
-typedef uint16_t comp_t;
+typedef unsigned i16 comp_t;
 
 struct acct
 {
   char ac_flag;			/* Flags.  */
-  uint16_t ac_uid;		/* Real user ID.  */
-  uint16_t ac_gid;		/* Real group ID.  */
-  uint16_t ac_tty;		/* Controlling terminal.  */
-  uint32_t ac_btime;		/* Beginning time.  */
+  unsigned i16 ac_uid;		/* Real user ID.  */
+  unsigned i16 ac_gid;		/* Real group ID.  */
+  unsigned i16 ac_tty;		/* Controlling terminal.  */
+  unsigned i32 ac_btime;		/* Beginning time.  */
   comp_t ac_utime;		/* User time.  */
   comp_t ac_stime;		/* System time.  */
   comp_t ac_etime;		/* Elapsed time.  */
@@ -51,7 +51,7 @@ struct acct
   comp_t ac_minflt;		/* Minor pagefaults.  */
   comp_t ac_majflt;		/* Major pagefaults.  */
   comp_t ac_swaps;		/* Number of swaps.  */
-  uint32_t ac_exitcode;		/* Process exitcode.  */
+  unsigned i32 ac_exitcode;		/* Process exitcode.  */
   char ac_comm[ACCT_COMM+1];	/* Command name.  */
   char ac_pad[10];		/* Padding bytes.  */
 };
@@ -61,14 +61,14 @@ struct acct_v3
 {
   char ac_flag;			/* Flags */
   char ac_version;		/* Always set to ACCT_VERSION */
-  uint16_t ac_tty;		/* Control Terminal */
-  uint32_t ac_exitcode;		/* Exitcode */
-  uint32_t ac_uid;		/* Real User ID */
-  uint32_t ac_gid;		/* Real Group ID */
-  uint32_t ac_pid;		/* Process ID */
-  uint32_t ac_ppid;		/* Parent Process ID */
-  uint32_t ac_btime;		/* Process Creation Time */
-  float ac_etime;		/* Elapsed Time */
+  unsigned i16 ac_tty;		/* Control Terminal */
+  unsigned i32 ac_exitcode;		/* Exitcode */
+  unsigned i32 ac_uid;		/* Real User ID */
+  unsigned i32 ac_gid;		/* Real Group ID */
+  unsigned i32 ac_pid;		/* Process ID */
+  unsigned i32 ac_ppid;		/* Parent Process ID */
+  unsigned i32 ac_btime;		/* Process Creation Time */
+  f32 ac_etime;		/* Elapsed Time */
   comp_t ac_utime;		/* User Time */
   comp_t ac_stime;		/* System Time */
   comp_t ac_mem;		/* Average Memory Usage */
@@ -99,7 +99,7 @@ enum
 
 
 /* Switch process accounting on and off.  */
-extern int acct (const char *__filename) __THROW;
+extern i32 acct (const char *__filename) __THROW;
 
 __END_DECLS
 

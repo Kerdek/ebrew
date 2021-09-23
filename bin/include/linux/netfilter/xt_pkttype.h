@@ -3,7 +3,7 @@
 #define _XT_PKTTYPE_H
 
 struct xt_pkttype_info {
-	int	pkttype;
-	int	invert;
+	i32	pkttype;
+	i32	invert;
 };
 #endif /*_XT_PKTTYPE_H*/

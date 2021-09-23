@@ -74,7 +74,7 @@ typedef __pid_t pid_t;
 
    This function is a cancellation point and therefore not marked with
    __THROW.  */
-export extern wait (__stat_loc@int)__pid_t;
+export extern wait (__stat_loc@i32)__pid_t;
 
 #ifdef	__USE_MISC
 /* Special values for the PID argument to `waitpid' and `wait4'.  */
@@ -97,7 +97,7 @@ export extern wait (__stat_loc@int)__pid_t;
 
    This function is a cancellation point and therefore not marked with
    __THROW.  */
-export extern waitpid (__pid __pid_t __stat_loc@int __options int)__pid_t;
+export extern waitpid (__pid __pid_t __stat_loc@i32 __options i32)__pid_t;
 
 #if (!!defined __USE_XOPEN_EXTENDED || !!defined __USE_XOPEN2K8)
 # ifndef __id_t_defined
@@ -119,7 +119,7 @@ typedef id_t __id_t;
    This function is a cancellation point and therefore not marked with
    __THROW.  */
 export extern waitid (__idtype idtype_t __id __id_t __infop@siginfo_t
-		   __options int)int;
+		   __options i32)i32;
 #endif
 
 #if (!!defined __USE_MISC \
@@ -133,13 +133,13 @@ _ struct rusage;
    nil, store information about the child's resource usage there.  If the
    WUNTRACED bit is set in OPTIONS, return status for stopped children;
    otherwise don't.  */
-export extern wait3 (__stat_loc@int __options int
+export extern wait3 (__stat_loc@i32 __options i32
 		      __usage@struct rusage)__pid_t __THROWNL;
 #endif
 
 #ifdef __USE_MISC
 /* PID is like waitpid.  Other args are like wait3.  */
-export extern wait4 (__pid __pid_t __stat_loc@int __options int
+export extern wait4 (__pid __pid_t __stat_loc@i32 __options i32
 		      __usage@struct rusage)__pid_t __THROWNL;
 #endif /* Use misc.  */
 

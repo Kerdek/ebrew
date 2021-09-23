@@ -15,7 +15,7 @@ struct ipc_perm
 	__kernel_uid_t	cuid;
 	__kernel_gid_t	cgid;
 	__kernel_mode_t	mode; 
-	unsigned short	seq;
+	unsigned i16	seq;
 };
 
 /* Include the definition of ipc64_perm */
@@ -57,7 +57,7 @@ struct ipc_perm
  */
 struct ipc_kludge {
 	struct msgbuf *msgp;
-	long msgtyp;
+	i64 msgtyp;
 };
 
 #define SEMOP		 1

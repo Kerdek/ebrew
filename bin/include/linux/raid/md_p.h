@@ -245,13 +245,13 @@ struct mdp_superblock_1 {
 	__le32	raid_disks;
 	union {
 		__le32	bitmap_offset;	/* sectors after start of superblock that bitmap starts
-					 * NOTE: signed, so bitmap can be before superblock
+					 * NOTE: , so bitmap can be before superblock
 					 * only meaningful of feature_map[0] is set.
 					 */
 
 		/* only meaningful when feature_map[MD_FEATURE_PPL] is set */
 		struct {
-			__le16 offset; /* sectors from start of superblock that ppl starts (signed) */
+			__le16 offset; /* sectors from start of superblock that ppl starts () */
 			__le16 size; /* ppl size in sectors */
 		} ppl;
 	};
@@ -262,7 +262,7 @@ struct mdp_superblock_1 {
 	__le32	delta_disks;	/* change in number of raid_disks		*/
 	__le32	new_layout;	/* new layout					*/
 	__le32	new_chunk;	/* new chunk size (512byte sectors)		*/
-	__le32  new_offset;	/* signed number to add to data_offset in new
+	__le32  new_offset;	/*  number to add to data_offset in new
 				 * layout.  0 == no-change.  This can be
 				 * different on each device in the array.
 				 */
@@ -287,7 +287,7 @@ struct mdp_superblock_1 {
 	__u8	bblog_shift;	/* shift from sectors to block size */
 	__le16	bblog_size;	/* number of sectors reserved for list */
 	__le32	bblog_offset;	/* sector offset from superblock to bblog,
-				 * signed - not unsigned */
+				 *  - not unsigned */
 
 	/* array state information - 64 bytes */
 	__le64	utime;		/* 40 bits second, 24 bits microseconds */

@@ -148,7 +148,7 @@ typedef struct vring_used __attribute__((aligned(VRING_USED_ALIGN_SIZE)))
 	vring_used_t;
 
 struct vring {
-	unsigned int num;
+	unsigned i32 num;
 
 	vring_desc_t *desc;
 
@@ -188,17 +188,17 @@ struct vring {
 #define vring_used_event(vr) ((vr)->avail->ring[(vr)->num])
 #define vring_avail_event(vr) (*(__virtio16 *)&(vr)->used->ring[(vr)->num])
 
-static __inline__ void vring_init(struct vring *vr, unsigned int num, void *p,
-			      unsigned long align)
+static __inline__ void vring_init(struct vring *vr, unsigned i32 num, void *p,
+			      unsigned i64 align)
 {
 	vr->num = num;
 	vr->desc = p;
 	vr->avail = (struct vring_avail *)((char *)p + num * sizeof(struct vring_desc));
-	vr->used = (void *)(((uintptr_t)&vr->avail->ring[num] + sizeof(__virtio16)
+	vr->used = (void *)(((unsigned i64)&vr->avail->ring[num] + sizeof(__virtio16)
 		+ align-1) & ~(align - 1));
 }
 
-static __inline__ unsigned vring_size(unsigned int num, unsigned long align)
+static __inline__ unsigned vring_size(unsigned i32 num, unsigned i64 align)
 {
 	return ((sizeof(struct vring_desc) * num + sizeof(__virtio16) * (3 + num)
 		 + align - 1) & ~(align - 1))
@@ -211,7 +211,7 @@ static __inline__ unsigned vring_size(unsigned int num, unsigned long align)
 /* Assuming a given event_idx value from the other side, if
  * we have just incremented index from old to new_idx,
  * should we trigger an event? */
-static __inline__ int vring_need_event(__u16 event_idx, __u16 new_idx, __u16 old)
+static __inline__ i32 vring_need_event(__u16 event_idx, __u16 new_idx, __u16 old)
 {
 	/* Note: Xen has similar logic for notification hold-off
 	 * in include/xen/interface/io/ring.h with req_event and req_prod

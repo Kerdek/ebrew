@@ -59,7 +59,7 @@ enum __vlimit_resource
 
 /* Set the soft limit for RESOURCE to be VALUE.
    Returns 0 for success, -1 for failure.  */
-extern int vlimit (enum __vlimit_resource __resource, int __value) __THROW;
+extern i32 vlimit (enum __vlimit_resource __resource, i32 __value) __THROW;
 
 
 __END_DECLS

@@ -257,7 +257,7 @@
 
 /*
  * The key type for tree items that are stored persistently and usually exist
- * for a long period, eg. filesystem lifetime. The item kinds can be status
+ * for a i64 period, eg. filesystem lifetime. The item kinds can be status
  * information, stats or preference values. The item can exist in any tree.
  *
  * [subtype, BTRFS_PERSISTENT_ITEM_KEY, data]
@@ -290,7 +290,7 @@
 						 * received subvols */
 
 /*
- * string items are for debugging.  They just store a short string of
+ * string items are for debugging.  They just store a i16 string of
  * data in the FS
  */
 #define BTRFS_STRING_ITEM_KEY	253
@@ -522,7 +522,7 @@ struct btrfs_extent_inline_ref {
 
 /* dev extents record free space on individual devices.  The owner
  * field points back to the chunk allocation mapping tree that allocated
- * the extent.  The chunk tree uuid field is a way to double check the owner
+ * the extent.  The chunk tree uuid field is a way to f64 check the owner
  */
 struct btrfs_dev_extent {
 	__le64 chunk_tree;

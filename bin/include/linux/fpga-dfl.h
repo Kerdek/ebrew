@@ -237,21 +237,21 @@ struct dfl_fpga_fme_port_pr {
 
 /**
  * DFL_FPGA_FME_PORT_RELEASE - _IOW(DFL_FPGA_MAGIC, DFL_FME_BASE + 1,
- *						int port_id)
+ *						i32 port_id)
  *
  * Driver releases the port per Port ID provided by caller.
  * Return: 0 on success, -errno on failure.
  */
-#define DFL_FPGA_FME_PORT_RELEASE   _IOW(DFL_FPGA_MAGIC, DFL_FME_BASE + 1, int)
+#define DFL_FPGA_FME_PORT_RELEASE   _IOW(DFL_FPGA_MAGIC, DFL_FME_BASE + 1, i32)
 
 /**
  * DFL_FPGA_FME_PORT_ASSIGN - _IOW(DFL_FPGA_MAGIC, DFL_FME_BASE + 2,
- *						int port_id)
+ *						i32 port_id)
  *
  * Driver assigns the port back per Port ID provided by caller.
  * Return: 0 on success, -errno on failure.
  */
-#define DFL_FPGA_FME_PORT_ASSIGN     _IOW(DFL_FPGA_MAGIC, DFL_FME_BASE + 2, int)
+#define DFL_FPGA_FME_PORT_ASSIGN     _IOW(DFL_FPGA_MAGIC, DFL_FME_BASE + 2, i32)
 
 /**
  * DFL_FPGA_FME_ERR_GET_IRQ_NUM - _IOR(DFL_FPGA_MAGIC, DFL_FME_BASE + 3,

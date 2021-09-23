@@ -55,7 +55,7 @@
 #define HOT_ADD_DISK		_IO (MD_MAJOR, 0x28)
 #define SET_DISK_FAULTY		_IO (MD_MAJOR, 0x29)
 #define HOT_GENERATE_ERROR	_IO (MD_MAJOR, 0x2a)
-#define SET_BITMAP_FILE		_IOW (MD_MAJOR, 0x2b, int)
+#define SET_BITMAP_FILE		_IOW (MD_MAJOR, 0x2b, i32)
 
 /* usage */
 #define RUN_ARRAY		_IOW (MD_MAJOR, 0x30, mdu_param_t)
@@ -69,41 +69,41 @@
 #define MdpMinorShift 6
 
 typedef struct mdu_version_s {
-	int major;
-	int minor;
-	int patchlevel;
+	i32 major;
+	i32 minor;
+	i32 patchlevel;
 } mdu_version_t;
 
 typedef struct mdu_array_info_s {
 	/*
 	 * Generic constant information
 	 */
-	int major_version;
-	int minor_version;
-	int patch_version;
-	unsigned int ctime;
-	int level;
-	int size;
-	int nr_disks;
-	int raid_disks;
-	int md_minor;
-	int not_persistent;
+	i32 major_version;
+	i32 minor_version;
+	i32 patch_version;
+	unsigned i32 ctime;
+	i32 level;
+	i32 size;
+	i32 nr_disks;
+	i32 raid_disks;
+	i32 md_minor;
+	i32 not_persistent;
 
 	/*
 	 * Generic state information
 	 */
-	unsigned int utime;	/*  0 Superblock update time		      */
-	int state;		/*  1 State bits (clean, ...)		      */
-	int active_disks;	/*  2 Number of currently active disks	      */
-	int working_disks;	/*  3 Number of working disks		      */
-	int failed_disks;	/*  4 Number of failed disks		      */
-	int spare_disks;	/*  5 Number of spare disks		      */
+	unsigned i32 utime;	/*  0 Superblock update time		      */
+	i32 state;		/*  1 State bits (clean, ...)		      */
+	i32 active_disks;	/*  2 Number of currently active disks	      */
+	i32 working_disks;	/*  3 Number of working disks		      */
+	i32 failed_disks;	/*  4 Number of failed disks		      */
+	i32 spare_disks;	/*  5 Number of spare disks		      */
 
 	/*
 	 * Personality information
 	 */
-	int layout;		/*  0 the array's physical layout	      */
-	int chunk_size;	/*  1 chunk size in bytes		      */
+	i32 layout;		/*  0 the array's physical layout	      */
+	i32 chunk_size;	/*  1 chunk size in bytes		      */
 
 } mdu_array_info_t;
 
@@ -122,11 +122,11 @@ typedef struct mdu_disk_info_s {
 	/*
 	 * configuration/status of one particular disk
 	 */
-	int number;
-	int major;
-	int minor;
-	int raid_disk;
-	int state;
+	i32 number;
+	i32 major;
+	i32 minor;
+	i32 raid_disk;
+	i32 state;
 
 } mdu_disk_info_t;
 
@@ -134,10 +134,10 @@ typedef struct mdu_start_info_s {
 	/*
 	 * configuration/status of one particular disk
 	 */
-	int major;
-	int minor;
-	int raid_disk;
-	int state;
+	i32 major;
+	i32 minor;
+	i32 raid_disk;
+	i32 state;
 
 } mdu_start_info_t;
 
@@ -148,9 +148,9 @@ typedef struct mdu_bitmap_file_s
 
 typedef struct mdu_param_s
 {
-	int			personality;	/* 1,2,3,4 */
-	int			chunk_size;	/* in bytes */
-	int			max_fault;	/* unused for now */
+	i32			personality;	/* 1,2,3,4 */
+	i32			chunk_size;	/* in bytes */
+	i32			max_fault;	/* unused for now */
 } mdu_param_t;
 
 #endif /* _MD_U_H */

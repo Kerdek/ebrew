@@ -195,7 +195,7 @@ struct dvb_diseqc_master_cmd {
 struct dvb_diseqc_slave_reply {
 	__u8 msg[4];
 	__u8 msg_len;
-	int  timeout;
+	i32  timeout;
 };
 
 /**
@@ -857,7 +857,7 @@ struct dtv_property {
 			void *reserved2;
 		} buffer;
 	} u;
-	int result;
+	i32 result;
 } __attribute__ ((packed));
 
 /* num of properties cannot exceed DTV_IOCTL_MAX_MSGS per ioctl */
@@ -894,7 +894,7 @@ struct dtv_properties {
 
 #define FE_SET_TONE		   _IO('o', 66)  /* fe_sec_tone_mode_t */
 #define FE_SET_VOLTAGE		   _IO('o', 67)  /* fe_sec_voltage_t */
-#define FE_ENABLE_HIGH_LNB_VOLTAGE _IO('o', 68)  /* int */
+#define FE_ENABLE_HIGH_LNB_VOLTAGE _IO('o', 68)  /* i32 */
 
 #define FE_READ_STATUS		   _IOR('o', 69, fe_status_t)
 #define FE_READ_BER		   _IOR('o', 70, __u32)
@@ -902,10 +902,10 @@ struct dtv_properties {
 #define FE_READ_SNR		   _IOR('o', 72, __u16)
 #define FE_READ_UNCORRECTED_BLOCKS _IOR('o', 73, __u32)
 
-#define FE_SET_FRONTEND_TUNE_MODE  _IO('o', 81) /* unsigned int */
+#define FE_SET_FRONTEND_TUNE_MODE  _IO('o', 81) /* unsigned i32 */
 #define FE_GET_EVENT		   _IOR('o', 78, struct dvb_frontend_event)
 
-#define FE_DISHNETWORK_SEND_LEGACY_CMD _IO('o', 80) /* unsigned int */
+#define FE_DISHNETWORK_SEND_LEGACY_CMD _IO('o', 80) /* unsigned i32 */
 
 #define FE_SET_PROPERTY		   _IOW('o', 82, struct dtv_properties)
 #define FE_GET_PROPERTY		   _IOR('o', 83, struct dtv_properties)

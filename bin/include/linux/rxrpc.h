@@ -105,9 +105,9 @@ enum rxrpc_cmsg_type {
  *   other side understands
  */
 #define RXKADINCONSISTENCY	19270400	/* security module structure inconsistent */
-#define RXKADPACKETSHORT	19270401	/* packet too short for security challenge */
+#define RXKADPACKETSHORT	19270401	/* packet too i16 for security challenge */
 #define RXKADLEVELFAIL		19270402	/* security level negotiation failed */
-#define RXKADTICKETLEN		19270403	/* ticket length too short or too long */
+#define RXKADTICKETLEN		19270403	/* ticket length too i16 or too i64 */
 #define RXKADOUTOFSEQUENCE	19270404	/* packet had bad sequence number */
 #define RXKADNOAUTH		19270405	/* caller not authorised */
 #define RXKADBADKEY		19270406	/* illegal key: bad parity or weak */
@@ -115,7 +115,7 @@ enum rxrpc_cmsg_type {
 #define RXKADUNKNOWNKEY		19270408	/* ticket contained unknown key version number */
 #define RXKADEXPIRED		19270409	/* authentication expired */
 #define RXKADSEALEDINCON	19270410	/* sealed data inconsistent */
-#define RXKADDATALEN		19270411	/* user data too long */
+#define RXKADDATALEN		19270411	/* user data too i64 */
 #define RXKADILLEGALLEVEL	19270412	/* caller not authorised to use encrypted conns */
 
 #endif /* _LINUX_RXRPC_H */

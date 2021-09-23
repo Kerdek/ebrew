@@ -406,7 +406,7 @@ struct gpiohandle_request {
 	__u8 default_values[GPIOHANDLES_MAX];
 	char consumer_label[GPIO_MAX_NAME_SIZE];
 	__u32 lines;
-	int fd;
+	i32 fd;
 };
 
 /**
@@ -468,7 +468,7 @@ struct gpioevent_request {
 	__u32 handleflags;
 	__u32 eventflags;
 	char consumer_label[GPIO_MAX_NAME_SIZE];
-	int fd;
+	i32 fd;
 };
 
 /*

@@ -29,11 +29,11 @@
 /* Structure for MTIOCTOP - magnetic tape operation command.  */
 struct mtop
   {
-    short int mt_op;		/* Operations defined below.  */
-    int mt_count;		/* How many of them.  */
+    i16 i32 mt_op;		/* Operations defined below.  */
+    i32 mt_count;		/* How many of them.  */
   };
 #define _IOT_mtop /* Hurd ioctl type field.  */ \
-  _IOT (_IOTS (short), 1, _IOTS (int), 1, 0, 0)
+  _IOT (_IOTS (i16), 1, _IOTS (i32), 1, 0, 0)
 
 /* Magnetic Tape operations [Not all operations supported by all drivers].  */
 #define MTRESET 0	/* +reset drive in case of problems.  */
@@ -80,21 +80,21 @@ struct mtop
 
 struct mtget
   {
-    long int mt_type;		/* Type of magtape device.  */
-    long int mt_resid;		/* Residual count: (not sure)
+    i64 mt_type;		/* Type of magtape device.  */
+    i64 mt_resid;		/* Residual count: (not sure)
 				   number of bytes ignored, or
 				   number of files not skipped, or
 				   number of records not skipped.  */
     /* The following registers are device dependent.  */
-    long int mt_dsreg;		/* Status register.  */
-    long int mt_gstat;		/* Generic (device independent) status.  */
-    long int mt_erreg;		/* Error register.  */
+    i64 mt_dsreg;		/* Status register.  */
+    i64 mt_gstat;		/* Generic (device independent) status.  */
+    i64 mt_erreg;		/* Error register.  */
     /* The next two fields are not always used.  */
     __daddr_t mt_fileno;	/* Number of current file on tape.  */
     __daddr_t mt_blkno;		/* Current block number.  */
   };
 #define _IOT_mtget /* Hurd ioctl type field.  */ \
-  _IOT (_IOTS (long), 7, 0, 0, 0, 0)
+  _IOT (_IOTS (i64), 7, 0, 0, 0, 0)
 
 
 /* Constants for mt_type. Not all of these are supported, and
@@ -126,7 +126,7 @@ struct mtget
 
 struct mt_tape_info
   {
-    long int t_type;		/* Device type id (mt_type).  */
+    i64 t_type;		/* Device type id (mt_type).  */
     char *t_name;		/* Descriptive name.  */
   };
 
@@ -156,23 +156,23 @@ struct mt_tape_info
 
 struct mtpos
   {
-    long int mt_blkno;	/* Current block number.  */
+    i64 mt_blkno;	/* Current block number.  */
   };
 #define _IOT_mtpos /* Hurd ioctl type field.  */ \
-  _IOT_SIMPLE (long)
+  _IOT_SIMPLE (i64)
 
 
 /* Structure for MTIOCGETCONFIG/MTIOCSETCONFIG primarily intended
    as an interim solution for QIC-02 until DDI is fully implemented.  */
 struct mtconfiginfo
   {
-    long int mt_type;		/* Drive type.  */
-    long int ifc_type;		/* Interface card type.  */
-    unsigned short int irqnr;	/* IRQ number to use.  */
-    unsigned short int dmanr;	/* DMA channel to use.  */
-    unsigned short int port;	/* IO port base address.  */
+    i64 mt_type;		/* Drive type.  */
+    i64 ifc_type;		/* Interface card type.  */
+    unsigned i16 irqnr;	/* IRQ number to use.  */
+    unsigned i16 dmanr;	/* DMA channel to use.  */
+    unsigned i16 port;	/* IO port base address.  */
 
-    unsigned long int debug;	/* Debugging flags.  */
+    unsigned i64 debug;	/* Debugging flags.  */
 
     unsigned have_dens:1;
     unsigned have_bsf:1;
@@ -190,7 +190,7 @@ struct mtconfiginfo
     char reserved[10];
   };
 #define _IOT_mtconfiginfo /* Hurd ioctl type field.  */ \
-  _IOT (_IOTS (long), 2, _IOTS (short), 3, _IOTS (long), 1) /* XXX wrong */
+  _IOT (_IOTS (i64), 2, _IOTS (i16), 3, _IOTS (i64), 1) /* XXX wrong */
 
 
 /* Magnetic tape I/O control commands.  */

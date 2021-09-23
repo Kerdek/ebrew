@@ -45,10 +45,10 @@ enum nf_dn_hook_priorities {
 };
 
 struct nf_dn_rtmsg {
-	int nfdn_ifindex;
+	i32 nfdn_ifindex;
 };
 
-#define NFDN_RTMSG(r) ((unsigned char *)(r) + NLMSG_ALIGN(sizeof(struct nf_dn_rtmsg)))
+#define NFDN_RTMSG(r) ((unsigned i8 *)(r) + NLMSG_ALIGN(sizeof(struct nf_dn_rtmsg)))
 
 /* backwards compatibility for userspace */
 #define DNRMG_L1_GROUP 0x01

@@ -31,8 +31,8 @@ struct input_event {
 #else
 	__kernel_ulong_t __sec;
 #if defined(__sparc__) && defined(__arch64__)
-	unsigned int __usec;
-	unsigned int __pad;
+	unsigned i32 __usec;
+	unsigned i32 __pad;
 #else
 	__kernel_ulong_t __usec;
 #endif
@@ -124,14 +124,14 @@ struct input_mask {
 	__u64 codes_ptr;
 };
 
-#define EVIOCGVERSION		_IOR('E', 0x01, int)			/* get driver version */
+#define EVIOCGVERSION		_IOR('E', 0x01, i32)			/* get driver version */
 #define EVIOCGID		_IOR('E', 0x02, struct input_id)	/* get device ID */
-#define EVIOCGREP		_IOR('E', 0x03, unsigned int[2])	/* get repeat settings */
-#define EVIOCSREP		_IOW('E', 0x03, unsigned int[2])	/* set repeat settings */
+#define EVIOCGREP		_IOR('E', 0x03, unsigned i32[2])	/* get repeat settings */
+#define EVIOCSREP		_IOW('E', 0x03, unsigned i32[2])	/* set repeat settings */
 
-#define EVIOCGKEYCODE		_IOR('E', 0x04, unsigned int[2])        /* get keycode */
+#define EVIOCGKEYCODE		_IOR('E', 0x04, unsigned i32[2])        /* get keycode */
 #define EVIOCGKEYCODE_V2	_IOR('E', 0x04, struct input_keymap_entry)
-#define EVIOCSKEYCODE		_IOW('E', 0x04, unsigned int[2])        /* set keycode */
+#define EVIOCSKEYCODE		_IOW('E', 0x04, unsigned i32[2])        /* set keycode */
 #define EVIOCSKEYCODE_V2	_IOW('E', 0x04, struct input_keymap_entry)
 
 #define EVIOCGNAME(len)		_IOC(_IOC_READ, 'E', 0x06, len)		/* get device name */
@@ -175,11 +175,11 @@ struct input_mask {
 #define EVIOCSABS(abs)		_IOW('E', 0xc0 + (abs), struct input_absinfo)	/* set abs value/limits */
 
 #define EVIOCSFF		_IOW('E', 0x80, struct ff_effect)	/* send a force effect to a force feedback device */
-#define EVIOCRMFF		_IOW('E', 0x81, int)			/* Erase a force effect */
-#define EVIOCGEFFECTS		_IOR('E', 0x84, int)			/* Report number of effects playable at the same time */
+#define EVIOCRMFF		_IOW('E', 0x81, i32)			/* Erase a force effect */
+#define EVIOCGEFFECTS		_IOR('E', 0x84, i32)			/* Report number of effects playable at the same time */
 
-#define EVIOCGRAB		_IOW('E', 0x90, int)			/* Grab/Release device */
-#define EVIOCREVOKE		_IOW('E', 0x91, int)			/* Revoke device access */
+#define EVIOCGRAB		_IOW('E', 0x90, i32)			/* Grab/Release device */
+#define EVIOCREVOKE		_IOW('E', 0x91, i32)			/* Revoke device access */
 
 /**
  * EVIOCGMASK - Retrieve current event mask
@@ -235,7 +235,7 @@ struct input_mask {
  */
 #define EVIOCSMASK		_IOW('E', 0x93, struct input_mask)	/* Set event-masks */
 
-#define EVIOCSCLOCKID		_IOW('E', 0xa0, int)			/* Set clockid to be used for timestamps */
+#define EVIOCSCLOCKID		_IOW('E', 0xa0, i32)			/* Set clockid to be used for timestamps */
 
 /*
  * IDs.

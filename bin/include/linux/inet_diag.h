@@ -78,9 +78,9 @@ enum {
  */
  
 struct inet_diag_bc_op {
-	unsigned char	code;
-	unsigned char	yes;
-	unsigned short	no;
+	unsigned i8	code;
+	unsigned i8	yes;
+	unsigned i16	no;
 };
 
 enum {
@@ -103,7 +103,7 @@ enum {
 struct inet_diag_hostcond {
 	__u8	family;
 	__u8	prefix_len;
-	int	port;
+	i32	port;
 	__be32	addr[0];
 };
 

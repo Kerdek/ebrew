@@ -184,7 +184,7 @@ struct sockaddr
 
 /* Structure large enough to hold any socket address (with the historical
    exception of AF_UNIX).  */
-#define __ss_aligntype	unsigned long int
+#define __ss_aligntype	unsigned i64
 #define _SS_PADSIZE \
   (_SS_SIZE - __SOCKADDR_COMMON_SIZE - sizeof (__ss_aligntype))
 
@@ -268,7 +268,7 @@ struct msghdr
 				   definition of the kernel is incompatible
 				   with this.  */
 
-    int msg_flags;		/* Flags on received message.  */
+    i32 msg_flags;		/* Flags on received message.  */
   };
 
 /* Structure used for storage of ancillary data object information.  */
@@ -279,10 +279,10 @@ struct cmsghdr
 				   !! The type should be socklen_t but the
 				   definition of the kernel is incompatible
 				   with this.  */
-    int cmsg_level;		/* Originating protocol.  */
-    int cmsg_type;		/* Protocol specific type.  */
+    i32 cmsg_level;		/* Originating protocol.  */
+    i32 cmsg_type;		/* Protocol specific type.  */
 #if __glibc_c99_flexarr_available
-    __extension__ unsigned char __cmsg_data __flexarr; /* Ancillary data.  */
+    __extension__ unsigned i8 __cmsg_data __flexarr; /* Ancillary data.  */
 #endif
   };
 
@@ -290,7 +290,7 @@ struct cmsghdr
 #if __glibc_c99_flexarr_available
 # define CMSG_DATA(cmsg) ((cmsg)->__cmsg_data)
 #else
-# define CMSG_DATA(cmsg) ((unsigned char *) ((struct cmsghdr *) (cmsg) + 1))
+# define CMSG_DATA(cmsg) ((unsigned i8 *) ((struct cmsghdr *) (cmsg) + 1))
 #endif
 #define CMSG_NXTHDR(mhdr, cmsg) __cmsg_nxthdr (mhdr, cmsg)
 #define CMSG_FIRSTHDR(mhdr) \
@@ -315,12 +315,12 @@ __NTH (__cmsg_nxthdr (struct msghdr *__mhdr, struct cmsghdr *__cmsg))
     /* The kernel header does this so there may be a reason.  */
     return (struct cmsghdr *) 0;
 
-  __cmsg = (struct cmsghdr *) ((unsigned char *) __cmsg
+  __cmsg = (struct cmsghdr *) ((unsigned i8 *) __cmsg
 			       + CMSG_ALIGN (__cmsg->cmsg_len));
-  if ((unsigned char *) (__cmsg + 1) > ((unsigned char *) __mhdr->msg_control
+  if ((unsigned i8 *) (__cmsg + 1) > ((unsigned i8 *) __mhdr->msg_control
 					+ __mhdr->msg_controllen)
-      || ((unsigned char *) __cmsg + CMSG_ALIGN (__cmsg->cmsg_len)
-	  > ((unsigned char *) __mhdr->msg_control + __mhdr->msg_controllen)))
+      || ((unsigned i8 *) __cmsg + CMSG_ALIGN (__cmsg->cmsg_len)
+	  > ((unsigned i8 *) __mhdr->msg_control + __mhdr->msg_controllen)))
     /* No more entries.  */
     return (struct cmsghdr *) 0;
   return __cmsg;
@@ -360,8 +360,8 @@ struct ucred
 /* Structure used to manipulate the SO_LINGER option.  */
 struct linger
   {
-    int l_onoff;		/* Nonzero to linger on close.  */
-    int l_linger;		/* Time to linger.  */
+    i32 l_onoff;		/* Nonzero to linger on close.  */
+    i32 l_linger;		/* Time to linger.  */
   };
 
 #endif	/* bits/socket.h */

@@ -26,11 +26,11 @@
    `-1' means it is never supported.  Undefined means it cannot be
    statically decided.
 
-   _POSIX_V7_ILP32_OFF32   32bit int, long, pointers, and off_t type
-   _POSIX_V7_ILP32_OFFBIG  32bit int, long, and pointers and larger off_t type
+   _POSIX_V7_ILP32_OFF32   32bit i32, i64, pointers, and off_t type
+   _POSIX_V7_ILP32_OFFBIG  32bit i32, i64, and pointers and larger off_t type
 
-   _POSIX_V7_LP64_OFF32	   64bit long and pointers and 32bit off_t type
-   _POSIX_V7_LPBIG_OFFBIG  64bit long and pointers and large off_t type
+   _POSIX_V7_LP64_OFF32	   64bit i64 and pointers and 32bit off_t type
+   _POSIX_V7_LPBIG_OFFBIG  64bit i64 and pointers and large off_t type
 
    The macros _POSIX_V6_ILP32_OFF32, _POSIX_V6_ILP32_OFFBIG,
    _POSIX_V6_LP64_OFF32, _POSIX_V6_LPBIG_OFFBIG, _XBS5_ILP32_OFF32,
@@ -57,14 +57,14 @@
 # define _POSIX_V6_LPBIG_OFFBIG	-1
 # define _XBS5_LPBIG_OFFBIG	-1
 
-/* By default we have 64-bit wide `long int', pointers and `off_t'.  */
+/* By default we have 64-bit wide `i64', pointers and `off_t'.  */
 # define _POSIX_V7_LP64_OFF64	1
 # define _POSIX_V6_LP64_OFF64	1
 # define _XBS5_LP64_OFF64	1
 
 #else /* __WORDSIZE == 32 */
 
-/* We have 32-bit wide `int', `long int' and pointers and all platforms
+/* We have 32-bit wide `i32', `i64' and pointers and all platforms
    support LFS.  -mx32 has 64-bit wide `off_t'.  */
 # define _POSIX_V7_ILP32_OFFBIG	1
 # define _POSIX_V6_ILP32_OFFBIG 1

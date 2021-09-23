@@ -93,7 +93,7 @@ struct hv_vss_check_dm_info {
 struct hv_vss_msg {
 	union {
 		struct hv_vss_hdr vss_hdr;
-		int error;
+		i32 error;
 	};
 	union {
 		struct hv_vss_check_feature vss_cf;
@@ -379,7 +379,7 @@ struct hv_kvp_register {
 struct hv_kvp_msg {
 	union {
 		struct hv_kvp_hdr	kvp_hdr;
-		int error;
+		i32 error;
 	};
 	union {
 		struct hv_kvp_msg_get		kvp_get;

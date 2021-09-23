@@ -18,26 +18,26 @@
 
 
 /* Classify given number.  */
-__MATHDECL_1 (int, __fpclassify,, (_Mdouble_ __value))
+__MATHDECL_1 (i32, __fpclassify,, (_Mdouble_ __value))
      __attribute__ ((__const__));
 
 /* Test for negative number.  */
-__MATHDECL_1 (int, __signbit,, (_Mdouble_ __value))
+__MATHDECL_1 (i32, __signbit,, (_Mdouble_ __value))
      __attribute__ ((__const__));
 
 /* Return 0 if VALUE is finite or NaN, +1 if it
    is +Infinity, -1 if it is -Infinity.  */
-__MATHDECL_1 (int, __isinf,, (_Mdouble_ __value)) __attribute__ ((__const__));
+__MATHDECL_1 (i32, __isinf,, (_Mdouble_ __value)) __attribute__ ((__const__));
 
 /* Return nonzero if VALUE is finite and not NaN.  Used by isfinite macro.  */
-__MATHDECL_1 (int, __finite,, (_Mdouble_ __value)) __attribute__ ((__const__));
+__MATHDECL_1 (i32, __finite,, (_Mdouble_ __value)) __attribute__ ((__const__));
 
 /* Return nonzero if VALUE is not a number.  */
-__MATHDECL_1 (int, __isnan,, (_Mdouble_ __value)) __attribute__ ((__const__));
+__MATHDECL_1 (i32, __isnan,, (_Mdouble_ __value)) __attribute__ ((__const__));
 
 /* Test equality.  */
-__MATHDECL_1 (int, __iseqsig,, (_Mdouble_ __x, _Mdouble_ __y));
+__MATHDECL_1 (i32, __iseqsig,, (_Mdouble_ __x, _Mdouble_ __y));
 
 /* Test for signaling NaN.  */
-__MATHDECL_1 (int, __issignaling,, (_Mdouble_ __value))
+__MATHDECL_1 (i32, __issignaling,, (_Mdouble_ __value))
      __attribute__ ((__const__));

@@ -24,16 +24,16 @@ enum {
 struct dlm_lock_data {
 	__u16 version;
 	__u32 lockspace_id;
-	int nodeid;
-	int ownpid;
+	i32 nodeid;
+	i32 ownpid;
 	__u32 id;
 	__u32 remid;
 	__u64 xid;
 	__s8 status;
 	__s8 grmode;
 	__s8 rqmode;
-	unsigned long timestamp;
-	int resource_namelen;
+	unsigned i64 timestamp;
+	i32 resource_namelen;
 	char resource_name[DLM_RESNAME_MAXLEN];
 };
 

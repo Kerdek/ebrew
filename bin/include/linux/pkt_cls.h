@@ -143,7 +143,7 @@ enum tca_id {
 
 struct tc_police {
 	__u32			index;
-	int			action;
+	i32			action;
 #define TC_POLICE_UNSPEC	TC_ACT_UNSPEC
 #define TC_POLICE_OK		TC_ACT_OK
 #define TC_POLICE_RECLASSIFY	TC_ACT_RECLASSIFY
@@ -155,8 +155,8 @@ struct tc_police {
 	__u32			mtu;
 	struct tc_ratespec	rate;
 	struct tc_ratespec	peakrate;
-	int			refcnt;
-	int			bindcnt;
+	i32			refcnt;
+	i32			bindcnt;
 	__u32			capab;
 };
 
@@ -168,16 +168,16 @@ struct tcf_t {
 };
 
 struct tc_cnt {
-	int                   refcnt;
-	int                   bindcnt;
+	i32                   refcnt;
+	i32                   bindcnt;
 };
 
 #define tc_gen \
 	__u32                 index; \
 	__u32                 capab; \
-	int                   action; \
-	int                   refcnt; \
-	int                   bindcnt
+	i32                   action; \
+	i32                   refcnt; \
+	i32                   bindcnt
 
 enum {
 	TCA_POLICE_UNSPEC,
@@ -235,20 +235,20 @@ enum {
 struct tc_u32_key {
 	__be32		mask;
 	__be32		val;
-	int		off;
-	int		offmask;
+	i32		off;
+	i32		offmask;
 };
 
 struct tc_u32_sel {
-	unsigned char		flags;
-	unsigned char		offshift;
-	unsigned char		nkeys;
+	unsigned i8		flags;
+	unsigned i8		offshift;
+	unsigned i8		nkeys;
 
 	__be16			offmask;
 	__u16			off;
-	short			offoff;
+	i16			offoff;
 
-	short			hoff;
+	i16			hoff;
 	__be32			hmask;
 	struct tc_u32_key	keys[0];
 };
@@ -293,7 +293,7 @@ enum {
 struct tc_rsvp_gpi {
 	__u32	key;
 	__u32	mask;
-	int	offset;
+	i32	offset;
 };
 
 struct tc_rsvp_pinfo {

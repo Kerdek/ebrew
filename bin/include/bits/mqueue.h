@@ -21,7 +21,7 @@
 
 #include <bits/types.h>
 
-typedef int mqd_t;
+typedef i32 mqd_t;
 
 struct mq_attr
 {

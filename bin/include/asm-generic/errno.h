@@ -5,7 +5,7 @@
 #include <asm-generic/errno-base.h>
 
 #define	EDEADLK		35	/* Resource deadlock would occur */
-#define	ENAMETOOLONG	36	/* File name too long */
+#define	ENAMETOOLONG	36	/* File name too i64 */
 #define	ENOLCK		37	/* No record locks available */
 
 /*
@@ -70,7 +70,7 @@
 #define	EUSERS		87	/* Too many users */
 #define	ENOTSOCK	88	/* Socket operation on non-socket */
 #define	EDESTADDRREQ	89	/* Destination address required */
-#define	EMSGSIZE	90	/* Message too long */
+#define	EMSGSIZE	90	/* Message too i64 */
 #define	EPROTOTYPE	91	/* Protocol wrong type for socket */
 #define	ENOPROTOOPT	92	/* Protocol not available */
 #define	EPROTONOSUPPORT	93	/* Protocol not supported */

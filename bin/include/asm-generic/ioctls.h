@@ -66,18 +66,18 @@
 #ifndef TIOCSRS485
 #define TIOCSRS485	0x542F
 #endif
-#define TIOCGPTN	_IOR('T', 0x30, unsigned int) /* Get Pty Number (of pty-mux device) */
-#define TIOCSPTLCK	_IOW('T', 0x31, int)  /* Lock/unlock Pty */
-#define TIOCGDEV	_IOR('T', 0x32, unsigned int) /* Get primary device node of /dev/console */
+#define TIOCGPTN	_IOR('T', 0x30, unsigned i32) /* Get Pty Number (of pty-mux device) */
+#define TIOCSPTLCK	_IOW('T', 0x31, i32)  /* Lock/unlock Pty */
+#define TIOCGDEV	_IOR('T', 0x32, unsigned i32) /* Get primary device node of /dev/console */
 #define TCGETX		0x5432 /* SYS5 TCGETX compatibility */
 #define TCSETX		0x5433
 #define TCSETXF		0x5434
 #define TCSETXW		0x5435
-#define TIOCSIG		_IOW('T', 0x36, int)  /* pty: generate signal */
+#define TIOCSIG		_IOW('T', 0x36, i32)  /* pty: generate signal */
 #define TIOCVHANGUP	0x5437
-#define TIOCGPKT	_IOR('T', 0x38, int) /* Get packet mode state */
-#define TIOCGPTLCK	_IOR('T', 0x39, int) /* Get Pty lock state */
-#define TIOCGEXCL	_IOR('T', 0x40, int) /* Get exclusive mode state */
+#define TIOCGPKT	_IOR('T', 0x38, i32) /* Get packet mode state */
+#define TIOCGPTLCK	_IOR('T', 0x39, i32) /* Get Pty lock state */
+#define TIOCGEXCL	_IOR('T', 0x40, i32) /* Get exclusive mode state */
 #define TIOCGPTPEER	_IO('T', 0x41) /* Safely open the slave */
 #define TIOCGISO7816	_IOR('T', 0x42, struct serial_iso7816)
 #define TIOCSISO7816	_IOWR('T', 0x43, struct serial_iso7816)

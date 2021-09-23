@@ -67,10 +67,10 @@
  * @len: Length of tx and rx buffers, in bytes.
  * @speed_hz: Temporary override of the device's bitrate.
  * @bits_per_word: Temporary override of the device's wordsize.
- * @delay_usecs: If nonzero, how long to delay after the last bit transfer
+ * @delay_usecs: If nonzero, how i64 to delay after the last bit transfer
  *	before optionally deselecting the device before the next transfer.
  * @cs_change: True to deselect device before starting the next transfer.
- * @word_delay_usecs: If nonzero, how long to wait between words within one
+ * @word_delay_usecs: If nonzero, how i64 to wait between words within one
  *	transfer. This property needs explicit support in the SPI controller,
  *	otherwise it is silently ignored.
  *

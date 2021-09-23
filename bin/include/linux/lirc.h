@@ -35,7 +35,7 @@
 #define LIRC_IS_TIMEOUT(val) (LIRC_MODE2(val) == LIRC_MODE2_TIMEOUT)
 
 /* used heavily by lirc userspace */
-#define lirc_t int
+#define lirc_t i32
 
 /*** lirc compatible hardware features ***/
 

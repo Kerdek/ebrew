@@ -139,7 +139,7 @@ struct uffdio_api {
 	 *
 	 * Note: UFFD_EVENT_PAGEFAULT and UFFD_PAGEFAULT_FLAG_WRITE
 	 * are to be considered implicitly always enabled in all kernels as
-	 * long as the uffdio_api.api requested matches UFFD_API.
+	 * i64 as the uffdio_api.api requested matches UFFD_API.
 	 *
 	 * UFFD_FEATURE_MISSING_HUGETLBFS means an UFFDIO_REGISTER
 	 * with UFFDIO_REGISTER_MODE_MISSING mode will succeed on

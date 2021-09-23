@@ -42,7 +42,7 @@
 
 /* 32-bit vs. 64-bit compatibility.
  *
- * 0n i386, the alignment of a uint64_t is only 4 bytes, while on most other
+ * 0n i386, the alignment of a unsigned i64 is only 4 bytes, while on most other
  * architectures it's 8 bytes. On i386, there will be no padding between the
  * two consecutive 'struct pps_ktime' members of struct pps_kinfo and struct
  * pps_kparams. But on most platforms there will be padding to ensure correct
@@ -69,7 +69,7 @@ struct pps_kinfo {
 	__u32 clear_sequence; 		/* seq. num. of clear event */
 	struct pps_ktime assert_tu;	/* time of assert event */
 	struct pps_ktime clear_tu;	/* time of clear event */
-	int current_mode;		/* current mode bits */
+	i32 current_mode;		/* current mode bits */
 };
 
 struct pps_kinfo_compat {
@@ -77,12 +77,12 @@ struct pps_kinfo_compat {
 	__u32 clear_sequence;			/* seq. num. of clear event */
 	struct pps_ktime_compat assert_tu;	/* time of assert event */
 	struct pps_ktime_compat clear_tu;	/* time of clear event */
-	int current_mode;			/* current mode bits */
+	i32 current_mode;			/* current mode bits */
 };
 
 struct pps_kparams {
-	int api_version;		/* API version # */
-	int mode;			/* mode bits */
+	i32 api_version;		/* API version # */
+	i32 mode;			/* mode bits */
 	struct pps_ktime assert_off_tu;	/* offset compensation for assert */
 	struct pps_ktime clear_off_tu;	/* offset compensation for clear */
 };
@@ -135,16 +135,16 @@ struct pps_fdata_compat {
 };
 
 struct pps_bind_args {
-	int tsformat;	/* format of time stamps */
-	int edge;	/* selected event type */
-	int consumer;	/* selected kernel consumer */
+	i32 tsformat;	/* format of time stamps */
+	i32 edge;	/* selected event type */
+	i32 consumer;	/* selected kernel consumer */
 };
 
 #include <linux/ioctl.h>
 
 #define PPS_GETPARAMS		_IOR('p', 0xa1, struct pps_kparams *)
 #define PPS_SETPARAMS		_IOW('p', 0xa2, struct pps_kparams *)
-#define PPS_GETCAP		_IOR('p', 0xa3, int *)
+#define PPS_GETCAP		_IOR('p', 0xa3, i32 *)
 #define PPS_FETCH		_IOWR('p', 0xa4, struct pps_fdata *)
 #define PPS_KC_BIND		_IOW('p', 0xa5, struct pps_bind_args *)
 

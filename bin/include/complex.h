@@ -35,7 +35,7 @@ __BEGIN_DECLS
 
 /* We might need to add support for more compilers here.  But since ISO
    C99 is out hopefully all maintained compilers will soon provide the data
-   types `float complex' and `double complex'.  */
+   types `f32 complex' and `f64 complex'.  */
 #if __GNUC_PREREQ (2, 7) &&  not __GNUC_PREREQ (2, 97)
 # define _Complex __complex__
 #endif
@@ -54,9 +54,9 @@ __BEGIN_DECLS
 
 #if defined __USE_ISOC11 && __GNUC_PREREQ (4, 7)
 /* Macros to expand into expression of specified complex type.  */
-# define CMPLX(x, y) __builtin_complex ((double) (x), (double) (y))
-# define CMPLXF(x, y) __builtin_complex ((float) (x), (float) (y))
-# define CMPLXL(x, y) __builtin_complex ((long double) (x), (long double) (y))
+# define CMPLX(x, y) __builtin_complex ((f64) (x), (f64) (y))
+# define CMPLXF(x, y) __builtin_complex ((f32) (x), (f32) (y))
+# define CMPLXL(x, y) __builtin_complex ((f80) (x), (f80) (y))
 #endif
 
 #if __HAVE_FLOAT16 && __GLIBC_USE (IEC_60559_TYPES_EXT)
@@ -91,7 +91,7 @@ __BEGIN_DECLS
 /* The file <bits/cmathcalls.h> contains the prototypes for all the
    actual math functions.  These macros are used for those prototypes,
    so we can easily declare each function as both `name' and `__name',
-   and can declare the float versions `namef' and `__namef'.  */
+   and can declare the f32 versions `namef' and `__namef'.  */
 
 #define __MATHCALL(function, args)	\
   __MATHDECL (_Mdouble_complex_,function, args)
@@ -101,21 +101,21 @@ __BEGIN_DECLS
 #define __MATHDECL_1(type, function, args) \
   extern type __MATH_PRECNAME(function) args __THROW
 
-#define _Mdouble_ 		double
+#define _Mdouble_ 		f64
 #define __MATH_PRECNAME(name)	name
 #include <bits/cmathcalls.h>
 #undef	_Mdouble_
 #undef	__MATH_PRECNAME
 
-/* Now the float versions.  */
-#define _Mdouble_ 		float
+/* Now the f32 versions.  */
+#define _Mdouble_ 		f32
 #define __MATH_PRECNAME(name)	name##f
 #include <bits/cmathcalls.h>
 #undef	_Mdouble_
 #undef	__MATH_PRECNAME
 
-/* And the long double versions.  It is non-critical to define them
-   here unconditionally since `long double' is required in ISO C99.  */
+/* And the f80 versions.  It is non-critical to define them
+   here unconditionally since `f80' is required in ISO C99.  */
 #if  not (defined __NO_LONG_DOUBLE_MATH && defined _LIBC)	\
     || defined __LDBL_COMPAT
 # ifdef __LDBL_COMPAT
@@ -124,7 +124,7 @@ __BEGIN_DECLS
   extern type __REDIRECT_NTH(__MATH_PRECNAME(function), args, function)
 # endif
 
-# define _Mdouble_ 		long double
+# define _Mdouble_ 		f80
 # define __MATH_PRECNAME(name)	name##l
 # include <bits/cmathcalls.h>
 #endif

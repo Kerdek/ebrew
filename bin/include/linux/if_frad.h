@@ -32,7 +32,7 @@
 struct dlci_add
 {
    char  devname[IFNAMSIZ];
-   short dlci;
+   i16 dlci;
 };
 
 #define DLCI_GET_CONF	(SIOCDEVPRIVATE + 2)
@@ -44,19 +44,19 @@ struct dlci_add
  * structure.  Change at your own peril.
  */
 struct dlci_conf {
-   short flags;
-   short CIR_fwd;
-   short Bc_fwd;
-   short Be_fwd;
-   short CIR_bwd;
-   short Bc_bwd;
-   short Be_bwd; 
+   i16 flags;
+   i16 CIR_fwd;
+   i16 Bc_fwd;
+   i16 Be_fwd;
+   i16 CIR_bwd;
+   i16 Bc_bwd;
+   i16 Be_bwd; 
 
 /* these are part of the status read */
-   short Tc_fwd;
-   short Tc_bwd;
-   short Tf_max;
-   short Tb_max;
+   i16 Tc_fwd;
+   i16 Tc_bwd;
+   i16 Tf_max;
+   i16 Tb_max;
 
 /* add any new fields here above is a mirror of sdla_dlci_conf */
 };
@@ -83,22 +83,22 @@ struct dlci_conf {
  */
 struct frad_conf 
 {
-   short station;
-   short flags;
-   short kbaud;
-   short clocking;
-   short mtu;
-   short T391;
-   short T392;
-   short N391;
-   short N392;
-   short N393;
-   short CIR_fwd;
-   short Bc_fwd;
-   short Be_fwd;
-   short CIR_bwd;
-   short Bc_bwd;
-   short Be_bwd;
+   i16 station;
+   i16 flags;
+   i16 kbaud;
+   i16 clocking;
+   i16 mtu;
+   i16 T391;
+   i16 T392;
+   i16 N391;
+   i16 N392;
+   i16 N393;
+   i16 CIR_fwd;
+   i16 Bc_fwd;
+   i16 Be_fwd;
+   i16 CIR_bwd;
+   i16 Bc_bwd;
+   i16 Be_bwd;
 
 /* Add new fields here, above is a mirror of the sdla_conf */
 

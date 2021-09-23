@@ -30,14 +30,14 @@
 
 
 /* Type used for the number of file descriptors.  */
-typedef unsigned long int nfds_t;
+typedef unsigned i64 nfds_t;
 
 /* Data structure describing a polling request.  */
 struct pollfd
   {
-    int fd;			/* File descriptor to poll.  */
-    short int events;		/* Types of events poller cares about.  */
-    short int revents;		/* Types of events that actually occurred.  */
+    i32 fd;			/* File descriptor to poll.  */
+    i16 i32 events;		/* Types of events poller cares about.  */
+    i16 i32 revents;		/* Types of events that actually occurred.  */
   };
 
 
@@ -51,7 +51,7 @@ __BEGIN_DECLS
 
    This function is a cancellation point and therefore not marked with
    __THROW.  */
-extern int poll (struct pollfd *__fds, nfds_t __nfds, int __timeout);
+extern i32 poll (struct pollfd *__fds, nfds_t __nfds, i32 __timeout);
 
 #ifdef __USE_GNU
 /* Like poll, but before waiting the threads signal mask is replaced
@@ -60,7 +60,7 @@ extern int poll (struct pollfd *__fds, nfds_t __nfds, int __timeout);
 
    This function is a cancellation point and therefore not marked with
    __THROW.  */
-extern int ppoll (struct pollfd *__fds, nfds_t __nfds,
+extern i32 ppoll (struct pollfd *__fds, nfds_t __nfds,
 		  const struct timespec *__timeout,
 		  const __sigset_t *__ss);
 #endif

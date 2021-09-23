@@ -44,8 +44,8 @@ struct tc_stats {
 };
 
 struct tc_estimator {
-	signed char	interval;
-	unsigned char	ewma_log;
+	 char	interval;
+	unsigned i8	ewma_log;
 };
 
 /* "Handles"
@@ -89,25 +89,25 @@ enum tc_link_layer {
 #define TC_LINKLAYER_MASK 0x0F /* limit use to lower 4 bits */
 
 struct tc_ratespec {
-	unsigned char	cell_log;
+	unsigned i8	cell_log;
 	__u8		linklayer; /* lower 4 bits */
-	unsigned short	overhead;
-	short		cell_align;
-	unsigned short	mpu;
+	unsigned i16	overhead;
+	i16		cell_align;
+	unsigned i16	mpu;
 	__u32		rate;
 };
 
 #define TC_RTAB_SIZE	1024
 
 struct tc_sizespec {
-	unsigned char	cell_log;
-	unsigned char	size_log;
-	short		cell_align;
-	int		overhead;
-	unsigned int	linklayer;
-	unsigned int	mpu;
-	unsigned int	mtu;
-	unsigned int	tsize;
+	unsigned i8	cell_log;
+	unsigned i8	size_log;
+	i16		cell_align;
+	i32		overhead;
+	unsigned i32	linklayer;
+	unsigned i32	mpu;
+	unsigned i32	mtu;
+	unsigned i32	tsize;
 };
 
 enum {
@@ -146,7 +146,7 @@ struct tc_skbprio_qopt {
 #define TCQ_MIN_PRIO_BANDS 2
 
 struct tc_prio_qopt {
-	int	bands;			/* Number of bands */
+	i32	bands;			/* Number of bands */
 	__u8	priomap[TC_PRIO_MAX+1];	/* Map: logical priority -> PRIO band */
 };
 
@@ -174,7 +174,7 @@ struct tc_plug_qopt {
 	 *   command is received (just act as a pass-thru queue).
 	 * TCQ_PLUG_LIMIT: Increase/decrease queue size
 	 */
-	int             action;
+	i32             action;
 	__u32           limit;
 };
 
@@ -212,7 +212,7 @@ enum {
 
 struct tc_sfq_qopt {
 	unsigned	quantum;	/* Bytes per round allocated to flow */
-	int		perturb_period;	/* Period of hash perturbation */
+	i32		perturb_period;	/* Period of hash perturbation */
 	__u32		limit;		/* Maximal packets in queue */
 	unsigned	divisor;	/* Hash divisor  */
 	unsigned	flows;		/* Maximal number of flows  */
@@ -229,16 +229,16 @@ struct tc_sfqred_stats {
 
 struct tc_sfq_qopt_v1 {
 	struct tc_sfq_qopt v0;
-	unsigned int	depth;		/* max number of packets per flow */
-	unsigned int	headdrop;
+	unsigned i32	depth;		/* max number of packets per flow */
+	unsigned i32	headdrop;
 /* SFQRED parameters */
 	__u32		limit;		/* HARD maximal flow queue length (bytes) */
 	__u32		qth_min;	/* Min average length threshold (bytes) */
 	__u32		qth_max;	/* Max average length threshold (bytes) */
-	unsigned char   Wlog;		/* log(W)		*/
-	unsigned char   Plog;		/* log(P_max/(qth_max-qth_min))	*/
-	unsigned char   Scell_log;	/* cell size for idle damping */
-	unsigned char	flags;
+	unsigned i8   Wlog;		/* log(W)		*/
+	unsigned i8   Plog;		/* log(P_max/(qth_max-qth_min))	*/
+	unsigned i8   Scell_log;	/* cell size for idle damping */
+	unsigned i8	flags;
 	__u32		max_P;		/* probability, high resolution */
 /* SFQRED stats */
 	struct tc_sfqred_stats stats;
@@ -268,9 +268,9 @@ struct tc_red_qopt {
 	__u32		limit;		/* HARD maximal queue length (bytes)	*/
 	__u32		qth_min;	/* Min average length threshold (bytes) */
 	__u32		qth_max;	/* Max average length threshold (bytes) */
-	unsigned char   Wlog;		/* log(W)		*/
-	unsigned char   Plog;		/* log(P_max/(qth_max-qth_min))	*/
-	unsigned char   Scell_log;	/* cell size for idle damping */
+	unsigned i8   Wlog;		/* log(W)		*/
+	unsigned i8   Plog;		/* log(P_max/(qth_max-qth_min))	*/
+	unsigned i8   Scell_log;	/* cell size for idle damping */
 
 	/* This field can be used for flags that a RED-like qdisc has
 	 * historically supported. E.g. when configuring RED, it can be used for
@@ -284,7 +284,7 @@ struct tc_red_qopt {
 	 * attribute (such as TCA_RED_FLAGS above). Such attribute should allow
 	 * passing both recent and historic flags in one value.
 	 */
-	unsigned char	flags;
+	unsigned i8	flags;
 #define TC_RED_ECN		1
 #define TC_RED_HARDDROP		2
 #define TC_RED_ADAPTATIVE	4
@@ -387,10 +387,10 @@ struct tc_choke_qopt {
 	__u32		limit;		/* Hard queue length (packets)	*/
 	__u32		qth_min;	/* Min average threshold (packets) */
 	__u32		qth_max;	/* Max average threshold (packets) */
-	unsigned char   Wlog;		/* log(W)		*/
-	unsigned char   Plog;		/* log(P_max/(qth_max-qth_min))	*/
-	unsigned char   Scell_log;	/* cell size for idle damping */
-	unsigned char	flags;		/* see RED flags */
+	unsigned i8   Wlog;		/* log(W)		*/
+	unsigned i8   Plog;		/* log(P_max/(qth_max-qth_min))	*/
+	unsigned i8   Scell_log;	/* cell size for idle damping */
+	unsigned i8	flags;		/* see RED flags */
 };
 
 struct tc_choke_xstats {
@@ -484,12 +484,12 @@ enum {
 #define TC_CBQ_DEF_EWMA		5
 
 struct tc_cbq_lssopt {
-	unsigned char	change;
-	unsigned char	flags;
+	unsigned i8	change;
+	unsigned i8	flags;
 #define TCF_CBQ_LSS_BOUNDED	1
 #define TCF_CBQ_LSS_ISOLATED	2
-	unsigned char  	ewma_log;
-	unsigned char  	level;
+	unsigned i8  	ewma_log;
+	unsigned i8  	level;
 #define TCF_CBQ_LSS_FLAGS	1
 #define TCF_CBQ_LSS_EWMA	2
 #define TCF_CBQ_LSS_MAXIDLE	4
@@ -503,30 +503,30 @@ struct tc_cbq_lssopt {
 };
 
 struct tc_cbq_wrropt {
-	unsigned char	flags;
-	unsigned char	priority;
-	unsigned char	cpriority;
-	unsigned char	__reserved;
+	unsigned i8	flags;
+	unsigned i8	priority;
+	unsigned i8	cpriority;
+	unsigned i8	__reserved;
 	__u32		allot;
 	__u32		weight;
 };
 
 struct tc_cbq_ovl {
-	unsigned char	strategy;
+	unsigned i8	strategy;
 #define	TC_CBQ_OVL_CLASSIC	0
 #define	TC_CBQ_OVL_DELAY	1
 #define	TC_CBQ_OVL_LOWPRIO	2
 #define	TC_CBQ_OVL_DROP		3
 #define	TC_CBQ_OVL_RCLASSIC	4
-	unsigned char	priority2;
+	unsigned i8	priority2;
 	__u16		pad;
 	__u32		penalty;
 };
 
 struct tc_cbq_police {
-	unsigned char	police;
-	unsigned char	__res1;
-	unsigned short	__res2;
+	unsigned i8	police;
+	unsigned i8	__res1;
+	unsigned i16	__res2;
 };
 
 struct tc_cbq_fopt {
@@ -757,7 +757,7 @@ enum {
  */
 struct tc_sfb_qopt {
 	__u32 rehash_interval;	/* delay between hash move, in ms */
-	__u32 warmup_time;	/* double buffering warmup time in ms (warmup_time < rehash_interval) */
+	__u32 warmup_time;	/* f64 buffering warmup time in ms (warmup_time < rehash_interval) */
 	__u32 max;		/* max len of qlen_min */
 	__u32 bin_size;		/* maximum queue length per bin */
 	__u32 increment;	/* probability increment, (d1 in Blue) */

@@ -65,7 +65,7 @@ struct ip6t_ip6 {
 	/* Mask for src and dest IP6 addr */
 	struct in6_addr smsk, dmsk;
 	char iniface[IFNAMSIZ], outiface[IFNAMSIZ];
-	unsigned char iniface_mask[IFNAMSIZ], outiface_mask[IFNAMSIZ];
+	unsigned i8 iniface_mask[IFNAMSIZ], outiface_mask[IFNAMSIZ];
 
 	/* Upper protocol number
 	 * - The allowed value is 0 (any) or protocol number of last parsable
@@ -109,7 +109,7 @@ struct ip6t_entry {
 	struct ip6t_ip6 ipv6;
 
 	/* Mark with fields that we care about. */
-	unsigned int nfcache;
+	unsigned i32 nfcache;
 
 	/* Size of ipt_entry + matches */
 	__u16 target_offset;
@@ -117,13 +117,13 @@ struct ip6t_entry {
 	__u16 next_offset;
 
 	/* Back pointer */
-	unsigned int comefrom;
+	unsigned i32 comefrom;
 
 	/* Packet and byte counters. */
 	struct xt_counters counters;
 
 	/* The matches (if any), then the target. */
-	unsigned char elems[0];
+	unsigned i8 elems[0];
 };
 
 /* Standard entry */
@@ -198,19 +198,19 @@ struct ip6t_getinfo {
 
 	/* Kernel fills these in. */
 	/* Which hook entry points are valid: bitmask */
-	unsigned int valid_hooks;
+	unsigned i32 valid_hooks;
 
 	/* Hook entry points: one per netfilter hook. */
-	unsigned int hook_entry[NF_INET_NUMHOOKS];
+	unsigned i32 hook_entry[NF_INET_NUMHOOKS];
 
 	/* Underflow points. */
-	unsigned int underflow[NF_INET_NUMHOOKS];
+	unsigned i32 underflow[NF_INET_NUMHOOKS];
 
 	/* Number of entries */
-	unsigned int num_entries;
+	unsigned i32 num_entries;
 
 	/* Size of entries. */
-	unsigned int size;
+	unsigned i32 size;
 };
 
 /* The argument to IP6T_SO_SET_REPLACE. */
@@ -220,23 +220,23 @@ struct ip6t_replace {
 
 	/* Which hook entry points are valid: bitmask.  You can't
            change this. */
-	unsigned int valid_hooks;
+	unsigned i32 valid_hooks;
 
 	/* Number of entries */
-	unsigned int num_entries;
+	unsigned i32 num_entries;
 
 	/* Total size of new entries */
-	unsigned int size;
+	unsigned i32 size;
 
 	/* Hook entry points. */
-	unsigned int hook_entry[NF_INET_NUMHOOKS];
+	unsigned i32 hook_entry[NF_INET_NUMHOOKS];
 
 	/* Underflow points. */
-	unsigned int underflow[NF_INET_NUMHOOKS];
+	unsigned i32 underflow[NF_INET_NUMHOOKS];
 
 	/* Information about old entries: */
 	/* Number of counters (must be equal to current number of entries). */
-	unsigned int num_counters;
+	unsigned i32 num_counters;
 	/* The old entries' counters. */
 	struct xt_counters *counters;
 
@@ -250,7 +250,7 @@ struct ip6t_get_entries {
 	char name[XT_TABLE_MAXNAMELEN];
 
 	/* User fills this in: total entry size. */
-	unsigned int size;
+	unsigned i32 size;
 
 	/* The entries. */
 	struct ip6t_entry entrytable[0];

@@ -42,15 +42,15 @@
 
 /* structure emitted by "gcc -a".  This must match struct bb in
    gcc/libgcc2.c.  It is OK for gcc to declare a longer structure as
-   long as the members below are present.  */
+   i64 as the members below are present.  */
 struct __bb
 {
-  long			zero_word;
+  i64			zero_word;
   const char		*filename;
-  long			*counts;
-  long			ncounts;
+  i64			*counts;
+  i64			ncounts;
   struct __bb		*next;
-  const unsigned long	*addresses;
+  const unsigned i64	*addresses;
 };
 
 extern struct __bb *__bb_head;
@@ -58,7 +58,7 @@ extern struct __bb *__bb_head;
 /*
  * histogram counters are unsigned shorts (according to the kernel).
  */
-#define	HISTCOUNTER	unsigned short
+#define	HISTCOUNTER	unsigned i16
 
 /*
  * fraction of text space to allocate for histogram counters here, 1/2
@@ -72,7 +72,7 @@ extern struct __bb *__bb_head;
  * Given MIN_SUBR_SEPARATION bytes of separation the value of
  * HASHFRACTION is calculated as:
  *
- *	HASHFRACTION = MIN_SUBR_SEPARATION / (2 * sizeof(short) - 1);
+ *	HASHFRACTION = MIN_SUBR_SEPARATION / (2 * sizeof(i16) - 1);
  *
  * For example, on the VAX, the shortest two call sequence is:
  *
@@ -117,21 +117,21 @@ extern struct __bb *__bb_head;
 /*
  * The type used to represent indices into gmonparam.tos[].
  */
-#define	ARCINDEX	unsigned long
+#define	ARCINDEX	unsigned i64
 
 /*
  * Maximum number of arcs we want to allow.
  * Used to be max representable value of ARCINDEX minus 2, but now
- * that ARCINDEX is a long, that's too large; we don't really want
+ * that ARCINDEX is a i64, that's too large; we don't really want
  * to allow a 48 gigabyte table.
  * The old value of 1<<16 wasn't high enough in practice for large C++
- * programs; will 1<<20 be adequate for long?  FIXME
+ * programs; will 1<<20 be adequate for i64?  FIXME
  */
 #define MAXARCS		(1 << 20)
 
 struct tostruct {
-	unsigned long	selfpc;
-	long		count;
+	unsigned i64	selfpc;
+	i64		count;
 	ARCINDEX	link;
 };
 
@@ -140,9 +140,9 @@ struct tostruct {
  * the called site and a count.
  */
 struct rawarc {
-	unsigned long	raw_frompc;
-	unsigned long	raw_selfpc;
-	long		raw_count;
+	unsigned i64	raw_frompc;
+	unsigned i64	raw_selfpc;
+	i64		raw_count;
 };
 
 /*
@@ -155,19 +155,19 @@ struct rawarc {
  * The profiling data structures are housed in this structure.
  */
 struct gmonparam {
-	long int	state;
-	unsigned short	*kcount;
-	unsigned long	kcountsize;
+	i64	state;
+	unsigned i16	*kcount;
+	unsigned i64	kcountsize;
 	ARCINDEX	*froms;
-	unsigned long	fromssize;
+	unsigned i64	fromssize;
 	struct tostruct	*tos;
-	unsigned long	tossize;
-	long		tolimit;
-	unsigned long	lowpc;
-	unsigned long	highpc;
-	unsigned long	textsize;
-	unsigned long	hashfraction;
-	long		log_hashfraction;
+	unsigned i64	tossize;
+	i64		tolimit;
+	unsigned i64	lowpc;
+	unsigned i64	highpc;
+	unsigned i64	textsize;
+	unsigned i64	hashfraction;
+	i64		log_hashfraction;
 };
 
 /*
@@ -181,7 +181,7 @@ struct gmonparam {
 /*
  * Sysctl definitions for extracting profiling information from the kernel.
  */
-#define	GPROF_STATE	0	/* int: profiling enabling variable */
+#define	GPROF_STATE	0	/* i32: profiling enabling variable */
 #define	GPROF_COUNT	1	/* struct: profile tick count buffer */
 #define	GPROF_FROMS	2	/* struct: from location hash bucket */
 #define	GPROF_TOS	3	/* struct: destination/count structure */
@@ -190,8 +190,8 @@ struct gmonparam {
 __BEGIN_DECLS
 
 /* Set up data structures and start profiling.  */
-extern void __monstartup (unsigned long __lowpc, unsigned long __highpc) __THROW;
-extern void monstartup (unsigned long __lowpc, unsigned long __highpc) __THROW;
+extern void __monstartup (unsigned i64 __lowpc, unsigned i64 __highpc) __THROW;
+extern void monstartup (unsigned i64 __lowpc, unsigned i64 __highpc) __THROW;
 
 /* Clean up profiling and write out gmon.out.  */
 extern void _mcleanup (void) __THROW;

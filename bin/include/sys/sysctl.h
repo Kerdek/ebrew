@@ -67,7 +67,7 @@
 __BEGIN_DECLS
 
 /* Read or write system parameters.  */
-extern int sysctl (int *__name, int __nlen, void *__oldval,
+extern i32 sysctl (i32 *__name, i32 __nlen, void *__oldval,
 		   size_t *__oldlenp, void *__newval, size_t __newlen) __THROW
   __attribute_deprecated__;
 

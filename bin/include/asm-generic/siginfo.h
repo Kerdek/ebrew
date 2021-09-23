@@ -6,19 +6,19 @@
 #include <linux/types.h>
 
 typedef union sigval {
-	int sival_int;
+	i32 sival_int;
 	void *sival_ptr;
 } sigval_t;
 
 #define SI_MAX_SIZE	128
 
 /*
- * The default "si_band" type is "long", as specified by POSIX.
- * However, some architectures want to override this to "int"
+ * The default "si_band" type is "i64", as specified by POSIX.
+ * However, some architectures want to override this to "i32"
  * for historical compatibility reasons, so we allow that.
  */
 #ifndef __ARCH_SI_BAND_T
-#define __ARCH_SI_BAND_T long
+#define __ARCH_SI_BAND_T i64
 #endif
 
 #ifndef __ARCH_SI_CLOCK_T
@@ -39,9 +39,9 @@ union __sifields {
 	/* POSIX.1b timers */
 	struct {
 		__kernel_timer_t _tid;	/* timer id */
-		int _overrun;		/* overrun count */
+		i32 _overrun;		/* overrun count */
 		sigval_t _sigval;	/* same as below */
-		int _sys_private;       /* not to be passed to user */
+		i32 _sys_private;       /* not to be passed to user */
 	} _timer;
 
 	/* POSIX.1b signals */
@@ -55,7 +55,7 @@ union __sifields {
 	struct {
 		__kernel_pid_t _pid;	/* which child */
 		__kernel_uid32_t _uid;	/* sender's uid */
-		int _status;		/* exit code */
+		i32 _status;		/* exit code */
 		__ARCH_SI_CLOCK_T _utime;
 		__ARCH_SI_CLOCK_T _stime;
 	} _sigchld;
@@ -64,22 +64,22 @@ union __sifields {
 	struct {
 		void *_addr; /* faulting insn/memory ref. */
 #ifdef __ARCH_SI_TRAPNO
-		int _trapno;	/* TRAP # which caused the signal */
+		i32 _trapno;	/* TRAP # which caused the signal */
 #endif
 #ifdef __ia64__
-		int _imm;		/* immediate value for "break" */
-		unsigned int _flags;	/* see ia64 si_flags */
-		unsigned long _isr;	/* isr */
+		i32 _imm;		/* immediate value for "break" */
+		unsigned i32 _flags;	/* see ia64 si_flags */
+		unsigned i64 _isr;	/* isr */
 #endif
 
-#define __ADDR_BND_PKEY_PAD  (__alignof__(void *) < sizeof(short) ? \
-			      sizeof(short) : __alignof__(void *))
+#define __ADDR_BND_PKEY_PAD  (__alignof__(void *) < sizeof(i16) ? \
+			      sizeof(i16) : __alignof__(void *))
 		union {
 			/*
 			 * used when si_code=BUS_MCEERR_AR or
 			 * used when si_code=BUS_MCEERR_AO
 			 */
-			short _addr_lsb; /* LSB of the reported address */
+			i16 _addr_lsb; /* LSB of the reported address */
 			/* used when si_code=SEGV_BNDERR */
 			struct {
 				char _dummy_bnd[__ADDR_BND_PKEY_PAD];
@@ -97,31 +97,31 @@ union __sifields {
 	/* SIGPOLL */
 	struct {
 		__ARCH_SI_BAND_T _band;	/* POLL_IN, POLL_OUT, POLL_MSG */
-		int _fd;
+		i32 _fd;
 	} _sigpoll;
 
 	/* SIGSYS */
 	struct {
 		void *_call_addr; /* calling user insn */
-		int _syscall;	/* triggering system call number */
-		unsigned int _arch;	/* AUDIT_ARCH_* of syscall */
+		i32 _syscall;	/* triggering system call number */
+		unsigned i32 _arch;	/* AUDIT_ARCH_* of syscall */
 	} _sigsys;
 };
 
 #ifndef __ARCH_HAS_SWAPPED_SIGINFO
 #define __SIGINFO 			\
 struct {				\
-	int si_signo;			\
-	int si_errno;			\
-	int si_code;			\
+	i32 si_signo;			\
+	i32 si_errno;			\
+	i32 si_code;			\
 	union __sifields _sifields;	\
 }
 #else
 #define __SIGINFO 			\
 struct {				\
-	int si_signo;			\
-	int si_code;			\
-	int si_errno;			\
+	i32 si_signo;			\
+	i32 si_code;			\
+	i32 si_errno;			\
 	union __sifields _sifields;	\
 }
 #endif /* __ARCH_HAS_SWAPPED_SIGINFO */
@@ -129,7 +129,7 @@ struct {				\
 typedef struct siginfo {
 	union {
 		__SIGINFO;
-		int _si_pad[SI_MAX_SIZE/sizeof(int)];
+		i32 _si_pad[SI_MAX_SIZE/sizeof(i32)];
 	};
 } __ARCH_SI_ATTRIBUTES siginfo_t;
 
@@ -312,20 +312,20 @@ typedef struct siginfo {
  * but we leave open this being overridden in the future
  */
 #ifndef __ARCH_SIGEV_PREAMBLE_SIZE
-#define __ARCH_SIGEV_PREAMBLE_SIZE	(sizeof(int) * 2 + sizeof(sigval_t))
+#define __ARCH_SIGEV_PREAMBLE_SIZE	(sizeof(i32) * 2 + sizeof(sigval_t))
 #endif
 
 #define SIGEV_MAX_SIZE	64
 #define SIGEV_PAD_SIZE	((SIGEV_MAX_SIZE - __ARCH_SIGEV_PREAMBLE_SIZE) \
-		/ sizeof(int))
+		/ sizeof(i32))
 
 typedef struct sigevent {
 	sigval_t sigev_value;
-	int sigev_signo;
-	int sigev_notify;
+	i32 sigev_signo;
+	i32 sigev_notify;
 	union {
-		int _pad[SIGEV_PAD_SIZE];
-		 int _tid;
+		i32 _pad[SIGEV_PAD_SIZE];
+		 i32 _tid;
 
 		struct {
 			void (*_function)(sigval_t);

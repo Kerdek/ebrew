@@ -39,26 +39,26 @@
 /* Structure used for argument to `semop' to describe operations.  */
 struct sembuf
 {
-  unsigned short int sem_num;	/* semaphore number */
-  short int sem_op;		/* semaphore operation */
-  short int sem_flg;		/* operation flag */
+  unsigned i16 sem_num;	/* semaphore number */
+  i16 i32 sem_op;		/* semaphore operation */
+  i16 i32 sem_flg;		/* operation flag */
 };
 
 
 __BEGIN_DECLS
 
 /* Semaphore control operation.  */
-extern int semctl (int __semid, int __semnum, int __cmd, ...) __THROW;
+extern i32 semctl (i32 __semid, i32 __semnum, i32 __cmd, ...) __THROW;
 
 /* Get semaphore.  */
-extern int semget (key_t __key, int __nsems, int __semflg) __THROW;
+extern i32 semget (key_t __key, i32 __nsems, i32 __semflg) __THROW;
 
 /* Operate on semaphore.  */
-extern int semop (int __semid, struct sembuf *__sops, size_t __nsops) __THROW;
+extern i32 semop (i32 __semid, struct sembuf *__sops, size_t __nsops) __THROW;
 
 #ifdef __USE_GNU
 /* Operate on semaphore with timeout.  */
-extern int semtimedop (int __semid, struct sembuf *__sops, size_t __nsops,
+extern i32 semtimedop (i32 __semid, struct sembuf *__sops, size_t __nsops,
 		       const struct timespec *__timeout) __THROW;
 #endif
 

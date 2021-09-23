@@ -270,7 +270,7 @@ static __inline__ __u8 uac_mixer_unit_bNrChannels(struct uac_mixer_unit_descript
 }
 
 static __inline__ __u32 uac_mixer_unit_wChannelConfig(struct uac_mixer_unit_descriptor *desc,
-						  int protocol)
+						  i32 protocol)
 {
 	if (protocol == UAC_VERSION_1)
 		return (desc->baSourceID[desc->bNrInPins + 2] << 8) |
@@ -283,7 +283,7 @@ static __inline__ __u32 uac_mixer_unit_wChannelConfig(struct uac_mixer_unit_desc
 }
 
 static __inline__ __u8 uac_mixer_unit_iChannelNames(struct uac_mixer_unit_descriptor *desc,
-						int protocol)
+						i32 protocol)
 {
 	return (protocol == UAC_VERSION_1) ?
 		desc->baSourceID[desc->bNrInPins + 3] :
@@ -291,7 +291,7 @@ static __inline__ __u8 uac_mixer_unit_iChannelNames(struct uac_mixer_unit_descri
 }
 
 static __inline__ __u8 *uac_mixer_unit_bmControls(struct uac_mixer_unit_descriptor *desc,
-					      int protocol)
+					      i32 protocol)
 {
 	switch (protocol) {
 	case UAC_VERSION_1:
@@ -367,7 +367,7 @@ static __inline__ __u8 uac_processing_unit_bNrChannels(struct uac_processing_uni
 }
 
 static __inline__ __u32 uac_processing_unit_wChannelConfig(struct uac_processing_unit_descriptor *desc,
-						       int protocol)
+						       i32 protocol)
 {
 	if (protocol == UAC_VERSION_1)
 		return (desc->baSourceID[desc->bNrInPins + 2] << 8) |
@@ -380,7 +380,7 @@ static __inline__ __u32 uac_processing_unit_wChannelConfig(struct uac_processing
 }
 
 static __inline__ __u8 uac_processing_unit_iChannelNames(struct uac_processing_unit_descriptor *desc,
-						     int protocol)
+						     i32 protocol)
 {
 	return (protocol == UAC_VERSION_1) ?
 		desc->baSourceID[desc->bNrInPins + 3] :
@@ -388,7 +388,7 @@ static __inline__ __u8 uac_processing_unit_iChannelNames(struct uac_processing_u
 }
 
 static __inline__ __u8 uac_processing_unit_bControlSize(struct uac_processing_unit_descriptor *desc,
-						    int protocol)
+						    i32 protocol)
 {
 	switch (protocol) {
 	case UAC_VERSION_1:
@@ -403,7 +403,7 @@ static __inline__ __u8 uac_processing_unit_bControlSize(struct uac_processing_un
 }
 
 static __inline__ __u8 *uac_processing_unit_bmControls(struct uac_processing_unit_descriptor *desc,
-						   int protocol)
+						   i32 protocol)
 {
 	switch (protocol) {
 	case UAC_VERSION_1:
@@ -418,7 +418,7 @@ static __inline__ __u8 *uac_processing_unit_bmControls(struct uac_processing_uni
 }
 
 static __inline__ __u8 uac_processing_unit_iProcessing(struct uac_processing_unit_descriptor *desc,
-						   int protocol)
+						   i32 protocol)
 {
 	__u8 control_size = uac_processing_unit_bControlSize(desc, protocol);
 
@@ -434,7 +434,7 @@ static __inline__ __u8 uac_processing_unit_iProcessing(struct uac_processing_uni
 }
 
 static __inline__ __u8 *uac_processing_unit_specific(struct uac_processing_unit_descriptor *desc,
-						 int protocol)
+						 i32 protocol)
 {
 	__u8 control_size = uac_processing_unit_bControlSize(desc, protocol);
 
@@ -457,7 +457,7 @@ static __inline__ __u8 *uac_processing_unit_specific(struct uac_processing_unit_
  * well as iProcessing field of PU.
  */
 static __inline__ __u8 uac_extension_unit_bControlSize(struct uac_processing_unit_descriptor *desc,
-						   int protocol)
+						   i32 protocol)
 {
 	switch (protocol) {
 	case UAC_VERSION_1:
@@ -472,7 +472,7 @@ static __inline__ __u8 uac_extension_unit_bControlSize(struct uac_processing_uni
 }
 
 static __inline__ __u8 uac_extension_unit_iExtension(struct uac_processing_unit_descriptor *desc,
-						 int protocol)
+						 i32 protocol)
 {
 	__u8 control_size = uac_extension_unit_bControlSize(desc, protocol);
 

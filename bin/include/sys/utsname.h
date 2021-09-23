@@ -78,7 +78,7 @@ struct utsname
 
 
 /* Put information about the system in NAME.  */
-extern int uname (struct utsname *__name) __THROW;
+extern i32 uname (struct utsname *__name) __THROW;
 
 
 __END_DECLS

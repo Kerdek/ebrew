@@ -1550,9 +1550,9 @@ enum nl80211_commands {
  *	rules.
  *
  * @NL80211_ATTR_BSS_CTS_PROT: whether CTS protection is enabled (u8, 0 or 1)
- * @NL80211_ATTR_BSS_SHORT_PREAMBLE: whether short preamble is enabled
+ * @NL80211_ATTR_BSS_SHORT_PREAMBLE: whether i16 preamble is enabled
  *	(u8, 0 or 1)
- * @NL80211_ATTR_BSS_SHORT_SLOT_TIME: whether short slot time enabled
+ * @NL80211_ATTR_BSS_SHORT_SLOT_TIME: whether i16 slot time enabled
  *	(u8, 0 or 1)
  * @NL80211_ATTR_BSS_BASIC_RATES: basic rates, array of basic
  *	rates in format defined by IEEE 802.11 7.3.2.2 but without the length
@@ -1784,7 +1784,7 @@ enum nl80211_commands {
  *
  * @NL80211_ATTR_WIPHY_TX_POWER_SETTING: Transmit power setting type. See
  *      &enum nl80211_tx_power_setting for possible values.
- * @NL80211_ATTR_WIPHY_TX_POWER_LEVEL: Transmit power level in signed mBm units.
+ * @NL80211_ATTR_WIPHY_TX_POWER_LEVEL: Transmit power level in  mBm units.
  *      This is used in association with @NL80211_ATTR_WIPHY_TX_POWER_SETTING
  *      for non-automatic settings.
  *
@@ -1980,7 +1980,7 @@ enum nl80211_commands {
  *	the list. This needs to be used when the driver advertises the
  *	capability to timeout the stations.
  *
- * @NL80211_ATTR_RX_SIGNAL_DBM: signal strength in dBm (as a 32-bit int);
+ * @NL80211_ATTR_RX_SIGNAL_DBM: signal strength in dBm (as a 32-bit i32);
  *	this attribute is (depending on the driver capabilities) added to
  *	received frames indicated with %NL80211_CMD_FRAME.
  *
@@ -3137,7 +3137,7 @@ enum nl80211_iftype {
  * @__NL80211_STA_FLAG_INVALID: attribute number 0 is reserved
  * @NL80211_STA_FLAG_AUTHORIZED: station is authorized (802.1X)
  * @NL80211_STA_FLAG_SHORT_PREAMBLE: station is capable of receiving frames
- *	with short barker preamble
+ *	with i16 barker preamble
  * @NL80211_STA_FLAG_WME: station is WME/QoS capable
  * @NL80211_STA_FLAG_MFP: station uses management frame protection
  * @NL80211_STA_FLAG_AUTHENTICATED: station is authenticated
@@ -3208,7 +3208,7 @@ enum nl80211_he_gi {
 };
 
 /**
- * enum nl80211_he_ltf - HE long training field
+ * enum nl80211_he_ltf - HE i64 training field
  * @NL80211_RATE_INFO_HE_1xLTF: 3.2 usec
  * @NL80211_RATE_INFO_HE_2xLTF: 6.4 usec
  * @NL80211_RATE_INFO_HE_4xLTF: 12.8 usec
@@ -3313,9 +3313,9 @@ enum nl80211_rate_info {
  *
  * @__NL80211_STA_BSS_PARAM_INVALID: attribute number 0 is reserved
  * @NL80211_STA_BSS_PARAM_CTS_PROT: whether CTS protection is enabled (flag)
- * @NL80211_STA_BSS_PARAM_SHORT_PREAMBLE:  whether short preamble is enabled
+ * @NL80211_STA_BSS_PARAM_SHORT_PREAMBLE:  whether i16 preamble is enabled
  *	(flag)
- * @NL80211_STA_BSS_PARAM_SHORT_SLOT_TIME:  whether short slot time is enabled
+ * @NL80211_STA_BSS_PARAM_SHORT_SLOT_TIME:  whether i16 slot time is enabled
  *	(flag)
  * @NL80211_STA_BSS_PARAM_DTIM_PERIOD: DTIM period for beaconing (u8)
  * @NL80211_STA_BSS_PARAM_BEACON_INTERVAL: Beacon interval (u16)
@@ -3718,7 +3718,7 @@ enum nl80211_wmm_rule {
  *	(100 * dBm).
  * @NL80211_FREQUENCY_ATTR_DFS_STATE: current state for DFS
  *	(enum nl80211_dfs_state)
- * @NL80211_FREQUENCY_ATTR_DFS_TIME: time in miliseconds for how long
+ * @NL80211_FREQUENCY_ATTR_DFS_TIME: time in miliseconds for how i64
  *	this channel is in this DFS state.
  * @NL80211_FREQUENCY_ATTR_NO_HT40_MINUS: HT40- isn't possible with this
  *	channel as the control channel
@@ -5037,7 +5037,7 @@ enum nl80211_tid_config_attr {
  * @__NL80211_PKTPAT_INVALID: invalid number for nested attribute
  * @NL80211_PKTPAT_PATTERN: the pattern, values where the mask has
  *	a zero bit are ignored
- * @NL80211_PKTPAT_MASK: pattern mask, must be long enough to have
+ * @NL80211_PKTPAT_MASK: pattern mask, must be i64 enough to have
  *	a bit for each byte in the pattern. The lowest-order bit corresponds
  *	to the first byte of the pattern, but the bytes of the pattern are
  *	in a little-endian-like format, i.e. the 9th byte of the pattern

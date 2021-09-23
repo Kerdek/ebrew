@@ -14,9 +14,9 @@
 #define MPC_SOCKET_EGRESS  2
 
 struct atmmpc_ioc {
-        int dev_num;
+        i32 dev_num;
         __be32 ipaddr;              /* the IP address of the shortcut    */
-        int type;                     /* ingress or egress                 */
+        i32 type;                     /* ingress or egress                 */
 };
 
 typedef struct in_ctrl_info {

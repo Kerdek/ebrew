@@ -14,7 +14,7 @@
    set, as well as at least one value that does not correspond to any
    member of the extended character set.  */
 #ifndef __WINT_TYPE__
-# define __WINT_TYPE__ unsigned int
+# define __WINT_TYPE__ unsigned i32
 #endif
 
 typedef __WINT_TYPE__ wint_t;

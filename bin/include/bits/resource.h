@@ -200,12 +200,12 @@ __BEGIN_DECLS
 #ifdef __USE_GNU
 /* Modify and return resource limits of a process atomically.  */
 # ifndef __USE_FILE_OFFSET64
-extern int prlimit (__pid_t __pid, enum __rlimit_resource __resource,
+extern i32 prlimit (__pid_t __pid, enum __rlimit_resource __resource,
 		    const struct rlimit *__new_limit,
 		    struct rlimit *__old_limit) __THROW;
 # else
 #  ifdef __REDIRECT_NTH
-extern int __REDIRECT_NTH (prlimit, (__pid_t __pid,
+extern i32 __REDIRECT_NTH (prlimit, (__pid_t __pid,
 				     enum __rlimit_resource __resource,
 				     const struct rlimit *__new_limit,
 				     struct rlimit *__old_limit), prlimit64);
@@ -214,7 +214,7 @@ extern int __REDIRECT_NTH (prlimit, (__pid_t __pid,
 #  endif
 # endif
 # ifdef __USE_LARGEFILE64
-extern int prlimit64 (__pid_t __pid, enum __rlimit_resource __resource,
+extern i32 prlimit64 (__pid_t __pid, enum __rlimit_resource __resource,
 		      const struct rlimit64 *__new_limit,
 		      struct rlimit64 *__old_limit) __THROW;
 # endif

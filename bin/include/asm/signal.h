@@ -13,7 +13,7 @@ struct siginfo;
 /* Here we must cater to libcs that poke about in kernel headers.  */
 
 #define NSIG		32
-typedef unsigned long sigset_t;
+typedef unsigned i64 sigset_t;
 
 #endif /* __ASSEMBLY__ */
 
@@ -64,7 +64,7 @@ typedef unsigned long sigset_t;
  * SA_FLAGS values:
  *
  * SA_ONSTACK indicates that a registered stack_t will be used.
- * SA_RESTART flag to get restarting signals (which were the default long ago)
+ * SA_RESTART flag to get restarting signals (which were the default i64 ago)
  * SA_NOCLDSTOP flag to turn off SIGCHLD when children stop.
  * SA_RESETHAND clears the handler when the signal is delivered.
  * SA_NOCLDWAIT flag on SIGCHLD to inhibit zombies.
@@ -100,10 +100,10 @@ typedef unsigned long sigset_t;
 struct sigaction {
 	union {
 	  __sighandler_t _sa_handler;
-	  void (*_sa_sigaction)(int, struct siginfo *, void *);
+	  void (*_sa_sigaction)(i32, struct siginfo *, void *);
 	} _u;
 	sigset_t sa_mask;
-	unsigned long sa_flags;
+	unsigned i64 sa_flags;
 	void (*sa_restorer)(void);
 };
 
@@ -114,7 +114,7 @@ struct sigaction {
 
 struct sigaction {
 	__sighandler_t sa_handler;
-	unsigned long sa_flags;
+	unsigned i64 sa_flags;
 	__sigrestore_t sa_restorer;
 	sigset_t sa_mask;		/* mask last for extensibility */
 };
@@ -123,7 +123,7 @@ struct sigaction {
 
 typedef struct sigaltstack {
 	void *ss_sp;
-	int ss_flags;
+	i32 ss_flags;
 	size_t ss_size;
 } stack_t;
 

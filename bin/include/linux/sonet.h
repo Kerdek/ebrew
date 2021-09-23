@@ -19,7 +19,7 @@
     __HANDLE_ITEM(rx_cells);		/* cells received */
 
 struct sonet_stats {
-#define __HANDLE_ITEM(i) int i
+#define __HANDLE_ITEM(i) i32 i
 	__SONET_ITEMS
 #undef __HANDLE_ITEM
 } __attribute__ ((packed));
@@ -29,18 +29,18 @@ struct sonet_stats {
 					/* get statistics */
 #define SONET_GETSTATZ	_IOR('a',ATMIOC_PHYTYP+1,struct sonet_stats)
 					/* ... and zero counters */
-#define SONET_SETDIAG	_IOWR('a',ATMIOC_PHYTYP+2,int)
+#define SONET_SETDIAG	_IOWR('a',ATMIOC_PHYTYP+2,i32)
 					/* set error insertion */
-#define SONET_CLRDIAG	_IOWR('a',ATMIOC_PHYTYP+3,int)
+#define SONET_CLRDIAG	_IOWR('a',ATMIOC_PHYTYP+3,i32)
 					/* clear error insertion */
-#define SONET_GETDIAG	_IOR('a',ATMIOC_PHYTYP+4,int)
+#define SONET_GETDIAG	_IOR('a',ATMIOC_PHYTYP+4,i32)
 					/* query error insertion */
-#define SONET_SETFRAMING _IOW('a',ATMIOC_PHYTYP+5,int)
+#define SONET_SETFRAMING _IOW('a',ATMIOC_PHYTYP+5,i32)
 					/* set framing mode (SONET/SDH) */
-#define SONET_GETFRAMING _IOR('a',ATMIOC_PHYTYP+6,int)
+#define SONET_GETFRAMING _IOR('a',ATMIOC_PHYTYP+6,i32)
 					/* get framing mode */
 #define SONET_GETFRSENSE _IOR('a',ATMIOC_PHYTYP+7, \
-  unsigned char[SONET_FRSENSE_SIZE])	/* get framing sense information */
+  unsigned i8[SONET_FRSENSE_SIZE])	/* get framing sense information */
 
 #define SONET_INS_SBIP	  1		/* section BIP */
 #define SONET_INS_LBIP	  2		/* line BIP */

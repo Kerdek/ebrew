@@ -150,8 +150,8 @@ struct ip_vs_service_user {
 
 	/* virtual service options */
 	char			sched_name[IP_VS_SCHEDNAME_MAXLEN];
-	unsigned int		flags;		/* virtual service flags */
-	unsigned int		timeout;	/* persistent timeout in sec */
+	unsigned i32		flags;		/* virtual service flags */
+	unsigned i32		timeout;	/* persistent timeout in sec */
 	__be32			netmask;	/* persistent netmask */
 };
 
@@ -162,8 +162,8 @@ struct ip_vs_dest_user {
 	__be16			port;
 
 	/* real server options */
-	unsigned int		conn_flags;	/* connection flags */
-	int			weight;		/* destination weight */
+	unsigned i32		conn_flags;	/* connection flags */
+	i32			weight;		/* destination weight */
 
 	/* thresholds for active connections */
 	__u32		u_threshold;	/* upper threshold */
@@ -192,13 +192,13 @@ struct ip_vs_stats_user {
 /* The argument to IP_VS_SO_GET_INFO */
 struct ip_vs_getinfo {
 	/* version number */
-	unsigned int		version;
+	unsigned i32		version;
 
 	/* size of connection hash table */
-	unsigned int		size;
+	unsigned i32		size;
 
 	/* number of virtual services */
-	unsigned int		num_services;
+	unsigned i32		num_services;
 };
 
 
@@ -212,12 +212,12 @@ struct ip_vs_service_entry {
 
 	/* service options */
 	char			sched_name[IP_VS_SCHEDNAME_MAXLEN];
-	unsigned int		flags;          /* virtual service flags */
-	unsigned int		timeout;	/* persistent timeout */
+	unsigned i32		flags;          /* virtual service flags */
+	unsigned i32		timeout;	/* persistent timeout */
 	__be32			netmask;	/* persistent netmask */
 
 	/* number of real servers */
-	unsigned int		num_dests;
+	unsigned i32		num_dests;
 
 	/* statistics */
 	struct ip_vs_stats_user stats;
@@ -227,8 +227,8 @@ struct ip_vs_service_entry {
 struct ip_vs_dest_entry {
 	__be32			addr;		/* destination address */
 	__be16			port;
-	unsigned int		conn_flags;	/* connection flags */
-	int			weight;		/* destination weight */
+	unsigned i32		conn_flags;	/* connection flags */
+	i32			weight;		/* destination weight */
 
 	__u32		u_threshold;	/* upper threshold */
 	__u32		l_threshold;	/* lower threshold */
@@ -251,7 +251,7 @@ struct ip_vs_get_dests {
 	__u32		fwmark;		/* firwall mark of service */
 
 	/* number of real servers */
-	unsigned int		num_dests;
+	unsigned i32		num_dests;
 
 	/* the real servers */
 	struct ip_vs_dest_entry	entrytable[0];
@@ -261,7 +261,7 @@ struct ip_vs_get_dests {
 /* The argument to IP_VS_SO_GET_SERVICES */
 struct ip_vs_get_services {
 	/* number of virtual services */
-	unsigned int		num_services;
+	unsigned i32		num_services;
 
 	/* service table */
 	struct ip_vs_service_entry entrytable[0];
@@ -270,22 +270,22 @@ struct ip_vs_get_services {
 
 /* The argument to IP_VS_SO_GET_TIMEOUT */
 struct ip_vs_timeout_user {
-	int			tcp_timeout;
-	int			tcp_fin_timeout;
-	int			udp_timeout;
+	i32			tcp_timeout;
+	i32			tcp_fin_timeout;
+	i32			udp_timeout;
 };
 
 
 /* The argument to IP_VS_SO_GET_DAEMON */
 struct ip_vs_daemon_user {
 	/* sync daemon state (master/backup) */
-	int			state;
+	i32			state;
 
 	/* multicast interface name */
 	char			mcast_ifn[IP_VS_IFNAME_MAXLEN];
 
 	/* SyncID we belong to */
-	int			syncid;
+	i32			syncid;
 };
 
 /*

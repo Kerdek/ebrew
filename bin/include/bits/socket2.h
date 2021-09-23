@@ -20,18 +20,18 @@
 # error "Never include <bits/socket2.h> directly; use <sys/socket.h> instead."
 #endif
 
-extern ssize_t __recv_chk (int __fd, void *__buf, size_t __n, size_t __buflen,
-			   int __flags);
-extern ssize_t __REDIRECT (__recv_alias, (int __fd, void *__buf, size_t __n,
-					  int __flags), recv);
+extern ssize_t __recv_chk (i32 __fd, void *__buf, size_t __n, size_t __buflen,
+			   i32 __flags);
+extern ssize_t __REDIRECT (__recv_alias, (i32 __fd, void *__buf, size_t __n,
+					  i32 __flags), recv);
 extern ssize_t __REDIRECT (__recv_chk_warn,
-			   (int __fd, void *__buf, size_t __n, size_t __buflen,
-			    int __flags), __recv_chk)
+			   (i32 __fd, void *__buf, size_t __n, size_t __buflen,
+			    i32 __flags), __recv_chk)
      __warnattr ("recv called with bigger length than size of destination "
 		 "buffer");
 
 __fortify_function ssize_t
-recv (int __fd, void *__buf, size_t __n, int __flags)
+recv (i32 __fd, void *__buf, size_t __n, i32 __flags)
 {
   if (__bos0 (__buf) != (size_t) -1)
     {
@@ -44,24 +44,24 @@ recv (int __fd, void *__buf, size_t __n, int __flags)
   return __recv_alias (__fd, __buf, __n, __flags);
 }
 
-extern ssize_t __recvfrom_chk (int __fd, void *__restrict __buf, size_t __n,
-			       size_t __buflen, int __flags,
+extern ssize_t __recvfrom_chk (i32 __fd, void *__restrict __buf, size_t __n,
+			       size_t __buflen, i32 __flags,
 			       __SOCKADDR_ARG __addr,
 			       socklen_t *__restrict __addr_len);
 extern ssize_t __REDIRECT (__recvfrom_alias,
-			   (int __fd, void *__restrict __buf, size_t __n,
-			    int __flags, __SOCKADDR_ARG __addr,
+			   (i32 __fd, void *__restrict __buf, size_t __n,
+			    i32 __flags, __SOCKADDR_ARG __addr,
 			    socklen_t *__restrict __addr_len), recvfrom);
 extern ssize_t __REDIRECT (__recvfrom_chk_warn,
-			   (int __fd, void *__restrict __buf, size_t __n,
-			    size_t __buflen, int __flags,
+			   (i32 __fd, void *__restrict __buf, size_t __n,
+			    size_t __buflen, i32 __flags,
 			    __SOCKADDR_ARG __addr,
 			    socklen_t *__restrict __addr_len), __recvfrom_chk)
      __warnattr ("recvfrom called with bigger length than size of "
 		 "destination buffer");
 
 __fortify_function ssize_t
-recvfrom (int __fd, void *__restrict __buf, size_t __n, int __flags,
+recvfrom (i32 __fd, void *__restrict __buf, size_t __n, i32 __flags,
 	  __SOCKADDR_ARG __addr, socklen_t *__restrict __addr_len)
 {
   if (__bos0 (__buf) != (size_t) -1)

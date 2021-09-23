@@ -11,9 +11,9 @@
 
 typedef struct _cciss_pci_info_struct
 {
-	unsigned char 	bus;
-	unsigned char 	dev_fn;
-	unsigned short	domain;
+	unsigned i8 	bus;
+	unsigned i8 	dev_fn;
+	unsigned i16	domain;
 	__u32 		board_id;
 } cciss_pci_info_struct; 
 
@@ -58,8 +58,8 @@ typedef struct _BIG_IOCTL_Command_struct {
 
 typedef struct _LogvolInfo_struct{
 	__u32	LunID;
-	int	num_opens;  /* number of opens on the logical volume */
-	int	num_parts;  /* number of partitions configured on logvol */
+	i32	num_opens;  /* number of opens on the logical volume */
+	i32	num_parts;  /* number of partitions configured on logvol */
 } LogvolInfo_struct;
 
 #define CCISS_GETPCIINFO _IOR(CCISS_IOC_MAGIC, 1, cciss_pci_info_struct)
@@ -79,7 +79,7 @@ typedef struct _LogvolInfo_struct{
 #define CCISS_DEREGDISK	   _IO(CCISS_IOC_MAGIC, 12)
 
 /* no longer used... use REGNEWD instead */ 
-#define CCISS_REGNEWDISK  _IOW(CCISS_IOC_MAGIC, 13, int)
+#define CCISS_REGNEWDISK  _IOW(CCISS_IOC_MAGIC, 13, i32)
 
 #define CCISS_REGNEWD	   _IO(CCISS_IOC_MAGIC, 14)
 #define CCISS_RESCANDISK   _IO(CCISS_IOC_MAGIC, 16)

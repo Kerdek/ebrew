@@ -105,7 +105,7 @@ enum {
 #define TCP_MD5SIG		14	/* TCP MD5 Signature (RFC2385) */
 #define TCP_THIN_LINEAR_TIMEOUTS 16      /* Use linear timeouts for thin streams*/
 #define TCP_THIN_DUPACK         17      /* Fast retrans. after 1 dupack */
-#define TCP_USER_TIMEOUT	18	/* How long for loss retry before timeout */
+#define TCP_USER_TIMEOUT	18	/* How i64 for loss retry before timeout */
 #define TCP_REPAIR		19	/* TCP sock is under repair right now */
 #define TCP_REPAIR_QUEUE	20
 #define TCP_QUEUE_SEQ		21
@@ -328,7 +328,7 @@ struct tcp_md5sig {
 	__u8	tcpm_flags;				/* extension flags */
 	__u8	tcpm_prefixlen;				/* address prefix */
 	__u16	tcpm_keylen;				/* key length */
-	int	tcpm_ifindex;				/* device index for scope */
+	i32	tcpm_ifindex;				/* device index for scope */
 	__u8	tcpm_key[TCP_MD5SIG_MAXKEYLEN];		/* key (binary) */
 };
 

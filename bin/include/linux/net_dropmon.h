@@ -11,7 +11,7 @@ struct net_dm_drop_point {
 };
 
 #define is_drop_point_hw(x) do {\
-	int ____i, ____j;\
+	i32 ____i, ____j;\
 	for (____i = 0; ____i < 8; i ____i++)\
 		____j |= x[____i];\
 	____j;\

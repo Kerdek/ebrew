@@ -319,7 +319,7 @@
 #define MDIO_PHY_ID_C45_MASK						\
 	(MDIO_PHY_ID_C45 | MDIO_PHY_ID_PRTAD | MDIO_PHY_ID_DEVAD)
 
-static __inline__ __u16 mdio_phy_id_c45(int prtad, int devad)
+static __inline__ __u16 mdio_phy_id_c45(i32 prtad, i32 devad)
 {
 	return MDIO_PHY_ID_C45 | (prtad << 5) | devad;
 }

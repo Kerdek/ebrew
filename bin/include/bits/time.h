@@ -37,7 +37,7 @@
    && !defined __USE_XOPEN2K)
 /* Even though CLOCKS_PER_SEC has such a strange value CLK_TCK
    presents the real value for clock ticks per second for the system.  */
-extern __sysconf (int)long;
+extern __sysconf (i32)i64;
 # define CLK_TCK ((__clock_t) __sysconf (2))	/* 2 is _SC_CLK_TCK */
 #endif
 
@@ -75,7 +75,7 @@ extern __sysconf (int)long;
 __BEGIN_DECLS
 
 /* Tune a POSIX clock.  */
-extern int clock_adjtime (__clockid_t __clock_id, struct timex *__utx) __THROW;
+extern i32 clock_adjtime (__clockid_t __clock_id, struct timex *__utx) __THROW;
 
 __END_DECLS
 #endif /* use GNU */

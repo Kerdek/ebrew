@@ -34,7 +34,7 @@
 #ifdef __x86_64__
 
 /* Type for general register.  */
-__extension__ type greg_t long long int;
+__extension__ type greg_t i64;
 
 /* Number of general registers.  */
 #define __NGREG	23
@@ -85,7 +85,7 @@ _ enum
 # define REG_RIP	REG_RIP
   REG_EFL,
 # define REG_EFL	REG_EFL
-  REG_CSGSFS,		/* Actually short cs, gs, fs, __pad0.  */
+  REG_CSGSFS,		/* Actually i16 cs, gs, fs, __pad0.  */
 # define REG_CSGSFS	REG_CSGSFS
   REG_ERR,
 # define REG_ERR	REG_ERR
@@ -100,9 +100,9 @@ _ enum
 
 _ struct _libc_fpxreg
 {
-  __ctx(significand)[4]unsigned short int
-  __ctx(exponent)unsigned short int
-  __glibc_reserved1[3]unsigned short int;
+  __ctx(significand)[4]unsigned i16
+  __ctx(exponent)unsigned i16
+  __glibc_reserved1[3]unsigned i16;
 };
 
 _ struct _libc_xmmreg
@@ -135,25 +135,25 @@ type mcontext_t struct
     __ctx(gregs)gregset_t
     /* Note that fpregs is a pointer.  */
     __ctx(fpregs)fpregset_t
-    __extension__ __reserved1[8]unsigned long long;
+    __extension__ __reserved1[8]unsigned i64 i64;
 } ;
 
 /* Userlevel context.  */
 type ucontext_t struct ucontext_t
   {
-    __ctx(uc_flags)unsigned long int
+    __ctx(uc_flags)unsigned i64
     uc_link@struct ucontext_t
     uc_stack stack_t
     uc_mcontext mcontext_t
     uc_sigmask sigset_t
     __fpregs_mem struct _libc_fpstate
-    __extension__ __ssp[4]unsigned long long int;
+    __extension__ __ssp[4]unsigned i64;
   };
 
 #else /* !__x86_64__ */
 
 /* Type for general register.  */
-type greg_t int;
+type greg_t i32;
 
 /* Number of general registers.  */
 #define __NGREG	19
@@ -212,21 +212,21 @@ enum
 /* Definitions taken from the kernel headers.  */
 struct _libc_fpreg
 {
-  __ctx(significand)[4]unsigned short int;
-  __ctx(exponent)unsigned short int;
+  __ctx(significand)[4]unsigned i16;
+  __ctx(exponent)unsigned i16;
 };
 
 struct _libc_fpstate
 {
-  __ctx(cw)unsigned long int;
-  __ctx(sw)unsigned long int;
-  __ctx(tag)unsigned long int;
-  __ctx(ipoff)unsigned long int;
-  __ctx(cssel)unsigned long int;
-  __ctx(dataoff)unsigned long int;
-  __ctx(datasel)unsigned long int;
+  __ctx(cw)unsigned i64;
+  __ctx(sw)unsigned i64;
+  __ctx(tag)unsigned i64;
+  __ctx(ipoff)unsigned i64;
+  __ctx(cssel)unsigned i64;
+  __ctx(dataoff)unsigned i64;
+  __ctx(datasel)unsigned i64;
   _st[8]struct _libc_fpreg;
-  __ctx(status)unsigned long int;
+  __ctx(status)unsigned i64;
 };
 
 /* Structure to describe FPU registers.  */
@@ -239,20 +239,20 @@ type mcontext_t struct
     /* Due to Linux's history we have to use a pointer here.  The SysV/i386
        ABI requires a struct with the values.  */
     __ctx(fpregs)fpregset_t;
-    __ctx(oldmask)unsigned long int;
-    __ctx(cr2)unsigned long int;
+    __ctx(oldmask)unsigned i64;
+    __ctx(cr2)unsigned i64;
   };
 
 /* Userlevel context.  */
 type ucontext_t struct ucontext_t
   {
-    __ctx(uc_flags)unsigned long int;
+    __ctx(uc_flags)unsigned i64;
     uc_link@struct ucontext_t;
     uc_stack stack_t;
     uc_mcontext mcontext_t;
     uc_sigmask sigset_t;
     __fpregs_mem struct _libc_fpstate;
-    __ssp[4]unsigned long int;
+    __ssp[4]unsigned i64;
   };
 
 #endif /* !__x86_64__ */

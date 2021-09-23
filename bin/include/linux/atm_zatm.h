@@ -24,15 +24,15 @@
 						/* set pool parameters */
 
 struct zatm_pool_info {
-	int ref_count;			/* free buffer pool usage counters */
-	int low_water,high_water;	/* refill parameters */
-	int rqa_count,rqu_count;	/* queue condition counters */
-	int offset,next_off;		/* alignment optimizations: offset */
-	int next_cnt,next_thres;	/* repetition counter and threshold */
+	i32 ref_count;			/* free buffer pool usage counters */
+	i32 low_water,high_water;	/* refill parameters */
+	i32 rqa_count,rqu_count;	/* queue condition counters */
+	i32 offset,next_off;		/* alignment optimizations: offset */
+	i32 next_cnt,next_thres;	/* repetition counter and threshold */
 };
 
 struct zatm_pool_req {
-	int pool_num;			/* pool number */
+	i32 pool_num;			/* pool number */
 	struct zatm_pool_info info;	/* actual information */
 };
 

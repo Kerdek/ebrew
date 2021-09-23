@@ -51,8 +51,8 @@ __BEGIN_DECLS
    This is obsolete and should never be used.  */
 struct timezone
   {
-    int tz_minuteswest;		/* Minutes west of GMT.  */
-    int tz_dsttime;		/* Nonzero if DST is ever in effect.  */
+    i32 tz_minuteswest;		/* Minutes west of GMT.  */
+    i32 tz_dsttime;		/* Nonzero if DST is ever in effect.  */
   };
 #endif
 
@@ -63,7 +63,7 @@ struct timezone
    use localtime etc. instead.
    This function itself is semi-obsolete;
    most callers should use time or clock_gettime instead. */
-extern int gettimeofday (struct timeval *__restrict __tv,
+extern i32 gettimeofday (struct timeval *__restrict __tv,
 			 void *__restrict __tz) __THROW __nonnull ((1));
 
 #ifdef __USE_MISC
@@ -72,7 +72,7 @@ extern int gettimeofday (struct timeval *__restrict __tv,
    Setting the timezone in this way is obsolete, but we don't yet
    warn about it because it still has some uses for which there is
    no alternative.  */
-extern int settimeofday (const struct timeval *__tv,
+extern i32 settimeofday (const struct timeval *__tv,
 			 const struct timezone *__tz)
      __THROW;
 
@@ -80,7 +80,7 @@ extern int settimeofday (const struct timeval *__tv,
    If OLDDELTA is not NULL, it is filled in with the amount
    of time adjustment remaining to be done from the last `adjtime' call.
    This call is restricted to the super-user.  */
-extern int adjtime (const struct timeval *__delta,
+extern i32 adjtime (const struct timeval *__delta,
 		    struct timeval *__olddelta) __THROW;
 #endif
 
@@ -115,41 +115,41 @@ struct itimerval
    strict C++ rules prevent the automatic promotion.  */
 typedef enum __itimer_which __itimer_which_t;
 #else
-typedef int __itimer_which_t;
+typedef i32 __itimer_which_t;
 #endif
 
 /* Set *VALUE to the current setting of timer WHICH.
    Return 0 on success, -1 on errors.  */
-extern int getitimer (__itimer_which_t __which,
+extern i32 getitimer (__itimer_which_t __which,
 		      struct itimerval *__value) __THROW;
 
 /* Set the timer WHICH to *NEW.  If OLD is not NULL,
    set *OLD to the old value of timer WHICH.
    Returns 0 on success, -1 on errors.  */
-extern int setitimer (__itimer_which_t __which,
+extern i32 setitimer (__itimer_which_t __which,
 		      const struct itimerval *__restrict __new,
 		      struct itimerval *__restrict __old) __THROW;
 
 /* Change the access time of FILE to TVP[0] and the modification time of
    FILE to TVP[1].  If TVP is a null pointer, use the current time instead.
    Returns 0 on success, -1 on errors.  */
-extern int utimes (const char *__file, const struct timeval __tvp[2])
+extern i32 utimes (const char *__file, const struct timeval __tvp[2])
      __THROW __nonnull ((1));
 
 #ifdef __USE_MISC
 /* Same as `utimes', but does not follow symbolic links.  */
-extern int lutimes (const char *__file, const struct timeval __tvp[2])
+extern i32 lutimes (const char *__file, const struct timeval __tvp[2])
      __THROW __nonnull ((1));
 
 /* Same as `utimes', but takes an open file descriptor instead of a name.  */
-extern int futimes (int __fd, const struct timeval __tvp[2]) __THROW;
+extern i32 futimes (i32 __fd, const struct timeval __tvp[2]) __THROW;
 #endif
 
 #ifdef __USE_GNU
 /* Change the access time of FILE relative to FD to TVP[0] and the
    modification time of FILE to TVP[1].  If TVP is a null pointer, use
    the current time instead.  Returns 0 on success, -1 on errors.  */
-extern int futimesat (int __fd, const char *__file,
+extern i32 futimesat (i32 __fd, const char *__file,
 		      const struct timeval __tvp[2]) __THROW;
 #endif
 

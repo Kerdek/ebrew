@@ -79,20 +79,20 @@ __BEGIN_DECLS
 
 #ifdef __USE_GNU
 /* Clone current process.  */
-extern int clone (int (*__fn) (void *__arg), void *__child_stack,
-		  int __flags, void *__arg, ...) __THROW;
+extern i32 clone (i32 (*__fn) (void *__arg), void *__child_stack,
+		  i32 __flags, void *__arg, ...) __THROW;
 
 /* Unshare the specified resources.  */
-extern int unshare (int __flags) __THROW;
+extern i32 unshare (i32 __flags) __THROW;
 
 /* Get index of currently used CPU.  */
-extern int sched_getcpu (void) __THROW;
+extern i32 sched_getcpu (void) __THROW;
 
 /* Get currently used CPU and NUMA node.  */
-extern int getcpu (unsigned int *, unsigned int *) __THROW;
+extern i32 getcpu (unsigned i32 *, unsigned i32 *) __THROW;
 
 /* Switch process to namespace of type NSTYPE indicated by FD.  */
-extern int setns (int __fd, int __nstype) __THROW;
+extern i32 setns (i32 __fd, i32 __nstype) __THROW;
 #endif
 
 __END_DECLS

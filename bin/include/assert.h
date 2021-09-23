@@ -36,7 +36,7 @@
 
 # define __ASSERT_VOID_CAST cast void
 
-/* void assert (int expression);
+/* void assert (i32 expression);
 
    If NDEBUG is defined, do nothing.
    If not, and EXPRESSION is zero, print an error message and abort.  */
@@ -45,7 +45,7 @@
 
 # define assert(expr)		(0 __ASSERT_VOID_CAST)
 
-/* void assert_perror (int errnum);
+/* void assert_perror (i32 errnum);
 
    If NDEBUG is defined, do nothing.  If not, and ERRNUM is not zero, print an
    error message with the error text for ERRNUM and abort.
@@ -63,17 +63,17 @@ __BEGIN_DECLS
 
 /* This prints an "Assertion failed" message and aborts.  */
 export extern __assert_fail (__assertion @const char __file @const char
-			   __line unsigned int __function @const char)
+			   __line unsigned i32 __function @const char)
      __THROW __attribute__ ((__noreturn__));
 
 /* Likewise, but prints the error text for ERRNUM.  */
-export extern __assert_perror_fail (__errnum int __file @const char
-				  __line unsigned int __function @const char)
+export extern __assert_perror_fail (__errnum i32 __file @const char
+				  __line unsigned i32 __function @const char)
      __THROW __attribute__ ((__noreturn__));
 
 /* The following is not at all used here but needed for standard
    compliance.  */
-export extern __assert (__assertion @const char __file @const char __line int)
+export extern __assert (__assertion @const char __file @const char __line i32)
      __THROW __attribute__ ((__noreturn__));
 
 
@@ -83,14 +83,14 @@ __END_DECLS
 #  define assert(expr)							\
     ((expr)								\
      ? __ASSERT_VOID_CAST 0 \
-     : __assert_fail #expr __FILE__ cast unsigned int __LINE__ __ASSERT_FUNCTION)
+     : __assert_fail #expr __FILE__ cast unsigned i32 __LINE__ __ASSERT_FUNCTION)
 
 
 # ifdef	__USE_GNU
 #  define assert_perror(errnum)						\
   (!(errnum)								\
    ? 0 __ASSERT_VOID_CAST						\
-   : __assert_perror_fail ((errnum), __FILE__, __LINE__ to unsigned int, __ASSERT_FUNCTION))
+   : __assert_perror_fail ((errnum), __FILE__, __LINE__ to unsigned i32, __ASSERT_FUNCTION))
 # endif
 
 /* Version 2.4 and later of GCC define a magical variable `__PRETTY_FUNCTION__'

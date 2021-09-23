@@ -38,8 +38,8 @@ struct ebt_mac_wormhash_tuple {
 };
 
 struct ebt_mac_wormhash {
-	int table[257];
-	int poolsize;
+	i32 table[257];
+	i32 poolsize;
 	struct ebt_mac_wormhash_tuple pool[0];
 };
 
@@ -47,9 +47,9 @@ struct ebt_mac_wormhash {
 		+ (x)->poolsize * sizeof(struct ebt_mac_wormhash_tuple) : 0)
 
 struct ebt_among_info {
-	int wh_dst_ofs;
-	int wh_src_ofs;
-	int bitmask;
+	i32 wh_dst_ofs;
+	i32 wh_src_ofs;
+	i32 bitmask;
 };
 
 #define EBT_AMONG_DST_NEG 0x1

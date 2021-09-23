@@ -12,8 +12,8 @@
 #define SIOCSBPQETHADDR		(SIOCDEVPRIVATE+1)
  
 struct bpq_ethaddr {
-	unsigned char destination[ETH_ALEN];
-	unsigned char accept[ETH_ALEN];
+	unsigned i8 destination[ETH_ALEN];
+	unsigned i8 accept[ETH_ALEN];
 };
 
 /* 
@@ -26,15 +26,15 @@ struct bpq_ethaddr {
 #define SIOCSBPQETHPARAM	0x5001  /* set */
 
 struct bpq_req  {
-    int cmd;
-    int speed;			/* unused */
-    int clockmode;		/* unused */
-    int txdelay;
-    unsigned char persist;	/* unused */
-    int slotime;		/* unused */
-    int squeldelay;
-    int dmachan;		/* unused */
-    int irq;			/* unused */
+    i32 cmd;
+    i32 speed;			/* unused */
+    i32 clockmode;		/* unused */
+    i32 txdelay;
+    unsigned i8 persist;	/* unused */
+    i32 slotime;		/* unused */
+    i32 squeldelay;
+    i32 dmachan;		/* unused */
+    i32 irq;			/* unused */
 };
 
 #endif

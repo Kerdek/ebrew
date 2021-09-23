@@ -195,7 +195,7 @@ struct media_entity_desc {
 			__u32 major;
 			__u32 minor;
 		} fb;
-		int dvb;
+		i32 dvb;
 
 		/* Sub-device specifications */
 		/* Nothing needed yet */
@@ -355,7 +355,7 @@ struct media_v2_topology {
 #define MEDIA_IOC_ENUM_LINKS	_IOWR('|', 0x02, struct media_links_enum)
 #define MEDIA_IOC_SETUP_LINK	_IOWR('|', 0x03, struct media_link_desc)
 #define MEDIA_IOC_G_TOPOLOGY	_IOWR('|', 0x04, struct media_v2_topology)
-#define MEDIA_IOC_REQUEST_ALLOC	_IOR ('|', 0x05, int)
+#define MEDIA_IOC_REQUEST_ALLOC	_IOR ('|', 0x05, i32)
 
 /*
  * These ioctls are called on the request file descriptor as returned

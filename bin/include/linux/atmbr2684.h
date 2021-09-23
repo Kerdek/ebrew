@@ -54,9 +54,9 @@
  */
 struct atm_newif_br2684 {
 	atm_backend_t backend_num;	/* ATM_BACKEND_BR2684 */
-	int media;		/* BR2684_MEDIA_*, flags in upper bits */
+	i32 media;		/* BR2684_MEDIA_*, flags in upper bits */
 	char ifname[IFNAMSIZ];
-	int mtu;
+	i32 mtu;
 };
 
 /*
@@ -67,10 +67,10 @@ struct atm_newif_br2684 {
 #define BR2684_FIND_BYNUM	(1)
 #define BR2684_FIND_BYIFNAME	(2)
 struct br2684_if_spec {
-	int method;		/* BR2684_FIND_* */
+	i32 method;		/* BR2684_FIND_* */
 	union {
 		char ifname[IFNAMSIZ];
-		int devnum;
+		i32 devnum;
 	} spec;
 };
 
@@ -82,14 +82,14 @@ struct br2684_if_spec {
 struct atm_backend_br2684 {
 	atm_backend_t backend_num;	/* ATM_BACKEND_BR2684 */
 	struct br2684_if_spec ifspec;
-	int fcs_in;		/* BR2684_FCSIN_* */
-	int fcs_out;		/* BR2684_FCSOUT_* */
-	int fcs_auto;		/* 1: fcs_{in,out} disabled if no FCS rx'ed */
-	int encaps;		/* BR2684_ENCAPS_* */
-	int has_vpiid;		/* 1: use vpn_id - Unsupported */
+	i32 fcs_in;		/* BR2684_FCSIN_* */
+	i32 fcs_out;		/* BR2684_FCSOUT_* */
+	i32 fcs_auto;		/* 1: fcs_{in,out} disabled if no FCS rx'ed */
+	i32 encaps;		/* BR2684_ENCAPS_* */
+	i32 has_vpiid;		/* 1: use vpn_id - Unsupported */
 	__u8 vpn_id[7];
-	int send_padding;	/* unsupported */
-	int min_size;		/* we will pad smaller packets than this */
+	i32 send_padding;	/* unsupported */
+	i32 min_size;		/* we will pad smaller packets than this */
 };
 
 /*

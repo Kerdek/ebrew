@@ -86,7 +86,7 @@ struct arc_eth_encap {
 
 struct arc_cap {
 	__u8 proto;
-	__u8 cookie[sizeof(int)];
+	__u8 cookie[sizeof(i32)];
 				/* Actually NOT sent over the network */
 	union {
 		__u8 ack;

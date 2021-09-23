@@ -23,15 +23,15 @@
 #define __FD_SETSIZE	1024
 
 typedef struct {
-	unsigned long fds_bits[__FD_SETSIZE / (8 * sizeof(long))];
+	unsigned i64 fds_bits[__FD_SETSIZE / (8 * sizeof(i64))];
 } __kernel_fd_set;
 
 /* Type of a signal handler.  */
-typedef void (*__kernel_sighandler_t)(int);
+typedef void (*__kernel_sighandler_t)(i32);
 
 /* Type of a SYSV IPC key.  */
-typedef int __kernel_key_t;
-typedef int __kernel_mqd_t;
+typedef i32 __kernel_key_t;
+typedef i32 __kernel_mqd_t;
 
 #include <asm/posix_types.h>
 

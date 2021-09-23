@@ -34,8 +34,8 @@
 __BEGIN_DECLS
 
 /* The error code set by various library functions.  */
-export extern __errno_location(void)@int __THROW __attribute_const__;
-inline errno(void) int = (__errno_location)@;;
+export extern __errno_location(void)@i32 __THROW __attribute_const__;
+inline errno(void) i32 = (__errno_location)@;;
 
 # ifdef __USE_GNU
 

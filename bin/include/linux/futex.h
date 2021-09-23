@@ -48,7 +48,7 @@
 
 /*
  * Per-lock list entry - embedded in user-space locks, somewhere close
- * to the futex field. (Note: user-space uses a double-linked list to
+ * to the futex field. (Note: user-space uses a f64-linked list to
  * achieve O(1) list add and remove, but the kernel only needs to know
  * about the forward link)
  *
@@ -79,7 +79,7 @@ struct robust_list_head {
 	 * we keep userspace flexible, to freely shape its data-structure,
 	 * without hardcoding any particular offset into the kernel:
 	 */
-	long futex_offset;
+	i64 futex_offset;
 
 	/*
 	 * The death of the thread may race with userspace setting
@@ -125,11 +125,11 @@ struct robust_list_head {
 #define FUTEX_BITSET_MATCH_ANY	0xffffffff
 
 
-#define FUTEX_OP_SET		0	/* *(int *)UADDR2 = OPARG; */
-#define FUTEX_OP_ADD		1	/* *(int *)UADDR2 += OPARG; */
-#define FUTEX_OP_OR		2	/* *(int *)UADDR2 |= OPARG; */
-#define FUTEX_OP_ANDN		3	/* *(int *)UADDR2 &= ~OPARG; */
-#define FUTEX_OP_XOR		4	/* *(int *)UADDR2 ^= OPARG; */
+#define FUTEX_OP_SET		0	/* *(i32 *)UADDR2 = OPARG; */
+#define FUTEX_OP_ADD		1	/* *(i32 *)UADDR2 += OPARG; */
+#define FUTEX_OP_OR		2	/* *(i32 *)UADDR2 |= OPARG; */
+#define FUTEX_OP_ANDN		3	/* *(i32 *)UADDR2 &= ~OPARG; */
+#define FUTEX_OP_XOR		4	/* *(i32 *)UADDR2 ^= OPARG; */
 
 #define FUTEX_OP_OPARG_SHIFT	8	/* Use (1 << OPARG) instead of OPARG.  */
 
@@ -141,8 +141,8 @@ struct robust_list_head {
 #define FUTEX_OP_CMP_GE		5	/* if (oldval >= CMPARG) wake */
 
 /* FUTEX_WAKE_OP will perform atomically
-   int oldval = *(int *)UADDR2;
-   *(int *)UADDR2 = oldval OP OPARG;
+   i32 oldval = *(i32 *)UADDR2;
+   *(i32 *)UADDR2 = oldval OP OPARG;
    if (oldval CMP CMPARG)
      wake UADDR2;  */
 

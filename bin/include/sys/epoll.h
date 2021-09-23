@@ -75,14 +75,14 @@ enum EPOLL_EVENTS
 typedef union epoll_data
 {
   void *ptr;
-  int fd;
-  uint32_t u32;
-  uint64_t u64;
+  i32 fd;
+  unsigned i32 u32;
+  unsigned i64 u64;
 } epoll_data_t;
 
 struct epoll_event
 {
-  uint32_t events;	/* Epoll events */
+  unsigned i32 events;	/* Epoll events */
   epoll_data_t data;	/* User data variable */
 } __EPOLL_PACKED;
 
@@ -93,11 +93,11 @@ __BEGIN_DECLS
    The "size" parameter is a hint specifying the number of file
    descriptors to be associated with the new instance.  The fd
    returned by epoll_create() should be closed with close().  */
-extern int epoll_create (int __size) __THROW;
+extern i32 epoll_create (i32 __size) __THROW;
 
 /* Same as epoll_create but with an FLAGS parameter.  The unused SIZE
    parameter has been dropped.  */
-extern int epoll_create1 (int __flags) __THROW;
+extern i32 epoll_create1 (i32 __flags) __THROW;
 
 
 /* Manipulate an epoll instance "epfd". Returns 0 in case of success,
@@ -106,7 +106,7 @@ extern int epoll_create1 (int __flags) __THROW;
    constants defined above. The "fd" parameter is the target of the
    operation. The "event" parameter describes which events the caller
    is interested in and any associated user data.  */
-extern int epoll_ctl (int __epfd, int __op, int __fd,
+extern i32 epoll_ctl (i32 __epfd, i32 __op, i32 __fd,
 		      struct epoll_event *__event) __THROW;
 
 
@@ -120,8 +120,8 @@ extern int epoll_ctl (int __epfd, int __op, int __fd,
 
    This function is a cancellation point and therefore not marked with
    __THROW.  */
-extern int epoll_wait (int __epfd, struct epoll_event *__events,
-		       int __maxevents, int __timeout);
+extern i32 epoll_wait (i32 __epfd, struct epoll_event *__events,
+		       i32 __maxevents, i32 __timeout);
 
 
 /* Same as epoll_wait, but the thread's signal mask is temporarily
@@ -129,8 +129,8 @@ extern int epoll_wait (int __epfd, struct epoll_event *__events,
 
    This function is a cancellation point and therefore not marked with
    __THROW.  */
-extern int epoll_pwait (int __epfd, struct epoll_event *__events,
-			int __maxevents, int __timeout,
+extern i32 epoll_pwait (i32 __epfd, struct epoll_event *__events,
+			i32 __maxevents, i32 __timeout,
 			const __sigset_t *__ss);
 
 __END_DECLS

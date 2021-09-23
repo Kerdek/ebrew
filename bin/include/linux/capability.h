@@ -38,7 +38,7 @@
 
 typedef struct __user_cap_header_struct {
 	__u32 version;
-	int pid;
+	i32 pid;
 } *cap_user_header_t;
 
 typedef struct __user_cap_data_struct {

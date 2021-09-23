@@ -27,10 +27,10 @@
 /* Structure describing an inotify event.  */
 struct inotify_event
 {
-  int wd;		/* Watch descriptor.  */
-  uint32_t mask;	/* Watch mask.  */
-  uint32_t cookie;	/* Cookie to synchronize two events.  */
-  uint32_t len;		/* Length (including NULs) of name.  */
+  i32 wd;		/* Watch descriptor.  */
+  unsigned i32 mask;	/* Watch mask.  */
+  unsigned i32 cookie;	/* Cookie to synchronize two events.  */
+  unsigned i32 len;		/* Length (including NULs) of name.  */
   char name __flexarr;	/* Name.  */
 };
 
@@ -82,18 +82,18 @@ struct inotify_event
 __BEGIN_DECLS
 
 /* Create and initialize inotify instance.  */
-extern int inotify_init (void) __THROW;
+extern i32 inotify_init (void) __THROW;
 
 /* Create and initialize inotify instance.  */
-extern int inotify_init1 (int __flags) __THROW;
+extern i32 inotify_init1 (i32 __flags) __THROW;
 
 /* Add watch of object NAME to inotify instance FD.  Notify about
    events specified by MASK.  */
-extern int inotify_add_watch (int __fd, const char *__name, uint32_t __mask)
+extern i32 inotify_add_watch (i32 __fd, const char *__name, unsigned i32 __mask)
   __THROW;
 
 /* Remove the watch specified by WD from the inotify instance FD.  */
-extern int inotify_rm_watch (int __fd, int __wd) __THROW;
+extern i32 inotify_rm_watch (i32 __fd, i32 __wd) __THROW;
 
 __END_DECLS
 

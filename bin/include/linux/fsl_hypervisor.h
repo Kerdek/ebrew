@@ -119,7 +119,7 @@ struct fsl_hv_ioctl_stop {
  * @remote_addr: guest physical address of a buffer in the
  *           remote partition
  * @count: the number of bytes to copy.  Both the local and remote
- *         buffers must be at least 'count' bytes long
+ *         buffers must be at least 'count' bytes i64
  *
  * Used by FSL_HV_IOCTL_MEMCPY
  *

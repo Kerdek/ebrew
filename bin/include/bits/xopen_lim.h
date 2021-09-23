@@ -94,7 +94,7 @@
 #define NZERO		20
 
 
-/* Number of bits in a word of type `int'.  */
+/* Number of bits in a word of type `i32'.  */
 #ifdef INT_MAX
 # if INT_MAX == 32767
 #  define WORD_BIT	16
@@ -121,7 +121,7 @@
 # define WORD_BIT	32
 #endif
 
-/* Number of bits in a word of type `long int'.  */
+/* Number of bits in a word of type `i64'.  */
 #ifdef LONG_MAX
 # if LONG_MAX == 2147483647
 #  define LONG_BIT	32

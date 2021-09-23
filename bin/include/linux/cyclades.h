@@ -13,7 +13,7 @@
  *port is throttled or not
  *
  *Revision 3.1  2000/04/19 18:52:52  ivan
- *converted address fields to unsigned long and added fields for physical
+ *converted address fields to unsigned i64 and added fields for physical
  *addresses on cyclades_card structure;
  *
  *Revision 3.0  1998/11/02 14:20:59  ivan
@@ -71,10 +71,10 @@
 #include <linux/types.h>
 
 struct cyclades_monitor {
-        unsigned long           int_count;
-        unsigned long           char_count;
-        unsigned long           char_max;
-        unsigned long           char_last;
+        unsigned i64           int_count;
+        unsigned i64           char_count;
+        unsigned i64           char_max;
+        unsigned i64           char_last;
 };
 
 /*
@@ -86,11 +86,11 @@ struct cyclades_idle_stats {
     __kernel_old_time_t in_use;	/* Time device has been in use (secs) */
     __kernel_old_time_t recv_idle; /* Time since last char received (secs) */
     __kernel_old_time_t xmit_idle; /* Time since last char transmitted (secs) */
-    unsigned long  recv_bytes;	/* Bytes received */
-    unsigned long  xmit_bytes;	/* Bytes transmitted */
-    unsigned long  overruns;	/* Input overruns */
-    unsigned long  frame_errs;	/* Input framing errors */
-    unsigned long  parity_errs;	/* Input parity errors */
+    unsigned i64  recv_bytes;	/* Bytes received */
+    unsigned i64  xmit_bytes;	/* Bytes transmitted */
+    unsigned i64  overruns;	/* Input overruns */
+    unsigned i64  frame_errs;	/* Input framing errors */
+    unsigned i64  parity_errs;	/* Input parity errors */
 };
 
 #define CYCLADES_MAGIC  0x4359
@@ -133,12 +133,12 @@ struct cyclades_idle_stats {
 
 #define CYZ_BOOT_NWORDS 0x100
 struct CYZ_BOOT_CTRL {
-        unsigned short  nboard;
-        int             status[MAX_BOARD];
-        int             nchannel[MAX_BOARD];
-        int             fw_rev[MAX_BOARD];
-        unsigned long   offset;
-        unsigned long   data[CYZ_BOOT_NWORDS];
+        unsigned i16  nboard;
+        i32             status[MAX_BOARD];
+        i32             nchannel[MAX_BOARD];
+        i32             fw_rev[MAX_BOARD];
+        unsigned i64   offset;
+        unsigned i64   data[CYZ_BOOT_NWORDS];
 };
 
 
@@ -470,11 +470,11 @@ struct BOARD_CTRL {
 #define QUEUE_SIZE	(10*MAX_CHAN)
 
 struct	INT_QUEUE {
-	unsigned char	intr_code[QUEUE_SIZE];
-	unsigned long	channel[QUEUE_SIZE];
-	unsigned long	param[QUEUE_SIZE];
-	unsigned long	put;
-	unsigned long	get;
+	unsigned i8	intr_code[QUEUE_SIZE];
+	unsigned i64	channel[QUEUE_SIZE];
+	unsigned i64	param[QUEUE_SIZE];
+	unsigned i64	put;
+	unsigned i64	get;
 };
 
 /*

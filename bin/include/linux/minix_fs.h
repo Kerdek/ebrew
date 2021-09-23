@@ -44,7 +44,7 @@ struct minix_inode {
 
 /*
  * The new minix inode has all the time entries, as well as
- * long block numbers and a third indirect block (7+1+1+1
+ * i64 block numbers and a third indirect block (7+1+1+1
  * instead of 7+1+1). Also, some previously 8-bit values are
  * now 16-bit. The inode is now 64 bytes instead of 32.
  */

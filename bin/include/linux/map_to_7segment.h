@@ -73,10 +73,10 @@
 #define BIT_SEG7_RESERVED	7
 
 struct seg7_conversion_map {
-	unsigned char	table[128];
+	unsigned i8	table[128];
 };
 
-static __inline__ int map_to_seg7(struct seg7_conversion_map *map, int c)
+static __inline__ i32 map_to_seg7(struct seg7_conversion_map *map, i32 c)
 {
 	return c >= 0 && c < sizeof(map->table) ? map->table[c] : -EINVAL;
 }

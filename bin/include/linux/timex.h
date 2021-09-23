@@ -62,12 +62,12 @@
  * to discipline kernel clock oscillator
  */
 struct timex {
-	unsigned int modes;	/* mode selector */
+	unsigned i32 modes;	/* mode selector */
 	__kernel_long_t offset;	/* time offset (usec) */
 	__kernel_long_t freq;	/* frequency offset (scaled ppm) */
 	__kernel_long_t maxerror;/* maximum error (usec) */
 	__kernel_long_t esterror;/* estimated error (usec) */
-	int status;		/* clock command/status */
+	i32 status;		/* clock command/status */
 	__kernel_long_t constant;/* pll time constant */
 	__kernel_long_t precision;/* clock precision (usec) (read only) */
 	__kernel_long_t tolerance;/* clock frequency tolerance (ppm)
@@ -78,57 +78,57 @@ struct timex {
 
 	__kernel_long_t ppsfreq;/* pps frequency (scaled ppm) (ro) */
 	__kernel_long_t jitter; /* pps jitter (us) (ro) */
-	int shift;              /* interval duration (s) (shift) (ro) */
+	i32 shift;              /* interval duration (s) (shift) (ro) */
 	__kernel_long_t stabil;            /* pps stability (scaled ppm) (ro) */
 	__kernel_long_t jitcnt; /* jitter limit exceeded (ro) */
 	__kernel_long_t calcnt; /* calibration intervals (ro) */
 	__kernel_long_t errcnt; /* calibration errors (ro) */
 	__kernel_long_t stbcnt; /* stability limit exceeded (ro) */
 
-	int tai;		/* TAI offset (ro) */
+	i32 tai;		/* TAI offset (ro) */
 
-	int  :32; int  :32; int  :32; int  :32;
-	int  :32; int  :32; int  :32; int  :32;
-	int  :32; int  :32; int  :32;
+	i32  :32; i32  :32; i32  :32; i32  :32;
+	i32  :32; i32  :32; i32  :32; i32  :32;
+	i32  :32; i32  :32; i32  :32;
 };
 
 struct __kernel_timex_timeval {
 	__kernel_time64_t       tv_sec;
-	long long		tv_usec;
+	i64		tv_usec;
 };
 
 struct __kernel_timex {
-	unsigned int modes;	/* mode selector */
-	int :32;            /* pad */
-	long long offset;	/* time offset (usec) */
-	long long freq;	/* frequency offset (scaled ppm) */
-	long long maxerror;/* maximum error (usec) */
-	long long esterror;/* estimated error (usec) */
-	int status;		/* clock command/status */
-	int :32;            /* pad */
-	long long constant;/* pll time constant */
-	long long precision;/* clock precision (usec) (read only) */
-	long long tolerance;/* clock frequency tolerance (ppm)
+	unsigned i32 modes;	/* mode selector */
+	i32 :32;            /* pad */
+	i64 offset;	/* time offset (usec) */
+	i64 freq;	/* frequency offset (scaled ppm) */
+	i64 maxerror;/* maximum error (usec) */
+	i64 esterror;/* estimated error (usec) */
+	i32 status;		/* clock command/status */
+	i32 :32;            /* pad */
+	i64 constant;/* pll time constant */
+	i64 precision;/* clock precision (usec) (read only) */
+	i64 tolerance;/* clock frequency tolerance (ppm)
 				   * (read only)
 				   */
 	struct __kernel_timex_timeval time;	/* (read only, except for ADJ_SETOFFSET) */
-	long long tick;	/* (modified) usecs between clock ticks */
+	i64 tick;	/* (modified) usecs between clock ticks */
 
-	long long ppsfreq;/* pps frequency (scaled ppm) (ro) */
-	long long jitter; /* pps jitter (us) (ro) */
-	int shift;              /* interval duration (s) (shift) (ro) */
-	int :32;            /* pad */
-	long long stabil;            /* pps stability (scaled ppm) (ro) */
-	long long jitcnt; /* jitter limit exceeded (ro) */
-	long long calcnt; /* calibration intervals (ro) */
-	long long errcnt; /* calibration errors (ro) */
-	long long stbcnt; /* stability limit exceeded (ro) */
+	i64 ppsfreq;/* pps frequency (scaled ppm) (ro) */
+	i64 jitter; /* pps jitter (us) (ro) */
+	i32 shift;              /* interval duration (s) (shift) (ro) */
+	i32 :32;            /* pad */
+	i64 stabil;            /* pps stability (scaled ppm) (ro) */
+	i64 jitcnt; /* jitter limit exceeded (ro) */
+	i64 calcnt; /* calibration intervals (ro) */
+	i64 errcnt; /* calibration errors (ro) */
+	i64 stbcnt; /* stability limit exceeded (ro) */
 
-	int tai;		/* TAI offset (ro) */
+	i32 tai;		/* TAI offset (ro) */
 
-	int  :32; int  :32; int  :32; int  :32;
-	int  :32; int  :32; int  :32; int  :32;
-	int  :32; int  :32; int  :32;
+	i32  :32; i32  :32; i32  :32; i32  :32;
+	i32  :32; i32  :32; i32  :32; i32  :32;
+	i32  :32; i32  :32; i32  :32;
 };
 
 /*

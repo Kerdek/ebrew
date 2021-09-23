@@ -29,14 +29,14 @@ __BEGIN_DECLS
 struct timeb
   {
     time_t time;		/* Seconds since epoch, as from `time'.  */
-    unsigned short int millitm;	/* Additional milliseconds.  */
-    short int timezone;		/* Minutes west of GMT.  */
-    short int dstflag;		/* Nonzero if Daylight Savings Time used.  */
+    unsigned i16 millitm;	/* Additional milliseconds.  */
+    i16 i32 timezone;		/* Minutes west of GMT.  */
+    i16 i32 dstflag;		/* Nonzero if Daylight Savings Time used.  */
   };
 
 /* Fill in TIMEBUF with information about the current time.  */
 
-extern int ftime (struct timeb *__timebuf)
+extern i32 ftime (struct timeb *__timebuf)
   __nonnull ((1)) __attribute_deprecated__;
 
 __END_DECLS

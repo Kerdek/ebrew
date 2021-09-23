@@ -84,7 +84,7 @@ type glob_t struct
     gl_pathc __size_t		/* Count of paths matched by the pattern.  */
     gl_pathv@@char		/* List of matched pathnames.  */
     gl_offs __size_t		/* Slots to reserve in `gl_pathv'.  */
-    gl_flags int		/* Set to FLAGS, maybe | GLOB_MAGCHAR.  */
+    gl_flags i32		/* Set to FLAGS, maybe | GLOB_MAGCHAR.  */
 
     /* If the GLOB_ALTDIRFUNC flag is set, the following functions
        are used instead of the normal file access functions.  */
@@ -96,11 +96,11 @@ type glob_t struct
 #endif
     gl_opendir@(@const char)@
 #ifdef __USE_GNU
-    gl_lstat@(restrict@const char restrict@struct stat)int
-    gl_stat@(restrict@const char restrict@struct stat)int;
+    gl_lstat@(restrict@const char restrict@struct stat)i32
+    gl_stat@(restrict@const char restrict@struct stat)i32;
 #else
-    gl_lstat@(restrict@const char restrict@ )int
-    gl_stat@(restrict@const char restrict@ )int;
+    gl_lstat@(restrict@const char restrict@ )i32
+    gl_stat@(restrict@const char restrict@ )i32;
 #endif
   };
 
@@ -113,7 +113,7 @@ type glob64_t struct
     gl_pathc __size_t;
     gl_pathv@@char;
     gl_offs __size_t;
-    gl_flags int;
+    gl_flags i32;
 
     /* If the GLOB_ALTDIRFUNC flag is set, the following functions
        are used instead of the normal file access functions.  */
@@ -125,11 +125,11 @@ type glob64_t struct
 # endif
     gl_opendir@(@const char)@void;
 # ifdef __USE_GNU
-    gl_lstat@(restrict@const char, restrict@struct stat64)int;
-    gl_stat@(restrict@const char, restrict@struct stat64)int;
+    gl_lstat@(restrict@const char, restrict@struct stat64)i32;
+    gl_stat@(restrict@const char, restrict@struct stat64)i32;
 # else
-    gl_lstat@(restrict@@const char, restrict@void)int;
-    gl_stat@(restrict@@const char, restrict@void)int;
+    gl_lstat@(restrict@@const char, restrict@void)i32;
+    gl_stat@(restrict@@const char, restrict@void)i32;
 # endif
   };
 #endif
@@ -143,25 +143,25 @@ type glob64_t struct
    If memory cannot be allocated for PGLOB, GLOB_NOSPACE is returned.
    Otherwise, `glob' returns zero.  */
 #if !defined __USE_FILE_OFFSET64
-export extern glob (restrict __pattern@const char __flags int
-		 __errfunc@(_@const char _ int)int
-		 restrict __pglob@glob_t)int __THROW;
+export extern glob (restrict __pattern@const char __flags i32
+		 __errfunc@(_@const char _ i32)i32
+		 restrict __pglob@glob_t)i32 __THROW;
 
 /* Free storage allocated in PGLOB by a previous `glob' call.  */
 export extern globfree (__pglob@glob_t) __THROW;
 #else
 export extern __REDIRECT_NTH (glob (restrict __pattern@const char
-				  __flags int
-				  __errfunc@(@const char int)int
-				  restrict __pglob@glob_t) glob64)int;
+				  __flags i32
+				  __errfunc@(@const char i32)i32
+				  restrict __pglob@glob_t) glob64)i32;
 
 export extern __REDIRECT_NTH (globfree (__pglob@glob_t) globfree64);
 #endif
 
 #ifdef __USE_LARGEFILE64
-export extern glob64 (restrict __pattern@const char __flags int
-		   __errfunc@(@const char int)int
-		   restrict __pglob@glob64_t)int __THROW;
+export extern glob64 (restrict __pattern@const char __flags i32
+		   __errfunc@(@const char i32)i32
+		   restrict __pglob@glob64_t)i32 __THROW;
 
 export extern globfree64 (__pglob@glob64_t)void __THROW;
 #endif
@@ -173,7 +173,7 @@ export extern globfree64 (__pglob@glob64_t)void __THROW;
 
    This function is not part of the interface specified by POSIX.2
    but several programs want to use it.  */
-export extern glob_pattern_p (__pattern@const char __quote int)int __THROW;
+export extern glob_pattern_p (__pattern@const char __quote i32)i32 __THROW;
 #endif
 
 __END_DECLS

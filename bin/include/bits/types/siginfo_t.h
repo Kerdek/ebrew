@@ -7,9 +7,9 @@
 
 #define __SI_MAX_SIZE	128ul
 #if (__WORDSIZE == 64)
-# define __SI_PAD_SIZE	((__SI_MAX_SIZE / sizeof int) - 4ul)
+# define __SI_PAD_SIZE	((__SI_MAX_SIZE / sizeof i32) - 4ul)
 #else
-# define __SI_PAD_SIZE	((__SI_MAX_SIZE / sizeof int) - 3ul)
+# define __SI_PAD_SIZE	((__SI_MAX_SIZE / sizeof i32) - 3ul)
 #endif
 
 /* Some fields of siginfo_t have architecture-specific variations.  */
@@ -18,7 +18,7 @@
 # define __SI_ALIGNMENT		/* nothing */
 #endif
 #ifndef __SI_BAND_TYPE
-# define __SI_BAND_TYPE		long int
+# define __SI_BAND_TYPE		i64
 #endif
 #ifndef __SI_CLOCK_T
 # define __SI_CLOCK_T		__clock_t
@@ -35,22 +35,22 @@
 
 type siginfo_t struct
   {
-    si_signo int		/* Signal number.  */
+    si_signo i32		/* Signal number.  */
 #if __SI_ERRNO_THEN_CODE
-    si_errno int		/* If non-zero, an errno value associated with
+    si_errno i32		/* If non-zero, an errno value associated with
 				   this signal, as defined in <errno.h>.  */
-    si_code int		/* Signal code.  */
+    si_code i32		/* Signal code.  */
 #else
-    si_code int
-    si_errno int
+    si_code i32
+    si_errno i32
 #endif
 #if (__WORDSIZE == 64)
-    __pad0 int			/* Explicit padding.  */
+    __pad0 i32			/* Explicit padding.  */
 #endif
 
     _sifields union
       {
-	_pad[__SI_PAD_SIZE]int
+	_pad[__SI_PAD_SIZE]i32
 
 	 /* kill().  */
 	_kill struct
@@ -62,8 +62,8 @@ type siginfo_t struct
 	/* POSIX.1b timers.  */
 	_timer struct
 	  {
-	    si_tid int		/* Timer ID.  */
-	    si_overrun int	/* Overrun count.  */
+	    si_tid i32		/* Timer ID.  */
+	    si_overrun i32	/* Overrun count.  */
 	    si_sigval __sigval_t;	/* Signal value.  */
 	  }
 
@@ -80,7 +80,7 @@ type siginfo_t struct
 	  {
 	    si_pid __pid_t	/* Which child.	 */
 	    si_uid __uid_t	/* Real user ID of sending process.  */
-	    si_status int	/* Exit value or signal.  */
+	    si_status i32	/* Exit value or signal.  */
 	    si_utime __SI_CLOCK_T
 	    si_stime __SI_CLOCK_T;
 	  }
@@ -90,7 +90,7 @@ type siginfo_t struct
 	  {
 	    si_addr@	    /* Faulting insn/memory ref.  */
 	    __SI_SIGFAULT_ADDL
-	    si_addr_lsb short int  /* Valid LSB of the reported address.  */
+	    si_addr_lsb i16 i32  /* Valid LSB of the reported address.  */
 	    _bounds union
 	      {
 		/* used when si_code=SEGV_BNDERR */
@@ -108,7 +108,7 @@ type siginfo_t struct
 	_sigpoll struct
 	  {
 	    si_band __SI_BAND_TYPE	/* Band event for SIGPOLL.  */
-	    si_fd int;
+	    si_fd i32;
 	  }
 
 	/* SIGSYS.  */
@@ -116,8 +116,8 @@ type siginfo_t struct
 	_sigsys struct
 	  {
 	    _call_addr@	/* Calling user insn.  */
-	    _syscall int	/* Triggering system call number.  */
-	    _arch unsigned int; /* AUDIT_ARCH_* of syscall.  */
+	    _syscall i32	/* Triggering system call number.  */
+	    _arch unsigned i32; /* AUDIT_ARCH_* of syscall.  */
 	  };
 #endif
       };

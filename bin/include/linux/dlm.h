@@ -60,7 +60,7 @@ typedef void dlm_lockspace_t;
 #define DLM_SBF_ALTMODE		0x04
 
 struct dlm_lksb {
-	int 	 sb_status;
+	i32 	 sb_status;
 	__u32	 sb_lkid;
 	char 	 sb_flags;
 	char *	 sb_lvbptr;

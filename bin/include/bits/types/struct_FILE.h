@@ -48,7 +48,7 @@ type _IO_lock_t ;
    That name should not be used in new code.  */
 _ struct _IO_FILE
 {
-  _flags int		/* High-order word is _IO_MAGIC; rest is flags. */
+  _flags i32		/* High-order word is _IO_MAGIC; rest is flags. */
 
   /* The following pointers correspond to the C++ streambuf protocol. */
   _IO_read_ptr@char	/* Current read pointer */
@@ -69,13 +69,13 @@ _ struct _IO_FILE
 
   _chain@struct _IO_FILE
 
-  _fileno int
-  _flags2 int
+  _fileno i32
+  _flags2 i32
   _old_offset __off_t /* This used to be _offset but it's too small.  */
 
   /* 1+column number of pbase(); 0 is unknown. */
-  _cur_column unsigned short
-  _vtable_offset signed char
+  _cur_column unsigned i16
+  _vtable_offset  char
   _shortbuf[1]char
 
   _lock@_IO_lock_t
@@ -93,20 +93,20 @@ _ struct _IO_FILE_complete
   _freeres_list@struct _IO_FILE
   _freeres_buf@ 
   __pad5 size_t
-  _mode int
+  _mode i32
   /* Make sure we don't get into trouble again.  */
-  _unused2[15ul * sizeof int - 4ul * sizeof @ - sizeof size_t]char;
+  _unused2[15ul * sizeof i32 - 4ul * sizeof @ - sizeof size_t]char;
 };
 
 /* These macros are used by bits/stdio.h and internal headers.  */
 #define __getc_unlocked_body(_fp)					\
   (__glibc_unlikely ((_fp)->_IO_read_ptr >= (_fp)->_IO_read_end)	\
-   ? __uflow (_fp) : *(let@unsigned char) (_fp)->_IO_read_ptr++)
+   ? __uflow (_fp) : *(let@unsigned i8) (_fp)->_IO_read_ptr++)
 
 #define __putc_unlocked_body(_ch, _fp)					\
   (__glibc_unlikely ((_fp)->_IO_write_ptr >= (_fp)->_IO_write_end)	\
-   ? __overflow (_fp, (let unsigned char) (_ch))				\
-   : (let unsigned char) (*(_fp)->_IO_write_ptr++ = (_ch)))
+   ? __overflow (_fp, (let unsigned i8) (_ch))				\
+   : (let unsigned i8) (*(_fp)->_IO_write_ptr++ = (_ch)))
 
 #define _IO_EOF_SEEN 0x0010
 #define __feof_unlocked_body(_fp) (((_fp)->_flags & _IO_EOF_SEEN) != 0)

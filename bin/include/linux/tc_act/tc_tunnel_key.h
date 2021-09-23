@@ -19,7 +19,7 @@
 
 struct tc_tunnel_key {
 	tc_gen;
-	int t_action;
+	i32 t_action;
 };
 
 enum {

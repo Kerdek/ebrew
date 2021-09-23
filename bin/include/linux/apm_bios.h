@@ -19,8 +19,8 @@
 
 #include <linux/types.h>
 
-typedef unsigned short	apm_event_t;
-typedef unsigned short	apm_eventinfo_t;
+typedef unsigned i16	apm_event_t;
+typedef unsigned i16	apm_eventinfo_t;
 
 struct apm_bios_info {
 	__u16	version;

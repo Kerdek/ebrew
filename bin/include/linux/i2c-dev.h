@@ -28,8 +28,8 @@
 
 
 /* /dev/i2c-X ioctl commands.  The ioctl's parameter is always an
- * unsigned long, except for:
- *	- I2C_FUNCS, takes pointer to an unsigned long
+ * unsigned i64, except for:
+ *	- I2C_FUNCS, takes pointer to an unsigned i64
  *	- I2C_RDWR, takes pointer to struct i2c_rdwr_ioctl_data
  *	- I2C_SMBUS, takes pointer to struct i2c_smbus_ioctl_data
  */

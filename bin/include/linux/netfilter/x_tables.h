@@ -28,7 +28,7 @@ struct xt_entry_match {
 		__u16 match_size;
 	} u;
 
-	unsigned char data[0];
+	unsigned i8 data[0];
 };
 
 struct xt_entry_target {
@@ -51,7 +51,7 @@ struct xt_entry_target {
 		__u16 target_size;
 	} u;
 
-	unsigned char data[0];
+	unsigned i8 data[0];
 };
 
 #define XT_TARGET_INIT(__name, __size)					       \
@@ -64,7 +64,7 @@ struct xt_entry_target {
 
 struct xt_standard_target {
 	struct xt_entry_target target;
-	int verdict;
+	i32 verdict;
 };
 
 struct xt_error_target {
@@ -116,7 +116,7 @@ struct xt_counters_info {
 	/* Which table. */
 	char name[XT_TABLE_MAXNAMELEN];
 
-	unsigned int num_counters;
+	unsigned i32 num_counters;
 
 	/* The counters (actually `number' of these). */
 	struct xt_counters counters[0];
@@ -127,8 +127,8 @@ struct xt_counters_info {
 /* fn returns 0 to continue iteration */
 #define XT_MATCH_ITERATE(type, e, fn, args...)			\
 ({								\
-	unsigned int __i;					\
-	int __ret = 0;						\
+	unsigned i32 __i;					\
+	i32 __ret = 0;						\
 	struct xt_entry_match *__m;				\
 								\
 	for (__i = sizeof(type);				\
@@ -146,8 +146,8 @@ struct xt_counters_info {
 /* fn returns 0 to continue iteration */
 #define XT_ENTRY_ITERATE_CONTINUE(type, entries, size, n, fn, args...) \
 ({								\
-	unsigned int __i, __n;					\
-	int __ret = 0;						\
+	unsigned i32 __i, __n;					\
+	i32 __ret = 0;						\
 	type *__entry;						\
 								\
 	for (__i = 0, __n = 0; __i < (size);			\

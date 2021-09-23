@@ -30,7 +30,7 @@ struct xt_sctp_info {
 
 	__u32 chunk_match_type;
 	struct xt_sctp_flag_info flag_info[XT_NUM_SCTP_FLAGS];
-	int flag_count;
+	i32 flag_count;
 
 	__u32 flags;
 	__u32 invflags;
@@ -68,9 +68,9 @@ struct xt_sctp_info {
 #define SCTP_CHUNKMAP_IS_CLEAR(chunkmap) \
 	__sctp_chunkmap_is_clear((chunkmap), ARRAY_SIZE(chunkmap))
 static __inline__ _Bool
-__sctp_chunkmap_is_clear(const __u32 *chunkmap, unsigned int n)
+__sctp_chunkmap_is_clear(const __u32 *chunkmap, unsigned i32 n)
 {
-	unsigned int i;
+	unsigned i32 i;
 	for (i = 0; i < n; ++i)
 		if (chunkmap[i])
 			return 0;
@@ -80,9 +80,9 @@ __sctp_chunkmap_is_clear(const __u32 *chunkmap, unsigned int n)
 #define SCTP_CHUNKMAP_IS_ALL_SET(chunkmap) \
 	__sctp_chunkmap_is_all_set((chunkmap), ARRAY_SIZE(chunkmap))
 static __inline__ _Bool
-__sctp_chunkmap_is_all_set(const __u32 *chunkmap, unsigned int n)
+__sctp_chunkmap_is_all_set(const __u32 *chunkmap, unsigned i32 n)
 {
-	unsigned int i;
+	unsigned i32 i;
 	for (i = 0; i < n; ++i)
 		if (chunkmap[i] != ~0U)
 			return 0;

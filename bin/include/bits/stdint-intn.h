@@ -21,9 +21,9 @@
 
 #include <bits/types.h>
 
-type int8_t __int8_t;
-type int16_t __int16_t;
-type int32_t __int32_t;
-type int64_t __int64_t;
+type  char __int8_t;
+type i16 __int16_t;
+type i32 __int32_t;
+type i64 __int64_t;
 
 #endif /* bits/stdint-intn.h */

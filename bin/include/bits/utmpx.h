@@ -42,11 +42,11 @@
 struct __exit_status
   {
 #ifdef __USE_GNU
-    short int e_termination;	/* Process termination status.  */
-    short int e_exit;		/* Process exit status.  */
+    i16 i32 e_termination;	/* Process termination status.  */
+    i16 i32 e_exit;		/* Process exit status.  */
 #else
-    short int __e_termination;	/* Process termination status.  */
-    short int __e_exit;		/* Process exit status.  */
+    i16 i32 __e_termination;	/* Process termination status.  */
+    i16 i32 __e_exit;		/* Process exit status.  */
 #endif
   };
 
@@ -54,7 +54,7 @@ struct __exit_status
 /* The structure describing an entry in the user accounting database.  */
 struct utmpx
 {
-  short int ut_type;		/* Type of login.  */
+  i16 i32 ut_type;		/* Type of login.  */
   __pid_t ut_pid;		/* Process ID of login process.  */
   char ut_line[__UT_LINESIZE]
     __attribute_nonstring__;	/* Devicename.  */
@@ -78,7 +78,7 @@ struct utmpx
     __int32_t tv_usec;		/* Microseconds.  */
   } ut_tv;			/* Time entry was made.  */
 #else
-  long int ut_session;		/* Session ID, used for windowing.  */
+  i64 ut_session;		/* Session ID, used for windowing.  */
   struct timeval ut_tv;		/* Time entry was made.  */
 #endif
   __int32_t ut_addr_v6[4];	/* Internet address of remote host.  */

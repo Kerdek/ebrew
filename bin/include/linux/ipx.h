@@ -13,9 +13,9 @@ struct sockaddr_ipx {
 	__kernel_sa_family_t sipx_family;
 	__be16		sipx_port;
 	__be32		sipx_network;
-	unsigned char 	sipx_node[IPX_NODE_LEN];
+	unsigned i8 	sipx_node[IPX_NODE_LEN];
 	__u8		sipx_type;
-	unsigned char	sipx_zero;	/* 16 byte fill */
+	unsigned i8	sipx_zero;	/* 16 byte fill */
 };
 #endif /* __UAPI_DEF_SOCKADDR_IPX */
 
@@ -31,33 +31,33 @@ struct sockaddr_ipx {
 struct ipx_route_definition {
 	__be32        ipx_network;
 	__be32        ipx_router_network;
-	unsigned char ipx_router_node[IPX_NODE_LEN];
+	unsigned i8 ipx_router_node[IPX_NODE_LEN];
 };
 #endif /* __UAPI_DEF_IPX_ROUTE_DEFINITION */
 
 #if __UAPI_DEF_IPX_INTERFACE_DEFINITION
 struct ipx_interface_definition {
 	__be32        ipx_network;
-	unsigned char ipx_device[16];
-	unsigned char ipx_dlink_type;
+	unsigned i8 ipx_device[16];
+	unsigned i8 ipx_dlink_type;
 #define IPX_FRAME_NONE		0
 #define IPX_FRAME_SNAP		1
 #define IPX_FRAME_8022		2
 #define IPX_FRAME_ETHERII	3
 #define IPX_FRAME_8023		4
 #define IPX_FRAME_TR_8022       5 /* obsolete */
-	unsigned char ipx_special;
+	unsigned i8 ipx_special;
 #define IPX_SPECIAL_NONE	0
 #define IPX_PRIMARY		1
 #define IPX_INTERNAL		2
-	unsigned char ipx_node[IPX_NODE_LEN];
+	unsigned i8 ipx_node[IPX_NODE_LEN];
 };
 #endif /* __UAPI_DEF_IPX_INTERFACE_DEFINITION */
 
 #if __UAPI_DEF_IPX_CONFIG_DATA
 struct ipx_config_data {
-	unsigned char	ipxcfg_auto_select_primary;
-	unsigned char	ipxcfg_auto_create_interfaces;
+	unsigned i8	ipxcfg_auto_select_primary;
+	unsigned i8	ipxcfg_auto_create_interfaces;
 };
 #endif /* __UAPI_DEF_IPX_CONFIG_DATA */
 
@@ -70,9 +70,9 @@ struct ipx_route_def {
 	__be32		ipx_network;
 	__be32		ipx_router_network;
 #define IPX_ROUTE_NO_ROUTER	0
-	unsigned char	ipx_router_node[IPX_NODE_LEN];
-	unsigned char	ipx_device[16];
-	unsigned short	ipx_flags;
+	unsigned i8	ipx_router_node[IPX_NODE_LEN];
+	unsigned i8	ipx_device[16];
+	unsigned i16	ipx_flags;
 #define IPX_RT_SNAP		8
 #define IPX_RT_8022		4
 #define IPX_RT_BLUEBOOK		2

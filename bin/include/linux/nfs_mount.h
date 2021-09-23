@@ -25,24 +25,24 @@
 #define NFS_MAX_CONTEXT_LEN	256
 
 struct nfs_mount_data {
-	int		version;		/* 1 */
-	int		fd;			/* 1 */
+	i32		version;		/* 1 */
+	i32		fd;			/* 1 */
 	struct nfs2_fh	old_root;		/* 1 */
-	int		flags;			/* 1 */
-	int		rsize;			/* 1 */
-	int		wsize;			/* 1 */
-	int		timeo;			/* 1 */
-	int		retrans;		/* 1 */
-	int		acregmin;		/* 1 */
-	int		acregmax;		/* 1 */
-	int		acdirmin;		/* 1 */
-	int		acdirmax;		/* 1 */
+	i32		flags;			/* 1 */
+	i32		rsize;			/* 1 */
+	i32		wsize;			/* 1 */
+	i32		timeo;			/* 1 */
+	i32		retrans;		/* 1 */
+	i32		acregmin;		/* 1 */
+	i32		acregmax;		/* 1 */
+	i32		acdirmin;		/* 1 */
+	i32		acdirmax;		/* 1 */
 	struct sockaddr_in addr;		/* 1 */
 	char		hostname[NFS_MAXNAMLEN + 1];		/* 1 */
-	int		namlen;			/* 2 */
-	unsigned int	bsize;			/* 3 */
+	i32		namlen;			/* 2 */
+	unsigned i32	bsize;			/* 3 */
 	struct nfs3_fh	root;			/* 4 */
-	int		pseudoflavor;		/* 5 */
+	i32		pseudoflavor;		/* 5 */
 	char		context[NFS_MAX_CONTEXT_LEN + 1];	/* 6 */
 };
 

@@ -6,7 +6,7 @@
 
 struct __kernel_timespec {
 	__kernel_time64_t       tv_sec;                 /* seconds */
-	long long               tv_nsec;                /* nanoseconds */
+	i64               tv_nsec;                /* nanoseconds */
 };
 
 struct __kernel_itimerspec {
@@ -30,7 +30,7 @@ struct __kernel_old_timeval {
 
 struct __kernel_old_timespec {
 	__kernel_old_time_t	tv_sec;		/* seconds */
-	long			tv_nsec;	/* nanoseconds */
+	i64			tv_nsec;	/* nanoseconds */
 };
 
 struct __kernel_old_itimerval {

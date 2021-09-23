@@ -35,7 +35,7 @@
    inline.  */
 # if !(__USE_FORTIFY_LEVEL > 0 && defined __fortify_function)
 /* Write formatted output to stdout from argument list ARG.  */
-__STDIO_INLINE int
+__STDIO_INLINE i32
 vprintf (const char *__restrict __fmt, __gnuc_va_list __arg)
 {
   return vfprintf (stdout, __fmt, __arg);
@@ -43,7 +43,7 @@ vprintf (const char *__restrict __fmt, __gnuc_va_list __arg)
 # endif
 
 /* Read a character from stdin.  */
-__STDIO_INLINE int
+__STDIO_INLINE i32
 getchar (void)
 {
   return getc (stdin);
@@ -52,7 +52,7 @@ getchar (void)
 
 # ifdef __USE_MISC
 /* Faster version when locking is not necessary.  */
-__STDIO_INLINE int
+__STDIO_INLINE i32
 fgetc_unlocked (FILE *__fp)
 {
   return __getc_unlocked_body (__fp);
@@ -62,14 +62,14 @@ fgetc_unlocked (FILE *__fp)
 
 # ifdef __USE_POSIX
 /* This is defined in POSIX.1:1996.  */
-__STDIO_INLINE int
+__STDIO_INLINE i32
 getc_unlocked (FILE *__fp)
 {
   return __getc_unlocked_body (__fp);
 }
 
 /* This is defined in POSIX.1:1996.  */
-__STDIO_INLINE int
+__STDIO_INLINE i32
 getchar_unlocked (void)
 {
   return __getc_unlocked_body (stdin);
@@ -78,8 +78,8 @@ getchar_unlocked (void)
 
 
 /* Write a character to stdout.  */
-__STDIO_INLINE int
-putchar (int __c)
+__STDIO_INLINE i32
+putchar (i32 __c)
 {
   return putc (__c, stdout);
 }
@@ -87,8 +87,8 @@ putchar (int __c)
 
 # ifdef __USE_MISC
 /* Faster version when locking is not necessary.  */
-__STDIO_INLINE int
-fputc_unlocked (int __c, FILE *__stream)
+__STDIO_INLINE i32
+fputc_unlocked (i32 __c, FILE *__stream)
 {
   return __putc_unlocked_body (__c, __stream);
 }
@@ -97,15 +97,15 @@ fputc_unlocked (int __c, FILE *__stream)
 
 # ifdef __USE_POSIX
 /* This is defined in POSIX.1:1996.  */
-__STDIO_INLINE int
-putc_unlocked (int __c, FILE *__stream)
+__STDIO_INLINE i32
+putc_unlocked (i32 __c, FILE *__stream)
 {
   return __putc_unlocked_body (__c, __stream);
 }
 
 /* This is defined in POSIX.1:1996.  */
-__STDIO_INLINE int
-putchar_unlocked (int __c)
+__STDIO_INLINE i32
+putchar_unlocked (i32 __c)
 {
   return __putc_unlocked_body (__c, stdout);
 }
@@ -124,14 +124,14 @@ getline (char **__lineptr, size_t *__n, FILE *__stream)
 
 # ifdef __USE_MISC
 /* Faster versions when locking is not required.  */
-__STDIO_INLINE int
+__STDIO_INLINE i32
 __NTH (feof_unlocked (FILE *__stream))
 {
   return __feof_unlocked_body (__stream);
 }
 
 /* Faster versions when locking is not required.  */
-__STDIO_INLINE int
+__STDIO_INLINE i32
 __NTH (ferror_unlocked (FILE *__stream))
 {
   return __ferror_unlocked_body (__stream);
@@ -154,7 +154,7 @@ __NTH (ferror_unlocked (FILE *__stream))
 		       for (__cnt = (size_t) (size) * (size_t) (n);	      \
 			    __cnt > 0; --__cnt)				      \
 			 {						      \
-			   int __c = getc_unlocked (__stream);		      \
+			   i32 __c = getc_unlocked (__stream);		      \
 			   if (__c == EOF)				      \
 			     break;					      \
 			   *__ptr++ = __c;				      \

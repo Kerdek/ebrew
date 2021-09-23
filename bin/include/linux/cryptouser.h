@@ -150,32 +150,32 @@ struct crypto_report_larval {
 
 struct crypto_report_hash {
 	char type[CRYPTO_MAX_NAME];
-	unsigned int blocksize;
-	unsigned int digestsize;
+	unsigned i32 blocksize;
+	unsigned i32 digestsize;
 };
 
 struct crypto_report_cipher {
 	char type[CRYPTO_MAX_NAME];
-	unsigned int blocksize;
-	unsigned int min_keysize;
-	unsigned int max_keysize;
+	unsigned i32 blocksize;
+	unsigned i32 min_keysize;
+	unsigned i32 max_keysize;
 };
 
 struct crypto_report_blkcipher {
 	char type[CRYPTO_MAX_NAME];
 	char geniv[CRYPTO_MAX_NAME];
-	unsigned int blocksize;
-	unsigned int min_keysize;
-	unsigned int max_keysize;
-	unsigned int ivsize;
+	unsigned i32 blocksize;
+	unsigned i32 min_keysize;
+	unsigned i32 max_keysize;
+	unsigned i32 ivsize;
 };
 
 struct crypto_report_aead {
 	char type[CRYPTO_MAX_NAME];
 	char geniv[CRYPTO_MAX_NAME];
-	unsigned int blocksize;
-	unsigned int maxauthsize;
-	unsigned int ivsize;
+	unsigned i32 blocksize;
+	unsigned i32 maxauthsize;
+	unsigned i32 ivsize;
 };
 
 struct crypto_report_comp {
@@ -184,7 +184,7 @@ struct crypto_report_comp {
 
 struct crypto_report_rng {
 	char type[CRYPTO_MAX_NAME];
-	unsigned int seedsize;
+	unsigned i32 seedsize;
 };
 
 struct crypto_report_akcipher {

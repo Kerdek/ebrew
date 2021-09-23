@@ -7,9 +7,9 @@
 
 #define __SIGEV_MAX_SIZE	64ul
 #if (__WORDSIZE == 64)
-# define __SIGEV_PAD_SIZE	((__SIGEV_MAX_SIZE / sizeof int - 4ul))
+# define __SIGEV_PAD_SIZE	((__SIGEV_MAX_SIZE / sizeof i32 - 4ul))
 #else
-# define __SIGEV_PAD_SIZE	((__SIGEV_MAX_SIZE / sizeof int - 3ul))
+# define __SIGEV_PAD_SIZE	((__SIGEV_MAX_SIZE / sizeof i32 - 3ul))
 #endif
 
 /* Forward declaration.  */
@@ -22,12 +22,12 @@ type pthread_attr_t union pthread_attr_t;
 type sigevent_t struct sigevent
   {
     sigev_value __sigval_t
-    sigev_signo int
-    sigev_notify int
+    sigev_signo i32
+    sigev_notify i32
 
     _sigev_un union
       {
-	_pad[__SIGEV_PAD_SIZE]int
+	_pad[__SIGEV_PAD_SIZE]i32
 
 	/* When SIGEV_SIGNAL and SIGEV_THREAD_ID set, LWP ID of the
 	   thread to receive the signal.  */

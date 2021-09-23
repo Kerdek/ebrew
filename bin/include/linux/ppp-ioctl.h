@@ -29,10 +29,10 @@
 #define SC_ENABLE_IP	0x00000100	/* IP packets may be exchanged */
 #define SC_LOOP_TRAFFIC	0x00000200	/* send traffic to pppd */
 #define SC_MULTILINK	0x00000400	/* do multilink encapsulation */
-#define SC_MP_SHORTSEQ	0x00000800	/* use short MP sequence numbers */
+#define SC_MP_SHORTSEQ	0x00000800	/* use i16 MP sequence numbers */
 #define SC_COMP_RUN	0x00001000	/* compressor has been inited */
 #define SC_DECOMP_RUN	0x00002000	/* decompressor has been inited */
-#define SC_MP_XSHORTSEQ	0x00004000	/* transmit short MP seq numbers */
+#define SC_MP_XSHORTSEQ	0x00004000	/* transmit i16 MP seq numbers */
 #define SC_DEBUG	0x00010000	/* enable debug messages */
 #define SC_LOG_INPKT	0x00020000	/* log contents of good pkts recvd */
 #define SC_LOG_OUTPKT	0x00040000	/* log contents of pkts sent */
@@ -53,7 +53,7 @@
 
 /* Used with PPPIOCGNPMODE/PPPIOCSNPMODE */
 struct npioctl {
-	int		protocol;	/* PPP protocol, e.g. PPP_IP */
+	i32		protocol;	/* PPP protocol, e.g. PPP_IP */
 	enum NPmode	mode;
 };
 
@@ -61,7 +61,7 @@ struct npioctl {
 struct ppp_option_data {
 	__u8	*ptr;
 	__u32	length;
-	int	transmit;
+	i32	transmit;
 };
 
 /* For PPPIOCGL2TPSTATS */
@@ -83,16 +83,16 @@ struct pppol2tp_ioc_stats {
  * Ioctl definitions.
  */
 
-#define	PPPIOCGFLAGS	_IOR('t', 90, int)	/* get configuration flags */
-#define	PPPIOCSFLAGS	_IOW('t', 89, int)	/* set configuration flags */
-#define	PPPIOCGASYNCMAP	_IOR('t', 88, int)	/* get async map */
-#define	PPPIOCSASYNCMAP	_IOW('t', 87, int)	/* set async map */
-#define	PPPIOCGUNIT	_IOR('t', 86, int)	/* get ppp unit number */
-#define	PPPIOCGRASYNCMAP _IOR('t', 85, int)	/* get receive async map */
-#define	PPPIOCSRASYNCMAP _IOW('t', 84, int)	/* set receive async map */
-#define	PPPIOCGMRU	_IOR('t', 83, int)	/* get max receive unit */
-#define	PPPIOCSMRU	_IOW('t', 82, int)	/* set max receive unit */
-#define	PPPIOCSMAXCID	_IOW('t', 81, int)	/* set VJ max slot ID */
+#define	PPPIOCGFLAGS	_IOR('t', 90, i32)	/* get configuration flags */
+#define	PPPIOCSFLAGS	_IOW('t', 89, i32)	/* set configuration flags */
+#define	PPPIOCGASYNCMAP	_IOR('t', 88, i32)	/* get async map */
+#define	PPPIOCSASYNCMAP	_IOW('t', 87, i32)	/* set async map */
+#define	PPPIOCGUNIT	_IOR('t', 86, i32)	/* get ppp unit number */
+#define	PPPIOCGRASYNCMAP _IOR('t', 85, i32)	/* get receive async map */
+#define	PPPIOCSRASYNCMAP _IOW('t', 84, i32)	/* set receive async map */
+#define	PPPIOCGMRU	_IOR('t', 83, i32)	/* get max receive unit */
+#define	PPPIOCSMRU	_IOW('t', 82, i32)	/* set max receive unit */
+#define	PPPIOCSMAXCID	_IOW('t', 81, i32)	/* set VJ max slot ID */
 #define PPPIOCGXASYNCMAP _IOR('t', 80, ext_accm) /* get extended ACCM */
 #define PPPIOCSXASYNCMAP _IOW('t', 79, ext_accm) /* set extended ACCM */
 #define PPPIOCXFERUNIT	_IO('t', 78)		/* transfer PPP unit */
@@ -101,19 +101,19 @@ struct pppol2tp_ioc_stats {
 #define PPPIOCSNPMODE	_IOW('t', 75, struct npioctl)  /* set NP mode */
 #define PPPIOCSPASS	_IOW('t', 71, struct sock_fprog) /* set pass filter */
 #define PPPIOCSACTIVE	_IOW('t', 70, struct sock_fprog) /* set active filt */
-#define PPPIOCGDEBUG	_IOR('t', 65, int)	/* Read debug level */
-#define PPPIOCSDEBUG	_IOW('t', 64, int)	/* Set debug level */
+#define PPPIOCGDEBUG	_IOR('t', 65, i32)	/* Read debug level */
+#define PPPIOCSDEBUG	_IOW('t', 64, i32)	/* Set debug level */
 #define PPPIOCGIDLE	_IOR('t', 63, struct ppp_idle) /* get idle time */
 #define PPPIOCGIDLE32	_IOR('t', 63, struct ppp_idle32) /* 32-bit times */
 #define PPPIOCGIDLE64	_IOR('t', 63, struct ppp_idle64) /* 64-bit times */
-#define PPPIOCNEWUNIT	_IOWR('t', 62, int)	/* create new ppp unit */
-#define PPPIOCATTACH	_IOW('t', 61, int)	/* attach to ppp unit */
-#define PPPIOCDETACH	_IOW('t', 60, int)	/* obsolete, do not use */
-#define PPPIOCSMRRU	_IOW('t', 59, int)	/* set multilink MRU */
-#define PPPIOCCONNECT	_IOW('t', 58, int)	/* connect channel to unit */
+#define PPPIOCNEWUNIT	_IOWR('t', 62, i32)	/* create new ppp unit */
+#define PPPIOCATTACH	_IOW('t', 61, i32)	/* attach to ppp unit */
+#define PPPIOCDETACH	_IOW('t', 60, i32)	/* obsolete, do not use */
+#define PPPIOCSMRRU	_IOW('t', 59, i32)	/* set multilink MRU */
+#define PPPIOCCONNECT	_IOW('t', 58, i32)	/* connect channel to unit */
 #define PPPIOCDISCONN	_IO('t', 57)		/* disconnect channel */
-#define PPPIOCATTCHAN	_IOW('t', 56, int)	/* attach to ppp channel */
-#define PPPIOCGCHAN	_IOR('t', 55, int)	/* get ppp channel number */
+#define PPPIOCATTCHAN	_IOW('t', 56, i32)	/* attach to ppp channel */
+#define PPPIOCGCHAN	_IOR('t', 55, i32)	/* get ppp channel number */
 #define PPPIOCGL2TPSTATS _IOR('t', 54, struct pppol2tp_ioc_stats)
 
 #define SIOCGPPPSTATS   (SIOCDEVPRIVATE + 0)

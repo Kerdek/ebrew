@@ -53,27 +53,27 @@
  */
  
 struct hipnet_statistics {
-	int	rx_packets;		/* total packets received	*/
-	int	tx_packets;		/* total packets transmitted	*/
-	int	rx_errors;		/* bad packets received		*/
-	int	tx_errors;		/* packet transmit problems	*/
-	int	rx_dropped;		/* no space in linux buffers	*/
-	int	tx_dropped;		/* no space available in linux	*/
+	i32	rx_packets;		/* total packets received	*/
+	i32	tx_packets;		/* total packets transmitted	*/
+	i32	rx_errors;		/* bad packets received		*/
+	i32	tx_errors;		/* packet transmit problems	*/
+	i32	rx_dropped;		/* no space in linux buffers	*/
+	i32	tx_dropped;		/* no space available in linux	*/
 
 	/* detailed rx_errors: */
-	int	rx_length_errors;
-	int	rx_over_errors;		/* receiver ring buff overflow	*/
-	int	rx_crc_errors;		/* recved pkt with crc error	*/
-	int	rx_frame_errors;	/* recv'd frame alignment error */
-	int	rx_fifo_errors;		/* recv'r fifo overrun		*/
-	int	rx_missed_errors;	/* receiver missed packet	*/
+	i32	rx_length_errors;
+	i32	rx_over_errors;		/* receiver ring buff overflow	*/
+	i32	rx_crc_errors;		/* recved pkt with crc error	*/
+	i32	rx_frame_errors;	/* recv'd frame alignment error */
+	i32	rx_fifo_errors;		/* recv'r fifo overrun		*/
+	i32	rx_missed_errors;	/* receiver missed packet	*/
 
 	/* detailed tx_errors */
-	int	tx_aborted_errors;
-	int	tx_carrier_errors;
-	int	tx_fifo_errors;
-	int	tx_heartbeat_errors;
-	int	tx_window_errors;
+	i32	tx_aborted_errors;
+	i32	tx_carrier_errors;
+	i32	tx_fifo_errors;
+	i32	tx_heartbeat_errors;
+	i32	tx_window_errors;
 };
 
 

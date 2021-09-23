@@ -48,9 +48,9 @@ __BEGIN_DECLS
 /* Signal info.  */
 struct elf_siginfo
   {
-    int si_signo;			/* Signal number.  */
-    int si_code;			/* Extra code.  */
-    int si_errno;			/* Errno.  */
+    i32 si_signo;			/* Signal number.  */
+    i32 si_code;			/* Extra code.  */
+    i32 si_errno;			/* Errno.  */
   };
 
 /* Definitions to generate Intel SVR4-like core files.  These mostly
@@ -63,9 +63,9 @@ struct elf_siginfo
 struct elf_prstatus
   {
     struct elf_siginfo pr_info;		/* Info associated with signal.  */
-    short int pr_cursig;		/* Current signal.  */
-    unsigned long int pr_sigpend;	/* Set of pending signals.  */
-    unsigned long int pr_sighold;	/* Set of held signals.  */
+    i16 i32 pr_cursig;		/* Current signal.  */
+    unsigned i64 pr_sigpend;	/* Set of pending signals.  */
+    unsigned i64 pr_sighold;	/* Set of held signals.  */
     __pid_t pr_pid;
     __pid_t pr_ppid;
     __pid_t pr_pgrp;
@@ -75,7 +75,7 @@ struct elf_prstatus
     struct timeval pr_cutime;		/* Cumulative user time.  */
     struct timeval pr_cstime;		/* Cumulative system time.  */
     elf_gregset_t pr_reg;		/* GP registers.  */
-    int pr_fpvalid;			/* True if math copro being used.  */
+    i32 pr_fpvalid;			/* True if math copro being used.  */
   };
 
 
@@ -87,10 +87,10 @@ struct elf_prpsinfo
     char pr_sname;			/* Char for pr_state.  */
     char pr_zomb;			/* Zombie.  */
     char pr_nice;			/* Nice val.  */
-    unsigned long int pr_flag;		/* Flags.  */
+    unsigned i64 pr_flag;		/* Flags.  */
     __pr_uid_t pr_uid;
     __pr_gid_t pr_gid;
-    int pr_pid, pr_ppid, pr_pgrp, pr_sid;
+    i32 pr_pid, pr_ppid, pr_pgrp, pr_sid;
     /* Lots missing */
     char pr_fname[16];			/* Filename of executable.  */
     char pr_psargs[ELF_PRARGSZ];	/* Initial part of arg list.  */

@@ -72,9 +72,9 @@ struct sockaddr_x25 {
  *	backward compatibility.
  */
 struct x25_subscrip_struct {
-	char device[200-sizeof(unsigned long)];
-	unsigned long	global_facil_mask;	/* 0 to disable negotiation */
-	unsigned int	extended;
+	char device[200-sizeof(unsigned i64)];
+	unsigned i64	global_facil_mask;	/* 0 to disable negotiation */
+	unsigned i32	extended;
 };
 
 /* values for above global_facil_mask */
@@ -93,7 +93,7 @@ struct x25_subscrip_struct {
  */
 struct x25_route_struct {
 	struct x25_address address;
-	unsigned int	   sigdigits;
+	unsigned i32	   sigdigits;
 	char		   device[200];
 };
 
@@ -101,10 +101,10 @@ struct x25_route_struct {
  *	Facilities structure.
  */
 struct x25_facilities {
-	unsigned int	winsize_in, winsize_out;
-	unsigned int	pacsize_in, pacsize_out;
-	unsigned int	throughput;
-	unsigned int	reverse;
+	unsigned i32	winsize_in, winsize_out;
+	unsigned i32	pacsize_in, pacsize_out;
+	unsigned i32	throughput;
+	unsigned i32	reverse;
 };
 
 /*
@@ -131,23 +131,23 @@ struct x25_dte_facilities {
  *	Call User Data structure.
  */
 struct x25_calluserdata {
-	unsigned int	cudlength;
-	unsigned char	cuddata[128];
+	unsigned i32	cudlength;
+	unsigned i8	cuddata[128];
 };
 
 /*
  *	Call clearing Cause and Diagnostic structure.
  */
 struct x25_causediag {
-	unsigned char	cause;
-	unsigned char	diagnostic;
+	unsigned i8	cause;
+	unsigned i8	diagnostic;
 };
 
 /*
  *	Further optional call user data match length selection
  */
 struct x25_subaddr {
-	unsigned int cudmatchlength;
+	unsigned i32 cudmatchlength;
 };
 
 #endif

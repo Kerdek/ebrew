@@ -22,7 +22,7 @@ bsearch (const void *__key, const void *__base, size_t __nmemb, size_t __size,
 {
   size_t __l, __u, __idx;
   const void *__p;
-  int __comparison;
+  i32 __comparison;
 
   __l = 0;
   __u = __nmemb;

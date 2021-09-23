@@ -235,7 +235,7 @@ struct nd_cmd_pkg {
 	__u32   nd_size_out;		/* INPUT: size of payload */
 	__u32   nd_reserved2[9];	/* reserved must be zero */
 	__u32   nd_fw_size;		/* OUTPUT: size fw wants to return */
-	unsigned char nd_payload[];	/* Contents of call      */
+	unsigned i8 nd_payload[];	/* Contents of call      */
 };
 
 /* These NVDIMM families represent pre-standardization command sets */

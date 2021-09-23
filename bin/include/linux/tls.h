@@ -87,26 +87,26 @@ struct tls_crypto_info {
 
 struct tls12_crypto_info_aes_gcm_128 {
 	struct tls_crypto_info info;
-	unsigned char iv[TLS_CIPHER_AES_GCM_128_IV_SIZE];
-	unsigned char key[TLS_CIPHER_AES_GCM_128_KEY_SIZE];
-	unsigned char salt[TLS_CIPHER_AES_GCM_128_SALT_SIZE];
-	unsigned char rec_seq[TLS_CIPHER_AES_GCM_128_REC_SEQ_SIZE];
+	unsigned i8 iv[TLS_CIPHER_AES_GCM_128_IV_SIZE];
+	unsigned i8 key[TLS_CIPHER_AES_GCM_128_KEY_SIZE];
+	unsigned i8 salt[TLS_CIPHER_AES_GCM_128_SALT_SIZE];
+	unsigned i8 rec_seq[TLS_CIPHER_AES_GCM_128_REC_SEQ_SIZE];
 };
 
 struct tls12_crypto_info_aes_gcm_256 {
 	struct tls_crypto_info info;
-	unsigned char iv[TLS_CIPHER_AES_GCM_256_IV_SIZE];
-	unsigned char key[TLS_CIPHER_AES_GCM_256_KEY_SIZE];
-	unsigned char salt[TLS_CIPHER_AES_GCM_256_SALT_SIZE];
-	unsigned char rec_seq[TLS_CIPHER_AES_GCM_256_REC_SEQ_SIZE];
+	unsigned i8 iv[TLS_CIPHER_AES_GCM_256_IV_SIZE];
+	unsigned i8 key[TLS_CIPHER_AES_GCM_256_KEY_SIZE];
+	unsigned i8 salt[TLS_CIPHER_AES_GCM_256_SALT_SIZE];
+	unsigned i8 rec_seq[TLS_CIPHER_AES_GCM_256_REC_SEQ_SIZE];
 };
 
 struct tls12_crypto_info_aes_ccm_128 {
 	struct tls_crypto_info info;
-	unsigned char iv[TLS_CIPHER_AES_CCM_128_IV_SIZE];
-	unsigned char key[TLS_CIPHER_AES_CCM_128_KEY_SIZE];
-	unsigned char salt[TLS_CIPHER_AES_CCM_128_SALT_SIZE];
-	unsigned char rec_seq[TLS_CIPHER_AES_CCM_128_REC_SEQ_SIZE];
+	unsigned i8 iv[TLS_CIPHER_AES_CCM_128_IV_SIZE];
+	unsigned i8 key[TLS_CIPHER_AES_CCM_128_KEY_SIZE];
+	unsigned i8 salt[TLS_CIPHER_AES_CCM_128_SALT_SIZE];
+	unsigned i8 rec_seq[TLS_CIPHER_AES_CCM_128_REC_SEQ_SIZE];
 };
 
 enum {

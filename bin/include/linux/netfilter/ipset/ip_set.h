@@ -287,8 +287,8 @@ union ip_set_name_index {
 
 #define IP_SET_OP_GET_BYNAME	0x00000006	/* Get set index by name */
 struct ip_set_req_get_set {
-	unsigned int op;
-	unsigned int version;
+	unsigned i32 op;
+	unsigned i32 version;
 	union ip_set_name_index set;
 };
 
@@ -297,16 +297,16 @@ struct ip_set_req_get_set {
 
 #define IP_SET_OP_GET_FNAME	0x00000008	/* Get set index and family */
 struct ip_set_req_get_set_family {
-	unsigned int op;
-	unsigned int version;
-	unsigned int family;
+	unsigned i32 op;
+	unsigned i32 version;
+	unsigned i32 family;
 	union ip_set_name_index set;
 };
 
 #define IP_SET_OP_VERSION	0x00000100	/* Ask kernel version */
 struct ip_set_req_version {
-	unsigned int op;
-	unsigned int version;
+	unsigned i32 op;
+	unsigned i32 version;
 };
 
 #endif /* _IP_SET_H */

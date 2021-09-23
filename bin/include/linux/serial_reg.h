@@ -24,7 +24,7 @@
 #define UART_IER	1	/* Out: Interrupt Enable Register */
 #define UART_IER_MSI		0x08 /* Enable Modem status interrupt */
 #define UART_IER_RLSI		0x04 /* Enable receiver line status interrupt */
-#define UART_IER_THRI		0x02 /* Enable Transmitter holding register int. */
+#define UART_IER_THRI		0x02 /* Enable Transmitter holding register i32. */
 #define UART_IER_RDI		0x01 /* Enable receiver data interrupt */
 /*
  * Sleep mode for ST16650 and TI16750.  For the ST16650, EFR[4]=1
@@ -297,10 +297,10 @@
 
 #define UART_RSA_IER ((UART_RSA_BASE) + 1) /* I/O: Interrupt Enable Register */
 
-#define UART_RSA_IER_Rx_FIFO_H (1 << 0) /* Enable Rx FIFO half full int. */
-#define UART_RSA_IER_Tx_FIFO_H (1 << 1) /* Enable Tx FIFO half full int. */
-#define UART_RSA_IER_Tx_FIFO_E (1 << 2) /* Enable Tx FIFO empty int. */
-#define UART_RSA_IER_Rx_TOUT (1 << 3) /* Enable char receive timeout int */
+#define UART_RSA_IER_Rx_FIFO_H (1 << 0) /* Enable Rx FIFO half full i32. */
+#define UART_RSA_IER_Tx_FIFO_H (1 << 1) /* Enable Tx FIFO half full i32. */
+#define UART_RSA_IER_Tx_FIFO_E (1 << 2) /* Enable Tx FIFO empty i32. */
+#define UART_RSA_IER_Rx_TOUT (1 << 3) /* Enable char receive timeout i32 */
 #define UART_RSA_IER_TIMER (1 << 4) /* Enable timer interrupt */
 
 #define UART_RSA_SRR ((UART_RSA_BASE) + 2) /* IN: Status Read Register */

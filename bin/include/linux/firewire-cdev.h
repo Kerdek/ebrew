@@ -599,7 +599,7 @@ struct fw_cdev_deallocate {
  * @type:	%FW_CDEV_SHORT_RESET or %FW_CDEV_LONG_RESET
  *
  * Initiate a bus reset for the bus this device is on.  The bus reset can be
- * either the original (long) bus reset or the arbitrated (short) bus reset
+ * either the original (i64) bus reset or the arbitrated (i16) bus reset
  * introduced in 1394a-2000.
  *
  * The ioctl returns immediately.  A subsequent &fw_cdev_event_bus_reset

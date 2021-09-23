@@ -39,7 +39,7 @@
     __HANDLE_ITEM(rx_drop);		/* RX out of memory */
 
 struct atm_aal_stats {
-#define __HANDLE_ITEM(i) int i
+#define __HANDLE_ITEM(i) i32 i
 	__AAL_STAT_ITEMS
 #undef __HANDLE_ITEM
 };
@@ -93,7 +93,7 @@ struct atm_dev_stats {
 					/* set loopback mode */
 #define ATM_QUERYLOOP	_IOW('a',ATMIOC_SARCOM+4,struct atmif_sioc)
 					/* query supported loopback modes */
-#define ATM_SETSC	_IOW('a',ATMIOC_SPECIAL+1,int)
+#define ATM_SETSC	_IOW('a',ATMIOC_SPECIAL+1,i32)
 					/* enable or disable single-copy */
 #define ATM_SETBACKEND	_IOW('a',ATMIOC_SPECIAL+2,atm_backend_t)
 					/* set backend handler */
@@ -105,7 +105,7 @@ struct atm_dev_stats {
 /* It actually takes struct sockaddr_atmsvc, not struct atm_iobuf */
 #define COMPAT_ATM_ADDPARTY  	_IOW('a', ATMIOC_SPECIAL+4,struct compat_atm_iobuf)
 #endif
-#define ATM_DROPPARTY 	_IOW('a', ATMIOC_SPECIAL+5,int)
+#define ATM_DROPPARTY 	_IOW('a', ATMIOC_SPECIAL+5,i32)
 					/* drop party from p2mp call */
 
 /*
@@ -158,7 +158,7 @@ struct atm_dev_stats {
 
 
 struct atm_iobuf {
-	int length;
+	i32 length;
 	void *buffer;
 };
 
@@ -167,8 +167,8 @@ struct atm_iobuf {
 #define ATM_CI_MAX      -1              /* use maximum range of VPI/VCI */
  
 struct atm_cirange {
-	signed char	vpi_bits;	/* 1..8, ATM_CI_MAX (-1) for maximum */
-	signed char	vci_bits;	/* 1..16, ATM_CI_MAX (-1) for maximum */
+	 char	vpi_bits;	/* 1..8, ATM_CI_MAX (-1) for maximum */
+	 char	vci_bits;	/* 1..16, ATM_CI_MAX (-1) for maximum */
 };
 
 /* for ATM_SETSC; actually taken from the ATM_VF number space */

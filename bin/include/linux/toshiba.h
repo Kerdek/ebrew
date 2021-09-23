@@ -36,12 +36,12 @@
  */
 
 typedef struct {
-	unsigned int eax;
-	unsigned int ebx __attribute__ ((packed));
-	unsigned int ecx __attribute__ ((packed));
-	unsigned int edx __attribute__ ((packed));
-	unsigned int esi __attribute__ ((packed));
-	unsigned int edi __attribute__ ((packed));
+	unsigned i32 eax;
+	unsigned i32 ebx __attribute__ ((packed));
+	unsigned i32 ecx __attribute__ ((packed));
+	unsigned i32 edx __attribute__ ((packed));
+	unsigned i32 esi __attribute__ ((packed));
+	unsigned i32 edi __attribute__ ((packed));
 } SMMRegisters;
 
 /*

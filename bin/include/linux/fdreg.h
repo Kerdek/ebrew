@@ -64,7 +64,7 @@
 
 /* Bits of FD_ST3 */
 #define ST3_HA		0x04		/* Head (Address) */
-#define ST3_DS		0x08		/* drive is double-sided */
+#define ST3_DS		0x08		/* drive is f64-sided */
 #define ST3_TZ		0x10		/* Track Zero signal (1=track 0) */
 #define ST3_RY		0x20		/* drive is ready */
 #define ST3_WP		0x40		/* Write Protect */

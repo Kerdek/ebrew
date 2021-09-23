@@ -20,7 +20,7 @@
 #if __UAPI_DEF_IN6_PKTINFO
 struct in6_pktinfo {
 	struct in6_addr	ipi6_addr;
-	int		ipi6_ifindex;
+	i32		ipi6_ifindex;
 };
 #endif
 
@@ -34,7 +34,7 @@ struct ip6_mtuinfo {
 struct in6_ifreq {
 	struct in6_addr	ifr6_addr;
 	__u32		ifr6_prefixlen;
-	int		ifr6_ifindex; 
+	i32		ifr6_ifindex; 
 };
 
 #define IPV6_SRCRT_STRICT	0x01	/* Deprecated; will be removed */

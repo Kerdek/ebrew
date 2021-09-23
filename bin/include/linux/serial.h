@@ -17,24 +17,24 @@
 
 
 struct serial_struct {
-	int	type;
-	int	line;
-	unsigned int	port;
-	int	irq;
-	int	flags;
-	int	xmit_fifo_size;
-	int	custom_divisor;
-	int	baud_base;
-	unsigned short	close_delay;
+	i32	type;
+	i32	line;
+	unsigned i32	port;
+	i32	irq;
+	i32	flags;
+	i32	xmit_fifo_size;
+	i32	custom_divisor;
+	i32	baud_base;
+	unsigned i16	close_delay;
 	char	io_type;
 	char	reserved_char[1];
-	int	hub6;
-	unsigned short	closing_wait; /* time to wait before closing */
-	unsigned short	closing_wait2; /* no longer used... */
-	unsigned char	*iomem_base;
-	unsigned short	iomem_reg_shift;
-	unsigned int	port_high;
-	unsigned long	iomap_base;	/* cookie passed into ioremap */
+	i32	hub6;
+	unsigned i16	closing_wait; /* time to wait before closing */
+	unsigned i16	closing_wait2; /* no longer used... */
+	unsigned i8	*iomem_base;
+	unsigned i16	iomem_reg_shift;
+	unsigned i32	port_high;
+	unsigned i64	iomap_base;	/* cookie passed into ioremap */
 };
 
 /*
@@ -82,17 +82,17 @@ struct serial_struct {
  * Multiport serial configuration structure --- external structure
  */
 struct serial_multiport_struct {
-	int		irq;
-	int		port1;
-	unsigned char	mask1, match1;
-	int		port2;
-	unsigned char	mask2, match2;
-	int		port3;
-	unsigned char	mask3, match3;
-	int		port4;
-	unsigned char	mask4, match4;
-	int		port_monitor;
-	int	reserved[32];
+	i32		irq;
+	i32		port1;
+	unsigned i8	mask1, match1;
+	i32		port2;
+	unsigned i8	mask2, match2;
+	i32		port3;
+	unsigned i8	mask3, match3;
+	i32		port4;
+	unsigned i8	mask4, match4;
+	i32		port_monitor;
+	i32	reserved[32];
 };
 
 /*
@@ -100,11 +100,11 @@ struct serial_multiport_struct {
  * Four lines can interrupt: CTS, DSR, RI, DCD
  */
 struct serial_icounter_struct {
-	int cts, dsr, rng, dcd;
-	int rx, tx;
-	int frame, overrun, parity, brk;
-	int buf_overrun;
-	int reserved[9];
+	i32 cts, dsr, rng, dcd;
+	i32 rx, tx;
+	i32 frame, overrun, parity, brk;
+	i32 buf_overrun;
+	i32 reserved[9];
 };
 
 /*

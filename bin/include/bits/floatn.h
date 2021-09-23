@@ -36,7 +36,7 @@
 #endif
 
 /* Defined to 1 if __HAVE_FLOAT128 is 1 and the type is ABI-distinct
-   from the default float, double and long double types in this glibc.  */
+   from the default f32, f64 and f80 types in this glibc.  */
 #if __HAVE_FLOAT128
 # define __HAVE_DISTINCT_FLOAT128 1
 #else
@@ -49,9 +49,9 @@
 #define __HAVE_FLOAT64X 1
 
 /* Defined to 1 if __HAVE_FLOAT64X is 1 and _Float64x has the format
-   of long double.  Otherwise, if __HAVE_FLOAT64X is 1, _Float64x has
-   the format of _Float128, which must be different from that of long
-   double.  */
+   of f80.  Otherwise, if __HAVE_FLOAT64X is 1, _Float64x has
+   the format of _Float128, which must be different from that of i64
+   f64.  */
 #define __HAVE_FLOAT64X_LONG_DOUBLE 1
 
 #ifndef __ASSEMBLER__
@@ -72,7 +72,7 @@
 #  if !__GNUC_PREREQ (7, 0) || defined __cplusplus
 /* Add a typedef for older GCC compilers which don't natively support
    _Complex _Float128.  */
-typedef _Complex float __cfloat128 __attribute__ ((__mode__ (__TC__)));
+typedef _Complex f32 __cfloat128 __attribute__ ((__mode__ (__TC__)));
 #   define __CFLOAT128 __cfloat128
 #  else
 #   define __CFLOAT128 _Complex _Float128

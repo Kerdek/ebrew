@@ -46,12 +46,12 @@ typedef __suseconds_t suseconds_t;
 
 
 /* The fd_set member is required to be an array of longs.  */
-typedef long int __fd_mask;
+typedef i64 __fd_mask;
 
 /* Some versions of <linux/posix_types.h> define this macros.  */
 #undef	__NFDBITS
 /* It's easier to assume 8-bit bytes than to get CHAR_BIT.  */
-#define __NFDBITS	(8 * (int) sizeof (__fd_mask))
+#define __NFDBITS	(8 * (i32) sizeof (__fd_mask))
 #define	__FD_ELT(d)	((d) / __NFDBITS)
 #define	__FD_MASK(d)	((__fd_mask) (1UL << ((d) % __NFDBITS)))
 
@@ -98,7 +98,7 @@ __BEGIN_DECLS
 
    This function is a cancellation point and therefore not marked with
    __THROW.  */
-extern int select (int __nfds, fd_set *__restrict __readfds,
+extern i32 select (i32 __nfds, fd_set *__restrict __readfds,
 		   fd_set *__restrict __writefds,
 		   fd_set *__restrict __exceptfds,
 		   struct timeval *__restrict __timeout);
@@ -110,7 +110,7 @@ extern int select (int __nfds, fd_set *__restrict __readfds,
 
    This function is a cancellation point and therefore not marked with
    __THROW.  */
-extern int pselect (int __nfds, fd_set *__restrict __readfds,
+extern i32 pselect (i32 __nfds, fd_set *__restrict __readfds,
 		    fd_set *__restrict __writefds,
 		    fd_set *__restrict __exceptfds,
 		    const struct timespec *__restrict __timeout,

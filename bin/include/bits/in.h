@@ -43,17 +43,17 @@
 
 /* Options for use with `getsockopt' and `setsockopt' at the IP level.
    The first word in the comment at the right is the data type used;
-   "bool" means a boolean value stored in an `int'.  */
+   "bool" means a boolean value stored in an `i32'.  */
 #define        IP_OPTIONS      4       /* ip_opts; IP per-packet options.  */
-#define        IP_HDRINCL      3       /* int; Header is included with data.  */
-#define        IP_TOS          1       /* int; IP type of service and precedence.  */
-#define        IP_TTL          2       /* int; IP time to live.  */
+#define        IP_HDRINCL      3       /* i32; Header is included with data.  */
+#define        IP_TOS          1       /* i32; IP type of service and precedence.  */
+#define        IP_TTL          2       /* i32; IP time to live.  */
 #define        IP_RECVOPTS     6       /* bool; Receive all IP options w/datagram.  */
 /* For BSD compatibility.  */
 #define        IP_RECVRETOPTS  IP_RETOPTS       /* bool; Receive IP options for response.  */
 #define        IP_RETOPTS      7       /* ip_opts; Set/get IP per-packet options.  */
 #define IP_MULTICAST_IF 32	/* in_addr; set/get IP multicast i/f */
-#define IP_MULTICAST_TTL 33	/* unsigned char; set/get IP multicast ttl */
+#define IP_MULTICAST_TTL 33	/* unsigned i8; set/get IP multicast ttl */
 #define IP_MULTICAST_LOOP 34	/* bool; set/get IP multicast loopback */
 #define IP_ADD_MEMBERSHIP 35	/* ip_mreq; add an IP group membership */
 #define IP_DROP_MEMBERSHIP 36	/* ip_mreq; drop an IP group membership */
@@ -81,11 +81,11 @@
 #define IP_PKTINFO	8	/* bool */
 #define IP_PKTOPTIONS	9
 #define IP_PMTUDISC	10	/* obsolete name? */
-#define IP_MTU_DISCOVER	10	/* int; see below */
+#define IP_MTU_DISCOVER	10	/* i32; see below */
 #define IP_RECVERR	11	/* bool */
 #define IP_RECVTTL	12	/* bool */
 #define IP_RECVTOS	13	/* bool */
-#define IP_MTU		14	/* int */
+#define IP_MTU		14	/* i32 */
 #define IP_FREEBIND	15
 #define IP_IPSEC_POLICY 16
 #define IP_XFRM_POLICY	17
@@ -150,13 +150,13 @@ struct ip_mreqn
   {
     struct in_addr imr_multiaddr;	/* IP multicast address of group */
     struct in_addr imr_address;		/* local IP address of interface */
-    int	imr_ifindex;			/* Interface index */
+    i32	imr_ifindex;			/* Interface index */
   };
 
 /* Structure used for IP_PKTINFO.  */
 struct in_pktinfo
   {
-    int ipi_ifindex;			/* Interface index  */
+    i32 ipi_ifindex;			/* Interface index  */
     struct in_addr ipi_spec_dst;	/* Routing destination address  */
     struct in_addr ipi_addr;		/* Header destination address  */
   };
@@ -164,7 +164,7 @@ struct in_pktinfo
 
 /* Options for use with `getsockopt' and `setsockopt' at the IPv6 level.
    The first word in the comment at the right is the data type used;
-   "bool" means a boolean value stored in an `int'.  */
+   "bool" means a boolean value stored in an `i32'.  */
 #define IPV6_ADDRFORM		1
 #define IPV6_2292PKTINFO	2
 #define IPV6_2292HOPOPTS	3

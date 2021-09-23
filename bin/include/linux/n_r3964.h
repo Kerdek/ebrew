@@ -87,9 +87,9 @@ enum {R3964_MSG_ACK=1, R3964_MSG_DATA };
 
 /* the client gets this struct when calling read(fd,...): */
 struct r3964_client_message {
-	  int     msg_id;
-	  int     arg;
-	  int     error_code;
+	  i32     msg_id;
+	  i32     arg;
+	  i32     error_code;
 };
 
 #define R3964_MTU      256

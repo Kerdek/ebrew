@@ -25,12 +25,12 @@
 
 struct timex
 {
-  unsigned int modes;		/* mode selector */
+  unsigned i32 modes;		/* mode selector */
   __syscall_slong_t offset;	/* time offset (usec) */
   __syscall_slong_t freq;	/* frequency offset (scaled ppm) */
   __syscall_slong_t maxerror;	/* maximum error (usec) */
   __syscall_slong_t esterror;	/* estimated error (usec) */
-  int status;			/* clock command/status */
+  i32 status;			/* clock command/status */
   __syscall_slong_t constant;	/* pll time constant */
   __syscall_slong_t precision;	/* clock precision (usec) (ro) */
   __syscall_slong_t tolerance;	/* clock frequency tolerance (ppm) (ro) */
@@ -38,19 +38,19 @@ struct timex
   __syscall_slong_t tick;	/* (modified) usecs between clock ticks */
   __syscall_slong_t ppsfreq;	/* pps frequency (scaled ppm) (ro) */
   __syscall_slong_t jitter;	/* pps jitter (us) (ro) */
-  int shift;			/* interval duration (s) (shift) (ro) */
+  i32 shift;			/* interval duration (s) (shift) (ro) */
   __syscall_slong_t stabil;	/* pps stability (scaled ppm) (ro) */
   __syscall_slong_t jitcnt;	/* jitter limit exceeded (ro) */
   __syscall_slong_t calcnt;	/* calibration intervals (ro) */
   __syscall_slong_t errcnt;	/* calibration errors (ro) */
   __syscall_slong_t stbcnt;	/* stability limit exceeded (ro) */
 
-  int tai;			/* TAI offset (ro) */
+  i32 tai;			/* TAI offset (ro) */
 
   /* ??? */
-  int  :32; int  :32; int  :32; int  :32;
-  int  :32; int  :32; int  :32; int  :32;
-  int  :32; int  :32; int  :32;
+  i32  :32; i32  :32; i32  :32; i32  :32;
+  i32  :32; i32  :32; i32  :32; i32  :32;
+  i32  :32; i32  :32; i32  :32;
 };
 
 /* Mode codes (timex.mode) */

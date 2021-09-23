@@ -28,7 +28,7 @@
  * All BPF programs must return a 32-bit value.
  * The bottom 16-bits are for optional return data.
  * The upper 16-bits are ordered from least permissive values to most,
- * as a signed value (so 0x8000000 is negative).
+ * as a  value (so 0x8000000 is negative).
  *
  * The ordering ensures that a min_t() over composed return values always
  * selects the least permissive choice.
@@ -58,7 +58,7 @@
  *        regardless of the architecture.
  */
 struct seccomp_data {
-	int nr;
+	i32 nr;
 	__u32 arch;
 	__u64 instruction_pointer;
 	__u64 args[6];

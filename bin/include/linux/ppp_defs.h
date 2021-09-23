@@ -126,7 +126,7 @@ struct compstat {
     __u32       in_count;	/* Bytes received */
     __u32       bytes_out;	/* Bytes transmitted */
 
-    double	ratio;		/* not computed in kernel. */
+    f64	ratio;		/* not computed in kernel. */
 };
 
 struct ppp_stats {

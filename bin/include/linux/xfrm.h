@@ -57,7 +57,7 @@ struct xfrm_selector {
 	__u8	prefixlen_d;
 	__u8	prefixlen_s;
 	__u8	proto;
-	int	ifindex;
+	i32	ifindex;
 	__kernel_uid32_t	user;
 };
 
@@ -90,7 +90,7 @@ struct xfrm_replay_state {
 #define XFRMA_REPLAY_ESN_MAX	4096
 
 struct xfrm_replay_state_esn {
-	unsigned int	bmp_len;
+	unsigned i32	bmp_len;
 	__u32		oseq;
 	__u32		seq;
 	__u32		oseq_hi;
@@ -101,21 +101,21 @@ struct xfrm_replay_state_esn {
 
 struct xfrm_algo {
 	char		alg_name[64];
-	unsigned int	alg_key_len;    /* in bits */
+	unsigned i32	alg_key_len;    /* in bits */
 	char		alg_key[0];
 };
 
 struct xfrm_algo_auth {
 	char		alg_name[64];
-	unsigned int	alg_key_len;    /* in bits */
-	unsigned int	alg_trunc_len;  /* in bits */
+	unsigned i32	alg_key_len;    /* in bits */
+	unsigned i32	alg_trunc_len;  /* in bits */
 	char		alg_key[0];
 };
 
 struct xfrm_algo_aead {
 	char		alg_name[64];
-	unsigned int	alg_key_len;	/* in bits */
-	unsigned int	alg_icv_len;	/* in bits */
+	unsigned i32	alg_key_len;	/* in bits */
+	unsigned i32	alg_icv_len;	/* in bits */
 	char		alg_key[0];
 };
 
@@ -291,7 +291,7 @@ enum xfrm_attr_type_t {
 	XFRMA_ETIMER_THRESH,
 	XFRMA_SRCADDR,		/* xfrm_address_t */
 	XFRMA_COADDR,		/* xfrm_address_t */
-	XFRMA_LASTUSED,		/* unsigned long  */
+	XFRMA_LASTUSED,		/* unsigned i64  */
 	XFRMA_POLICY_TYPE,	/* struct xfrm_userpolicy_type */
 	XFRMA_MIGRATE,
 	XFRMA_ALG_AEAD,		/* struct xfrm_algo_aead */
@@ -502,7 +502,7 @@ struct xfrm_address_filter {
 };
 
 struct xfrm_user_offload {
-	int				ifindex;
+	i32				ifindex;
 	__u8				flags;
 };
 #define XFRM_OFFLOAD_IPV6	1

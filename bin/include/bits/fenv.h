@@ -65,7 +65,7 @@ enum
 
 
 /* Type representing exception flags.  */
-typedef unsigned short int fexcept_t;
+typedef unsigned i16 fexcept_t;
 
 
 /* Type representing floating-point environment.  This structure
@@ -74,21 +74,21 @@ typedef unsigned short int fexcept_t;
    register as written by the `stmxcsr' instruction.  */
 typedef struct
   {
-    unsigned short int __control_word;
-    unsigned short int __glibc_reserved1;
-    unsigned short int __status_word;
-    unsigned short int __glibc_reserved2;
-    unsigned short int __tags;
-    unsigned short int __glibc_reserved3;
-    unsigned int __eip;
-    unsigned short int __cs_selector;
-    unsigned int __opcode:11;
-    unsigned int __glibc_reserved4:5;
-    unsigned int __data_offset;
-    unsigned short int __data_selector;
-    unsigned short int __glibc_reserved5;
+    unsigned i16 __control_word;
+    unsigned i16 __glibc_reserved1;
+    unsigned i16 __status_word;
+    unsigned i16 __glibc_reserved2;
+    unsigned i16 __tags;
+    unsigned i16 __glibc_reserved3;
+    unsigned i32 __eip;
+    unsigned i16 __cs_selector;
+    unsigned i32 __opcode:11;
+    unsigned i32 __glibc_reserved4:5;
+    unsigned i32 __data_offset;
+    unsigned i16 __data_selector;
+    unsigned i16 __glibc_reserved5;
 #ifdef __x86_64__
-    unsigned int __mxcsr;
+    unsigned i32 __mxcsr;
 #endif
   }
 fenv_t;
@@ -105,9 +105,9 @@ fenv_t;
 /* Type representing floating-point control modes.  */
 typedef struct
   {
-    unsigned short int __control_word;
-    unsigned short int __glibc_reserved;
-    unsigned int __mxcsr;
+    unsigned i16 __control_word;
+    unsigned i16 __glibc_reserved;
+    unsigned i32 __mxcsr;
   }
 femode_t;
 
@@ -121,15 +121,15 @@ __BEGIN_DECLS
 
 /* Optimized versions.  */
 #ifndef _LIBC
-extern int __REDIRECT_NTH (__feraiseexcept_renamed, (int), feraiseexcept);
+extern i32 __REDIRECT_NTH (__feraiseexcept_renamed, (i32), feraiseexcept);
 #endif
 __extern_always_inline void
-__NTH (__feraiseexcept_invalid_divbyzero (int __excepts))
+__NTH (__feraiseexcept_invalid_divbyzero (i32 __excepts))
 {
   if ((FE_INVALID & __excepts) != 0)
     {
       /* One example of an invalid operation is 0.0 / 0.0.  */
-      float __f = 0.0;
+      f32 __f = 0.0;
 
 # ifdef __SSE_MATH__
       __asm__ __volatile__ ("divss %0, %0 " : : "x" (__f));
@@ -141,8 +141,8 @@ __NTH (__feraiseexcept_invalid_divbyzero (int __excepts))
     }
   if ((FE_DIVBYZERO & __excepts) != 0)
     {
-      float __f = 1.0;
-      float __g = 0.0;
+      f32 __f = 1.0;
+      f32 __g = 0.0;
 
 # ifdef __SSE_MATH__
       __asm__ __volatile__ ("divss %1, %0" : : "x" (__f), "x" (__g));
@@ -153,8 +153,8 @@ __NTH (__feraiseexcept_invalid_divbyzero (int __excepts))
       (void) &__f;
     }
 }
-__extern_inline int
-__NTH (feraiseexcept (int __excepts))
+__extern_inline i32
+__NTH (feraiseexcept (i32 __excepts))
 {
   if (__builtin_constant_p (__excepts)
       && (__excepts & ~(FE_INVALID | FE_DIVBYZERO)) == 0)

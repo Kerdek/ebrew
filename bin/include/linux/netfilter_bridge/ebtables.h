@@ -28,8 +28,8 @@
 #define EBT_CONTINUE -3
 #define EBT_RETURN   -4
 #define NUM_STANDARD_TARGETS   4
-/* ebtables target modules store the verdict inside an int. We can
- * reclaim a part of this int for backwards compatible extensions.
+/* ebtables target modules store the verdict inside an i32. We can
+ * reclaim a part of this i32 for backwards compatible extensions.
  * The 4 lsb are more than enough to store the verdict. */
 #define EBT_VERDICT_BITS 0x0000000F
 
@@ -43,15 +43,15 @@ struct ebt_counter {
 
 struct ebt_replace {
 	char name[EBT_TABLE_MAXNAMELEN];
-	unsigned int valid_hooks;
+	unsigned i32 valid_hooks;
 	/* nr of rules in the table */
-	unsigned int nentries;
+	unsigned i32 nentries;
 	/* total size of the entries */
-	unsigned int entries_size;
+	unsigned i32 entries_size;
 	/* start of the chains */
 	struct ebt_entries *hook_entry[NF_BR_NUMHOOKS];
 	/* nr of counters userspace expects back */
-	unsigned int num_counters;
+	unsigned i32 num_counters;
 	/* where the kernel will put the old counters */
 	struct ebt_counter *counters;
 	char *entries;
@@ -59,15 +59,15 @@ struct ebt_replace {
 
 struct ebt_replace_kernel {
 	char name[EBT_TABLE_MAXNAMELEN];
-	unsigned int valid_hooks;
+	unsigned i32 valid_hooks;
 	/* nr of rules in the table */
-	unsigned int nentries;
+	unsigned i32 nentries;
 	/* total size of the entries */
-	unsigned int entries_size;
+	unsigned i32 entries_size;
 	/* start of the chains */
 	struct ebt_entries *hook_entry[NF_BR_NUMHOOKS];
 	/* nr of counters userspace expects back */
-	unsigned int num_counters;
+	unsigned i32 num_counters;
 	/* where the kernel will put the old counters */
 	struct ebt_counter *counters;
 	char *entries;
@@ -77,15 +77,15 @@ struct ebt_entries {
 	/* this field is always set to zero
 	 * See EBT_ENTRY_OR_ENTRIES.
 	 * Must be same size as ebt_entry.bitmask */
-	unsigned int distinguisher;
+	unsigned i32 distinguisher;
 	/* the chain name */
 	char name[EBT_CHAIN_MAXNAMELEN];
 	/* counter offset for this chain */
-	unsigned int counter_offset;
+	unsigned i32 counter_offset;
 	/* one standard (accept, drop, return) per hook */
-	int policy;
+	i32 policy;
 	/* nr. of entries */
-	unsigned int nentries;
+	unsigned i32 nentries;
 	/* entry list */
 	char data[0] __attribute__ ((aligned (__alignof__(struct ebt_replace))));
 };
@@ -128,8 +128,8 @@ struct ebt_entry_match {
 		struct xt_match *match;
 	} u;
 	/* size of data */
-	unsigned int match_size;
-	unsigned char data[0] __attribute__ ((aligned (__alignof__(struct ebt_replace))));
+	unsigned i32 match_size;
+	unsigned i8 data[0] __attribute__ ((aligned (__alignof__(struct ebt_replace))));
 };
 
 struct ebt_entry_watcher {
@@ -141,8 +141,8 @@ struct ebt_entry_watcher {
 		struct xt_target *watcher;
 	} u;
 	/* size of data */
-	unsigned int watcher_size;
-	unsigned char data[0] __attribute__ ((aligned (__alignof__(struct ebt_replace))));
+	unsigned i32 watcher_size;
+	unsigned i8 data[0] __attribute__ ((aligned (__alignof__(struct ebt_replace))));
 };
 
 struct ebt_entry_target {
@@ -154,21 +154,21 @@ struct ebt_entry_target {
 		struct xt_target *target;
 	} u;
 	/* size of data */
-	unsigned int target_size;
-	unsigned char data[0] __attribute__ ((aligned (__alignof__(struct ebt_replace))));
+	unsigned i32 target_size;
+	unsigned i8 data[0] __attribute__ ((aligned (__alignof__(struct ebt_replace))));
 };
 
 #define EBT_STANDARD_TARGET "standard"
 struct ebt_standard_target {
 	struct ebt_entry_target target;
-	int verdict;
+	i32 verdict;
 };
 
 /* one entry */
 struct ebt_entry {
 	/* this needs to be the first field */
-	unsigned int bitmask;
-	unsigned int invflags;
+	unsigned i32 bitmask;
+	unsigned i32 invflags;
 	__be16 ethproto;
 	/* the physical in-dev */
 	char in[IFNAMSIZ];
@@ -178,17 +178,17 @@ struct ebt_entry {
 	char out[IFNAMSIZ];
 	/* the logical out-dev */
 	char logical_out[IFNAMSIZ];
-	unsigned char sourcemac[ETH_ALEN];
-	unsigned char sourcemsk[ETH_ALEN];
-	unsigned char destmac[ETH_ALEN];
-	unsigned char destmsk[ETH_ALEN];
+	unsigned i8 sourcemac[ETH_ALEN];
+	unsigned i8 sourcemsk[ETH_ALEN];
+	unsigned i8 destmac[ETH_ALEN];
+	unsigned i8 destmsk[ETH_ALEN];
 	/* sizeof ebt_entry + matches */
-	unsigned int watchers_offset;
+	unsigned i32 watchers_offset;
 	/* sizeof ebt_entry + matches + watchers */
-	unsigned int target_offset;
+	unsigned i32 target_offset;
 	/* sizeof ebt_entry + matches + watchers + target */
-	unsigned int next_offset;
-	unsigned char elems[0] __attribute__ ((aligned (__alignof__(struct ebt_replace))));
+	unsigned i32 next_offset;
+	unsigned i8 elems[0] __attribute__ ((aligned (__alignof__(struct ebt_replace))));
 };
 
 static __inline__ struct ebt_entry_target *
@@ -215,8 +215,8 @@ ebt_get_target(struct ebt_entry *e)
  * fn returns 0 to continue iteration */
 #define EBT_MATCH_ITERATE(e, fn, args...)                   \
 ({                                                          \
-	unsigned int __i;                                   \
-	int __ret = 0;                                      \
+	unsigned i32 __i;                                   \
+	i32 __ret = 0;                                      \
 	struct ebt_entry_match *__match;                    \
 	                                                    \
 	for (__i = sizeof(struct ebt_entry);                \
@@ -238,8 +238,8 @@ ebt_get_target(struct ebt_entry *e)
 
 #define EBT_WATCHER_ITERATE(e, fn, args...)                 \
 ({                                                          \
-	unsigned int __i;                                   \
-	int __ret = 0;                                      \
+	unsigned i32 __i;                                   \
+	i32 __ret = 0;                                      \
 	struct ebt_entry_watcher *__watcher;                \
 	                                                    \
 	for (__i = e->watchers_offset;                      \
@@ -261,8 +261,8 @@ ebt_get_target(struct ebt_entry *e)
 
 #define EBT_ENTRY_ITERATE(entries, size, fn, args...)       \
 ({                                                          \
-	unsigned int __i;                                   \
-	int __ret = 0;                                      \
+	unsigned i32 __i;                                   \
+	i32 __ret = 0;                                      \
 	struct ebt_entry *__entry;                          \
 	                                                    \
 	for (__i = 0; __i < (size);) {                      \

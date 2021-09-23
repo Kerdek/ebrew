@@ -34,9 +34,9 @@
 #define POLL_BUSY_LOOP	(__poll_t)0x8000
 
 struct pollfd {
-	int fd;
-	short events;
-	short revents;
+	i32 fd;
+	i16 events;
+	i16 revents;
 };
 
 #endif	/* __ASM_GENERIC_POLL_H */

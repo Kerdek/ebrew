@@ -8,24 +8,24 @@
 
 #ifdef __i386__
 struct stat {
-	unsigned long  st_dev;
-	unsigned long  st_ino;
-	unsigned short st_mode;
-	unsigned short st_nlink;
-	unsigned short st_uid;
-	unsigned short st_gid;
-	unsigned long  st_rdev;
-	unsigned long  st_size;
-	unsigned long  st_blksize;
-	unsigned long  st_blocks;
-	unsigned long  st_atime;
-	unsigned long  st_atime_nsec;
-	unsigned long  st_mtime;
-	unsigned long  st_mtime_nsec;
-	unsigned long  st_ctime;
-	unsigned long  st_ctime_nsec;
-	unsigned long  __unused4;
-	unsigned long  __unused5;
+	unsigned i64  st_dev;
+	unsigned i64  st_ino;
+	unsigned i16 st_mode;
+	unsigned i16 st_nlink;
+	unsigned i16 st_uid;
+	unsigned i16 st_gid;
+	unsigned i64  st_rdev;
+	unsigned i64  st_size;
+	unsigned i64  st_blksize;
+	unsigned i64  st_blocks;
+	unsigned i64  st_atime;
+	unsigned i64  st_atime_nsec;
+	unsigned i64  st_mtime;
+	unsigned i64  st_mtime_nsec;
+	unsigned i64  st_ctime;
+	unsigned i64  st_ctime_nsec;
+	unsigned i64  __unused4;
+	unsigned i64  __unused5;
 };
 
 /* We don't need to memset the whole thing just to initialize the padding */
@@ -40,36 +40,36 @@ struct stat {
  * insane amounts of padding around dev_t's.
  */
 struct stat64 {
-	unsigned long long	st_dev;
-	unsigned char	__pad0[4];
+	unsigned i64 i64	st_dev;
+	unsigned i8	__pad0[4];
 
-	unsigned long	__st_ino;
+	unsigned i64	__st_ino;
 
-	unsigned int	st_mode;
-	unsigned int	st_nlink;
+	unsigned i32	st_mode;
+	unsigned i32	st_nlink;
 
-	unsigned long	st_uid;
-	unsigned long	st_gid;
+	unsigned i64	st_uid;
+	unsigned i64	st_gid;
 
-	unsigned long long	st_rdev;
-	unsigned char	__pad3[4];
+	unsigned i64 i64	st_rdev;
+	unsigned i8	__pad3[4];
 
-	long long	st_size;
-	unsigned long	st_blksize;
+	i64	st_size;
+	unsigned i64	st_blksize;
 
 	/* Number 512-byte blocks allocated. */
-	unsigned long long	st_blocks;
+	unsigned i64 i64	st_blocks;
 
-	unsigned long	st_atime;
-	unsigned long	st_atime_nsec;
+	unsigned i64	st_atime;
+	unsigned i64	st_atime_nsec;
 
-	unsigned long	st_mtime;
-	unsigned int	st_mtime_nsec;
+	unsigned i64	st_mtime;
+	unsigned i32	st_mtime_nsec;
 
-	unsigned long	st_ctime;
-	unsigned long	st_ctime_nsec;
+	unsigned i64	st_ctime;
+	unsigned i64	st_ctime_nsec;
 
-	unsigned long long	st_ino;
+	unsigned i64 i64	st_ino;
 };
 
 /* We don't need to memset the whole thing just to initialize the padding */
@@ -85,10 +85,10 @@ struct stat {
 	__kernel_ulong_t	st_ino;
 	__kernel_ulong_t	st_nlink;
 
-	unsigned int		st_mode;
-	unsigned int		st_uid;
-	unsigned int		st_gid;
-	unsigned int		__pad0;
+	unsigned i32		st_mode;
+	unsigned i32		st_uid;
+	unsigned i32		st_gid;
+	unsigned i32		__pad0;
 	__kernel_ulong_t	st_rdev;
 	__kernel_long_t		st_size;
 	__kernel_long_t		st_blksize;
@@ -115,23 +115,23 @@ struct stat {
 
 /* for 32bit emulation and 32 bit kernels */
 struct __old_kernel_stat {
-	unsigned short st_dev;
-	unsigned short st_ino;
-	unsigned short st_mode;
-	unsigned short st_nlink;
-	unsigned short st_uid;
-	unsigned short st_gid;
-	unsigned short st_rdev;
+	unsigned i16 st_dev;
+	unsigned i16 st_ino;
+	unsigned i16 st_mode;
+	unsigned i16 st_nlink;
+	unsigned i16 st_uid;
+	unsigned i16 st_gid;
+	unsigned i16 st_rdev;
 #ifdef __i386__
-	unsigned long  st_size;
-	unsigned long  st_atime;
-	unsigned long  st_mtime;
-	unsigned long  st_ctime;
+	unsigned i64  st_size;
+	unsigned i64  st_atime;
+	unsigned i64  st_mtime;
+	unsigned i64  st_ctime;
 #else
-	unsigned int  st_size;
-	unsigned int  st_atime;
-	unsigned int  st_mtime;
-	unsigned int  st_ctime;
+	unsigned i32  st_size;
+	unsigned i32  st_atime;
+	unsigned i32  st_mtime;
+	unsigned i32  st_ctime;
 #endif
 };
 

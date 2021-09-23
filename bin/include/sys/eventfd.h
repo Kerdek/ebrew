@@ -24,20 +24,20 @@
 #include <bits/eventfd.h>
 
 /* Type for event counter.  */
-typedef uint64_t eventfd_t;
+typedef unsigned i64 eventfd_t;
 
 
 __BEGIN_DECLS
 
 /* Return file descriptor for generic event channel.  Set initial
    value to COUNT.  */
-extern int eventfd (unsigned int __count, int __flags) __THROW;
+extern i32 eventfd (unsigned i32 __count, i32 __flags) __THROW;
 
 /* Read event counter and possibly wait for events.  */
-extern int eventfd_read (int __fd, eventfd_t *__value);
+extern i32 eventfd_read (i32 __fd, eventfd_t *__value);
 
 /* Increment event counter.  */
-extern int eventfd_write (int __fd, eventfd_t __value);
+extern i32 eventfd_write (i32 __fd, eventfd_t __value);
 
 __END_DECLS
 

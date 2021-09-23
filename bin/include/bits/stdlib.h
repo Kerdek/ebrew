@@ -31,7 +31,7 @@ extern char *__REDIRECT_NTH (__realpath_chk_warn,
 			      char *__restrict __resolved,
 			      size_t __resolvedlen), __realpath_chk) __wur
      __warnattr ("second argument of realpath must be either NULL or at "
-		 "least PATH_MAX bytes long buffer");
+		 "least PATH_MAX bytes i64 buffer");
 
 __fortify_function __wur char *
 __NTH (realpath (const char *__restrict __name, char *__restrict __resolved))
@@ -49,19 +49,19 @@ __NTH (realpath (const char *__restrict __name, char *__restrict __resolved))
 }
 
 
-extern int __ptsname_r_chk (int __fd, char *__buf, size_t __buflen,
+extern i32 __ptsname_r_chk (i32 __fd, char *__buf, size_t __buflen,
 			    size_t __nreal) __THROW __nonnull ((2));
-extern int __REDIRECT_NTH (__ptsname_r_alias, (int __fd, char *__buf,
+extern i32 __REDIRECT_NTH (__ptsname_r_alias, (i32 __fd, char *__buf,
 					       size_t __buflen), ptsname_r)
      __nonnull ((2));
-extern int __REDIRECT_NTH (__ptsname_r_chk_warn,
-			   (int __fd, char *__buf, size_t __buflen,
+extern i32 __REDIRECT_NTH (__ptsname_r_chk_warn,
+			   (i32 __fd, char *__buf, size_t __buflen,
 			    size_t __nreal), __ptsname_r_chk)
      __nonnull ((2)) __warnattr ("ptsname_r called with buflen bigger than "
 				 "size of buf");
 
-__fortify_function int
-__NTH (ptsname_r (int __fd, char *__buf, size_t __buflen))
+__fortify_function i32
+__NTH (ptsname_r (i32 __fd, char *__buf, size_t __buflen))
 {
   if (__bos (__buf) != (size_t) -1)
     {
@@ -74,12 +74,12 @@ __NTH (ptsname_r (int __fd, char *__buf, size_t __buflen))
 }
 
 
-extern int __wctomb_chk (char *__s, wchar_t __wchar, size_t __buflen)
+extern i32 __wctomb_chk (char *__s, wchar_t __wchar, size_t __buflen)
   __THROW __wur;
-extern int __REDIRECT_NTH (__wctomb_alias, (char *__s, wchar_t __wchar),
+extern i32 __REDIRECT_NTH (__wctomb_alias, (char *__s, wchar_t __wchar),
 			   wctomb) __wur;
 
-__fortify_function __wur int
+__fortify_function __wur i32
 __NTH (wctomb (char *__s, wchar_t __wchar))
 {
   /* We would have to include <limits.h> to get a definition of MB_LEN_MAX.

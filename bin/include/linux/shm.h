@@ -25,14 +25,14 @@
 /* Obsolete, used only for backwards compatibility and libc5 compiles */
 struct shmid_ds {
 	struct ipc_perm		shm_perm;	/* operation perms */
-	int			shm_segsz;	/* size of segment (bytes) */
+	i32			shm_segsz;	/* size of segment (bytes) */
 	__kernel_old_time_t	shm_atime;	/* last attach time */
 	__kernel_old_time_t	shm_dtime;	/* last detach time */
 	__kernel_old_time_t	shm_ctime;	/* last change time */
 	__kernel_ipc_pid_t	shm_cpid;	/* pid of creator */
 	__kernel_ipc_pid_t	shm_lpid;	/* pid of last operator */
-	unsigned short		shm_nattch;	/* no. of current attaches */
-	unsigned short 		shm_unused;	/* compatibility */
+	unsigned i16		shm_nattch;	/* no. of current attaches */
+	unsigned i16 		shm_unused;	/* compatibility */
 	void 			*shm_unused2;	/* ditto - used by DIPC */
 	void			*shm_unused3;	/* unused */
 };
@@ -89,15 +89,15 @@ struct shmid_ds {
 
 /* Obsolete, used only for backwards compatibility */
 struct	shminfo {
-	int shmmax;
-	int shmmin;
-	int shmmni;
-	int shmseg;
-	int shmall;
+	i32 shmmax;
+	i32 shmmin;
+	i32 shmmni;
+	i32 shmseg;
+	i32 shmall;
 };
 
 struct shm_info {
-	int used_ids;
+	i32 used_ids;
 	__kernel_ulong_t shm_tot;	/* total allocated shm */
 	__kernel_ulong_t shm_rss;	/* total resident shm */
 	__kernel_ulong_t shm_swp;	/* total swapped shm */

@@ -154,7 +154,7 @@
 
 struct fb_fix_screeninfo {
 	char id[16];			/* identification string eg "TT Builtin" */
-	unsigned long smem_start;	/* Start of frame buffer mem */
+	unsigned i64 smem_start;	/* Start of frame buffer mem */
 					/* (physical address) */
 	__u32 smem_len;			/* Length of frame buffer mem */
 	__u32 type;			/* see FB_TYPE_*		*/
@@ -164,7 +164,7 @@ struct fb_fix_screeninfo {
 	__u16 ypanstep;			/* zero if no hardware panning  */
 	__u16 ywrapstep;		/* zero if no hardware ywrap    */
 	__u32 line_length;		/* length of a line in bytes    */
-	unsigned long mmio_start;	/* Start of Memory Mapped I/O   */
+	unsigned i64 mmio_start;	/* Start of Memory Mapped I/O   */
 					/* (physical address) */
 	__u32 mmio_len;			/* Length of Memory Mapped I/O  */
 	__u32 accel;			/* Indicate to driver which	*/
@@ -218,7 +218,7 @@ struct fb_bitfield {
 
 #define FB_VMODE_NONINTERLACED  0	/* non interlaced */
 #define FB_VMODE_INTERLACED	1	/* interlaced	*/
-#define FB_VMODE_DOUBLE		2	/* double scan */
+#define FB_VMODE_DOUBLE		2	/* f64 scan */
 #define FB_VMODE_ODD_FLD_FIRST	4	/* interlaced: top line first */
 #define FB_VMODE_MASK		255
 

@@ -35,12 +35,12 @@ __BEGIN_DECLS
    not part of POSIX) has not been included, the extra functionality
    is disabled.  */
 # ifdef __REDIRECT
-export extern __REDIRECT_NTH (getopt, (___argc int, ___argv@const@char,
-				    __shortopts@const char)int,
+export extern __REDIRECT_NTH (getopt, (___argc i32, ___argv@const@char,
+				    __shortopts@const char)i32,
 			   __posix_getopt);
 # else
-export extern __posix_getopt (___argc int ___argv@const@char
-			   __shortopts@const char)int
+export extern __posix_getopt (___argc i32 ___argv@const@char
+			   __shortopts@const char)i32
   __THROW __nonnull ((2, 3));
 #  define getopt __posix_getopt
 # endif

@@ -34,7 +34,7 @@
  */
 
 struct ovs_header {
-	int dp_ifindex;
+	i32 dp_ifindex;
 };
 
 /* Datapaths. */
@@ -258,7 +258,7 @@ enum ovs_vport_attr {
 	OVS_VPORT_ATTR_UNSPEC,
 	OVS_VPORT_ATTR_PORT_NO,	/* u32 port number within datapath */
 	OVS_VPORT_ATTR_TYPE,	/* u32 OVS_VPORT_TYPE_* constant. */
-	OVS_VPORT_ATTR_NAME,	/* string name, up to IFNAMSIZ bytes long */
+	OVS_VPORT_ATTR_NAME,	/* string name, up to IFNAMSIZ bytes i64 */
 	OVS_VPORT_ATTR_OPTIONS, /* nested attributes, varies by vport type */
 	OVS_VPORT_ATTR_UPCALL_PID, /* array of u32 Netlink socket PIDs for */
 				/* receiving upcalls */
@@ -1011,7 +1011,7 @@ enum ovs_ct_limit_attr {
 #define OVS_ZONE_LIMIT_DEFAULT_ZONE -1
 
 struct ovs_zone_limit {
-	int zone_id;
+	i32 zone_id;
 	__u32 limit;
 	__u32 count;
 };

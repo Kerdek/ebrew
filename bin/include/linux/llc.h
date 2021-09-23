@@ -21,14 +21,14 @@
 struct sockaddr_llc {
 	__kernel_sa_family_t sllc_family; /* AF_LLC */
 	__kernel_sa_family_t sllc_arphrd; /* ARPHRD_ETHER */
-	unsigned char   sllc_test;
-	unsigned char   sllc_xid;
-	unsigned char	sllc_ua;	/* UA data, only for SOCK_STREAM. */
-	unsigned char   sllc_sap;
-	unsigned char   sllc_mac[IFHWADDRLEN];
-	unsigned char   __pad[__LLC_SOCK_SIZE__ -
+	unsigned i8   sllc_test;
+	unsigned i8   sllc_xid;
+	unsigned i8	sllc_ua;	/* UA data, only for SOCK_STREAM. */
+	unsigned i8   sllc_sap;
+	unsigned i8   sllc_mac[IFHWADDRLEN];
+	unsigned i8   __pad[__LLC_SOCK_SIZE__ -
 			      sizeof(__kernel_sa_family_t) * 2 -
-			      sizeof(unsigned char) * 4 - IFHWADDRLEN];
+			      sizeof(unsigned i8) * 4 - IFHWADDRLEN];
 };
 
 /* sockopt definitions. */
@@ -78,9 +78,9 @@ enum llc_sockopts {
 #define LLC_SAP_GLOBAL	0xFF		/* Global SAP. 			*/
 
 struct llc_pktinfo {
-	int lpi_ifindex;
-	unsigned char lpi_sap;
-	unsigned char lpi_mac[IFHWADDRLEN];
+	i32 lpi_ifindex;
+	unsigned i8 lpi_sap;
+	unsigned i8 lpi_mac[IFHWADDRLEN];
 };
 
 #endif /* __LINUX_LLC_H */

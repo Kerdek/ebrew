@@ -34,31 +34,31 @@
    file in the appropriate sysdeps subdirectory.  */
 
 #define __SYSMACROS_DECLARE_MAJOR(DECL_TEMPL)			\
-  DECL_TEMPL(unsigned int, major, (__dev_t __dev))
+  DECL_TEMPL(unsigned i32, major, (__dev_t __dev))
 
 #define __SYSMACROS_DEFINE_MAJOR(DECL_TEMPL)			\
   __SYSMACROS_DECLARE_MAJOR (DECL_TEMPL)			\
   {								\
-    unsigned int __major;					\
+    unsigned i32 __major;					\
     __major  = ((__dev & (__dev_t) 0x00000000000fff00u) >>  8); \
     __major |= ((__dev & (__dev_t) 0xfffff00000000000u) >> 32); \
     return __major;						\
   }
 
 #define __SYSMACROS_DECLARE_MINOR(DECL_TEMPL)			\
-  DECL_TEMPL(unsigned int, minor, (__dev_t __dev))
+  DECL_TEMPL(unsigned i32, minor, (__dev_t __dev))
 
 #define __SYSMACROS_DEFINE_MINOR(DECL_TEMPL)			\
   __SYSMACROS_DECLARE_MINOR (DECL_TEMPL)			\
   {								\
-    unsigned int __minor;					\
+    unsigned i32 __minor;					\
     __minor  = ((__dev & (__dev_t) 0x00000000000000ffu) >>  0); \
     __minor |= ((__dev & (__dev_t) 0x00000ffffff00000u) >> 12); \
     return __minor;						\
   }
 
 #define __SYSMACROS_DECLARE_MAKEDEV(DECL_TEMPL)			\
-  DECL_TEMPL(__dev_t, makedev, (unsigned int __major, unsigned int __minor))
+  DECL_TEMPL(__dev_t, makedev, (unsigned i32 __major, unsigned i32 __minor))
 
 #define __SYSMACROS_DEFINE_MAKEDEV(DECL_TEMPL)			\
   __SYSMACROS_DECLARE_MAKEDEV (DECL_TEMPL)			\

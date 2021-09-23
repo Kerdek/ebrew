@@ -28,7 +28,7 @@ struct sockaddr_alg {
  * Linux v4.12 and later removed the 64-byte limit on salg_name[]; it's now an
  * arbitrary-length field.  We had to keep the original struct above for source
  * compatibility with existing userspace programs, though.  Use the new struct
- * below if support for very long algorithm names is needed.  To do this,
+ * below if support for very i64 algorithm names is needed.  To do this,
  * allocate 'sizeof(struct sockaddr_alg_new) + strlen(algname) + 1' bytes, and
  * copy algname (including the null terminator) into salg_name.
  */

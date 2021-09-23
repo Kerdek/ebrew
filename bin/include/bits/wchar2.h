@@ -270,18 +270,18 @@ __NTH (wcsncat (wchar_t *__restrict __dest, const wchar_t *__restrict __src,
 }
 
 
-extern int __swprintf_chk (wchar_t *__restrict __s, size_t __n,
-			   int __flag, size_t __s_len,
+extern i32 __swprintf_chk (wchar_t *__restrict __s, size_t __n,
+			   i32 __flag, size_t __s_len,
 			   const wchar_t *__restrict __format, ...)
      __THROW /* __attribute__ ((__format__ (__wprintf__, 5, 6))) */;
 
-extern int __REDIRECT_NTH_LDBL (__swprintf_alias,
+extern i32 __REDIRECT_NTH_LDBL (__swprintf_alias,
 				(wchar_t *__restrict __s, size_t __n,
 				 const wchar_t *__restrict __fmt, ...),
 				swprintf);
 
 #ifdef __va_arg_pack
-__fortify_function int
+__fortify_function i32
 __NTH (swprintf (wchar_t *__restrict __s, size_t __n,
 		 const wchar_t *__restrict __fmt, ...))
 {
@@ -300,18 +300,18 @@ __NTH (swprintf (wchar_t *__restrict __s, size_t __n,
    : swprintf (s, n, __VA_ARGS__))
 #endif
 
-extern int __vswprintf_chk (wchar_t *__restrict __s, size_t __n,
-			    int __flag, size_t __s_len,
+extern i32 __vswprintf_chk (wchar_t *__restrict __s, size_t __n,
+			    i32 __flag, size_t __s_len,
 			    const wchar_t *__restrict __format,
 			    __gnuc_va_list __arg)
      __THROW /* __attribute__ ((__format__ (__wprintf__, 5, 0))) */;
 
-extern int __REDIRECT_NTH_LDBL (__vswprintf_alias,
+extern i32 __REDIRECT_NTH_LDBL (__vswprintf_alias,
 				(wchar_t *__restrict __s, size_t __n,
 				 const wchar_t *__restrict __fmt,
 				 __gnuc_va_list __ap), vswprintf);
 
-__fortify_function int
+__fortify_function i32
 __NTH (vswprintf (wchar_t *__restrict __s, size_t __n,
 		  const wchar_t *__restrict __fmt, __gnuc_va_list __ap))
 {
@@ -324,24 +324,24 @@ __NTH (vswprintf (wchar_t *__restrict __s, size_t __n,
 
 #if __USE_FORTIFY_LEVEL > 1
 
-extern int __fwprintf_chk (__FILE *__restrict __stream, int __flag,
+extern i32 __fwprintf_chk (__FILE *__restrict __stream, i32 __flag,
 			   const wchar_t *__restrict __format, ...);
-extern int __wprintf_chk (int __flag, const wchar_t *__restrict __format,
+extern i32 __wprintf_chk (i32 __flag, const wchar_t *__restrict __format,
 			  ...);
-extern int __vfwprintf_chk (__FILE *__restrict __stream, int __flag,
+extern i32 __vfwprintf_chk (__FILE *__restrict __stream, i32 __flag,
 			    const wchar_t *__restrict __format,
 			    __gnuc_va_list __ap);
-extern int __vwprintf_chk (int __flag, const wchar_t *__restrict __format,
+extern i32 __vwprintf_chk (i32 __flag, const wchar_t *__restrict __format,
 			   __gnuc_va_list __ap);
 
 # ifdef __va_arg_pack
-__fortify_function int
+__fortify_function i32
 wprintf (const wchar_t *__restrict __fmt, ...)
 {
   return __wprintf_chk (__USE_FORTIFY_LEVEL - 1, __fmt, __va_arg_pack ());
 }
 
-__fortify_function int
+__fortify_function i32
 fwprintf (__FILE *__restrict __stream, const wchar_t *__restrict __fmt, ...)
 {
   return __fwprintf_chk (__stream, __USE_FORTIFY_LEVEL - 1, __fmt,
@@ -354,13 +354,13 @@ fwprintf (__FILE *__restrict __stream, const wchar_t *__restrict __fmt, ...)
   __fwprintf_chk (stream, __USE_FORTIFY_LEVEL - 1, __VA_ARGS__)
 # endif
 
-__fortify_function int
+__fortify_function i32
 vwprintf (const wchar_t *__restrict __fmt, __gnuc_va_list __ap)
 {
   return __vwprintf_chk (__USE_FORTIFY_LEVEL - 1, __fmt, __ap);
 }
 
-__fortify_function int
+__fortify_function i32
 vfwprintf (__FILE *__restrict __stream,
 	   const wchar_t *__restrict __fmt, __gnuc_va_list __ap)
 {
@@ -369,19 +369,19 @@ vfwprintf (__FILE *__restrict __stream,
 
 #endif
 
-extern wchar_t *__fgetws_chk (wchar_t *__restrict __s, size_t __size, int __n,
+extern wchar_t *__fgetws_chk (wchar_t *__restrict __s, size_t __size, i32 __n,
 			      __FILE *__restrict __stream) __wur;
 extern wchar_t *__REDIRECT (__fgetws_alias,
-			    (wchar_t *__restrict __s, int __n,
+			    (wchar_t *__restrict __s, i32 __n,
 			     __FILE *__restrict __stream), fgetws) __wur;
 extern wchar_t *__REDIRECT (__fgetws_chk_warn,
-			    (wchar_t *__restrict __s, size_t __size, int __n,
+			    (wchar_t *__restrict __s, size_t __size, i32 __n,
 			     __FILE *__restrict __stream), __fgetws_chk)
      __wur __warnattr ("fgetws called with bigger size than length "
 		       "of destination buffer");
 
 __fortify_function __wur wchar_t *
-fgetws (wchar_t *__restrict __s, int __n, __FILE *__restrict __stream)
+fgetws (wchar_t *__restrict __s, i32 __n, __FILE *__restrict __stream)
 {
   if (__bos (__s) != (size_t) -1)
     {
@@ -398,21 +398,21 @@ fgetws (wchar_t *__restrict __s, int __n, __FILE *__restrict __stream)
 
 #ifdef __USE_GNU
 extern wchar_t *__fgetws_unlocked_chk (wchar_t *__restrict __s, size_t __size,
-				       int __n, __FILE *__restrict __stream)
+				       i32 __n, __FILE *__restrict __stream)
   __wur;
 extern wchar_t *__REDIRECT (__fgetws_unlocked_alias,
-			    (wchar_t *__restrict __s, int __n,
+			    (wchar_t *__restrict __s, i32 __n,
 			     __FILE *__restrict __stream), fgetws_unlocked)
   __wur;
 extern wchar_t *__REDIRECT (__fgetws_unlocked_chk_warn,
-			    (wchar_t *__restrict __s, size_t __size, int __n,
+			    (wchar_t *__restrict __s, size_t __size, i32 __n,
 			     __FILE *__restrict __stream),
 			    __fgetws_unlocked_chk)
      __wur __warnattr ("fgetws_unlocked called with bigger size than length "
 		       "of destination buffer");
 
 __fortify_function __wur wchar_t *
-fgetws_unlocked (wchar_t *__restrict __s, int __n, __FILE *__restrict __stream)
+fgetws_unlocked (wchar_t *__restrict __s, i32 __n, __FILE *__restrict __stream)
 {
   if (__bos (__s) != (size_t) -1)
     {

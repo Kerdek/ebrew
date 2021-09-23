@@ -48,7 +48,7 @@
 
 /*
  * DM_ULOG_CTR corresponds to (found in dm-dirty-log.h):
- * int (*ctr)(struct dm_dirty_log *log, struct dm_target *ti,
+ * i32 (*ctr)(struct dm_dirty_log *log, struct dm_target *ti,
  *	      unsigned argc, char **argv);
  *
  * Payload-to-userspace:
@@ -92,7 +92,7 @@
 
 /*
  * DM_ULOG_PRESUSPEND corresponds to (found in dm-dirty-log.h):
- * int (*presuspend)(struct dm_dirty_log *log);
+ * i32 (*presuspend)(struct dm_dirty_log *log);
  *
  * Payload-to-userspace:
  *	None.
@@ -111,7 +111,7 @@
 
 /*
  * DM_ULOG_POSTSUSPEND corresponds to (found in dm-dirty-log.h):
- * int (*postsuspend)(struct dm_dirty_log *log);
+ * i32 (*postsuspend)(struct dm_dirty_log *log);
  *
  * Payload-to-userspace:
  *	None.
@@ -130,7 +130,7 @@
 
 /*
  * DM_ULOG_RESUME corresponds to (found in dm-dirty-log.h):
- * int (*resume)(struct dm_dirty_log *log);
+ * i32 (*resume)(struct dm_dirty_log *log);
  *
  * Payload-to-userspace:
  *	None.
@@ -167,7 +167,7 @@
 
 /*
  * DM_ULOG_IS_CLEAN corresponds to (found in dm-dirty-log.h):
- * int (*is_clean)(struct dm_dirty_log *log, region_t region);
+ * i32 (*is_clean)(struct dm_dirty_log *log, region_t region);
  *
  * Payload-to-userspace:
  *	__u64 - the region to get clean status on
@@ -185,8 +185,8 @@
 
 /*
  * DM_ULOG_IN_SYNC corresponds to (found in dm-dirty-log.h):
- * int (*in_sync)(struct dm_dirty_log *log, region_t region,
- *		  int can_block);
+ * i32 (*in_sync)(struct dm_dirty_log *log, region_t region,
+ *		  i32 can_block);
  *
  * Payload-to-userspace:
  *	__u64 - the region to get sync status on
@@ -200,7 +200,7 @@
 
 /*
  * DM_ULOG_FLUSH corresponds to (found in dm-dirty-log.h):
- * int (*flush)(struct dm_dirty_log *log);
+ * i32 (*flush)(struct dm_dirty_log *log);
  *
  * Payload-to-userspace:
  *	If the 'integrated_flush' directive is present in the constructor
@@ -262,7 +262,7 @@
 
 /*
  * DM_ULOG_GET_RESYNC_WORK corresponds to (found in dm-dirty-log.h):
- * int (*get_resync_work)(struct dm_dirty_log *log, region_t *region);
+ * i32 (*get_resync_work)(struct dm_dirty_log *log, region_t *region);
  *
  * Payload-to-userspace:
  *	None.
@@ -281,7 +281,7 @@
 /*
  * DM_ULOG_SET_REGION_SYNC corresponds to (found in dm-dirty-log.h):
  * void (*set_region_sync)(struct dm_dirty_log *log,
- *			   region_t region, int in_sync);
+ *			   region_t region, i32 in_sync);
  *
  * Payload-to-userspace:
  *	{
@@ -317,7 +317,7 @@
 
 /*
  * DM_ULOG_STATUS_INFO corresponds to (found in dm-dirty-log.h):
- * int (*status)(struct dm_dirty_log *log, STATUSTYPE_INFO,
+ * i32 (*status)(struct dm_dirty_log *log, STATUSTYPE_INFO,
  *		 char *result, unsigned maxlen);
  *
  * Payload-to-userspace:
@@ -333,7 +333,7 @@
 
 /*
  * DM_ULOG_STATUS_TABLE corresponds to (found in dm-dirty-log.h):
- * int (*status)(struct dm_dirty_log *log, STATUSTYPE_TABLE,
+ * i32 (*status)(struct dm_dirty_log *log, STATUSTYPE_TABLE,
  *		 char *result, unsigned maxlen);
  *
  * Payload-to-userspace:
@@ -349,7 +349,7 @@
 
 /*
  * DM_ULOG_IS_REMOTE_RECOVERING corresponds to (found in dm-dirty-log.h):
- * int (*is_remote_recovering)(struct dm_dirty_log *log, region_t region);
+ * i32 (*is_remote_recovering)(struct dm_dirty_log *log, region_t region);
  *
  * Payload-to-userspace:
  *	__u64 - region to determine recovery status on

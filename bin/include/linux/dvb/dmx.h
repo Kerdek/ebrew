@@ -204,8 +204,8 @@ struct dmx_pes_filter_params {
  * @stc: output: stc in @base * 90 kHz units.
  */
 struct dmx_stc {
-	unsigned int num;
-	unsigned int base;
+	unsigned i32 num;
+	unsigned i32 base;
 	__u64 stc;
 };
 

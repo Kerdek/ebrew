@@ -30,22 +30,22 @@
  *
  */
 struct changer_params {
-	int cp_curpicker;  /* current transport element */
-	int cp_npickers;   /* number of transport elements      (CHET_MT) */
-	int cp_nslots;     /* number of storage elements        (CHET_ST) */
-	int cp_nportals;   /* number of import/export elements  (CHET_IE) */
-	int cp_ndrives;    /* number of data transfer elements  (CHET_DT) */
+	i32 cp_curpicker;  /* current transport element */
+	i32 cp_npickers;   /* number of transport elements      (CHET_MT) */
+	i32 cp_nslots;     /* number of storage elements        (CHET_ST) */
+	i32 cp_nportals;   /* number of import/export elements  (CHET_IE) */
+	i32 cp_ndrives;    /* number of data transfer elements  (CHET_DT) */
 };
 struct changer_vendor_params {
-	int  cvp_n1;       /* number of vendor specific elems   (CHET_V1) */
+	i32  cvp_n1;       /* number of vendor specific elems   (CHET_V1) */
 	char cvp_label1[16];
-	int  cvp_n2;       /* number of vendor specific elems   (CHET_V2) */
+	i32  cvp_n2;       /* number of vendor specific elems   (CHET_V2) */
 	char cvp_label2[16];
-	int  cvp_n3;       /* number of vendor specific elems   (CHET_V3) */
+	i32  cvp_n3;       /* number of vendor specific elems   (CHET_V3) */
 	char cvp_label3[16];
-	int  cvp_n4;       /* number of vendor specific elems   (CHET_V4) */
+	i32  cvp_n4;       /* number of vendor specific elems   (CHET_V4) */
 	char cvp_label4[16];
-	int  reserved[8];
+	i32  reserved[8];
 };
 
 
@@ -54,13 +54,13 @@ struct changer_vendor_params {
  *    move a medium from one element to another
  */
 struct changer_move {
-	int cm_fromtype;	/* type/unit of source element */
-	int cm_fromunit;	
-	int cm_totype;	/* type/unit of destination element */
-	int cm_tounit;
-	int cm_flags;
+	i32 cm_fromtype;	/* type/unit of source element */
+	i32 cm_fromunit;	
+	i32 cm_totype;	/* type/unit of destination element */
+	i32 cm_tounit;
+	i32 cm_flags;
 };
-#define CM_INVERT   1   /* flag: rotate media (for double-sided like MOD) */
+#define CM_INVERT   1   /* flag: rotate media (for f64-sided like MOD) */
 
 
 /*
@@ -70,13 +70,13 @@ struct changer_move {
  *    element #1 and #3 are allowed to be identical.
  */
 struct changer_exchange {
-	int ce_srctype;	    /* type/unit of element #1 */
-	int ce_srcunit;
-	int ce_fdsttype;    /* type/unit of element #2 */
-	int ce_fdstunit;
-	int ce_sdsttype;    /* type/unit of element #3 */
-	int ce_sdstunit;
-	int ce_flags;
+	i32 ce_srctype;	    /* type/unit of element #1 */
+	i32 ce_srcunit;
+	i32 ce_fdsttype;    /* type/unit of element #2 */
+	i32 ce_fdstunit;
+	i32 ce_sdsttype;    /* type/unit of element #3 */
+	i32 ce_sdstunit;
+	i32 ce_flags;
 };
 #define CE_INVERT1   1
 #define CE_INVERT2   2
@@ -87,9 +87,9 @@ struct changer_exchange {
  *    move the transport element (robot arm) to a specific element.
  */
 struct changer_position {
-	int cp_type;
-	int cp_unit;
-	int cp_flags;
+	i32 cp_type;
+	i32 cp_unit;
+	i32 cp_flags;
 };
 #define CP_INVERT   1
 
@@ -99,8 +99,8 @@ struct changer_position {
  *    get element status for all elements of a specific type
  */
 struct changer_element_status {
-	int             ces_type;
-	unsigned char   *ces_data;
+	i32             ces_type;
+	unsigned i8   *ces_data;
 };
 #define CESTATUS_FULL     0x01 /* full */
 #define CESTATUS_IMPEXP   0x02	/* media was imported (inserted by sysop) */
@@ -115,17 +115,17 @@ struct changer_element_status {
  *    get more detailed status information for a single element
  */
 struct changer_get_element {
-	int	cge_type;	 /* type/unit */
-	int	cge_unit;
-	int	cge_status;      /* status */
-	int     cge_errno;       /* errno */
-	int     cge_srctype;     /* source element of the last move/exchange */
-	int     cge_srcunit;
-	int     cge_id;          /* scsi id  (for data transfer elements) */
-	int     cge_lun;         /* scsi lun (for data transfer elements) */
+	i32	cge_type;	 /* type/unit */
+	i32	cge_unit;
+	i32	cge_status;      /* status */
+	i32     cge_errno;       /* errno */
+	i32     cge_srctype;     /* source element of the last move/exchange */
+	i32     cge_srcunit;
+	i32     cge_id;          /* scsi id  (for data transfer elements) */
+	i32     cge_lun;         /* scsi lun (for data transfer elements) */
 	char    cge_pvoltag[36]; /* primary volume tag */
 	char    cge_avoltag[36]; /* alternate volume tag */
-	int     cge_flags;
+	i32     cge_flags;
 };
 /* flags */
 #define CGE_ERRNO     0x01       /* errno available       */
@@ -141,10 +141,10 @@ struct changer_get_element {
  *    set volume tag
  */
 struct changer_set_voltag {
-	int	csv_type;	 /* type/unit */
-	int	csv_unit;
+	i32	csv_type;	 /* type/unit */
+	i32	csv_unit;
 	char    csv_voltag[36];  /* volume tag */
-	int     csv_flags;
+	i32     csv_flags;
 };
 #define CSV_PVOLTAG   0x01       /* primary volume tag */
 #define CSV_AVOLTAG   0x02       /* alternate volume tag */
@@ -154,8 +154,8 @@ struct changer_set_voltag {
 #define CHIOMOVE       _IOW('c', 1,struct changer_move)
 #define CHIOEXCHANGE   _IOW('c', 2,struct changer_exchange)
 #define CHIOPOSITION   _IOW('c', 3,struct changer_position)
-#define CHIOGPICKER    _IOR('c', 4,int)                        /* not impl. */
-#define CHIOSPICKER    _IOW('c', 5,int)                        /* not impl. */
+#define CHIOGPICKER    _IOR('c', 4,i32)                        /* not impl. */
+#define CHIOSPICKER    _IOW('c', 5,i32)                        /* not impl. */
 #define CHIOGPARAMS    _IOR('c', 6,struct changer_params)
 #define CHIOGSTATUS    _IOW('c', 8,struct changer_element_status)
 #define CHIOGELEM      _IOW('c',16,struct changer_get_element)

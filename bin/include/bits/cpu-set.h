@@ -114,7 +114,7 @@ typedef struct
 
 __BEGIN_DECLS
 
-extern int __sched_cpucount (size_t __setsize, const cpu_set_t *__setp)
+extern i32 __sched_cpucount (size_t __setsize, const cpu_set_t *__setp)
      __THROW;
 extern cpu_set_t *__sched_cpualloc (size_t __count) __THROW __wur;
 extern void __sched_cpufree (cpu_set_t *__set) __THROW;

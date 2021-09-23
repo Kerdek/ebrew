@@ -4,7 +4,7 @@
 
 #include <asm-generic/hugetlb_encode.h>
 
-/* flags for memfd_create(2) (unsigned int) */
+/* flags for memfd_create(2) (unsigned i32) */
 #define MFD_CLOEXEC		0x0001U
 #define MFD_ALLOW_SEALING	0x0002U
 #define MFD_HUGETLB		0x0004U

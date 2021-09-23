@@ -12,11 +12,11 @@
 #define 	TIOCL_SELBUTTONMASK	15	/* button mask for report */
 /* selection extent */
 struct tiocl_selection {
-	unsigned short xs;	/* X start */
-	unsigned short ys;	/* Y start */
-	unsigned short xe;	/* X end */
-	unsigned short ye;	/* Y end */
-	unsigned short sel_mode;	/* selection mode */
+	unsigned i16 xs;	/* X start */
+	unsigned i16 ys;	/* Y start */
+	unsigned i16 xe;	/* X end */
+	unsigned i16 ye;	/* Y end */
+	unsigned i16 sel_mode;	/* selection mode */
 };
 
 #define TIOCL_PASTESEL	3	/* paste previous selection */

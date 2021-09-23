@@ -25,19 +25,19 @@
 
    __MATHCALL (NAME,[_r], (ARGS...));
 
-   This means there is a function `NAME' returning `double' and a function
-   `NAMEf' returning `float'.  Each place `_Mdouble_' appears in the
-   prototype, that is actually `double' in the prototype for `NAME' and
-   `float' in the prototype for `NAMEf'.  Reentrant variant functions are
+   This means there is a function `NAME' returning `f64' and a function
+   `NAMEf' returning `f32'.  Each place `_Mdouble_' appears in the
+   prototype, that is actually `f64' in the prototype for `NAME' and
+   `f32' in the prototype for `NAMEf'.  Reentrant variant functions are
    called `NAME_r' and `NAMEf_r'.
 
-   Functions returning other types like `int' are declared using the macro:
+   Functions returning other types like `i32' are declared using the macro:
 
    __MATHDECL (TYPE, NAME,[_r], (ARGS...));
 
    This is just like __MATHCALL but for a function returning `TYPE'
    instead of `_Mdouble_'.  In all of these cases, there is still
-   both a `NAME' and a `NAMEf' that takes `float' arguments.
+   both a `NAME' and a `NAMEf' that takes `f32' arguments.
 
    Note that there must be no whitespace before the argument passed for
    NAME, to make token pasting work with -traditional.  */
@@ -95,10 +95,10 @@ __MATHCALL (atanh,, (_Mdouble_ __x));
 __MATHCALL_VEC (exp,, (_Mdouble_ __x));
 
 /* Break VALUE into a normalized fraction and an integral power of 2.  */
-__MATHCALL (frexp,, (_Mdouble_ __x, int *__exponent));
+__MATHCALL (frexp,, (_Mdouble_ __x, i32 *__exponent));
 
 /* X times (two to the EXP power).  */
-__MATHCALL (ldexp,, (_Mdouble_ __x, int __exponent));
+__MATHCALL (ldexp,, (_Mdouble_ __x, i32 __exponent));
 
 /* Natural logarithm of X.  */
 __MATHCALL_VEC (log,, (_Mdouble_ __x));
@@ -121,7 +121,7 @@ __MATHCALL (expm1,, (_Mdouble_ __x));
 /* Return log(1 + X).  */
 __MATHCALL (log1p,, (_Mdouble_ __x));
 
-/* Return the base 2 signed integral exponent of X.  */
+/* Return the base 2  integral exponent of X.  */
 __MATHCALL (logb,, (_Mdouble_ __x));
 #endif
 
@@ -174,12 +174,12 @@ __MATHCALL (fmod,, (_Mdouble_ __x, _Mdouble_ __y));
       && !__MATH_DECLARING_FLOATN
 /* Return 0 if VALUE is finite or NaN, +1 if it
    is +Infinity, -1 if it is -Infinity.  */
-__MATHDECL_1 (int,isinf,, (_Mdouble_ __value)) __attribute__ ((__const__));
+__MATHDECL_1 (i32,isinf,, (_Mdouble_ __value)) __attribute__ ((__const__));
 # endif
 
 # if !__MATH_DECLARING_FLOATN
 /* Return nonzero if VALUE is finite and not NaN.  */
-__MATHDECL_1 (int,finite,, (_Mdouble_ __value)) __attribute__ ((__const__));
+__MATHDECL_1 (i32,finite,, (_Mdouble_ __value)) __attribute__ ((__const__));
 
 /* Return the remainder of X/Y.  */
 __MATHCALL (drem,, (_Mdouble_ __x, _Mdouble_ __y));
@@ -192,12 +192,12 @@ __MATHCALL (significand,, (_Mdouble_ __x));
 #endif /* Use misc.  */
 
 #ifdef __USE_ISOC99
-/* Return X with its signed changed to Y's.  */
+/* Return X with its  changed to Y's.  */
 __MATHCALLX (copysign,, (_Mdouble_ __x, _Mdouble_ __y), (__const__));
 #endif
 
 #ifdef __USE_ISOC99
-/* Return representation of qNaN for double type.  */
+/* Return representation of qNaN for f64 type.  */
 __MATHCALL (nan,, (const char *__tagb));
 #endif
 
@@ -208,7 +208,7 @@ __MATHCALL (nan,, (const char *__tagb));
        || __MATH_DECLARING_DOUBLE == 0)) /* isnanf or isnanl don't.  */ \
       && !__MATH_DECLARING_FLOATN
 /* Return nonzero if VALUE is not a number.  */
-__MATHDECL_1 (int,isnan,, (_Mdouble_ __value)) __attribute__ ((__const__));
+__MATHDECL_1 (i32,isnan,, (_Mdouble_ __value)) __attribute__ ((__const__));
 # endif
 #endif
 
@@ -216,10 +216,10 @@ __MATHDECL_1 (int,isnan,, (_Mdouble_ __value)) __attribute__ ((__const__));
 /* Bessel functions.  */
 __MATHCALL (j0,, (_Mdouble_));
 __MATHCALL (j1,, (_Mdouble_));
-__MATHCALL (jn,, (int, _Mdouble_));
+__MATHCALL (jn,, (i32, _Mdouble_));
 __MATHCALL (y0,, (_Mdouble_));
 __MATHCALL (y1,, (_Mdouble_));
-__MATHCALL (yn,, (int, _Mdouble_));
+__MATHCALL (yn,, (i32, _Mdouble_));
 #endif
 
 
@@ -246,7 +246,7 @@ __MATHCALL (gamma,, (_Mdouble_));
 /* Reentrant version of lgamma.  This function uses the global variable
    `signgam'.  The reentrant version instead takes a pointer and stores
    the value through it.  */
-__MATHCALL (lgamma,_r, (_Mdouble_, int *__signgamp));
+__MATHCALL (lgamma,_r, (_Mdouble_, i32 *__signgamp));
 #endif
 
 
@@ -258,7 +258,7 @@ __MATHCALL (rint,, (_Mdouble_ __x));
 /* Return X + epsilon if X < Y, X - epsilon if X > Y.  */
 __MATHCALL (nextafter,, (_Mdouble_ __x, _Mdouble_ __y));
 # if defined __USE_ISOC99 && !defined __LDBL_COMPAT && !__MATH_DECLARING_FLOATN
-__MATHCALL (nexttoward,, (_Mdouble_ __x, long double __y));
+__MATHCALL (nexttoward,, (_Mdouble_ __x, f80 __y));
 # endif
 
 # if __GLIBC_USE (IEC_60559_BFP_EXT_C2X) || __MATH_DECLARING_FLOATN
@@ -273,21 +273,21 @@ __MATHCALL (remainder,, (_Mdouble_ __x, _Mdouble_ __y));
 
 # ifdef __USE_ISOC99
 /* Return X times (2 to the Nth power).  */
-__MATHCALL (scalbn,, (_Mdouble_ __x, int __n));
+__MATHCALL (scalbn,, (_Mdouble_ __x, i32 __n));
 # endif
 
 /* Return the binary exponent of X, which must be nonzero.  */
-__MATHDECL (int,ilogb,, (_Mdouble_ __x));
+__MATHDECL (i32,ilogb,, (_Mdouble_ __x));
 #endif
 
 #if __GLIBC_USE (IEC_60559_BFP_EXT_C2X) || __MATH_DECLARING_FLOATN
-/* Like ilogb, but returning long int.  */
-__MATHDECL (long int, llogb,, (_Mdouble_ __x));
+/* Like ilogb, but returning i64.  */
+__MATHDECL (i64, llogb,, (_Mdouble_ __x));
 #endif
 
 #ifdef __USE_ISOC99
 /* Return X times (2 to the Nth power).  */
-__MATHCALL (scalbln,, (_Mdouble_ __x, long int __n));
+__MATHCALL (scalbln,, (_Mdouble_ __x, i64 __n));
 
 /* Round X to integral value in floating-point format using current
    rounding direction, but do not raise inexact exception.  */
@@ -304,22 +304,22 @@ __MATHCALLX (trunc,, (_Mdouble_ __x), (__const__));
 /* Compute remainder of X and Y and put in *QUO a value with sign of x/y
    and magnitude congruent `mod 2^n' to the magnitude of the integral
    quotient x/y, with n >= 3.  */
-__MATHCALL (remquo,, (_Mdouble_ __x, _Mdouble_ __y, int *__quo));
+__MATHCALL (remquo,, (_Mdouble_ __x, _Mdouble_ __y, i32 *__quo));
 
 
 /* Conversion functions.  */
 
 /* Round X to nearest integral value according to current rounding
    direction.  */
-__MATHDECL (long int,lrint,, (_Mdouble_ __x));
+__MATHDECL (i64,lrint,, (_Mdouble_ __x));
 __extension__
-__MATHDECL (long long int,llrint,, (_Mdouble_ __x));
+__MATHDECL (i64,llrint,, (_Mdouble_ __x));
 
 /* Round X to nearest integral value, rounding halfway cases away from
    zero.  */
-__MATHDECL (long int,lround,, (_Mdouble_ __x));
+__MATHDECL (i64,lround,, (_Mdouble_ __x));
 __extension__
-__MATHDECL (long long int,llround,, (_Mdouble_ __x));
+__MATHDECL (i64,llround,, (_Mdouble_ __x));
 
 
 /* Return positive difference between X and Y.  */
@@ -339,27 +339,27 @@ __MATHCALL (fma,, (_Mdouble_ __x, _Mdouble_ __y, _Mdouble_ __z));
 /* Round X to nearest integer value, rounding halfway cases to even.  */
 __MATHCALLX (roundeven,, (_Mdouble_ __x), (__const__));
 
-/* Round X to nearest signed integer value, not raising inexact, with
+/* Round X to nearest  integer value, not raising inexact, with
    control of rounding direction and width of result.  */
-__MATHDECL (__intmax_t, fromfp,, (_Mdouble_ __x, int __round,
-				  unsigned int __width));
+__MATHDECL (__intmax_t, fromfp,, (_Mdouble_ __x, i32 __round,
+				  unsigned i32 __width));
 
 /* Round X to nearest unsigned integer value, not raising inexact,
    with control of rounding direction and width of result.  */
-__MATHDECL (__uintmax_t, ufromfp,, (_Mdouble_ __x, int __round,
-				    unsigned int __width));
+__MATHDECL (__uintmax_t, ufromfp,, (_Mdouble_ __x, i32 __round,
+				    unsigned i32 __width));
 
-/* Round X to nearest signed integer value, raising inexact for
+/* Round X to nearest  integer value, raising inexact for
    non-integers, with control of rounding direction and width of
    result.  */
-__MATHDECL (__intmax_t, fromfpx,, (_Mdouble_ __x, int __round,
-				   unsigned int __width));
+__MATHDECL (__intmax_t, fromfpx,, (_Mdouble_ __x, i32 __round,
+				   unsigned i32 __width));
 
 /* Round X to nearest unsigned integer value, raising inexact for
    non-integers, with control of rounding direction and width of
    result.  */
-__MATHDECL (__uintmax_t, ufromfpx,, (_Mdouble_ __x, int __round,
-				     unsigned int __width));
+__MATHDECL (__uintmax_t, ufromfpx,, (_Mdouble_ __x, i32 __round,
+				     unsigned i32 __width));
 
 /* Return value with maximum magnitude.  */
 __MATHCALLX (fmaxmag,, (_Mdouble_ __x, _Mdouble_ __y), (__const__));
@@ -368,17 +368,17 @@ __MATHCALLX (fmaxmag,, (_Mdouble_ __x, _Mdouble_ __y), (__const__));
 __MATHCALLX (fminmag,, (_Mdouble_ __x, _Mdouble_ __y), (__const__));
 
 /* Canonicalize floating-point representation.  */
-__MATHDECL_1 (int, canonicalize,, (_Mdouble_ *__cx, const _Mdouble_ *__x));
+__MATHDECL_1 (i32, canonicalize,, (_Mdouble_ *__cx, const _Mdouble_ *__x));
 #endif
 
 #if __GLIBC_USE (IEC_60559_BFP_EXT) || __MATH_DECLARING_FLOATN
 /* Total order operation.  */
-__MATHDECL_1 (int, totalorder,, (const _Mdouble_ *__x,
+__MATHDECL_1 (i32, totalorder,, (const _Mdouble_ *__x,
 				 const _Mdouble_ *__y))
      __attribute_pure__;
 
 /* Total order operation on absolute values.  */
-__MATHDECL_1 (int, totalordermag,, (const _Mdouble_ *__x,
+__MATHDECL_1 (i32, totalordermag,, (const _Mdouble_ *__x,
 				    const _Mdouble_ *__y))
      __attribute_pure__;
 
@@ -386,10 +386,10 @@ __MATHDECL_1 (int, totalordermag,, (const _Mdouble_ *__x,
 __MATHCALL (getpayload,, (const _Mdouble_ *__x));
 
 /* Set quiet NaN payload.  */
-__MATHDECL_1 (int, setpayload,, (_Mdouble_ *__x, _Mdouble_ __payload));
+__MATHDECL_1 (i32, setpayload,, (_Mdouble_ *__x, _Mdouble_ __payload));
 
 /* Set signaling NaN payload.  */
-__MATHDECL_1 (int, setpayloadsig,, (_Mdouble_ *__x, _Mdouble_ __payload));
+__MATHDECL_1 (i32, setpayloadsig,, (_Mdouble_ *__x, _Mdouble_ __payload));
 #endif
 
 #if (defined __USE_MISC || (defined __USE_XOPEN_EXTENDED \

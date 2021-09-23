@@ -67,24 +67,24 @@ enum vpfe_ccdc_gamma_width {
 /* structure for ALaw */
 struct vpfe_ccdc_a_law {
 	/* Enable/disable A-Law */
-	unsigned char enable;
+	unsigned i8 enable;
 	/* Gamma Width Input */
 	enum vpfe_ccdc_gamma_width gamma_wd;
 };
 
 /* structure for Black Clamping */
 struct vpfe_ccdc_black_clamp {
-	unsigned char enable;
+	unsigned i8 enable;
 	/* only if bClampEnable is TRUE */
 	enum vpfe_ccdc_sample_length sample_pixel;
 	/* only if bClampEnable is TRUE */
 	enum vpfe_ccdc_sample_line sample_ln;
 	/* only if bClampEnable is TRUE */
-	unsigned short start_pixel;
+	unsigned i16 start_pixel;
 	/* only if bClampEnable is TRUE */
-	unsigned short sgain;
+	unsigned i16 sgain;
 	/* only if bClampEnable is FALSE */
-	unsigned short dc_sub;
+	unsigned i16 dc_sub;
 };
 
 /* structure for Black Level Compensation */

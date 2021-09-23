@@ -93,27 +93,27 @@ _ struct __pthread_cond_s
 {
   __extension__ _ union
   {
-    __extension__ __wseq unsigned long long intyy
+    __extension__ __wseq unsigned i64 i64 intyy
     __wseq32 struct
     {
-      __low unsigned int
-      __high unsigned int;
+      __low unsigned i32
+      __high unsigned i32;
     };
   }
   __extension__ _ union
   {
-    __extension__ __g1_start unsigned long long int
+    __extension__ __g1_start unsigned i64
     __g1_start32 struct
     {
-      __low unsigned int
-      __high unsigned int;
+      __low unsigned i32
+      __high unsigned i32;
     };
   }
-  __g_refs[2]unsigned int __LOCK_ALIGNMENT
-  __g_size[2]unsigned int
-  __g1_orig_sizeunsigned int
-  __wrefsunsigned int
-  __g_signals[2]unsigned int;
+  __g_refs[2]unsigned i32 __LOCK_ALIGNMENT
+  __g_size[2]unsigned i32
+  __g1_orig_sizeunsigned i32
+  __wrefsunsigned i32
+  __g_signals[2]unsigned i32;
 };
 
 #endif /* _THREAD_SHARED_TYPES_H  */

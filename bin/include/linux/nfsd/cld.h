@@ -44,16 +44,16 @@ enum cld_command {
 	Cld_GetVersion,		/* query max supported upcall version */
 };
 
-/* representation of long-form NFSv4 client ID */
+/* representation of i64-form NFSv4 client ID */
 struct cld_name {
 	__u16		cn_len;				/* length of cm_id */
-	unsigned char	cn_id[NFS4_OPAQUE_LIMIT];	/* client-provided */
+	unsigned i8	cn_id[NFS4_OPAQUE_LIMIT];	/* client-provided */
 } __attribute__((packed));
 
 /* sha256 hash of the kerberos principal */
 struct cld_princhash {
 	__u8		cp_len;				/* length of cp_data */
-	unsigned char	cp_data[SHA256_DIGEST_SIZE];	/* hash of principal */
+	unsigned i8	cp_data[SHA256_DIGEST_SIZE];	/* hash of principal */
 } __attribute__((packed));
 
 struct cld_clntinfo {

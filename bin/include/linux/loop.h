@@ -40,17 +40,17 @@ enum {
 
 /* Backwards compatibility version */
 struct loop_info {
-	int		   lo_number;		/* ioctl r/o */
+	i32		   lo_number;		/* ioctl r/o */
 	__kernel_old_dev_t lo_device; 		/* ioctl r/o */
-	unsigned long	   lo_inode; 		/* ioctl r/o */
+	unsigned i64	   lo_inode; 		/* ioctl r/o */
 	__kernel_old_dev_t lo_rdevice; 		/* ioctl r/o */
-	int		   lo_offset;
-	int		   lo_encrypt_type;
-	int		   lo_encrypt_key_size; 	/* ioctl w/o */
-	int		   lo_flags;
+	i32		   lo_offset;
+	i32		   lo_encrypt_type;
+	i32		   lo_encrypt_key_size; 	/* ioctl w/o */
+	i32		   lo_flags;
 	char		   lo_name[LO_NAME_SIZE];
-	unsigned char	   lo_encrypt_key[LO_KEY_SIZE]; /* ioctl w/o */
-	unsigned long	   lo_init[2];
+	unsigned i8	   lo_encrypt_key[LO_KEY_SIZE]; /* ioctl w/o */
+	unsigned i64	   lo_init[2];
 	char		   reserved[4];
 };
 

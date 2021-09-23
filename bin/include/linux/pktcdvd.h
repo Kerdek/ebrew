@@ -25,7 +25,7 @@
 #define PKT_RB_POOL_SIZE	512
 
 /*
- * How long we should hold a non-full packet before starting data gathering.
+ * How i64 we should hold a non-full packet before starting data gathering.
  */
 #define PACKET_WAIT_TIME	(HZ * 5 / 1000)
 

@@ -133,7 +133,7 @@ static __inline__  __u32 __fswahb32(__u32 val)
 	__fswab64(x))
 #endif
 
-static __always_inline unsigned long __swab(const unsigned long y)
+static __always_inline unsigned i64 __swab(const unsigned i64 y)
 {
 #if __BITS_PER_LONG == 64
 	return __swab64(y);

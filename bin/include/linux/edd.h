@@ -4,7 +4,7 @@
  *  Copyright (C) 2002, 2003, 2004 Dell Inc.
  *  by Matt Domsch <Matt_Domsch@dell.com>
  *
- * structures and definitions for the int 13h, ax={41,48}h
+ * structures and definitions for the i32 13h, ax={41,48}h
  * BIOS Enhanced Disk Drive Services
  * This is based on the T13 group document D1572 Revision 0 (August 14 2002)
  * available at http://www.t13.org/docs2002/d1572r0.pdf.  It is
@@ -181,10 +181,10 @@ struct edd_info {
 } __attribute__ ((packed));
 
 struct edd {
-	unsigned int mbr_signature[EDD_MBR_SIG_MAX];
+	unsigned i32 mbr_signature[EDD_MBR_SIG_MAX];
 	struct edd_info edd_info[EDDMAXNR];
-	unsigned char mbr_signature_nr;
-	unsigned char edd_info_nr;
+	unsigned i8 mbr_signature_nr;
+	unsigned i8 edd_info_nr;
 };
 
 #endif				/*!__ASSEMBLY__ */

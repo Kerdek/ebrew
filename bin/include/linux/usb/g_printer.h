@@ -30,7 +30,7 @@
  * Don't add any colliding codes to either driver, and keep
  * them in unique ranges (size 0x20 for now).
  */
-#define GADGET_GET_PRINTER_STATUS	_IOR('g', 0x21, unsigned char)
-#define GADGET_SET_PRINTER_STATUS	_IOWR('g', 0x22, unsigned char)
+#define GADGET_GET_PRINTER_STATUS	_IOR('g', 0x21, unsigned i8)
+#define GADGET_SET_PRINTER_STATUS	_IOWR('g', 0x22, unsigned i8)
 
 #endif /* __LINUX_USB_G_PRINTER_H */

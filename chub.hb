@@ -1,9 +1,9 @@
 #include "shite.hb"
 
-maxl(a long b long) long = (a > b) ? a : b;;
-minl(a long b long) long = (a < b) ? a : b;;
-maxul(a unsigned long b unsigned long) unsigned long = (a > b) ? a : b;;
-minul(a unsigned long b unsigned long) unsigned long = (a < b) ? a : b;;
+maxl(a i64 b i64) i64 = (a > b) ? a : b;;
+minl(a i64 b i64) i64 = (a < b) ? a : b;;
+maxul(a unsigned i64 b unsigned i64) unsigned i64 = (a > b) ? a : b;;
+minul(a unsigned i64 b unsigned i64) unsigned i64 = (a < b) ? a : b;;
 
 type
   NodeKind enum
@@ -21,11 +21,12 @@ type
   ;
 
   TypeKind enum
-    TY_VOID    TY_BOOL    TY_CHAR
-    TY_SHORT   TY_INT     TY_LONG
-    TY_FLOAT   TY_DOUBLE  TY_LDOUBLE
+    TY_VOID    TY_BOOL    TY_INT08
+    TY_INT16   TY_INT32     TY_INT64
+    TY_FLOAT32   TY_FLOAT64  TY_FLOAT80
     TY_FUNC    TY_ARRAY   TY_ENUM
     TY_STRUCT  TY_UNION   TY_PTR
+    TY_UNSIGNED
   ;
 
   TokenKind enum
@@ -37,16 +38,16 @@ type
 
   StringArray struct {
     data     @@char
-    capacity   int
-    len        int;
+    capacity   i32
+    len        i32;
   }
 
   File struct {
     name         @char
-    file_no       int
+    file_no       i32
     contents     @char
     display_name @char
-    line_delta    int;
+    line_delta    i32;
   }
 
   Hideset struct {
@@ -57,16 +58,16 @@ type
   Token struct {
     kind        TokenKind
     s       @same
-    val         int64_t
-    fval        long double
+    val         i64
+    fval        f80
     loc        @char
-    len         int
+    len         i32
     t         @
     str        @char
     file       @File
     filename   @char
-    line_no     int
-    line_delta  int
+    line_no     i32
+    line_delta  i32
     at_bol      bool
     has_space   bool
     hideset    @Hideset
@@ -78,26 +79,25 @@ type
     t           @
     j          @Token
     name         @Token
-    idx           int
-    alignment     int
-    offset        int
+    idx           i32
+    alignment     i32
+    offset        i32
     is_bitfield   bool
-    bit_offset    int
-    bit_width     int;
+    bit_offset    i32
+    bit_width     i32;
   }
 
   Type struct  {
     kind          TypeKind
-    size          int
-    alignment     int
-    is_unsigned   bool
+    size          i32
+    alignment     i32
     s         @same
     is_atomic     bool
     origin       @same
     base         @same
     name         @Token
     name_pos     @Token
-    array_len     int
+    array_len     i32
     members      @Member
     is_flexible   bool
     is_packed     bool
@@ -108,9 +108,9 @@ type
 
   Relocation struct {
     s       @same
-    offset      int
+    offset      i32
     label     @@char
-    addend      long;
+    addend      i64;
   }
 
   Obj struct {
@@ -119,8 +119,8 @@ type
     t              @Type
     j             @Token
     is_local         bool
-    alignment        int
-    offset           int
+    alignment        i32
+    offset           i32
     is_function      bool
     is_definition    bool
     is_export        bool
@@ -134,7 +134,7 @@ type
     locals          @same
     va_area         @same
     alloca_bottom   @same
-    stack_size       int
+    stack_size       i32
     is_live          bool
     is_root          bool
     refs             StringArray;
@@ -163,23 +163,23 @@ type
     asm_str       @char
     var           @Obj
     kind           NodeKind
-    begin          long
-    end            long
-    val            long
-    fval           long double
+    begin          i64
+    end            i64
+    val            i64
+    fval           f80
     pass_by_stack  bool;
   }
 
   HashEntry struct {
     key    @char
-    keylen  int
+    keylen  i32
     val    @;
   }
 
   HashMap struct {
     buckets  @HashEntry
-    capacity  int
-    used      int;
+    capacity  i32
+    used      i32;
   }
 ;
 export advance(k @@Token) @Token;
@@ -195,28 +195,24 @@ export skip(j@ Token op@ char)@ Token;
 export consume(rest@@ Token j@ Token str@ char)bool;
 export convert_pp_tokens(j@ Token);
 export get_input_files(void)@@ File;
-export new_file(name@ char file_no int contents@ char)@ File;
+export new_file(name@ char file_no i32 contents@ char)@ File;
 export tokenize_string_literal(j@ Token basety@ Type)@ Token;
 export tokenize(file@ File)@ Token;
 export tokenize_file(filename@ char)@ Token;
 export preprocess(j@ Token include_paths @StringArray)@ Token;
-export const_expr(k @@Token) int64_t;
+export const_expr(k @@Token) i64;
 export parse(j@ Token)@ Obj;
 
 export extern
   ty_void       @Type
   ty_bool       @Type
-  ty_char       @Type
-  ty_short      @Type
-  ty_int        @Type
-  ty_long       @Type
-  ty_uchar      @Type
-  ty_ushort     @Type
-  ty_uint       @Type
-  ty_ulong      @Type
-  ty_float      @Type
-  ty_double     @Type
-  ty_ldouble    @Type
+  ty_i8       @Type
+  ty_i16      @Type
+  ty_i32        @Type
+  ty_i64       @Type
+  ty_f32      @Type
+  ty_f64     @Type
+  ty_f80    @Type
 ;
 
 export is_integer       (t         @Type           ) bool ;
@@ -226,28 +222,29 @@ export format_type      (t         @Type s    @char)      ;
 export type_equal       (t         @Type u    @Type) bool ;
 export copy_type        (t         @Type           ) @Type;
 export pointer_to       (base      @Type           ) @Type;
+export ring_of      (base      @Type           ) @Type;
 export func_type        (return_ty @Type           ) @Type;
-export array_of         (base      @Type size  int ) @Type;
+export array_of         (base      @Type size  i32 ) @Type;
 export enum_type        (           void           ) @Type;
 export struct_type      (           void           ) @Type;
 export preprocess(j@ Token include_paths @StringArray)@ Token;
 
 export codegen(prog@ Obj out@ FILE);
-export align_to(n int alignment int)int;
+export align_to(n i32 alignment i32)i32;
 
-export encode_utf8(buf@ char c uint32_t)int;
-export decode_utf8(new_pos@@ char p@ char)uint32_t;
-export is_ident1(c uint32_t)bool;
-export is_ident2(c uint32_t)bool;
-export display_width(p@ char len int)int;
+export encode_utf8(buf@ char c unsigned i32)i32;
+export decode_utf8(new_pos@@ char p@ char)unsigned i32;
+export is_ident1(c unsigned i32)bool;
+export is_ident2(c unsigned i32)bool;
+export display_width(p@ char len i32)i32;
 
 export hashmap_get(map@ HashMap key@ char)@;
-export hashmap_get2(map@ HashMap key@ char keylen int)@;
+export hashmap_get2(map@ HashMap key@ char keylen i32)@;
 export hashmap_put(map@ HashMap key@ char val@);
-export hashmap_put2(map@ HashMap key@ char keylen int val@);
+export hashmap_put2(map@ HashMap key@ char keylen i32 val@);
 export hashmap_delete(map@ HashMap key@ char);
 
-export hashmap_delete2(map@ HashMap key@ char keylen int);
+export hashmap_delete2(map@ HashMap key@ char keylen i32);
 export hashmap_test(void);
 
 export file_exists(path@ char)bool;

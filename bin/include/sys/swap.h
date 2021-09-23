@@ -33,10 +33,10 @@ __BEGIN_DECLS
 
 /* Make the block special device PATH available to the system for swapping.
    This call is restricted to the super-user.  */
-extern int swapon (const char *__path, int __flags) __THROW;
+extern i32 swapon (const char *__path, i32 __flags) __THROW;
 
 /* Stop using block special device PATH for swapping.  */
-extern int swapoff (const char *__path) __THROW;
+extern i32 swapoff (const char *__path) __THROW;
 
 __END_DECLS
 

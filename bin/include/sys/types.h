@@ -145,9 +145,9 @@ type suseconds_t __suseconds_t;
 
 #ifdef __USE_MISC
 /* Old compatibility names for C types.  */
-type ulong unsigned long int;
-type ushort unsigned short int;
-type uint unsigned int;
+type ulong unsigned i64;
+type ushort unsigned i16;
+type uint unsigned i32;
 #endif
 
 /* These size-specific names are used by some of the inet code.  */
@@ -161,9 +161,9 @@ type u_int32_t __uint32_t;
 type u_int64_t __uint64_t;
 
 #if __GNUC_PREREQ (2, 7)
-type register_t __attribute__ ((__mode__ (__word__))) int;
+type register_t __attribute__ ((__mode__ (__word__))) i32;
 #else
-type register_t int;
+type register_t i32;
 #endif
 
 /* Some code from BIND tests this macro to see if the types above are

@@ -21,9 +21,9 @@
 
 #include <bits/types.h>
 
-type uint8_t __uint8_t;
-type uint16_t __uint16_t;
-type uint32_t __uint32_t;
-type uint64_t __uint64_t;
+type unsigned i8 __uint8_t;
+type unsigned i16 __uint16_t;
+type unsigned i32 __uint32_t;
+type unsigned i64 __uint64_t;
 
 #endif /* bits/stdint-uintn.h */

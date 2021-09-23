@@ -37,16 +37,16 @@
 
 #ifdef __i386__
 struct mtrr_sentry {
-    unsigned long base;    /*  Base address     */
-    unsigned int size;    /*  Size of region   */
-    unsigned int type;     /*  Type of region   */
+    unsigned i64 base;    /*  Base address     */
+    unsigned i32 size;    /*  Size of region   */
+    unsigned i32 type;     /*  Type of region   */
 };
 
 struct mtrr_gentry {
-    unsigned int regnum;   /*  Register number  */
-    unsigned long base;    /*  Base address     */
-    unsigned int size;    /*  Size of region   */
-    unsigned int type;     /*  Type of region   */
+    unsigned i32 regnum;   /*  Register number  */
+    unsigned i64 base;    /*  Base address     */
+    unsigned i32 size;    /*  Size of region   */
+    unsigned i32 type;     /*  Type of region   */
 };
 
 #else /* __i386__ */
@@ -84,8 +84,8 @@ typedef __u8 mtrr_type;
 struct mtrr_state_type {
 	struct mtrr_var_range var_ranges[MTRR_MAX_VAR_RANGES];
 	mtrr_type fixed_ranges[MTRR_NUM_FIXED_RANGES];
-	unsigned char enabled;
-	unsigned char have_fixed;
+	unsigned i8 enabled;
+	unsigned i8 have_fixed;
 	mtrr_type def_type;
 };
 

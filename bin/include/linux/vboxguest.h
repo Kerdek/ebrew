@@ -148,7 +148,7 @@ struct vbg_ioctl_hgcm_call {
 	/** Input: Function number. */
 	__u32 function;
 	/**
-	 * Input: How long to wait (milliseconds) for completion before
+	 * Input: How i64 to wait (milliseconds) for completion before
 	 * cancelling the call. Set to -1 to wait indefinitely.
 	 */
 	__u32 timeout_ms;

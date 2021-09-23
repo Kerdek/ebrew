@@ -31,9 +31,9 @@ _ struct __locale_struct
   __locales[13]@struct __locale_data /* 13 = __LC_LAST. */
 
   /* To increase the speed of this solution we add some special members.  */
-  __ctype_b@const unsigned short int
-  __ctype_tolower@const int
-  __ctype_toupper@const int
+  __ctype_b@const unsigned i16
+  __ctype_tolower@const i32
+  __ctype_toupper@const i32
 
   /* Note: LC_ALL is not a valid index into this array.  */
   __names[13]@const char;

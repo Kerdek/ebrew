@@ -70,7 +70,7 @@ struct ieee_ets {
 
 /* This structure contains rate limit extension to the IEEE 802.1Qaz ETS
  * managed object.
- * Values are 64 bits long and specified in Kbps to enable usage over both
+ * Values are 64 bits i64 and specified in Kbps to enable usage over both
  * slow and very fast networks.
  *
  * @tc_maxrate: maximal tc tx bandwidth indexed by traffic class

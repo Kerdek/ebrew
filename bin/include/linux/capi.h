@@ -35,7 +35,7 @@ typedef struct capi_register_params {	/* CAPI_REGISTER */
 
 #define CAPI_MANUFACTURER_LEN		64
 
-#define	CAPI_GET_MANUFACTURER	_IOWR('C',0x06,int)	/* broken: wanted size 64 (CAPI_MANUFACTURER_LEN) */
+#define	CAPI_GET_MANUFACTURER	_IOWR('C',0x06,i32)	/* broken: wanted size 64 (CAPI_MANUFACTURER_LEN) */
 
 /*
  * CAPI_GET_VERSION
@@ -55,7 +55,7 @@ typedef struct capi_version {
  */
 
 #define CAPI_SERIAL_LEN		8
-#define CAPI_GET_SERIAL		_IOWR('C',0x08,int)	/* broken: wanted size 8 (CAPI_SERIAL_LEN) */
+#define CAPI_GET_SERIAL		_IOWR('C',0x08,i32)	/* broken: wanted size 8 (CAPI_SERIAL_LEN) */
 
 /*
  * CAPI_GET_PROFILE
@@ -75,7 +75,7 @@ typedef struct capi_profile {
 #define CAPI_GET_PROFILE	_IOWR('C',0x09,struct capi_profile)
 
 typedef struct capi_manufacturer_cmd {
-	unsigned long cmd;
+	unsigned i64 cmd;
 	void *data;
 } capi_manufacturer_cmd;
 

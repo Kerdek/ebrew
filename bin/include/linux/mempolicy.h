@@ -11,7 +11,7 @@
 
 /*
  * Both the MPOL_* mempolicy mode and the MPOL_F_* optional mode flags are
- * passed by the user to either set_mempolicy() or mbind() in an 'int' actual.
+ * passed by the user to either set_mempolicy() or mbind() in an 'i32' actual.
  * The MPOL_MODE_FLAGS macro determines the legal set of optional mode flags.
  */
 

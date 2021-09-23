@@ -29,8 +29,8 @@
 
 struct ivtvfb_dma_frame {
 	void *source;
-	unsigned long dest_offset;
-	int count;
+	unsigned i64 dest_offset;
+	i32 count;
 };
 
 #define IVTVFB_IOC_DMA_FRAME 	_IOW('V', BASE_VIDIOC_PRIVATE+0, struct ivtvfb_dma_frame)

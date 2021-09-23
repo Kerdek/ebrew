@@ -154,7 +154,7 @@
 #define F_OWNER_PGRP	2
 
 struct f_owner_ex {
-	int	type;
+	i32	type;
 	__kernel_pid_t	pid;
 };
 
@@ -194,8 +194,8 @@ struct f_owner_ex {
 #endif
 
 struct flock {
-	short	l_type;
-	short	l_whence;
+	i16	l_type;
+	i16	l_whence;
 	__kernel_off_t	l_start;
 	__kernel_off_t	l_len;
 	__kernel_pid_t	l_pid;
@@ -209,8 +209,8 @@ struct flock {
 #endif
 
 struct flock64 {
-	short  l_type;
-	short  l_whence;
+	i16  l_type;
+	i16  l_whence;
 	__kernel_loff_t l_start;
 	__kernel_loff_t l_len;
 	__kernel_pid_t  l_pid;

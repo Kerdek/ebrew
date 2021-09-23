@@ -38,17 +38,17 @@ enum
 __BEGIN_DECLS
 
 /* Return file descriptor for new interval timer source.  */
-extern int timerfd_create (__clockid_t __clock_id, int __flags) __THROW;
+extern i32 timerfd_create (__clockid_t __clock_id, i32 __flags) __THROW;
 
 /* Set next expiration time of interval timer source UFD to UTMR.  If
    FLAGS has the TFD_TIMER_ABSTIME flag set the timeout value is
    absolute.  Optionally return the old expiration time in OTMR.  */
-extern int timerfd_settime (int __ufd, int __flags,
+extern i32 timerfd_settime (i32 __ufd, i32 __flags,
 			    const struct itimerspec *__utmr,
 			    struct itimerspec *__otmr) __THROW;
 
 /* Return the next expiration time of UFD.  */
-extern int timerfd_gettime (int __ufd, struct itimerspec *__otmr) __THROW;
+extern i32 timerfd_gettime (i32 __ufd, struct itimerspec *__otmr) __THROW;
 
 __END_DECLS
 

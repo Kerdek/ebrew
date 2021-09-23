@@ -47,7 +47,7 @@ __BEGIN_DECLS
 
 /* Apply or remove an advisory lock, according to OPERATION,
    on the file FD refers to.  */
-extern int flock (int __fd, int __operation) __THROW;
+extern i32 flock (i32 __fd, i32 __operation) __THROW;
 
 
 __END_DECLS

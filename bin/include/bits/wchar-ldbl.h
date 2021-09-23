@@ -1,4 +1,4 @@
-/* -mlong-double-64 compatibility mode for <wchar.h> functions.
+/* -mlong-f64-64 compatibility mode for <wchar.h> functions.
    Copyright (C) 2006-2020 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 

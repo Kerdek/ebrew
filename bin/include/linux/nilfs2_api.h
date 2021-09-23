@@ -47,7 +47,7 @@ enum {
 };
 
 #define NILFS_CPINFO_FNS(flag, name)					\
-static __inline__ int							\
+static __inline__ i32							\
 nilfs_cpinfo_##name(const struct nilfs_cpinfo *cpinfo)			\
 {									\
 	return !!(cpinfo->ci_flags & (1UL << NILFS_CPINFO_##flag));	\
@@ -77,7 +77,7 @@ enum {
 };
 
 #define NILFS_SUINFO_FNS(flag, name)					\
-static __inline__ int							\
+static __inline__ i32							\
 nilfs_suinfo_##name(const struct nilfs_suinfo *si)			\
 {									\
 	return si->sui_flags & (1UL << NILFS_SUINFO_##flag);		\
@@ -87,7 +87,7 @@ NILFS_SUINFO_FNS(ACTIVE, active)
 NILFS_SUINFO_FNS(DIRTY, dirty)
 NILFS_SUINFO_FNS(ERROR, error)
 
-static __inline__ int nilfs_suinfo_clean(const struct nilfs_suinfo *si)
+static __inline__ i32 nilfs_suinfo_clean(const struct nilfs_suinfo *si)
 {
 	return !si->sui_flags;
 }
@@ -124,7 +124,7 @@ nilfs_suinfo_update_clear_##name(struct nilfs_suinfo_update *sup)	\
 {									\
 	sup->sup_flags &= ~(1UL << NILFS_SUINFO_UPDATE_##flag);		\
 }									\
-static __inline__ int							\
+static __inline__ i32							\
 nilfs_suinfo_update_##name(const struct nilfs_suinfo_update *sup)	\
 {									\
 	return !!(sup->sup_flags & (1UL << NILFS_SUINFO_UPDATE_##flag));\

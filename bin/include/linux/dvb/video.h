@@ -44,8 +44,8 @@ typedef enum {
 } video_displayformat_t;
 
 typedef struct {
-	int w;
-	int h;
+	i32 w;
+	i32 h;
 	video_format_t aspect_ratio;
 } video_size_t;
 
@@ -124,17 +124,17 @@ struct video_event {
 #define VIDEO_EVENT_DECODER_STOPPED	3
 #define VIDEO_EVENT_VSYNC		4
 	/* unused, make sure to use atomic time for y2038 if it ever gets used */
-	long timestamp;
+	i64 timestamp;
 	union {
 		video_size_t size;
-		unsigned int frame_rate;	/* in frames per 1000sec */
-		unsigned char vsync_field;	/* unknown/odd/even/progressive */
+		unsigned i32 frame_rate;	/* in frames per 1000sec */
+		unsigned i8 vsync_field;	/* unknown/odd/even/progressive */
 	} u;
 };
 
 
 struct video_status {
-	int                   video_blank;   /* blank video on freeze? */
+	i32                   video_blank;   /* blank video on freeze? */
 	video_play_state_t    play_state;    /* current state of playback */
 	video_stream_source_t stream_source; /* current source (demux/memory) */
 	video_format_t        video_format;  /* current aspect ratio of stream*/
@@ -190,7 +190,7 @@ typedef __u16 video_attributes_t;
 #define VIDEO_STILLPICTURE         _IOW('o', 30, struct video_still_picture)
 #define VIDEO_FAST_FORWARD         _IO('o', 31)
 #define VIDEO_SLOWMOTION           _IO('o', 32)
-#define VIDEO_GET_CAPABILITIES     _IOR('o', 33, unsigned int)
+#define VIDEO_GET_CAPABILITIES     _IOR('o', 33, unsigned i32)
 #define VIDEO_CLEAR_BUFFER         _IO('o',  34)
 #define VIDEO_SET_STREAMTYPE       _IO('o', 36)
 #define VIDEO_SET_FORMAT           _IO('o', 37)

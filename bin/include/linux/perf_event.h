@@ -546,7 +546,7 @@ struct perf_event_mmap_page {
 	 * to sign extend the result like:
 	 *
 	 *   pmc <<= 64 - width;
-	 *   pmc >>= 64 - width; // signed shift right
+	 *   pmc >>= 64 - width; //  shift right
 	 *   count += pmc;
 	 */
 	__u16	pmc_width;

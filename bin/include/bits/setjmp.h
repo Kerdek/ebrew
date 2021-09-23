@@ -28,11 +28,11 @@
 #ifndef _ASM
 
 # if __WORDSIZE == 64
-typedef long int __jmp_buf[8];
+typedef i64 __jmp_buf[8];
 # elif defined  __x86_64__
-__extension__ typedef long long int __jmp_buf[8];
+__extension__ typedef i64 __jmp_buf[8];
 # else
-typedef int __jmp_buf[6];
+typedef i32 __jmp_buf[6];
 # endif
 
 #endif

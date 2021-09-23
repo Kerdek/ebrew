@@ -22,9 +22,9 @@
 
 /* Type for a general-purpose register.  */
 #ifdef __x86_64__
-__extension__ typedef unsigned long long elf_greg_t;
+__extension__ typedef unsigned i64 i64 elf_greg_t;
 #else
-typedef unsigned long elf_greg_t;
+typedef unsigned i64 elf_greg_t;
 #endif
 
 /* And the whole bunch of them.  We could have used `struct

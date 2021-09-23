@@ -48,7 +48,7 @@ struct in6_addr {
 
 #if __UAPI_DEF_SOCKADDR_IN6
 struct sockaddr_in6 {
-	unsigned short int	sin6_family;    /* AF_INET6 */
+	unsigned i16	sin6_family;    /* AF_INET6 */
 	__be16			sin6_port;      /* Transport layer port # */
 	__be32			sin6_flowinfo;  /* IPv6 flow information */
 	struct in6_addr		sin6_addr;      /* IPv6 address */
@@ -62,7 +62,7 @@ struct ipv6_mreq {
 	struct in6_addr ipv6mr_multiaddr;
 
 	/* local IPv6 address of interface */
-	int		ipv6mr_ifindex;
+	i32		ipv6mr_ifindex;
 };
 #endif /* __UAPI_DEF_IVP6_MREQ */
 

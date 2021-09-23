@@ -130,7 +130,7 @@ typedef __s64	Elf64_Sxword;
 #define STT_TLS     6
 
 #define ELF_ST_BIND(x)		((x) >> 4)
-#define ELF_ST_TYPE(x)		(((unsigned int) x) & 0xf)
+#define ELF_ST_TYPE(x)		(((unsigned i32) x) & 0xf)
 #define ELF32_ST_BIND(x)	ELF_ST_BIND(x)
 #define ELF32_ST_TYPE(x)	ELF_ST_TYPE(x)
 #define ELF64_ST_BIND(x)	ELF_ST_BIND(x)
@@ -185,15 +185,15 @@ typedef struct elf32_sym{
   Elf32_Word	st_name;
   Elf32_Addr	st_value;
   Elf32_Word	st_size;
-  unsigned char	st_info;
-  unsigned char	st_other;
+  unsigned i8	st_info;
+  unsigned i8	st_other;
   Elf32_Half	st_shndx;
 } Elf32_Sym;
 
 typedef struct elf64_sym {
   Elf64_Word st_name;		/* Symbol name, index in string tbl */
-  unsigned char	st_info;	/* Type and binding attributes */
-  unsigned char	st_other;	/* No defined meaning, 0 */
+  unsigned i8	st_info;	/* Type and binding attributes */
+  unsigned i8	st_other;	/* No defined meaning, 0 */
   Elf64_Half st_shndx;		/* Associated section index */
   Elf64_Addr st_value;		/* Value of the symbol */
   Elf64_Xword st_size;		/* Associated symbol size */
@@ -203,7 +203,7 @@ typedef struct elf64_sym {
 #define EI_NIDENT	16
 
 typedef struct elf32_hdr{
-  unsigned char	e_ident[EI_NIDENT];
+  unsigned i8	e_ident[EI_NIDENT];
   Elf32_Half	e_type;
   Elf32_Half	e_machine;
   Elf32_Word	e_version;
@@ -220,7 +220,7 @@ typedef struct elf32_hdr{
 } Elf32_Ehdr;
 
 typedef struct elf64_hdr {
-  unsigned char	e_ident[EI_NIDENT];	/* ELF "magic number" */
+  unsigned i8	e_ident[EI_NIDENT];	/* ELF "magic number" */
   Elf64_Half e_type;
   Elf64_Half e_machine;
   Elf64_Word e_version;

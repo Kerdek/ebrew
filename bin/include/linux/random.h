@@ -15,19 +15,19 @@
 /* ioctl()'s for the random number generator */
 
 /* Get the entropy count. */
-#define RNDGETENTCNT	_IOR( 'R', 0x00, int )
+#define RNDGETENTCNT	_IOR( 'R', 0x00, i32 )
 
 /* Add to (or subtract from) the entropy count.  (Superuser only.) */
-#define RNDADDTOENTCNT	_IOW( 'R', 0x01, int )
+#define RNDADDTOENTCNT	_IOW( 'R', 0x01, i32 )
 
 /* Get the contents of the entropy pool.  (Superuser only.) */
-#define RNDGETPOOL	_IOR( 'R', 0x02, int [2] )
+#define RNDGETPOOL	_IOR( 'R', 0x02, i32 [2] )
 
 /* 
  * Write bytes into the entropy pool and add to the entropy count.
  * (Superuser only.)
  */
-#define RNDADDENTROPY	_IOW( 'R', 0x03, int [2] )
+#define RNDADDENTROPY	_IOW( 'R', 0x03, i32 [2] )
 
 /* Clear entropy count to 0.  (Superuser only.) */
 #define RNDZAPENTCNT	_IO( 'R', 0x04 )
@@ -39,8 +39,8 @@
 #define RNDRESEEDCRNG	_IO( 'R', 0x07 )
 
 struct rand_pool_info {
-	int	entropy_count;
-	int	buf_size;
+	i32	entropy_count;
+	i32	buf_size;
 	__u32	buf[0];
 };
 

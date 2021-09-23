@@ -4,7 +4,7 @@
 
 struct exec
 {
-	unsigned int a_info;	/* Use macros N_MAGIC, etc for access */
+	unsigned i32 a_info;	/* Use macros N_MAGIC, etc for access */
 	unsigned a_text;	/* length of text, in bytes */
 	unsigned a_data;	/* length of data, in bytes */
 	unsigned a_bss;		/* length of uninitialized data area for file, in bytes */

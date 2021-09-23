@@ -6,13 +6,13 @@
    set, as well as at least one value that does not correspond to any
    member of the extended character set.  */
 #ifndef __WINT_TYPE__
-# define __WINT_TYPE__ unsigned int
+# define __WINT_TYPE__ unsigned i32
 #endif
 
 /* Conversion state information.  */
 type __mbstate_t struct
 {
-  __count int
+  __count i32
   __value union
   {
     __wch __WINT_TYPE__

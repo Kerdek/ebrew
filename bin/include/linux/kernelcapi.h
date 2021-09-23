@@ -17,16 +17,16 @@
 
 
 typedef struct kcapi_flagdef {
-	int contr;
-	int flag;
+	i32 contr;
+	i32 flag;
 } kcapi_flagdef;
 
 typedef struct kcapi_carddef {
 	char		driver[32];
-	unsigned int	port;
+	unsigned i32	port;
 	unsigned	irq;
-	unsigned int	membase;
-	int		cardnr;
+	unsigned i32	membase;
+	i32		cardnr;
 } kcapi_carddef;
 
 /* new ioctls >= 10 */

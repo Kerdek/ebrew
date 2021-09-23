@@ -45,10 +45,10 @@ typedef __syscall_ulong_t shmatt_t;
 
 #if __SHM_PAD_BEFORE_TIME
 # define __SHM_PAD_TIME(NAME, RES)				\
-  unsigned long int __glibc_reserved ## RES; __time_t NAME
+  unsigned i64 __glibc_reserved ## RES; __time_t NAME
 #elif __SHM_PAD_AFTER_TIME
 # define __SHM_PAD_TIME(NAME, RES)				\
-  __time_t NAME; unsigned long int __glibc_reserved ## RES
+  __time_t NAME; unsigned i64 __glibc_reserved ## RES
 #else
 # define __SHM_PAD_TIME(NAME, RES)		\
   __time_t NAME
@@ -65,7 +65,7 @@ struct shmid_ds
     __SHM_PAD_TIME (shm_dtime, 2);	/* time of last shmdt() */
     __SHM_PAD_TIME (shm_ctime, 3);	/* time of last change by shmctl() */
 #if __SHM_PAD_BETWEEN_TIME_AND_SEGSZ
-    unsigned long int __glibc_reserved4;
+    unsigned i64 __glibc_reserved4;
 #endif
 #if __SHM_SEGSZ_AFTER_TIME
     size_t shm_segsz;			/* size of segment in bytes */
@@ -105,7 +105,7 @@ struct	shminfo
 
 struct shm_info
   {
-    int used_ids;
+    i32 used_ids;
     __syscall_ulong_t shm_tot;	/* total allocated shm */
     __syscall_ulong_t shm_rss;	/* total resident shm */
     __syscall_ulong_t shm_swp;	/* total swapped shm */

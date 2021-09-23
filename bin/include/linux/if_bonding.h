@@ -75,7 +75,7 @@
 /* each slave's link has 4 states */
 #define BOND_LINK_UP    0           /* link is up and running */
 #define BOND_LINK_FAIL  1           /* link has just gone down */
-#define BOND_LINK_DOWN  2           /* link has been down for too long time */
+#define BOND_LINK_DOWN  2           /* link has been down for too i64 time */
 #define BOND_LINK_BACK  3           /* link is going back */
 
 /* each slave has several states */

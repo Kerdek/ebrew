@@ -20,7 +20,7 @@
 #include <linux/socket.h>
 
 /* Option name for STREAM socket buffer size.  Use as the option name in
- * setsockopt(3) or getsockopt(3) to set or get an unsigned long long that
+ * setsockopt(3) or getsockopt(3) to set or get an unsigned i64 i64 that
  * specifies the size of the buffer underlying a vSockets STREAM socket.
  * Value is clamped to the MIN and MAX.
  */
@@ -28,7 +28,7 @@
 #define SO_VM_SOCKETS_BUFFER_SIZE 0
 
 /* Option name for STREAM socket minimum buffer size.  Use as the option name
- * in setsockopt(3) or getsockopt(3) to set or get an unsigned long long that
+ * in setsockopt(3) or getsockopt(3) to set or get an unsigned i64 i64 that
  * specifies the minimum size allowed for the buffer underlying a vSockets
  * STREAM socket.
  */
@@ -36,7 +36,7 @@
 #define SO_VM_SOCKETS_BUFFER_MIN_SIZE 1
 
 /* Option name for STREAM socket maximum buffer size.  Use as the option name
- * in setsockopt(3) or getsockopt(3) to set or get an unsigned long long
+ * in setsockopt(3) or getsockopt(3) to set or get an unsigned i64 i64
  * that specifies the maximum size allowed for the buffer underlying a
  * vSockets STREAM socket.
  */
@@ -45,7 +45,7 @@
 
 /* Option name for socket peer's host-specific VM ID.  Use as the option name
  * in getsockopt(3) to get a host-specific identifier for the peer endpoint's
- * VM.  The identifier is a signed integer.
+ * VM.  The identifier is a  integer.
  * Only available for hypervisor endpoints.
  */
 
@@ -53,7 +53,7 @@
 
 /* Option name for determining if a socket is trusted.  Use as the option name
  * in getsockopt(3) to determine if a socket is trusted.  The value is a
- * signed integer.
+ *  integer.
  */
 
 #define SO_VM_SOCKETS_TRUSTED 5
@@ -69,7 +69,7 @@
  * for setsockopt(3) or getsockopt(3) to set or get the non-blocking
  * transmit/receive flag for a STREAM socket.  This flag determines whether
  * send() and recv() can be called in non-blocking contexts for the given
- * socket.  The value is a signed integer.
+ * socket.  The value is a  integer.
  *
  * This option is only relevant to kernel endpoints, where descheduling the
  * thread of execution is not allowed, for example, while holding a spinlock.
@@ -145,13 +145,13 @@
 
 struct sockaddr_vm {
 	__kernel_sa_family_t svm_family;
-	unsigned short svm_reserved1;
-	unsigned int svm_port;
-	unsigned int svm_cid;
-	unsigned char svm_zero[sizeof(struct sockaddr) -
+	unsigned i16 svm_reserved1;
+	unsigned i32 svm_port;
+	unsigned i32 svm_cid;
+	unsigned i8 svm_zero[sizeof(struct sockaddr) -
 			       sizeof(sa_family_t) -
-			       sizeof(unsigned short) -
-			       sizeof(unsigned int) - sizeof(unsigned int)];
+			       sizeof(unsigned i16) -
+			       sizeof(unsigned i32) - sizeof(unsigned i32)];
 };
 
 #define IOCTL_VM_SOCKETS_GET_LOCAL_CID		_IO(7, 0xb9)

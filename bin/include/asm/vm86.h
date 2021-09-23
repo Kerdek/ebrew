@@ -33,7 +33,7 @@
 #define VM86_SIGNAL	0	/* return due to signal */
 #define VM86_UNKNOWN	1	/* unhandled GP fault
 				   - IO-instruction or similar */
-#define VM86_INTx	2	/* int3/int x instruction (ARG = x) */
+#define VM86_INTx	2	/* int3/i32 x instruction (ARG = x) */
 #define VM86_STI	3	/* sti/popf/iret instruction enabled
 				   virtual interrupts */
 
@@ -64,41 +64,41 @@ struct vm86_regs {
 /*
  * normal regs, with special meaning for the segment descriptors..
  */
-	long ebx;
-	long ecx;
-	long edx;
-	long esi;
-	long edi;
-	long ebp;
-	long eax;
-	long __null_ds;
-	long __null_es;
-	long __null_fs;
-	long __null_gs;
-	long orig_eax;
-	long eip;
-	unsigned short cs, __csh;
-	long eflags;
-	long esp;
-	unsigned short ss, __ssh;
+	i64 ebx;
+	i64 ecx;
+	i64 edx;
+	i64 esi;
+	i64 edi;
+	i64 ebp;
+	i64 eax;
+	i64 __null_ds;
+	i64 __null_es;
+	i64 __null_fs;
+	i64 __null_gs;
+	i64 orig_eax;
+	i64 eip;
+	unsigned i16 cs, __csh;
+	i64 eflags;
+	i64 esp;
+	unsigned i16 ss, __ssh;
 /*
  * these are specific to v86 mode:
  */
-	unsigned short es, __esh;
-	unsigned short ds, __dsh;
-	unsigned short fs, __fsh;
-	unsigned short gs, __gsh;
+	unsigned i16 es, __esh;
+	unsigned i16 ds, __dsh;
+	unsigned i16 fs, __fsh;
+	unsigned i16 gs, __gsh;
 };
 
 struct revectored_struct {
-	unsigned long __map[8];			/* 256 bits */
+	unsigned i64 __map[8];			/* 256 bits */
 };
 
 struct vm86_struct {
 	struct vm86_regs regs;
-	unsigned long flags;
-	unsigned long screen_bitmap;
-	unsigned long cpu_type;
+	unsigned i64 flags;
+	unsigned i64 screen_bitmap;
+	unsigned i64 cpu_type;
 	struct revectored_struct int_revectored;
 	struct revectored_struct int21_revectored;
 };
@@ -109,18 +109,18 @@ struct vm86_struct {
 #define VM86_SCREEN_BITMAP	0x0001
 
 struct vm86plus_info_struct {
-	unsigned long force_return_for_pic:1;
-	unsigned long vm86dbg_active:1;       /* for debugger */
-	unsigned long vm86dbg_TFpendig:1;     /* for debugger */
-	unsigned long unused:28;
-	unsigned long is_vm86pus:1;	      /* for vm86 internal use */
-	unsigned char vm86dbg_intxxtab[32];   /* for debugger */
+	unsigned i64 force_return_for_pic:1;
+	unsigned i64 vm86dbg_active:1;       /* for debugger */
+	unsigned i64 vm86dbg_TFpendig:1;     /* for debugger */
+	unsigned i64 unused:28;
+	unsigned i64 is_vm86pus:1;	      /* for vm86 internal use */
+	unsigned i8 vm86dbg_intxxtab[32];   /* for debugger */
 };
 struct vm86plus_struct {
 	struct vm86_regs regs;
-	unsigned long flags;
-	unsigned long screen_bitmap;
-	unsigned long cpu_type;
+	unsigned i64 flags;
+	unsigned i64 screen_bitmap;
+	unsigned i64 cpu_type;
 	struct revectored_struct int_revectored;
 	struct revectored_struct int21_revectored;
 	struct vm86plus_info_struct vm86plus;

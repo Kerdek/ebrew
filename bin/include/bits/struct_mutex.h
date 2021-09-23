@@ -21,28 +21,28 @@
 
 _ struct __pthread_mutex_s
 {
-  __lock int
-  __count unsigned int
-  __owner int
+  __lock i32
+  __count unsigned i32
+  __owner i32
 #ifdef __x86_64__
-  __nusers unsigned int
+  __nusers unsigned i32
 #endif
   /* KIND must stay at this position in the structure to maintain
      binary compatibility with static initializers.  */
-  __kind int
+  __kind i32
 #ifdef __x86_64__
-  __spins short
-  __elision short
+  __spins i16
+  __elision i16
   __list __pthread_list_t;
 # define __PTHREAD_MUTEX_HAVE_PREV      1
 #else
-  __nusers unsigned int
+  __nusers unsigned i32
   __extension__ union
   {
     __elision_data struct
     {
-      __espins short
-      __eelision short;
+      __espins i16
+      __eelision i16;
 # define __spins __elision_data.__espins
 # define __elision __elision_data.__eelision
     };

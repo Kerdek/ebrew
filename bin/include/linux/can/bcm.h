@@ -49,8 +49,8 @@
 #include <linux/can.h>
 
 struct bcm_timeval {
-	long tv_sec;
-	long tv_usec;
+	i64 tv_sec;
+	i64 tv_usec;
 };
 
 /**

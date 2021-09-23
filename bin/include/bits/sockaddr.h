@@ -25,7 +25,7 @@
 
 
 /* POSIX.1g specifies this type name for the `sa_family' member.  */
-typedef unsigned short int sa_family_t;
+typedef unsigned i16 sa_family_t;
 
 /* This macro is used to declare the initial common members
    of the data types used for socket addresses, `struct sockaddr',
@@ -34,7 +34,7 @@ typedef unsigned short int sa_family_t;
 #define	__SOCKADDR_COMMON(sa_prefix) \
   sa_family_t sa_prefix##family
 
-#define __SOCKADDR_COMMON_SIZE	(sizeof (unsigned short int))
+#define __SOCKADDR_COMMON_SIZE	(sizeof (unsigned i16))
 
 /* Size of struct sockaddr_storage.  */
 #define _SS_SIZE 128

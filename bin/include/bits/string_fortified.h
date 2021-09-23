@@ -56,7 +56,7 @@ __NTH (mempcpy (void *__restrict __dest, const void *__restrict __src,
    case no work is done at all.  We detect these problems by referring
    non-existing functions.  */
 __fortify_function void *
-__NTH (memset (void *__dest, int __ch, size_t __len))
+__NTH (memset (void *__dest, i32 __ch, size_t __len))
 {
   /* GCC-5.0 and newer implements these checks in the compiler, so we don't
      need them here.  */

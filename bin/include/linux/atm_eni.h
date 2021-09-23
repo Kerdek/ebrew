@@ -12,7 +12,7 @@
 
 
 struct eni_multipliers {
-	int tx,rx;	/* values are in percent and must be > 100 */
+	i32 tx,rx;	/* values are in percent and must be > 100 */
 };
 
 

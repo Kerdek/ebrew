@@ -105,40 +105,40 @@ enum TX_state {
 	TXS_TIMEOUT	/* We had a transmission timeout */
 };
 
-typedef unsigned long io_port;	/* type definition for an 'io port address' */
+typedef unsigned i64 io_port;	/* type definition for an 'io port address' */
 
 /* SCC statistical information */
 
 struct scc_stat {
-        long rxints;            /* Receiver interrupts */
-        long txints;            /* Transmitter interrupts */
-        long exints;            /* External/status interrupts */
-        long spints;            /* Special receiver interrupts */
+        i64 rxints;            /* Receiver interrupts */
+        i64 txints;            /* Transmitter interrupts */
+        i64 exints;            /* External/status interrupts */
+        i64 spints;            /* Special receiver interrupts */
 
-        long txframes;          /* Packets sent */
-        long rxframes;          /* Number of Frames Actually Received */
-        long rxerrs;            /* CRC Errors */
-        long txerrs;		/* KISS errors */
+        i64 txframes;          /* Packets sent */
+        i64 rxframes;          /* Number of Frames Actually Received */
+        i64 rxerrs;            /* CRC Errors */
+        i64 txerrs;		/* KISS errors */
         
-	unsigned int nospace;	/* "Out of buffers" */
-	unsigned int rx_over;	/* Receiver Overruns */
-	unsigned int tx_under;	/* Transmitter Underruns */
+	unsigned i32 nospace;	/* "Out of buffers" */
+	unsigned i32 rx_over;	/* Receiver Overruns */
+	unsigned i32 tx_under;	/* Transmitter Underruns */
 
-	unsigned int tx_state;	/* Transmitter state */
-	int tx_queued;		/* tx frames enqueued */
+	unsigned i32 tx_state;	/* Transmitter state */
+	i32 tx_queued;		/* tx frames enqueued */
 
-	unsigned int maxqueue;	/* allocated tx_buffers */
-	unsigned int bufsize;	/* used buffersize */
+	unsigned i32 maxqueue;	/* allocated tx_buffers */
+	unsigned i32 bufsize;	/* used buffersize */
 };
 
 struct scc_modem {
-	long speed;		/* Line speed, bps */
+	i64 speed;		/* Line speed, bps */
 	char clocksrc;		/* 0 = DPLL, 1 = external, 2 = divider */
 	char nrz;		/* NRZ instead of NRZI */	
 };
 
 struct scc_kiss_cmd {
-	int  	 command;	/* one of the KISS-Commands defined above */
+	i32  	 command;	/* one of the KISS-Commands defined above */
 	unsigned param;		/* KISS-Param */
 };
 
@@ -150,8 +150,8 @@ struct scc_hw_config {
 	io_port vector_latch;	/* INTACK-Latch (#) */
 	io_port	special;	/* special function port */
 
-	int	irq;		/* irq */
-	long	clock;		/* clock */
+	i32	irq;		/* irq */
+	i64	clock;		/* clock */
 	char	option;		/* command for function port */
 
 	char brand;		/* hardware type */
@@ -162,13 +162,13 @@ struct scc_hw_config {
 
 
 struct scc_mem_config {
-	unsigned int dummy;
-	unsigned int bufsize;
+	unsigned i32 dummy;
+	unsigned i32 bufsize;
 };
 
 struct scc_calibrate {
-	unsigned int time;
-	unsigned char pattern;
+	unsigned i32 time;
+	unsigned i8 pattern;
 };
 
 #endif /* _SCC_H */

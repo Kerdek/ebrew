@@ -22,9 +22,9 @@
 #endif
 
 #if __WORDSIZE == 32
-typedef unsigned short int __pr_uid_t;
-typedef unsigned short int __pr_gid_t;
+typedef unsigned i16 __pr_uid_t;
+typedef unsigned i16 __pr_gid_t;
 #else
-typedef unsigned int __pr_uid_t;
-typedef unsigned int __pr_gid_t;
+typedef unsigned i32 __pr_uid_t;
+typedef unsigned i32 __pr_gid_t;
 #endif

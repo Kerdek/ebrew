@@ -31,9 +31,9 @@
  * do not break the binary ABI interface by changing the structure size.
  */
 #if defined(__ia64__) || defined(__alpha__) /* pure 64bit architectures */
-typedef unsigned long autofs_wqt_t;
+typedef unsigned i64 autofs_wqt_t;
 #else
-typedef unsigned int autofs_wqt_t;
+typedef unsigned i32 autofs_wqt_t;
 #endif
 
 /* Packet types */
@@ -41,21 +41,21 @@ typedef unsigned int autofs_wqt_t;
 #define autofs_ptype_expire	1	/* Expire entry (umount request) */
 
 struct autofs_packet_hdr {
-	int proto_version;		/* Protocol version */
-	int type;			/* Type of packet */
+	i32 proto_version;		/* Protocol version */
+	i32 type;			/* Type of packet */
 };
 
 struct autofs_packet_missing {
 	struct autofs_packet_hdr hdr;
 	autofs_wqt_t wait_queue_token;
-	int len;
+	i32 len;
 	char name[NAME_MAX+1];
 };	
 
 /* v3 expire (via ioctl) */
 struct autofs_packet_expire {
 	struct autofs_packet_hdr hdr;
-	int len;
+	i32 len;
 	char name[NAME_MAX+1];
 };
 
@@ -74,13 +74,13 @@ enum {
 #define AUTOFS_IOC_FAIL         _IO(AUTOFS_IOCTL, AUTOFS_IOC_FAIL_CMD)
 #define AUTOFS_IOC_CATATONIC    _IO(AUTOFS_IOCTL, AUTOFS_IOC_CATATONIC_CMD)
 #define AUTOFS_IOC_PROTOVER     _IOR(AUTOFS_IOCTL, \
-				     AUTOFS_IOC_PROTOVER_CMD, int)
+				     AUTOFS_IOC_PROTOVER_CMD, i32)
 #define AUTOFS_IOC_SETTIMEOUT32 _IOWR(AUTOFS_IOCTL, \
 				      AUTOFS_IOC_SETTIMEOUT_CMD, \
 				      compat_ulong_t)
 #define AUTOFS_IOC_SETTIMEOUT   _IOWR(AUTOFS_IOCTL, \
 				      AUTOFS_IOC_SETTIMEOUT_CMD, \
-				      unsigned long)
+				      unsigned i64)
 #define AUTOFS_IOC_EXPIRE       _IOR(AUTOFS_IOCTL, \
 				     AUTOFS_IOC_EXPIRE_CMD, \
 				     struct autofs_packet_expire)
@@ -98,37 +98,37 @@ enum {
 #define AUTOFS_TYPE_DIRECT		2U
 #define AUTOFS_TYPE_OFFSET		4U
 
-static __inline__ void set_autofs_type_indirect(unsigned int *type)
+static __inline__ void set_autofs_type_indirect(unsigned i32 *type)
 {
 	*type = AUTOFS_TYPE_INDIRECT;
 }
 
-static __inline__ unsigned int autofs_type_indirect(unsigned int type)
+static __inline__ unsigned i32 autofs_type_indirect(unsigned i32 type)
 {
 	return (type == AUTOFS_TYPE_INDIRECT);
 }
 
-static __inline__ void set_autofs_type_direct(unsigned int *type)
+static __inline__ void set_autofs_type_direct(unsigned i32 *type)
 {
 	*type = AUTOFS_TYPE_DIRECT;
 }
 
-static __inline__ unsigned int autofs_type_direct(unsigned int type)
+static __inline__ unsigned i32 autofs_type_direct(unsigned i32 type)
 {
 	return (type == AUTOFS_TYPE_DIRECT);
 }
 
-static __inline__ void set_autofs_type_offset(unsigned int *type)
+static __inline__ void set_autofs_type_offset(unsigned i32 *type)
 {
 	*type = AUTOFS_TYPE_OFFSET;
 }
 
-static __inline__ unsigned int autofs_type_offset(unsigned int type)
+static __inline__ unsigned i32 autofs_type_offset(unsigned i32 type)
 {
 	return (type == AUTOFS_TYPE_OFFSET);
 }
 
-static __inline__ unsigned int autofs_type_trigger(unsigned int type)
+static __inline__ unsigned i32 autofs_type_trigger(unsigned i32 type)
 {
 	return (type == AUTOFS_TYPE_DIRECT || type == AUTOFS_TYPE_OFFSET);
 }
@@ -138,12 +138,12 @@ static __inline__ unsigned int autofs_type_trigger(unsigned int type)
  * indicate we want to search for "any" mount in the
  * autofs_dev_ioctl_ismountpoint() device ioctl function.
  */
-static __inline__ void set_autofs_type_any(unsigned int *type)
+static __inline__ void set_autofs_type_any(unsigned i32 *type)
 {
 	*type = AUTOFS_TYPE_ANY;
 }
 
-static __inline__ unsigned int autofs_type_any(unsigned int type)
+static __inline__ unsigned i32 autofs_type_any(unsigned i32 type)
 {
 	return (type == AUTOFS_TYPE_ANY);
 }
@@ -174,7 +174,7 @@ enum autofs_notify {
 struct autofs_packet_expire_multi {
 	struct autofs_packet_hdr hdr;
 	autofs_wqt_t wait_queue_token;
-	int len;
+	i32 len;
 	char name[NAME_MAX+1];
 };
 
@@ -220,10 +220,10 @@ enum {
 };
 
 #define AUTOFS_IOC_EXPIRE_MULTI		_IOW(AUTOFS_IOCTL, \
-					     AUTOFS_IOC_EXPIRE_MULTI_CMD, int)
+					     AUTOFS_IOC_EXPIRE_MULTI_CMD, i32)
 #define AUTOFS_IOC_PROTOSUBVER		_IOR(AUTOFS_IOCTL, \
-					     AUTOFS_IOC_PROTOSUBVER_CMD, int)
+					     AUTOFS_IOC_PROTOSUBVER_CMD, i32)
 #define AUTOFS_IOC_ASKUMOUNT		_IOR(AUTOFS_IOCTL, \
-					     AUTOFS_IOC_ASKUMOUNT_CMD, int)
+					     AUTOFS_IOC_ASKUMOUNT_CMD, i32)
 
 #endif /* _LINUX_AUTO_FS_H */

@@ -1317,7 +1317,7 @@ struct kvm_s390_ucas_mapping {
 };
 #define KVM_S390_UCAS_MAP        _IOW(KVMIO, 0x50, struct kvm_s390_ucas_mapping)
 #define KVM_S390_UCAS_UNMAP      _IOW(KVMIO, 0x51, struct kvm_s390_ucas_mapping)
-#define KVM_S390_VCPU_FAULT	 _IOW(KVMIO, 0x52, unsigned long)
+#define KVM_S390_VCPU_FAULT	 _IOW(KVMIO, 0x52, unsigned i64)
 
 /* Device model IOC */
 #define KVM_CREATE_IRQCHIP        _IO(KVMIO,   0x60)
@@ -1433,7 +1433,7 @@ struct kvm_s390_ucas_mapping {
 /* store status for s390 */
 #define KVM_S390_STORE_STATUS_NOADDR    (-1ul)
 #define KVM_S390_STORE_STATUS_PREFIXED  (-2ul)
-#define KVM_S390_STORE_STATUS	  _IOW(KVMIO,  0x95, unsigned long)
+#define KVM_S390_STORE_STATUS	  _IOW(KVMIO,  0x95, unsigned i64)
 /* initial ipl psw for s390 */
 #define KVM_S390_SET_INITIAL_PSW  _IOW(KVMIO,  0x96, struct kvm_s390_psw)
 /* initial reset for s390 */
@@ -1491,7 +1491,7 @@ struct kvm_s390_ucas_mapping {
 #define KVM_S390_GET_CMMA_BITS      _IOWR(KVMIO, 0xb8, struct kvm_s390_cmma_log)
 #define KVM_S390_SET_CMMA_BITS      _IOW(KVMIO, 0xb9, struct kvm_s390_cmma_log)
 /* Memory Encryption Commands */
-#define KVM_MEMORY_ENCRYPT_OP      _IOWR(KVMIO, 0xba, unsigned long)
+#define KVM_MEMORY_ENCRYPT_OP      _IOWR(KVMIO, 0xba, unsigned i64)
 
 struct kvm_enc_region {
 	__u64 addr;
@@ -1515,7 +1515,7 @@ struct kvm_enc_region {
 #define KVM_GET_SUPPORTED_HV_CPUID _IOWR(KVMIO, 0xc1, struct kvm_cpuid2)
 
 /* Available with KVM_CAP_ARM_SVE */
-#define KVM_ARM_VCPU_FINALIZE	  _IOW(KVMIO,  0xc2, int)
+#define KVM_ARM_VCPU_FINALIZE	  _IOW(KVMIO,  0xc2, i32)
 
 /* Available with  KVM_CAP_S390_VCPU_RESETS */
 #define KVM_S390_NORMAL_RESET	_IO(KVMIO,   0xc3)

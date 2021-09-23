@@ -52,9 +52,9 @@
 #define DELETED_FLAG	0xe5	/* marks file as deleted when in name[0] */
 #define IS_FREE(n)	(!*(n) || *(n) == DELETED_FLAG)
 
-#define FAT_LFN_LEN	255	/* maximum long name length */
+#define FAT_LFN_LEN	255	/* maximum i64 name length */
 #define MSDOS_NAME	11	/* maximum name length */
-#define MSDOS_SLOTS	21	/* max # of slots for short and long names */
+#define MSDOS_SLOTS	21	/* max # of slots for i16 and i64 names */
 #define MSDOS_DOT	".          "	/* ".", padded to MSDOS_NAME chars */
 #define MSDOS_DOTDOT	"..         "	/* "..", padded to MSDOS_NAME chars */
 
@@ -88,9 +88,9 @@
 #define FAT_STATE_DIRTY 0x01
 
 struct __fat_dirent {
-	long		d_ino;
+	i64		d_ino;
 	__kernel_off_t	d_off;
-	unsigned short	d_reclen;
+	unsigned i16	d_reclen;
 	char		d_name[256]; /* We must not include limits.h! */
 };
 
@@ -106,7 +106,7 @@ struct __fat_dirent {
 #define FAT_IOCTL_GET_VOLUME_ID		_IOR('r', 0x13, __u32)
 
 struct fat_boot_sector {
-	__u8	ignored[3];	/* Boot strap short or near jump */
+	__u8	ignored[3];	/* Boot strap i16 or near jump */
 	__u8	system_id[8];	/* Name - can be used to special case
 				   partition manager volumes */
 	__u8	sector_size[2];	/* bytes per logical sector */
@@ -190,7 +190,7 @@ struct msdos_dir_slot {
 	__u8    reserved;	/* always 0 */
 	__u8    alias_checksum;	/* checksum for 8.3 alias */
 	__u8    name5_10[12];	/* 6 more characters in name */
-	__le16   start;		/* starting cluster number, 0 in long slots */
+	__le16   start;		/* starting cluster number, 0 in i64 slots */
 	__u8    name11_12[4];	/* last 2 characters in name */
 };
 

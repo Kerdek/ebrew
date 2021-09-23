@@ -58,24 +58,24 @@ struct msgbuf
 __BEGIN_DECLS
 
 /* Message queue control operation.  */
-extern int msgctl (int __msqid, int __cmd, struct msqid_ds *__buf) __THROW;
+extern i32 msgctl (i32 __msqid, i32 __cmd, struct msqid_ds *__buf) __THROW;
 
 /* Get messages queue.  */
-extern int msgget (key_t __key, int __msgflg) __THROW;
+extern i32 msgget (key_t __key, i32 __msgflg) __THROW;
 
 /* Receive message from message queue.
 
    This function is a cancellation point and therefore not marked with
    __THROW.  */
-extern ssize_t msgrcv (int __msqid, void *__msgp, size_t __msgsz,
-		       long int __msgtyp, int __msgflg);
+extern ssize_t msgrcv (i32 __msqid, void *__msgp, size_t __msgsz,
+		       i64 __msgtyp, i32 __msgflg);
 
 /* Send message to message queue.
 
    This function is a cancellation point and therefore not marked with
    __THROW.  */
-extern int msgsnd (int __msqid, const void *__msgp, size_t __msgsz,
-		   int __msgflg);
+extern i32 msgsnd (i32 __msqid, const void *__msgp, size_t __msgsz,
+		   i32 __msgflg);
 
 __END_DECLS
 

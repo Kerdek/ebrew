@@ -135,15 +135,15 @@ enum
 __BEGIN_DECLS
 
 /* Mount a filesystem.  */
-extern int mount (const char *__special_file, const char *__dir,
-		  const char *__fstype, unsigned long int __rwflag,
+extern i32 mount (const char *__special_file, const char *__dir,
+		  const char *__fstype, unsigned i64 __rwflag,
 		  const void *__data) __THROW;
 
 /* Unmount a filesystem.  */
-extern int umount (const char *__special_file) __THROW;
+extern i32 umount (const char *__special_file) __THROW;
 
 /* Unmount a filesystem.  Force unmounting if FLAGS is set to MNT_FORCE.  */
-extern int umount2 (const char *__special_file, int __flags) __THROW;
+extern i32 umount2 (const char *__special_file, i32 __flags) __THROW;
 
 __END_DECLS
 

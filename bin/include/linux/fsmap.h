@@ -71,7 +71,7 @@ struct fsmap_head {
 /* Size of an fsmap_head with room for nr records. */
 static __inline__ size_t
 fsmap_sizeof(
-	unsigned int	nr)
+	unsigned i32	nr)
 {
 	return sizeof(struct fsmap_head) + nr * sizeof(struct fsmap);
 }

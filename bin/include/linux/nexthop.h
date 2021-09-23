@@ -5,11 +5,11 @@
 #include <linux/types.h>
 
 struct nhmsg {
-	unsigned char	nh_family;
-	unsigned char	nh_scope;     /* return only */
-	unsigned char	nh_protocol;  /* Routing protocol that installed nh */
-	unsigned char	resvd;
-	unsigned int	nh_flags;     /* RTNH_F flags */
+	unsigned i8	nh_family;
+	unsigned i8	nh_scope;     /* return only */
+	unsigned i8	nh_protocol;  /* Routing protocol that installed nh */
+	unsigned i8	resvd;
+	unsigned i32	nh_flags;     /* RTNH_F flags */
 };
 
 /* entry in a nexthop group */

@@ -1,71 +1,50 @@
 #include "chub.hb"
 
 export 
-  ty_void     @Type = &new Type { TY_VOID     1  1     ;
-  ty_bool     @Type = &new Type { TY_BOOL     1  1     ;
-  ty_char     @Type = &new Type { TY_CHAR     1  1     ;
-  ty_short    @Type = &new Type { TY_SHORT    2  2     ;
-  ty_int      @Type = &new Type { TY_INT      4  4     ;
-  ty_long     @Type = &new Type { TY_LONG     8  8     ;
-  ty_uchar    @Type = &new Type { TY_CHAR     1  1 true;
-  ty_ushort   @Type = &new Type { TY_SHORT    2  2 true;
-  ty_uint     @Type = &new Type { TY_INT      4  4 true;
-  ty_ulong    @Type = &new Type { TY_LONG     8  8 true;
-  ty_float    @Type = &new Type { TY_FLOAT    4  4     ;
-  ty_double   @Type = &new Type { TY_DOUBLE   8  8     ;
-  ty_ldouble  @Type = &new Type { TY_LDOUBLE 16 16     ;;
+  ty_void     @Type = &new Type { TY_VOID     1  1 ;
+  ty_bool     @Type = &new Type { TY_BOOL     1  1 ;
+  ty_i8     @Type = &new Type { TY_INT08     1  1 ;
+  ty_i16    @Type = &new Type { TY_INT16    2  2 ;
+  ty_i32      @Type = &new Type { TY_INT32      4  4 ;
+  ty_i64     @Type = &new Type { TY_INT64     8  8 ;
+  ty_f32    @Type = &new Type { TY_FLOAT32    4  4 ;
+  ty_f64   @Type = &new Type { TY_FLOAT64   8  8 ;
+  ty_f80  @Type = &new Type { TY_FLOAT80 16 16 ;;
 
-new_type(kind TypeKind size int alignment int) @Type = return
+new_type(kind TypeKind size i32 alignment i32) @Type = return
 cast @Type calloc 1ul sizeof Type is t t
 :; (t.kind      = kind     )
 :; (t.size      = size     )
 :; (t.alignment = alignment)
 ;;
 
-export is_integer(t@ Type) bool = return
-t.kind is c
-(  c == TY_BOOL
-|| c == TY_CHAR
-|| c == TY_SHORT
-|| c == TY_INT
-|| c == TY_LONG
-|| c == TY_ENUM
- ) ;;
-
-export is_flonum(t@ Type) bool = return
-t.kind is c
-(  c == TY_FLOAT
-|| c == TY_DOUBLE
-|| c == TY_LDOUBLE
- ) ;;
-
-export is_numeric(t@ Type) bool = return is_integer t || is_flonum t;;
-format_function_type(p @Type s @char) = for (; p; p = p.s) format_type p s;;
 export format_type(t @Type s @char) = return
 !t ? strcat s "undefined" :
 t.kind is c
 ( c == TY_VOID    ) ? strcat s "void"        :
 ( c == TY_BOOL    ) ? strcat s "bool"        :
-( c == TY_FLOAT   ) ? strcat s "float"       :
-( c == TY_DOUBLE  ) ? strcat s "double"      :
-( c == TY_LDOUBLE ) ? strcat s "long double" :
+( c == TY_FLOAT32 ) ? strcat s "f32"         :
+( c == TY_FLOAT64 ) ? strcat s "f64"         :
+( c == TY_FLOAT80 ) ? strcat s "f80"         :
+( c == TY_INT08   ) ? strcat s "i8"          :
+( c == TY_INT16   ) ? strcat s "i16"         :
+( c == TY_INT32   ) ? strcat s "i32"         :
+( c == TY_INT64   ) ? strcat s "i64"         :
 ( c == TY_ENUM    ) ? strcat s "enum"        :
 ( c == TY_STRUCT  ) ? strcat s "struct"      :
 ( c == TY_UNION   ) ? strcat s "union"       :
-( c == TY_ARRAY   ) ? strcat s "[]" :; format_type t.base s :
-( c == TY_PTR     ) ? strcat s "@"  :; format_type t.base s :
-( c == TY_CHAR    ) ? (t.is_unsigned && strcat s "unsigned " as void) ;: strcat s "char"  :
-( c == TY_SHORT   ) ? (t.is_unsigned && strcat s "unsigned " as void) ;: strcat s "short" :
-( c == TY_INT     ) ? (t.is_unsigned && strcat s "unsigned " as void) ;: strcat s "int"   :
-( c == TY_LONG    ) ? (t.is_unsigned && strcat s "unsigned " as void) ;: strcat s "long"  :
+( c == TY_UNSIGNED) ? strcat s "unsigned "   :; format_type t.base s :
+( c == TY_ARRAY   ) ? strcat s "[]"          :; format_type t.base s :
+( c == TY_PTR     ) ? strcat s "@"           :; format_type t.base s :
 ( c == TY_FUNC    ) ? 
   (cast void strcat s "(")  ;:
   t.params is p
     (t.is_variadic && !p && strcat s "void" as void) ;:
-    format_function_type p s ;:
+    (p for p (!!p && p.s :; format_type p s) as void) ;:
   strcat s ")" :;
   format_type t.return_ty s :
 strcat s "???" as void;;
+
 is_function_type_equal(p @Type q@Type) bool = while !(!p || !q) { if ! type_equal p q return false; (p = p.s); (q = q.s);; return p == q;;
 export type_equal(t @Type u @Type) bool = return
   !!t &&
@@ -77,19 +56,20 @@ export type_equal(t @Type u @Type) bool = return
       ( c == u.kind     && (
         c == TY_VOID    ||  
         c == TY_BOOL    ||
-        c == TY_FLOAT   ||
-        c == TY_DOUBLE  ||
-        c == TY_LDOUBLE || ((
-            c == TY_CHAR  ||
-            c == TY_SHORT ||
-            c == TY_INT   ||
-            c == TY_LONG)  ? (t.is_unsigned == u.is_unsigned)          :
+        c == TY_FLOAT32   ||
+        c == TY_FLOAT64  ||
+        c == TY_FLOAT80 || ((
+            c == TY_INT08  ||
+            c == TY_INT16 ||
+            c == TY_INT32   ||
+            c == TY_INT64)  ? true          :
             (c == TY_FUNC)  ? ! type_equal t.return_ty u.return_ty    ? false :
                           (t.is_variadic != u.is_variadic)            ? false :
                           is_function_type_equal t.params u.params  :
             (c == TY_ARRAY) ? ! type_equal t.base u.base              ? false :
                           (t.array_len == u.array_len)                :
-            (c == TY_PTR)   ? type_equal t.base u.base                :
+            (c == TY_PTR      ||
+             c == TY_UNSIGNED  )   ? type_equal t.base u.base                :
                           false                                             )))));;
 
 export copy_type(t @Type) @Type = return
@@ -101,32 +81,18 @@ export pointer_to(base@ Type)@ Type = return
   new_type TY_PTR 8 8 is t
   (t.base = base) ;:
   t;;
+export ring_of(base @Type) @Type = return
+  new_type TY_UNSIGNED base.size base.alignment is t
+  (t.base = base) ;:
+  t;;
 export func_type(return_ty@ Type)@ Type = return
   new_type TY_FUNC 1 1 is t
   (t.return_ty = return_ty) ;:
   t;;
-export array_of(base@ Type len int)@ Type = return
+export array_of(base@ Type len i32)@ Type = return
   new_type TY_ARRAY (base.size * len) base.alignment is t
   (t.base = base) ;:
   (t.array_len = len) ;:
   t;;
 export enum_type  (void) @Type = return new_type TY_ENUM 4 4;;
 export struct_type(void) @Type = return new_type TY_STRUCT 0 1;;
-get_common_type(t1@ Type t2@ Type)@ Type =
-                                        !!t1.base ? pointer_to t1.base        :
-  (                             t1.kind == TY_FUNC) ? pointer_to t1             :
-  (                             t2.kind == TY_FUNC) ? pointer_to t2             :
-  ( t1.kind == TY_LDOUBLE || t2.kind == TY_LDOUBLE) ? ty_ldouble                :
-  ( t1.kind == TY_DOUBLE  || t2.kind == TY_DOUBLE ) ? ty_double                 :
-  ( t1.kind == TY_FLOAT   || t2.kind == TY_FLOAT  ) ? ty_float                  :
-  (                          t1.kind == TY_LONG   ) ? t1                        :
-  (                          t2.kind == TY_LONG   ) ? t2                        :
-  (                          t1.kind == TY_INT    ) ? t1                        :
-  (                          t2.kind == TY_INT    ) ? t2                        :
-  (                          t1.kind == TY_SHORT  ) ? t1                        :
-  (                          t2.kind == TY_SHORT  ) ? t2                        :
-  (                          t1.kind == TY_CHAR   ) ? t1                        :
-  (                          t2.kind == TY_CHAR   ) ? t2                        :
-  (                          t1.kind == TY_BOOL   ) ? t1                        :
-  (                          t2.kind == TY_BOOL   ) ? t2                        :
-                                                    t1                        ;;

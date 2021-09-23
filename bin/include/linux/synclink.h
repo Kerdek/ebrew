@@ -147,25 +147,25 @@ typedef struct _MGSL_PARAMS
 {
 	/* Common */
 
-	unsigned long	mode;		/* Asynchronous or HDLC */
-	unsigned char	loopback;	/* internal loopback mode */
+	unsigned i64	mode;		/* Asynchronous or HDLC */
+	unsigned i8	loopback;	/* internal loopback mode */
 
 	/* HDLC Only */
 
-	unsigned short	flags;
-	unsigned char	encoding;	/* NRZ, NRZI, etc. */
-	unsigned long	clock_speed;	/* external clock speed in bits per second */
-	unsigned char	addr_filter;	/* receive HDLC address filter, 0xFF = disable */
-	unsigned short	crc_type;	/* None, CRC16-CCITT, or CRC32-CCITT */
-	unsigned char	preamble_length;
-	unsigned char	preamble;
+	unsigned i16	flags;
+	unsigned i8	encoding;	/* NRZ, NRZI, etc. */
+	unsigned i64	clock_speed;	/* external clock speed in bits per second */
+	unsigned i8	addr_filter;	/* receive HDLC address filter, 0xFF = disable */
+	unsigned i16	crc_type;	/* None, CRC16-CCITT, or CRC32-CCITT */
+	unsigned i8	preamble_length;
+	unsigned i8	preamble;
 
 	/* Async Only */
 
-	unsigned long	data_rate;	/* bits per second */
-	unsigned char	data_bits;	/* 7 or 8 data bits */
-	unsigned char	stop_bits;	/* 1 or 2 stop bits */
-	unsigned char	parity;		/* none, even, or odd */
+	unsigned i64	data_rate;	/* bits per second */
+	unsigned i8	data_bits;	/* 7 or 8 data bits */
+	unsigned i8	stop_bits;	/* 1 or 2 stop bits */
+	unsigned i8	parity;		/* none, even, or odd */
 
 } MGSL_PARAMS, *PMGSL_PARAMS;
 
@@ -284,7 +284,7 @@ struct gpio_desc {
 #define MGSL_IOCRXENABLE	_IO(MGSL_MAGIC_IOC,5)
 #define MGSL_IOCTXABORT		_IO(MGSL_MAGIC_IOC,6)
 #define MGSL_IOCGSTATS		_IO(MGSL_MAGIC_IOC,7)
-#define MGSL_IOCWAITEVENT	_IOWR(MGSL_MAGIC_IOC,8,int)
+#define MGSL_IOCWAITEVENT	_IOWR(MGSL_MAGIC_IOC,8,i32)
 #define MGSL_IOCCLRMODCOUNT	_IO(MGSL_MAGIC_IOC,15)
 #define MGSL_IOCLOOPTXDONE	_IO(MGSL_MAGIC_IOC,9)
 #define MGSL_IOCSIF		_IO(MGSL_MAGIC_IOC,10)

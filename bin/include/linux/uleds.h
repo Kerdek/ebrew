@@ -19,7 +19,7 @@
 
 struct uleds_user_dev {
 	char name[LED_MAX_NAME_SIZE];
-	int max_brightness;
+	i32 max_brightness;
 };
 
 #endif /* __ULEDS_H_ */

@@ -21,7 +21,7 @@
 
 struct tc_vlan {
 	tc_gen;
-	int v_action;
+	i32 v_action;
 };
 
 enum {

@@ -126,7 +126,7 @@ typedef struct fs_disk_quota {
 #define FS_DQ_ACCT_MASK		(FS_DQ_BCOUNT | FS_DQ_ICOUNT | FS_DQ_RTBCOUNT)
 
 /*
- * Quota expiration timestamps are 40-bit signed integers, with the upper 8
+ * Quota expiration timestamps are 40-bit  integers, with the upper 8
  * bits encoded in the _hi fields.
  */
 #define FS_DQ_BIGTIME		(1<<15)

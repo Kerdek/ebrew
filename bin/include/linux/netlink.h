@@ -36,7 +36,7 @@
 
 struct sockaddr_nl {
 	__kernel_sa_family_t	nl_family;	/* AF_NETLINK	*/
-	unsigned short	nl_pad;		/* zero		*/
+	unsigned i16	nl_pad;		/* zero		*/
 	__u32		nl_pid;		/* port ID	*/
        	__u32		nl_groups;	/* multicast groups mask */
 };
@@ -88,13 +88,13 @@ struct nlmsghdr {
 
 #define NLMSG_ALIGNTO	4U
 #define NLMSG_ALIGN(len) ( ((len)+NLMSG_ALIGNTO-1) & ~(NLMSG_ALIGNTO-1) )
-#define NLMSG_HDRLEN	 ((int) NLMSG_ALIGN(sizeof(struct nlmsghdr)))
+#define NLMSG_HDRLEN	 ((i32) NLMSG_ALIGN(sizeof(struct nlmsghdr)))
 #define NLMSG_LENGTH(len) ((len) + NLMSG_HDRLEN)
 #define NLMSG_SPACE(len) NLMSG_ALIGN(NLMSG_LENGTH(len))
 #define NLMSG_DATA(nlh)  ((void*)(((char*)nlh) + NLMSG_LENGTH(0)))
 #define NLMSG_NEXT(nlh,len)	 ((len) -= NLMSG_ALIGN((nlh)->nlmsg_len), \
 				  (struct nlmsghdr*)(((char*)(nlh)) + NLMSG_ALIGN((nlh)->nlmsg_len)))
-#define NLMSG_OK(nlh,len) ((len) >= (int)sizeof(struct nlmsghdr) && \
+#define NLMSG_OK(nlh,len) ((len) >= (i32)sizeof(struct nlmsghdr) && \
 			   (nlh)->nlmsg_len >= sizeof(struct nlmsghdr) && \
 			   (nlh)->nlmsg_len <= (len))
 #define NLMSG_PAYLOAD(nlh,len) ((nlh)->nlmsg_len - NLMSG_SPACE((len)))
@@ -107,7 +107,7 @@ struct nlmsghdr {
 #define NLMSG_MIN_TYPE		0x10	/* < 0x10: reserved control messages */
 
 struct nlmsgerr {
-	int		error;
+	i32		error;
 	struct nlmsghdr msg;
 	/*
 	 * followed by the message contents unless NETLINK_CAP_ACK was set
@@ -162,15 +162,15 @@ struct nl_pktinfo {
 };
 
 struct nl_mmap_req {
-	unsigned int	nm_block_size;
-	unsigned int	nm_block_nr;
-	unsigned int	nm_frame_size;
-	unsigned int	nm_frame_nr;
+	unsigned i32	nm_block_size;
+	unsigned i32	nm_block_nr;
+	unsigned i32	nm_frame_size;
+	unsigned i32	nm_frame_nr;
 };
 
 struct nl_mmap_hdr {
-	unsigned int	nm_status;
-	unsigned int	nm_len;
+	unsigned i32	nm_status;
+	unsigned i32	nm_len;
 	__u32		nm_group;
 	/* credentials */
 	__u32		nm_pid;
@@ -227,7 +227,7 @@ struct nlattr {
 
 #define NLA_ALIGNTO		4
 #define NLA_ALIGN(len)		(((len) + NLA_ALIGNTO - 1) & ~(NLA_ALIGNTO - 1))
-#define NLA_HDRLEN		((int) NLA_ALIGN(sizeof(struct nlattr)))
+#define NLA_HDRLEN		((i32) NLA_ALIGN(sizeof(struct nlattr)))
 
 /* Generic 32 bitflags attribute content sent to the kernel.
  *
@@ -261,10 +261,10 @@ struct nla_bitfield32 {
  * @NL_ATTR_TYPE_U16: 16-bit unsigned attribute
  * @NL_ATTR_TYPE_U32: 32-bit unsigned attribute
  * @NL_ATTR_TYPE_U64: 64-bit unsigned attribute
- * @NL_ATTR_TYPE_S8: 8-bit signed attribute
- * @NL_ATTR_TYPE_S16: 16-bit signed attribute
- * @NL_ATTR_TYPE_S32: 32-bit signed attribute
- * @NL_ATTR_TYPE_S64: 64-bit signed attribute
+ * @NL_ATTR_TYPE_S8: 8-bit  attribute
+ * @NL_ATTR_TYPE_S16: 16-bit  attribute
+ * @NL_ATTR_TYPE_S32: 32-bit  attribute
+ * @NL_ATTR_TYPE_S64: 64-bit  attribute
  * @NL_ATTR_TYPE_BINARY: binary data, min/max length may be specified
  * @NL_ATTR_TYPE_STRING: string, min/max length may be specified
  * @NL_ATTR_TYPE_NUL_STRING: NUL-terminated string,
@@ -309,9 +309,9 @@ enum netlink_attribute_type {
  * @NL_POLICY_TYPE_ATTR_UNSPEC: unused
  * @NL_POLICY_TYPE_ATTR_TYPE: type of the attribute,
  *	&enum netlink_attribute_type (U32)
- * @NL_POLICY_TYPE_ATTR_MIN_VALUE_S: minimum value for signed
+ * @NL_POLICY_TYPE_ATTR_MIN_VALUE_S: minimum value for 
  *	integers (S64)
- * @NL_POLICY_TYPE_ATTR_MAX_VALUE_S: maximum value for signed
+ * @NL_POLICY_TYPE_ATTR_MAX_VALUE_S: maximum value for 
  *	integers (S64)
  * @NL_POLICY_TYPE_ATTR_MIN_VALUE_U: minimum value for unsigned
  *	integers (U64)

@@ -36,5 +36,5 @@
 typedef union
 {
   char __size[__SIZEOF_SEM_T];
-  long int __align;
+  i64 __align;
 } sem_t;

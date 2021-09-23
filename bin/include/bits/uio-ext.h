@@ -27,18 +27,18 @@ __BEGIN_DECLS
 
 /* Read from another process' address space.  */
 extern ssize_t process_vm_readv (pid_t __pid, const struct iovec *__lvec,
-				 unsigned long int __liovcnt,
+				 unsigned i64 __liovcnt,
 				 const struct iovec *__rvec,
-				 unsigned long int __riovcnt,
-				 unsigned long int __flags)
+				 unsigned i64 __riovcnt,
+				 unsigned i64 __flags)
   __THROW;
 
 /* Write to another process' address space.  */
 extern ssize_t process_vm_writev (pid_t __pid, const struct iovec *__lvec,
-				  unsigned long int __liovcnt,
+				  unsigned i64 __liovcnt,
 				  const struct iovec *__rvec,
-				  unsigned long int __riovcnt,
-				  unsigned long int __flags)
+				  unsigned i64 __riovcnt,
+				  unsigned i64 __flags)
   __THROW;
 
 /* Flags for preadv2/pwritev2.  */

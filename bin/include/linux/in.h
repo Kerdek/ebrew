@@ -178,7 +178,7 @@ struct ip_mreq  {
 struct ip_mreqn {
 	struct in_addr	imr_multiaddr;		/* IP multicast address of group */
 	struct in_addr	imr_address;		/* local IP address of interface */
-	int		imr_ifindex;		/* Interface index */
+	i32		imr_ifindex;		/* Interface index */
 };
 
 struct ip_mreq_source {
@@ -225,7 +225,7 @@ struct group_filter {
 
 #if __UAPI_DEF_IN_PKTINFO
 struct in_pktinfo {
-	int		ipi_ifindex;
+	i32		ipi_ifindex;
 	struct in_addr	ipi_spec_dst;
 	struct in_addr	ipi_addr;
 };
@@ -240,8 +240,8 @@ struct sockaddr_in {
   struct in_addr	sin_addr;	/* Internet address		*/
 
   /* Pad to size of `struct sockaddr'. */
-  unsigned char		__pad[__SOCK_SIZE__ - sizeof(short int) -
-			sizeof(unsigned short int) - sizeof(struct in_addr)];
+  unsigned i8		__pad[__SOCK_SIZE__ - sizeof(i16 i32) -
+			sizeof(unsigned i16) - sizeof(struct in_addr)];
 };
 #define sin_zero	__pad		/* for BSD UNIX comp. -FvK	*/
 #endif
@@ -252,52 +252,52 @@ struct sockaddr_in {
  * On subnets, host and network parts are found according
  * to the subnet mask, not these masks.
  */
-#define	IN_CLASSA(a)		((((long int) (a)) & 0x80000000) == 0)
+#define	IN_CLASSA(a)		((((i64) (a)) & 0x80000000) == 0)
 #define	IN_CLASSA_NET		0xff000000
 #define	IN_CLASSA_NSHIFT	24
 #define	IN_CLASSA_HOST		(0xffffffff & ~IN_CLASSA_NET)
 #define	IN_CLASSA_MAX		128
 
-#define	IN_CLASSB(a)		((((long int) (a)) & 0xc0000000) == 0x80000000)
+#define	IN_CLASSB(a)		((((i64) (a)) & 0xc0000000) == 0x80000000)
 #define	IN_CLASSB_NET		0xffff0000
 #define	IN_CLASSB_NSHIFT	16
 #define	IN_CLASSB_HOST		(0xffffffff & ~IN_CLASSB_NET)
 #define	IN_CLASSB_MAX		65536
 
-#define	IN_CLASSC(a)		((((long int) (a)) & 0xe0000000) == 0xc0000000)
+#define	IN_CLASSC(a)		((((i64) (a)) & 0xe0000000) == 0xc0000000)
 #define	IN_CLASSC_NET		0xffffff00
 #define	IN_CLASSC_NSHIFT	8
 #define	IN_CLASSC_HOST		(0xffffffff & ~IN_CLASSC_NET)
 
-#define	IN_CLASSD(a)		((((long int) (a)) & 0xf0000000) == 0xe0000000)
+#define	IN_CLASSD(a)		((((i64) (a)) & 0xf0000000) == 0xe0000000)
 #define	IN_MULTICAST(a)		IN_CLASSD(a)
 #define	IN_MULTICAST_NET	0xe0000000
 
-#define	IN_BADCLASS(a)		(((long int) (a) ) == (long int)0xffffffff)
+#define	IN_BADCLASS(a)		(((i64) (a) ) == (i64)0xffffffff)
 #define	IN_EXPERIMENTAL(a)	IN_BADCLASS((a))
 
-#define	IN_CLASSE(a)		((((long int) (a)) & 0xf0000000) == 0xf0000000)
+#define	IN_CLASSE(a)		((((i64) (a)) & 0xf0000000) == 0xf0000000)
 #define	IN_CLASSE_NET		0xffffffff
 #define	IN_CLASSE_NSHIFT	0
 
 /* Address to accept any incoming messages. */
-#define	INADDR_ANY		((unsigned long int) 0x00000000)
+#define	INADDR_ANY		((unsigned i64) 0x00000000)
 
 /* Address to send to all hosts. */
-#define	INADDR_BROADCAST	((unsigned long int) 0xffffffff)
+#define	INADDR_BROADCAST	((unsigned i64) 0xffffffff)
 
 /* Address indicating an error return. */
-#define	INADDR_NONE		((unsigned long int) 0xffffffff)
+#define	INADDR_NONE		((unsigned i64) 0xffffffff)
 
 /* Dummy address for src of ICMP replies if no real address is set (RFC7600). */
-#define	INADDR_DUMMY		((unsigned long int) 0xc0000008)
+#define	INADDR_DUMMY		((unsigned i64) 0xc0000008)
 
 /* Network number for local host loopback. */
 #define	IN_LOOPBACKNET		127
 
 /* Address to loopback in software to local host.  */
 #define	INADDR_LOOPBACK		0x7f000001	/* 127.0.0.1   */
-#define	IN_LOOPBACK(a)		((((long int) (a)) & 0xff000000) == 0x7f000000)
+#define	IN_LOOPBACK(a)		((((i64) (a)) & 0xff000000) == 0x7f000000)
 
 /* Defines for Multicast INADDR */
 #define INADDR_UNSPEC_GROUP		0xe0000000U	/* 224.0.0.0   */

@@ -65,7 +65,7 @@
  * ATM layer
  */
 
-#define SO_SETCLP	__SO_ENCODE(SOL_ATM,0,int)
+#define SO_SETCLP	__SO_ENCODE(SOL_ATM,0,i32)
 			    /* set CLP bit value - TODO */
 #define SO_CIRANGE	__SO_ENCODE(SOL_ATM,1,struct atm_cirange)
 			    /* connection identifier range; socket must be
@@ -76,7 +76,7 @@
 			    /* Service Access Point */
 #define SO_ATMPVC	__SO_ENCODE(SOL_ATM,4,struct sockaddr_atmpvc)
 			    /* "PVC" address (also for SVCs); get only */
-#define SO_MULTIPOINT	__SO_ENCODE(SOL_ATM, 5, int)
+#define SO_MULTIPOINT	__SO_ENCODE(SOL_ATM, 5, i32)
 			    /* make this vc a p2mp */
 
 
@@ -134,34 +134,34 @@
 #define ATM_MAX_PCR	-1		/* maximum available PCR */
 
 struct atm_trafprm {
-	unsigned char	traffic_class;	/* traffic class (ATM_UBR, ...) */
-	int		max_pcr;	/* maximum PCR in cells per second */
-	int		pcr;		/* desired PCR in cells per second */
-	int		min_pcr;	/* minimum PCR in cells per second */
-	int		max_cdv;	/* maximum CDV in microseconds */
-	int		max_sdu;	/* maximum SDU in bytes */
+	unsigned i8	traffic_class;	/* traffic class (ATM_UBR, ...) */
+	i32		max_pcr;	/* maximum PCR in cells per second */
+	i32		pcr;		/* desired PCR in cells per second */
+	i32		min_pcr;	/* minimum PCR in cells per second */
+	i32		max_cdv;	/* maximum CDV in microseconds */
+	i32		max_sdu;	/* maximum SDU in bytes */
         /* extra params for ABR */
-        unsigned int 	icr;         	/* Initial Cell Rate (24-bit) */
-        unsigned int	tbe;		/* Transient Buffer Exposure (24-bit) */ 
-        unsigned int 	frtt : 24;	/* Fixed Round Trip Time (24-bit) */
-        unsigned int 	rif  : 4;       /* Rate Increment Factor (4-bit) */
-        unsigned int 	rdf  : 4;       /* Rate Decrease Factor (4-bit) */
-        unsigned int nrm_pres  :1;      /* nrm present bit */
-        unsigned int trm_pres  :1;     	/* rm present bit */
-        unsigned int adtf_pres :1;     	/* adtf present bit */
-        unsigned int cdf_pres  :1;    	/* cdf present bit*/
-        unsigned int nrm       :3;     	/* Max # of Cells for each forward RM cell (3-bit) */
-        unsigned int trm       :3;    	/* Time between forward RM cells (3-bit) */    
-	unsigned int adtf      :10;     /* ACR Decrease Time Factor (10-bit) */
-	unsigned int cdf       :3;      /* Cutoff Decrease Factor (3-bit) */
-        unsigned int spare     :9;      /* spare bits */ 
+        unsigned i32 	icr;         	/* Initial Cell Rate (24-bit) */
+        unsigned i32	tbe;		/* Transient Buffer Exposure (24-bit) */ 
+        unsigned i32 	frtt : 24;	/* Fixed Round Trip Time (24-bit) */
+        unsigned i32 	rif  : 4;       /* Rate Increment Factor (4-bit) */
+        unsigned i32 	rdf  : 4;       /* Rate Decrease Factor (4-bit) */
+        unsigned i32 nrm_pres  :1;      /* nrm present bit */
+        unsigned i32 trm_pres  :1;     	/* rm present bit */
+        unsigned i32 adtf_pres :1;     	/* adtf present bit */
+        unsigned i32 cdf_pres  :1;    	/* cdf present bit*/
+        unsigned i32 nrm       :3;     	/* Max # of Cells for each forward RM cell (3-bit) */
+        unsigned i32 trm       :3;    	/* Time between forward RM cells (3-bit) */    
+	unsigned i32 adtf      :10;     /* ACR Decrease Time Factor (10-bit) */
+	unsigned i32 cdf       :3;      /* Cutoff Decrease Factor (3-bit) */
+        unsigned i32 spare     :9;      /* spare bits */ 
 };
 
 struct atm_qos {
 	struct atm_trafprm txtp;	/* parameters in TX direction */
 	struct atm_trafprm rxtp __ATM_API_ALIGN;
 					/* parameters in RX direction */
-	unsigned char aal __ATM_API_ALIGN;
+	unsigned i8 aal __ATM_API_ALIGN;
 };
 
 /* PVC addressing */
@@ -174,11 +174,11 @@ struct atm_qos {
 
 
 struct sockaddr_atmpvc {
-	unsigned short 	sap_family;	/* address family, AF_ATMPVC  */
+	unsigned i16 	sap_family;	/* address family, AF_ATMPVC  */
 	struct {			/* PVC address */
-		short	itf;		/* ATM interface */
-		short	vpi;		/* VPI (only 8 bits at UNI) */
-		int	vci;		/* VCI (only 16 bits at UNI) */
+		i16	itf;		/* ATM interface */
+		i16	vpi;		/* VPI (only 8 bits at UNI) */
+		i32	vci;		/* VCI (only 16 bits at UNI) */
 	} sap_addr __ATM_API_ALIGN;	/* PVC address */
 };
 
@@ -204,9 +204,9 @@ struct sockaddr_atmpvc {
 
 
 struct sockaddr_atmsvc {
-    unsigned short 	sas_family;	/* address family, AF_ATMSVC */
+    unsigned i16 	sas_family;	/* address family, AF_ATMSVC */
     struct {				/* SVC address */
-        unsigned char	prv[ATM_ESA_LEN];/* private ATM address */
+        unsigned i8	prv[ATM_ESA_LEN];/* private ATM address */
         char		pub[ATM_E164_LEN+1]; /* public address (E.164) */
     					/* unused addresses must be bzero'ed */
 	char		lij_type;	/* role in LIJ call; one of ATM_LIJ* */
@@ -215,13 +215,13 @@ struct sockaddr_atmsvc {
 };
 
 
-static __inline__ int atmsvc_addr_in_use(struct sockaddr_atmsvc addr)
+static __inline__ i32 atmsvc_addr_in_use(struct sockaddr_atmsvc addr)
 {
 	return *addr.sas_addr.prv || *addr.sas_addr.pub;
 }
 
 
-static __inline__ int atmpvc_addr_in_use(struct sockaddr_atmpvc addr)
+static __inline__ i32 atmpvc_addr_in_use(struct sockaddr_atmpvc addr)
 {
 	return addr.sap_addr.itf || addr.sap_addr.vpi || addr.sap_addr.vci;
 }
@@ -232,11 +232,11 @@ static __inline__ int atmpvc_addr_in_use(struct sockaddr_atmpvc addr)
  */
 
 struct atmif_sioc {
-	int number;
-	int length;
+	i32 number;
+	i32 length;
 	void *arg;
 };
 
 
-typedef unsigned short atm_backend_t;
+typedef unsigned i16 atm_backend_t;
 #endif /* _LINUX_ATM_H */

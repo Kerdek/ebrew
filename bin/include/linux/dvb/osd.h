@@ -136,11 +136,11 @@ typedef enum {
 
 typedef struct osd_cmd_s {
 	OSD_Command cmd;
-	int x0;
-	int y0;
-	int x1;
-	int y1;
-	int color;
+	i32 x0;
+	i32 y0;
+	i32 x1;
+	i32 y1;
+	i32 color;
 	void *data;
 } osd_cmd_t;
 
@@ -169,9 +169,9 @@ typedef enum {
 } osd_raw_window_t;
 
 typedef struct osd_cap_s {
-	int  cmd;
+	i32  cmd;
 #define OSD_CAP_MEMSIZE         1  /* memory size */
-	long val;
+	i64 val;
 } osd_cap_t;
 
 

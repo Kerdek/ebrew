@@ -26,7 +26,7 @@ __BEGIN_DECLS
    the kernel's syslog system call, but that name is easily confused
    with the user-level syslog facility, which is something completely
    different.  */
-extern int klogctl (int __type, char *__bufp, int __len) __THROW;
+extern i32 klogctl (i32 __type, char *__bufp, i32 __len) __THROW;
 
 __END_DECLS
 

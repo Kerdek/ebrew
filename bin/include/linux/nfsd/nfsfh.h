@@ -74,7 +74,7 @@ struct nfs_fhbase_new {
 };
 
 struct knfsd_fh {
-	unsigned int	fh_size;	/* significant for NFSv3.
+	unsigned i32	fh_size;	/* significant for NFSv3.
 					 * Points to the current size while building
 					 * a new file handle
 					 */

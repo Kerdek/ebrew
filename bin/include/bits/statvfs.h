@@ -28,8 +28,8 @@
 
 struct statvfs
   {
-    unsigned long int f_bsize;
-    unsigned long int f_frsize;
+    unsigned i64 f_bsize;
+    unsigned i64 f_frsize;
 #ifndef __USE_FILE_OFFSET64
     __fsblkcnt_t f_blocks;
     __fsblkcnt_t f_bfree;
@@ -45,33 +45,33 @@ struct statvfs
     __fsfilcnt64_t f_ffree;
     __fsfilcnt64_t f_favail;
 #endif
-    unsigned long int f_fsid;
+    unsigned i64 f_fsid;
 #ifdef _STATVFSBUF_F_UNUSED
-    int __f_unused;
+    i32 __f_unused;
 #endif
-    unsigned long int f_flag;
-    unsigned long int f_namemax;
-    int __f_spare[6];
+    unsigned i64 f_flag;
+    unsigned i64 f_namemax;
+    i32 __f_spare[6];
   };
 
 #ifdef __USE_LARGEFILE64
 struct statvfs64
   {
-    unsigned long int f_bsize;
-    unsigned long int f_frsize;
+    unsigned i64 f_bsize;
+    unsigned i64 f_frsize;
     __fsblkcnt64_t f_blocks;
     __fsblkcnt64_t f_bfree;
     __fsblkcnt64_t f_bavail;
     __fsfilcnt64_t f_files;
     __fsfilcnt64_t f_ffree;
     __fsfilcnt64_t f_favail;
-    unsigned long int f_fsid;
+    unsigned i64 f_fsid;
 #ifdef _STATVFSBUF_F_UNUSED
-    int __f_unused;
+    i32 __f_unused;
 #endif
-    unsigned long int f_flag;
-    unsigned long int f_namemax;
-    int __f_spare[6];
+    unsigned i64 f_flag;
+    unsigned i64 f_namemax;
+    i32 __f_spare[6];
   };
 #endif
 

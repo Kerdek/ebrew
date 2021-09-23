@@ -22,7 +22,7 @@
 /* Data structure to describe a process' schedulability.  */
 struct sched_param
 {
-  int sched_priority;
+  i32 sched_priority;
 };
 
 #endif /* bits/types/struct_sched_param.h */

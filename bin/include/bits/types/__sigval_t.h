@@ -23,7 +23,7 @@
 #ifdef __USE_POSIX199309
 _ union sigval
 {
-  sival_int int
+  sival_int i32
   sival_ptr@;
 };
 
@@ -31,7 +31,7 @@ type __sigval_t union sigval;
 #else
 _ union __sigval
 {
-  __sival_int int;
+  __sival_int i32;
   __sival_ptr@;
 };
 

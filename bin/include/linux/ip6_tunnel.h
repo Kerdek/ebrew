@@ -26,7 +26,7 @@
 
 struct ip6_tnl_parm {
 	char name[IFNAMSIZ];	/* name of tunnel device */
-	int link;		/* ifindex of underlying L2 interface */
+	i32 link;		/* ifindex of underlying L2 interface */
 	__u8 proto;		/* tunnel protocol */
 	__u8 encap_limit;	/* encapsulation limit for tunnel */
 	__u8 hop_limit;		/* hop limit for tunnel */
@@ -38,7 +38,7 @@ struct ip6_tnl_parm {
 
 struct ip6_tnl_parm2 {
 	char name[IFNAMSIZ];	/* name of tunnel device */
-	int link;		/* ifindex of underlying L2 interface */
+	i32 link;		/* ifindex of underlying L2 interface */
 	__u8 proto;		/* tunnel protocol */
 	__u8 encap_limit;	/* encapsulation limit for tunnel */
 	__u8 hop_limit;		/* hop limit for tunnel */

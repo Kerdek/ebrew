@@ -27,7 +27,7 @@
 struct pppol2tp_addr {
 	__kernel_pid_t	pid;		/* pid that owns the fd.
 					 * 0 => current */
-	int	fd;			/* FD of UDP socket to use */
+	i32	fd;			/* FD of UDP socket to use */
 
 	struct sockaddr_in addr;	/* IP address and port to send to */
 
@@ -41,7 +41,7 @@ struct pppol2tp_addr {
 struct pppol2tpin6_addr {
 	__kernel_pid_t	pid;		/* pid that owns the fd.
 					 * 0 => current */
-	int	fd;			/* FD of UDP socket to use */
+	i32	fd;			/* FD of UDP socket to use */
 
 	__u16 s_tunnel, s_session;	/* For matching incoming packets */
 	__u16 d_tunnel, d_session;	/* For sending outgoing packets */
@@ -55,7 +55,7 @@ struct pppol2tpin6_addr {
 struct pppol2tpv3_addr {
 	__kernel_pid_t	pid;		/* pid that owns the fd.
 					 * 0 => current */
-	int	fd;			/* FD of UDP or IP socket to use */
+	i32	fd;			/* FD of UDP or IP socket to use */
 
 	struct sockaddr_in addr;	/* IP address and port to send to */
 
@@ -66,7 +66,7 @@ struct pppol2tpv3_addr {
 struct pppol2tpv3in6_addr {
 	__kernel_pid_t	pid;		/* pid that owns the fd.
 					 * 0 => current */
-	int	fd;			/* FD of UDP or IP socket to use */
+	i32	fd;			/* FD of UDP or IP socket to use */
 
 	__u32 s_tunnel, s_session;	/* For matching incoming packets */
 	__u32 d_tunnel, d_session;	/* For sending outgoing packets */

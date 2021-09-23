@@ -30,7 +30,7 @@ struct semid_ds {
 	struct sem_queue *sem_pending;		/* pending operations to be processed */
 	struct sem_queue **sem_pending_last;	/* last pending operation */
 	struct sem_undo	*undo;			/* undo requests on this array */
-	unsigned short	sem_nsems;		/* no. of semaphores in array */
+	unsigned i16	sem_nsems;		/* no. of semaphores in array */
 };
 
 /* Include the definition of semid64_ds */
@@ -38,31 +38,31 @@ struct semid_ds {
 
 /* semop system calls takes an array of these. */
 struct sembuf {
-	unsigned short  sem_num;	/* semaphore index in array */
-	short		sem_op;		/* semaphore operation */
-	short		sem_flg;	/* operation flags */
+	unsigned i16  sem_num;	/* semaphore index in array */
+	i16		sem_op;		/* semaphore operation */
+	i16		sem_flg;	/* operation flags */
 };
 
 /* arg for semctl system calls. */
 union semun {
-	int val;			/* value for SETVAL */
+	i32 val;			/* value for SETVAL */
 	struct semid_ds *buf;	/* buffer for IPC_STAT & IPC_SET */
-	unsigned short *array;	/* array for GETALL & SETALL */
+	unsigned i16 *array;	/* array for GETALL & SETALL */
 	struct seminfo *__buf;	/* buffer for IPC_INFO */
 	void *__pad;
 };
 
 struct  seminfo {
-	int semmap;
-	int semmni;
-	int semmns;
-	int semmnu;
-	int semmsl;
-	int semopm;
-	int semume;
-	int semusz;
-	int semvmx;
-	int semaem;
+	i32 semmap;
+	i32 semmni;
+	i32 semmns;
+	i32 semmnu;
+	i32 semmsl;
+	i32 semopm;
+	i32 semume;
+	i32 semusz;
+	i32 semvmx;
+	i32 semaem;
 };
 
 /*

@@ -320,7 +320,7 @@ struct binder_pri_ptr_cookie {
 enum binder_driver_return_protocol {
 	BR_ERROR = _IOR('r', 0, __s32),
 	/*
-	 * int: error code
+	 * i32: error code
 	 */
 
 	BR_OK = _IO('r', 1),
@@ -340,7 +340,7 @@ enum binder_driver_return_protocol {
 	BR_ACQUIRE_RESULT = _IOR('r', 4, __s32),
 	/*
 	 * not currently supported
-	 * int: 0 if the last bcATTEMPT_ACQUIRE was not successful.
+	 * i32: 0 if the last bcATTEMPT_ACQUIRE was not successful.
 	 * Else the remote object has acquired a primary reference.
 	 */
 
@@ -369,7 +369,7 @@ enum binder_driver_return_protocol {
 	BR_ATTEMPT_ACQUIRE = _IOR('r', 11, struct binder_pri_ptr_cookie),
 	/*
 	 * not currently supported
-	 * int:	priority
+	 * i32:	priority
 	 * void *: ptr to binder
 	 * void *: cookie for binder
 	 */
@@ -420,7 +420,7 @@ enum binder_driver_command_protocol {
 	BC_ACQUIRE_RESULT = _IOW('c', 2, __s32),
 	/*
 	 * not currently supported
-	 * int:  0 if the last BR_ATTEMPT_ACQUIRE was not successful.
+	 * i32:  0 if the last BR_ATTEMPT_ACQUIRE was not successful.
 	 * Else you have acquired a primary reference on the object.
 	 */
 
@@ -434,7 +434,7 @@ enum binder_driver_command_protocol {
 	BC_RELEASE = _IOW('c', 6, __u32),
 	BC_DECREFS = _IOW('c', 7, __u32),
 	/*
-	 * int:	descriptor
+	 * i32:	descriptor
 	 */
 
 	BC_INCREFS_DONE = _IOW('c', 8, struct binder_ptr_cookie),
@@ -447,8 +447,8 @@ enum binder_driver_command_protocol {
 	BC_ATTEMPT_ACQUIRE = _IOW('c', 10, struct binder_pri_desc),
 	/*
 	 * not currently supported
-	 * int: priority
-	 * int: descriptor
+	 * i32: priority
+	 * i32: descriptor
 	 */
 
 	BC_REGISTER_LOOPER = _IO('c', 11),
@@ -470,14 +470,14 @@ enum binder_driver_command_protocol {
 	BC_REQUEST_DEATH_NOTIFICATION = _IOW('c', 14,
 						struct binder_handle_cookie),
 	/*
-	 * int: handle
+	 * i32: handle
 	 * void *: cookie
 	 */
 
 	BC_CLEAR_DEATH_NOTIFICATION = _IOW('c', 15,
 						struct binder_handle_cookie),
 	/*
-	 * int: handle
+	 * i32: handle
 	 * void *: cookie
 	 */
 

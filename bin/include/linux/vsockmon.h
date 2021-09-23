@@ -13,7 +13,7 @@
  *   |      (struct af_vsockmon_hdr)     |
  *   +-----------------------------------+
  *   |          transport header         |
- *   | (af_vsockmon_hdr->len bytes long) |
+ *   | (af_vsockmon_hdr->len bytes i64) |
  *   +-----------------------------------+
  *   |              payload              |
  *   |       (until end of packet)       |

@@ -39,8 +39,8 @@ typedef struct buf_nr
 
 typedef struct pool_levels
 {
-   int buftype;
-   int count;		/* (At least for now) only used in NS_GETPSTAT */
+   i32 buftype;
+   i32 count;		/* (At least for now) only used in NS_GETPSTAT */
    buf_nr level;
 } pool_levels;
 

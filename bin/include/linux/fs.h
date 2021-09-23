@@ -91,15 +91,15 @@ struct file_dedupe_range {
 
 /* And dynamically-tunable limits and defaults: */
 struct files_stat_struct {
-	unsigned long nr_files;		/* read only */
-	unsigned long nr_free_files;	/* read only */
-	unsigned long max_files;		/* tunable */
+	unsigned i64 nr_files;		/* read only */
+	unsigned i64 nr_free_files;	/* read only */
+	unsigned i64 max_files;		/* tunable */
 };
 
 struct inodes_stat_t {
-	long nr_inodes;
-	long nr_unused;
-	long dummy[5];		/* padding for sysctl ABI compatibility */
+	i64 nr_inodes;
+	i64 nr_unused;
+	i64 dummy[5];		/* padding for sysctl ABI compatibility */
 };
 
 
@@ -114,7 +114,7 @@ struct fsxattr {
 	__u32		fsx_nextents;	/* nextents field value (get)	*/
 	__u32		fsx_projid;	/* project identifier (get/set) */
 	__u32		fsx_cowextsize;	/* CoW extsize field value (get/set)*/
-	unsigned char	fsx_pad[8];
+	unsigned i8	fsx_pad[8];
 };
 
 /*
@@ -144,7 +144,7 @@ struct fsxattr {
 #define BLKROSET   _IO(0x12,93)	/* set device read-only (0 = read-write) */
 #define BLKROGET   _IO(0x12,94)	/* get read-only status (0 = read_write) */
 #define BLKRRPART  _IO(0x12,95)	/* re-read partition table */
-#define BLKGETSIZE _IO(0x12,96)	/* return device size /512 (long *arg) */
+#define BLKGETSIZE _IO(0x12,96)	/* return device size /512 (i64 *arg) */
 #define BLKFLSBUF  _IO(0x12,97)	/* flush buffer cache */
 #define BLKRASET   _IO(0x12,98)	/* set read ahead for block device */
 #define BLKRAGET   _IO(0x12,99)	/* get current read ahead setting */
@@ -188,24 +188,24 @@ struct fsxattr {
 #define BMAP_IOCTL 1		/* obsolete - kept for compatibility */
 #define FIBMAP	   _IO(0x00,1)	/* bmap access */
 #define FIGETBSZ   _IO(0x00,2)	/* get the block size used for bmap */
-#define FIFREEZE	_IOWR('X', 119, int)	/* Freeze */
-#define FITHAW		_IOWR('X', 120, int)	/* Thaw */
+#define FIFREEZE	_IOWR('X', 119, i32)	/* Freeze */
+#define FITHAW		_IOWR('X', 120, i32)	/* Thaw */
 #define FITRIM		_IOWR('X', 121, struct fstrim_range)	/* Trim */
-#define FICLONE		_IOW(0x94, 9, int)
+#define FICLONE		_IOW(0x94, 9, i32)
 #define FICLONERANGE	_IOW(0x94, 13, struct file_clone_range)
 #define FIDEDUPERANGE	_IOWR(0x94, 54, struct file_dedupe_range)
 
 #define FSLABEL_MAX 256	/* Max chars for the interface; each fs may differ */
 
-#define	FS_IOC_GETFLAGS			_IOR('f', 1, long)
-#define	FS_IOC_SETFLAGS			_IOW('f', 2, long)
-#define	FS_IOC_GETVERSION		_IOR('v', 1, long)
-#define	FS_IOC_SETVERSION		_IOW('v', 2, long)
+#define	FS_IOC_GETFLAGS			_IOR('f', 1, i64)
+#define	FS_IOC_SETFLAGS			_IOW('f', 2, i64)
+#define	FS_IOC_GETVERSION		_IOR('v', 1, i64)
+#define	FS_IOC_SETVERSION		_IOW('v', 2, i64)
 #define FS_IOC_FIEMAP			_IOWR('f', 11, struct fiemap)
-#define FS_IOC32_GETFLAGS		_IOR('f', 1, int)
-#define FS_IOC32_SETFLAGS		_IOW('f', 2, int)
-#define FS_IOC32_GETVERSION		_IOR('v', 1, int)
-#define FS_IOC32_SETVERSION		_IOW('v', 2, int)
+#define FS_IOC32_GETFLAGS		_IOR('f', 1, i32)
+#define FS_IOC32_SETFLAGS		_IOW('f', 2, i32)
+#define FS_IOC32_GETVERSION		_IOR('v', 1, i32)
+#define FS_IOC32_SETVERSION		_IOW('v', 2, i32)
 #define FS_IOC_FSGETXATTR		_IOR('X', 31, struct fsxattr)
 #define FS_IOC_FSSETXATTR		_IOW('X', 32, struct fsxattr)
 #define FS_IOC_GETFSLABEL		_IOR(0x94, 49, char[FSLABEL_MAX])
@@ -279,7 +279,7 @@ struct fsxattr {
  * Flags for preadv2/pwritev2:
  */
 
-typedef int __bitwise __kernel_rwf_t;
+typedef i32 __bitwise __kernel_rwf_t;
 
 /* high priority request, poll if possible */
 #define RWF_HIPRI	((__kernel_rwf_t)0x00000001)

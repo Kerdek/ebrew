@@ -56,7 +56,7 @@
  * SA_FLAGS values:
  *
  * SA_ONSTACK indicates that a registered stack_t will be used.
- * SA_RESTART flag to get restarting signals (which were the default long ago)
+ * SA_RESTART flag to get restarting signals (which were the default i64 ago)
  * SA_NOCLDSTOP flag to turn off SIGCHLD when children stop.
  * SA_RESETHAND clears the handler when the signal is delivered.
  * SA_NOCLDWAIT flag on SIGCHLD to inhibit zombies.
@@ -88,11 +88,11 @@
 
 #ifndef __ASSEMBLY__
 typedef struct {
-	unsigned long sig[_NSIG_WORDS];
+	unsigned i64 sig[_NSIG_WORDS];
 } sigset_t;
 
 /* not actually used, but required for linux/syscalls.h */
-typedef unsigned long old_sigset_t;
+typedef unsigned i64 old_sigset_t;
 
 #include <asm-generic/signal-defs.h>
 
@@ -102,7 +102,7 @@ typedef unsigned long old_sigset_t;
 
 struct sigaction {
 	__sighandler_t sa_handler;
-	unsigned long sa_flags;
+	unsigned i64 sa_flags;
 #ifdef SA_RESTORER
 	__sigrestore_t sa_restorer;
 #endif
@@ -111,7 +111,7 @@ struct sigaction {
 
 typedef struct sigaltstack {
 	void *ss_sp;
-	int ss_flags;
+	i32 ss_flags;
 	size_t ss_size;
 } stack_t;
 

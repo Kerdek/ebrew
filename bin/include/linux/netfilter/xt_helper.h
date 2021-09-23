@@ -3,7 +3,7 @@
 #define _XT_HELPER_H
 
 struct xt_helper_info {
-	int invert;
+	i32 invert;
 	char name[30];
 };
 #endif /* _XT_HELPER_H */

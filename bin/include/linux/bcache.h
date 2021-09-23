@@ -30,10 +30,10 @@ struct bkey {
 	BITMASK(name, struct bkey, field, offset, size)
 
 #define PTR_FIELD(name, offset, size)					\
-static __inline__ __u64 name(const struct bkey *k, unsigned int i)		\
+static __inline__ __u64 name(const struct bkey *k, unsigned i32 i)		\
 { return (k->ptr[i] >> offset) & ~(~0ULL << size); }			\
 									\
-static __inline__ void SET_##name(struct bkey *k, unsigned int i, __u64 v)	\
+static __inline__ void SET_##name(struct bkey *k, unsigned i32 i, __u64 v)	\
 {									\
 	k->ptr[i] &= ~(~(~0ULL << size) << offset);			\
 	k->ptr[i] |= (v & ~(~0ULL << size)) << offset;			\
@@ -96,12 +96,12 @@ PTR_FIELD(PTR_GEN,			0,  8)
 
 /* Bkey utility code */
 
-static __inline__ unsigned long bkey_u64s(const struct bkey *k)
+static __inline__ unsigned i64 bkey_u64s(const struct bkey *k)
 {
 	return (sizeof(struct bkey) / sizeof(__u64)) + KEY_PTRS(k);
 }
 
-static __inline__ unsigned long bkey_bytes(const struct bkey *k)
+static __inline__ unsigned i64 bkey_bytes(const struct bkey *k)
 {
 	return bkey_u64s(k) * sizeof(__u64);
 }
@@ -121,7 +121,7 @@ static __inline__ struct bkey *bkey_next(const struct bkey *k)
 	return (struct bkey *) (d + bkey_u64s(k));
 }
 
-static __inline__ struct bkey *bkey_idx(const struct bkey *k, unsigned int nr_keys)
+static __inline__ struct bkey *bkey_idx(const struct bkey *k, unsigned i32 nr_keys)
 {
 	__u64 *d = (void *) k;
 

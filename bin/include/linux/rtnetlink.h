@@ -193,15 +193,15 @@ enum {
  */
 
 struct rtattr {
-	unsigned short	rta_len;
-	unsigned short	rta_type;
+	unsigned i16	rta_len;
+	unsigned i16	rta_type;
 };
 
 /* Macros to handle rtattributes */
 
 #define RTA_ALIGNTO	4U
 #define RTA_ALIGN(len) ( ((len)+RTA_ALIGNTO-1) & ~(RTA_ALIGNTO-1) )
-#define RTA_OK(rta,len) ((len) >= (int)sizeof(struct rtattr) && \
+#define RTA_OK(rta,len) ((len) >= (i32)sizeof(struct rtattr) && \
 			 (rta)->rta_len >= sizeof(struct rtattr) && \
 			 (rta)->rta_len <= (len))
 #define RTA_NEXT(rta,attrlen)	((attrlen) -= RTA_ALIGN((rta)->rta_len), \
@@ -209,7 +209,7 @@ struct rtattr {
 #define RTA_LENGTH(len)	(RTA_ALIGN(sizeof(struct rtattr)) + (len))
 #define RTA_SPACE(len)	RTA_ALIGN(RTA_LENGTH(len))
 #define RTA_DATA(rta)   ((void*)(((char*)(rta)) + RTA_LENGTH(0)))
-#define RTA_PAYLOAD(rta) ((int)((rta)->rta_len) - RTA_LENGTH(0))
+#define RTA_PAYLOAD(rta) ((i32)((rta)->rta_len) - RTA_LENGTH(0))
 
 
 
@@ -219,15 +219,15 @@ struct rtattr {
  ****/
 
 struct rtmsg {
-	unsigned char		rtm_family;
-	unsigned char		rtm_dst_len;
-	unsigned char		rtm_src_len;
-	unsigned char		rtm_tos;
+	unsigned i8		rtm_family;
+	unsigned i8		rtm_dst_len;
+	unsigned i8		rtm_src_len;
+	unsigned i8		rtm_tos;
 
-	unsigned char		rtm_table;	/* Routing table id */
-	unsigned char		rtm_protocol;	/* Routing protocol; see below	*/
-	unsigned char		rtm_scope;	/* See below */	
-	unsigned char		rtm_type;	/* See below	*/
+	unsigned i8		rtm_table;	/* Routing table id */
+	unsigned i8		rtm_protocol;	/* Routing protocol; see below	*/
+	unsigned i8		rtm_scope;	/* See below */	
+	unsigned i8		rtm_type;	/* See below	*/
 
 	unsigned		rtm_flags;
 };
@@ -385,10 +385,10 @@ enum rtattr_type_t {
  */
 
 struct rtnexthop {
-	unsigned short		rtnh_len;
-	unsigned char		rtnh_flags;
-	unsigned char		rtnh_hops;
-	int			rtnh_ifindex;
+	unsigned i16		rtnh_len;
+	unsigned i8		rtnh_flags;
+	unsigned i8		rtnh_hops;
+	i32			rtnh_ifindex;
 };
 
 /* rtnh_flags */
@@ -407,7 +407,7 @@ struct rtnexthop {
 #define RTNH_ALIGNTO	4
 #define RTNH_ALIGN(len) ( ((len)+RTNH_ALIGNTO-1) & ~(RTNH_ALIGNTO-1) )
 #define RTNH_OK(rtnh,len) ((rtnh)->rtnh_len >= sizeof(struct rtnexthop) && \
-			   ((int)(rtnh)->rtnh_len) <= (len))
+			   ((i32)(rtnh)->rtnh_len) <= (len))
 #define RTNH_NEXT(rtnh)	((struct rtnexthop*)(((char*)(rtnh)) + RTNH_ALIGN((rtnh)->rtnh_len)))
 #define RTNH_LENGTH(len) (RTNH_ALIGN(sizeof(struct rtnexthop)) + (len))
 #define RTNH_SPACE(len)	RTNH_ALIGN(RTNH_LENGTH(len))
@@ -518,7 +518,7 @@ struct rta_mfc_stats {
  ****/
 
 struct rtgenmsg {
-	unsigned char		rtgen_family;
+	unsigned i8		rtgen_family;
 };
 
 /*****************************************************************
@@ -531,10 +531,10 @@ struct rtgenmsg {
  */
 
 struct ifinfomsg {
-	unsigned char	ifi_family;
-	unsigned char	__ifi_pad;
-	unsigned short	ifi_type;		/* ARPHRD_* */
-	int		ifi_index;		/* Link index	*/
+	unsigned i8	ifi_family;
+	unsigned i8	__ifi_pad;
+	unsigned i16	ifi_type;		/* ARPHRD_* */
+	i32		ifi_index;		/* Link index	*/
 	unsigned	ifi_flags;		/* IFF_* flags	*/
 	unsigned	ifi_change;		/* IFF_* change mask */
 };
@@ -544,14 +544,14 @@ struct ifinfomsg {
  ****/
 
 struct prefixmsg {
-	unsigned char	prefix_family;
-	unsigned char	prefix_pad1;
-	unsigned short	prefix_pad2;
-	int		prefix_ifindex;
-	unsigned char	prefix_type;
-	unsigned char	prefix_len;
-	unsigned char	prefix_flags;
-	unsigned char	prefix_pad3;
+	unsigned i8	prefix_family;
+	unsigned i8	prefix_pad1;
+	unsigned i16	prefix_pad2;
+	i32		prefix_ifindex;
+	unsigned i8	prefix_type;
+	unsigned i8	prefix_len;
+	unsigned i8	prefix_flags;
+	unsigned i8	prefix_pad3;
 };
 
 enum 
@@ -575,10 +575,10 @@ struct prefix_cacheinfo {
  ****/
 
 struct tcmsg {
-	unsigned char	tcm_family;
-	unsigned char	tcm__pad1;
-	unsigned short	tcm__pad2;
-	int		tcm_ifindex;
+	unsigned i8	tcm_family;
+	unsigned i8	tcm__pad1;
+	unsigned i16	tcm__pad2;
+	i32		tcm_ifindex;
 	__u32		tcm_handle;
 	__u32		tcm_parent;
 /* tcm_block_index is used instead of tcm_parent
@@ -629,14 +629,14 @@ enum {
  ****/
 
 struct nduseroptmsg {
-	unsigned char	nduseropt_family;
-	unsigned char	nduseropt_pad1;
-	unsigned short	nduseropt_opts_len;	/* Total length of options */
-	int		nduseropt_ifindex;
+	unsigned i8	nduseropt_family;
+	unsigned i8	nduseropt_pad1;
+	unsigned i16	nduseropt_opts_len;	/* Total length of options */
+	i32		nduseropt_ifindex;
 	__u8		nduseropt_icmp_type;
 	__u8		nduseropt_icmp_code;
-	unsigned short	nduseropt_pad2;
-	unsigned int	nduseropt_pad3;
+	unsigned i16	nduseropt_pad2;
+	unsigned i32	nduseropt_pad3;
 	/* Followed by one or more ND options */
 };
 
@@ -743,9 +743,9 @@ enum rtnetlink_groups {
 
 /* TC action piece */
 struct tcamsg {
-	unsigned char	tca_family;
-	unsigned char	tca__pad1;
-	unsigned short	tca__pad2;
+	unsigned i8	tca_family;
+	unsigned i8	tca__pad1;
+	unsigned i16	tca__pad2;
 };
 
 enum {

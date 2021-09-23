@@ -367,7 +367,7 @@ struct sctp_assoc_change {
 };
 
 /*
- *   sac_state: 32 bits (signed integer)
+ *   sac_state: 32 bits ( integer)
  *
  *   This field holds one of a number of values that communicate the
  *   event that happened to the association.  They include:
@@ -395,13 +395,13 @@ struct sctp_paddr_change {
 	__u16 spc_flags;
 	__u32 spc_length;
 	struct sockaddr_storage spc_aaddr;
-	int spc_state;
-	int spc_error;
+	i32 spc_state;
+	i32 spc_error;
 	sctp_assoc_t spc_assoc_id;
 } __attribute__((packed, aligned(4)));
 
 /*
- *    spc_state:  32 bits (signed integer)
+ *    spc_state:  32 bits ( integer)
  *
  *   This field holds one of a number of values that communicate the
  *   event that happened to the address.  They include:
@@ -890,19 +890,19 @@ struct sctp_authkeyid {
  */
 struct sctp_sack_info {
 	sctp_assoc_t	sack_assoc_id;
-	uint32_t	sack_delay;
-	uint32_t	sack_freq;
+	unsigned i32	sack_delay;
+	unsigned i32	sack_freq;
 };
 
 struct sctp_assoc_value {
     sctp_assoc_t            assoc_id;
-    uint32_t                assoc_value;
+    unsigned i32                assoc_value;
 };
 
 struct sctp_stream_value {
 	sctp_assoc_t assoc_id;
-	uint16_t stream_id;
-	uint16_t stream_value;
+	unsigned i16 stream_id;
+	unsigned i16 stream_value;
 };
 
 /*
@@ -973,7 +973,7 @@ struct sctp_status {
 struct sctp_authchunks {
 	sctp_assoc_t	gauth_assoc_id;
 	__u32		gauth_number_of_chunks;
-	uint8_t		gauth_chunks[];
+	unsigned i8		gauth_chunks[];
 };
 
 /* The broken spelling has been released already in lksctp-tools header,
@@ -1014,7 +1014,7 @@ struct sctp_assoc_ids {
  */
 struct sctp_getaddrs_old {
 	sctp_assoc_t            assoc_id;
-	int			addr_num;
+	i32			addr_num;
 	struct sockaddr		*addrs;
 };
 
@@ -1064,7 +1064,7 @@ struct sctp_assoc_stats {
  */
 typedef struct {
 	sctp_assoc_t associd;
-	int sd;
+	i32 sd;
 } sctp_peeloff_arg_t;
 
 typedef struct {
@@ -1174,21 +1174,21 @@ struct sctp_info {
 
 struct sctp_reset_streams {
 	sctp_assoc_t srs_assoc_id;
-	uint16_t srs_flags;
-	uint16_t srs_number_streams;	/* 0 == ALL */
-	uint16_t srs_stream_list[];	/* list if srs_num_streams is not 0 */
+	unsigned i16 srs_flags;
+	unsigned i16 srs_number_streams;	/* 0 == ALL */
+	unsigned i16 srs_stream_list[];	/* list if srs_num_streams is not 0 */
 };
 
 struct sctp_add_streams {
 	sctp_assoc_t sas_assoc_id;
-	uint16_t sas_instrms;
-	uint16_t sas_outstrms;
+	unsigned i16 sas_instrms;
+	unsigned i16 sas_outstrms;
 };
 
 struct sctp_event {
 	sctp_assoc_t se_assoc_id;
-	uint16_t se_type;
-	uint8_t se_on;
+	unsigned i16 se_type;
+	unsigned i8 se_on;
 };
 
 /* SCTP Stream schedulers */

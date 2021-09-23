@@ -48,9 +48,9 @@ struct in6_rtmsg {
 	__u16			rtmsg_dst_len;
 	__u16			rtmsg_src_len;
 	__u32			rtmsg_metric;
-	unsigned long		rtmsg_info;
+	unsigned i64		rtmsg_info;
         __u32			rtmsg_flags;
-	int			rtmsg_ifindex;
+	i32			rtmsg_ifindex;
 };
 
 #define RTMSG_NEWDEVICE		0x11

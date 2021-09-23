@@ -47,16 +47,16 @@ export extern optarg@char;
    Otherwise, 'optind' communicates from one call to the next
    how much of ARGV has been scanned so far.  */
 
-export extern optind int;
+export extern optind i32;
 
 /* Callers store zero here to inhibit the error message 'getopt' prints
    for unrecognized options.  */
 
-export extern opterr int;
+export extern opterr i32;
 
 /* Set to an option character which was unrecognized.  */
 
-export extern optopt int;
+export extern optopt i32;
 
 /* Get definitions and prototypes for functions to process the
    arguments in ARGV (ARGC of them, minus the program name) for
@@ -88,7 +88,7 @@ export extern optopt int;
    enabled, the argv array (not the strings it points to) must be
    writable.  */
 
-export extern getopt (___argc int ___argv@const@char __shortopts@const char)int
+export extern getopt (___argc i32 ___argv@const@char __shortopts@const char)i32
        __THROW __nonnull ((2, 3));
 
 __END_DECLS

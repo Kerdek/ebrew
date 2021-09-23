@@ -391,7 +391,7 @@ struct kvm_sync_regs {
 	/* Members of this structure are potentially malicious.
 	 * Care must be taken by code reading, esp. interpreting,
 	 * data fields from them inside KVM to prevent TOCTOU and
-	 * double-fetch types of vulnerabilities.
+	 * f64-fetch types of vulnerabilities.
 	 */
 	struct kvm_regs regs;
 	struct kvm_sregs sregs;

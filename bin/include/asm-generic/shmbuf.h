@@ -13,8 +13,8 @@
  * everyone just ended up making identical copies without specific
  * optimizations, so we may just as well all use the same one.
  *
- * 64 bit architectures use a 64-bit long time field here, while
- * 32 bit architectures have a pair of unsigned long values.
+ * 64 bit architectures use a 64-bit i64 time field here, while
+ * 32 bit architectures have a pair of unsigned i64 values.
  * On big-endian systems, the lower half is in the wrong place.
  *
  *
@@ -26,34 +26,34 @@ struct shmid64_ds {
 	struct ipc64_perm	shm_perm;	/* operation perms */
 	size_t			shm_segsz;	/* size of segment (bytes) */
 #if __BITS_PER_LONG == 64
-	long			shm_atime;	/* last attach time */
-	long			shm_dtime;	/* last detach time */
-	long			shm_ctime;	/* last change time */
+	i64			shm_atime;	/* last attach time */
+	i64			shm_dtime;	/* last detach time */
+	i64			shm_ctime;	/* last change time */
 #else
-	unsigned long		shm_atime;	/* last attach time */
-	unsigned long		shm_atime_high;
-	unsigned long		shm_dtime;	/* last detach time */
-	unsigned long		shm_dtime_high;
-	unsigned long		shm_ctime;	/* last change time */
-	unsigned long		shm_ctime_high;
+	unsigned i64		shm_atime;	/* last attach time */
+	unsigned i64		shm_atime_high;
+	unsigned i64		shm_dtime;	/* last detach time */
+	unsigned i64		shm_dtime_high;
+	unsigned i64		shm_ctime;	/* last change time */
+	unsigned i64		shm_ctime_high;
 #endif
 	__kernel_pid_t		shm_cpid;	/* pid of creator */
 	__kernel_pid_t		shm_lpid;	/* pid of last operator */
-	unsigned long		shm_nattch;	/* no. of current attaches */
-	unsigned long		__unused4;
-	unsigned long		__unused5;
+	unsigned i64		shm_nattch;	/* no. of current attaches */
+	unsigned i64		__unused4;
+	unsigned i64		__unused5;
 };
 
 struct shminfo64 {
-	unsigned long		shmmax;
-	unsigned long		shmmin;
-	unsigned long		shmmni;
-	unsigned long		shmseg;
-	unsigned long		shmall;
-	unsigned long		__unused1;
-	unsigned long		__unused2;
-	unsigned long		__unused3;
-	unsigned long		__unused4;
+	unsigned i64		shmmax;
+	unsigned i64		shmmin;
+	unsigned i64		shmmni;
+	unsigned i64		shmseg;
+	unsigned i64		shmall;
+	unsigned i64		__unused1;
+	unsigned i64		__unused2;
+	unsigned i64		__unused3;
+	unsigned i64		__unused4;
 };
 
 #endif /* __ASM_GENERIC_SHMBUF_H */

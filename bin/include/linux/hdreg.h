@@ -27,8 +27,8 @@
 #define IDE_TASKFILE_STD_OUT_FLAGS	0xFE
 #define IDE_HOB_STD_OUT_FLAGS		0x3C
 
-typedef unsigned char task_ioreg_t;
-typedef unsigned long sata_ioreg_t;
+typedef unsigned i8 task_ioreg_t;
+typedef unsigned i64 sata_ioreg_t;
 
 typedef union ide_reg_valid_s {
 	unsigned all				: 16;
@@ -58,16 +58,16 @@ typedef struct ide_task_request_s {
 	__u8		hob_ports[8]; /* bytes 6 and 7 are unused */
 	ide_reg_valid_t	out_flags;
 	ide_reg_valid_t	in_flags;
-	int		data_phase;
-	int		req_cmd;
-	unsigned long	out_size;
-	unsigned long	in_size;
+	i32		data_phase;
+	i32		req_cmd;
+	unsigned i64	out_size;
+	unsigned i64	in_size;
 } ide_task_request_t;
 
 typedef struct ide_ioctl_request_s {
 	ide_task_request_t	*task_request;
-	unsigned char		*out_buffer;
-	unsigned char		*in_buffer;
+	unsigned i8		*out_buffer;
+	unsigned i8		*in_buffer;
 } ide_ioctl_request_t;
 
 struct hd_drive_cmd_hdr {
@@ -312,10 +312,10 @@ typedef struct hd_drive_hob_hdr {
 #define SECURITY_DISABLE_PASSWORD	0xBF
 
 struct hd_geometry {
-      unsigned char heads;
-      unsigned char sectors;
-      unsigned short cylinders;
-      unsigned long start;
+      unsigned i8 heads;
+      unsigned i8 sectors;
+      unsigned i16 cylinders;
+      unsigned i64 start;
 };
 
 /* hd/ide ctl's that pass (arg) ptrs to user space are numbered 0x030n/0x031n */
@@ -384,73 +384,73 @@ enum {
  * ide/probe.c.
  */
 struct hd_driveid {
-	unsigned short	config;		/* lots of obsolete bit flags */
-	unsigned short	cyls;		/* Obsolete, "physical" cyls */
-	unsigned short	reserved2;	/* reserved (word 2) */
-	unsigned short	heads;		/* Obsolete, "physical" heads */
-	unsigned short	track_bytes;	/* unformatted bytes per track */
-	unsigned short	sector_bytes;	/* unformatted bytes per sector */
-	unsigned short	sectors;	/* Obsolete, "physical" sectors per track */
-	unsigned short	vendor0;	/* vendor unique */
-	unsigned short	vendor1;	/* vendor unique */
-	unsigned short	vendor2;	/* Retired vendor unique */
-	unsigned char	serial_no[20];	/* 0 = not_specified */
-	unsigned short	buf_type;	/* Retired */
-	unsigned short	buf_size;	/* Retired, 512 byte increments
+	unsigned i16	config;		/* lots of obsolete bit flags */
+	unsigned i16	cyls;		/* Obsolete, "physical" cyls */
+	unsigned i16	reserved2;	/* reserved (word 2) */
+	unsigned i16	heads;		/* Obsolete, "physical" heads */
+	unsigned i16	track_bytes;	/* unformatted bytes per track */
+	unsigned i16	sector_bytes;	/* unformatted bytes per sector */
+	unsigned i16	sectors;	/* Obsolete, "physical" sectors per track */
+	unsigned i16	vendor0;	/* vendor unique */
+	unsigned i16	vendor1;	/* vendor unique */
+	unsigned i16	vendor2;	/* Retired vendor unique */
+	unsigned i8	serial_no[20];	/* 0 = not_specified */
+	unsigned i16	buf_type;	/* Retired */
+	unsigned i16	buf_size;	/* Retired, 512 byte increments
 					 * 0 = not_specified
 					 */
-	unsigned short	ecc_bytes;	/* for r/w long cmds; 0 = not_specified */
-	unsigned char	fw_rev[8];	/* 0 = not_specified */
-	unsigned char	model[40];	/* 0 = not_specified */
-	unsigned char	max_multsect;	/* 0=not_implemented */
-	unsigned char	vendor3;	/* vendor unique */
-	unsigned short	dword_io;	/* 0=not_implemented; 1=implemented */
-	unsigned char	vendor4;	/* vendor unique */
-	unsigned char	capability;	/* (upper byte of word 49)
+	unsigned i16	ecc_bytes;	/* for r/w i64 cmds; 0 = not_specified */
+	unsigned i8	fw_rev[8];	/* 0 = not_specified */
+	unsigned i8	model[40];	/* 0 = not_specified */
+	unsigned i8	max_multsect;	/* 0=not_implemented */
+	unsigned i8	vendor3;	/* vendor unique */
+	unsigned i16	dword_io;	/* 0=not_implemented; 1=implemented */
+	unsigned i8	vendor4;	/* vendor unique */
+	unsigned i8	capability;	/* (upper byte of word 49)
 					 *  3:	IORDYsup
 					 *  2:	IORDYsw
 					 *  1:	LBA
 					 *  0:	DMA
 					 */
-	unsigned short	reserved50;	/* reserved (word 50) */
-	unsigned char	vendor5;	/* Obsolete, vendor unique */
-	unsigned char	tPIO;		/* Obsolete, 0=slow, 1=medium, 2=fast */
-	unsigned char	vendor6;	/* Obsolete, vendor unique */
-	unsigned char	tDMA;		/* Obsolete, 0=slow, 1=medium, 2=fast */
-	unsigned short	field_valid;	/* (word 53)
+	unsigned i16	reserved50;	/* reserved (word 50) */
+	unsigned i8	vendor5;	/* Obsolete, vendor unique */
+	unsigned i8	tPIO;		/* Obsolete, 0=slow, 1=medium, 2=fast */
+	unsigned i8	vendor6;	/* Obsolete, vendor unique */
+	unsigned i8	tDMA;		/* Obsolete, 0=slow, 1=medium, 2=fast */
+	unsigned i16	field_valid;	/* (word 53)
 					 *  2:	ultra_ok	word  88
 					 *  1:	eide_ok		words 64-70
 					 *  0:	cur_ok		words 54-58
 					 */
-	unsigned short	cur_cyls;	/* Obsolete, logical cylinders */
-	unsigned short	cur_heads;	/* Obsolete, l heads */
-	unsigned short	cur_sectors;	/* Obsolete, l sectors per track */
-	unsigned short	cur_capacity0;	/* Obsolete, l total sectors on drive */
-	unsigned short	cur_capacity1;	/* Obsolete, (2 words, misaligned int)     */
-	unsigned char	multsect;	/* current multiple sector count */
-	unsigned char	multsect_valid;	/* when (bit0==1) multsect is ok */
-	unsigned int	lba_capacity;	/* Obsolete, total number of sectors */
-	unsigned short	dma_1word;	/* Obsolete, single-word dma info */
-	unsigned short	dma_mword;	/* multiple-word dma info */
-	unsigned short  eide_pio_modes; /* bits 0:mode3 1:mode4 */
-	unsigned short  eide_dma_min;	/* min mword dma cycle time (ns) */
-	unsigned short  eide_dma_time;	/* recommended mword dma cycle time (ns) */
-	unsigned short  eide_pio;       /* min cycle time (ns), no IORDY  */
-	unsigned short  eide_pio_iordy; /* min cycle time (ns), with IORDY */
-	unsigned short	words69_70[2];	/* reserved words 69-70
+	unsigned i16	cur_cyls;	/* Obsolete, logical cylinders */
+	unsigned i16	cur_heads;	/* Obsolete, l heads */
+	unsigned i16	cur_sectors;	/* Obsolete, l sectors per track */
+	unsigned i16	cur_capacity0;	/* Obsolete, l total sectors on drive */
+	unsigned i16	cur_capacity1;	/* Obsolete, (2 words, misaligned i32)     */
+	unsigned i8	multsect;	/* current multiple sector count */
+	unsigned i8	multsect_valid;	/* when (bit0==1) multsect is ok */
+	unsigned i32	lba_capacity;	/* Obsolete, total number of sectors */
+	unsigned i16	dma_1word;	/* Obsolete, single-word dma info */
+	unsigned i16	dma_mword;	/* multiple-word dma info */
+	unsigned i16  eide_pio_modes; /* bits 0:mode3 1:mode4 */
+	unsigned i16  eide_dma_min;	/* min mword dma cycle time (ns) */
+	unsigned i16  eide_dma_time;	/* recommended mword dma cycle time (ns) */
+	unsigned i16  eide_pio;       /* min cycle time (ns), no IORDY  */
+	unsigned i16  eide_pio_iordy; /* min cycle time (ns), with IORDY */
+	unsigned i16	words69_70[2];	/* reserved words 69-70
 					 * future command overlap and queuing
 					 */
-	unsigned short	words71_74[4];	/* reserved words 71-74
+	unsigned i16	words71_74[4];	/* reserved words 71-74
 					 * for IDENTIFY PACKET DEVICE command
 					 */
-	unsigned short  queue_depth;	/* (word 75)
+	unsigned i16  queue_depth;	/* (word 75)
 					 * 15:5	reserved
 					 *  4:0	Maximum queue depth -1
 					 */
-	unsigned short  words76_79[4];	/* reserved words 76-79 */
-	unsigned short  major_rev_num;	/* (word 80) */
-	unsigned short  minor_rev_num;	/* (word 81) */
-	unsigned short  command_set_1;	/* (word 82) supported
+	unsigned i16  words76_79[4];	/* reserved words 76-79 */
+	unsigned i16  major_rev_num;	/* (word 80) */
+	unsigned i16  minor_rev_num;	/* (word 81) */
+	unsigned i16  command_set_1;	/* (word 82) supported
 					 * 15:	Obsolete
 					 * 14:	NOP command
 					 * 13:	READ_BUFFER
@@ -468,7 +468,7 @@ struct hd_driveid {
 					 *  1:	Security Feature Set
 					 *  0:	SMART Feature Set
 					 */
-	unsigned short  command_set_2;	/* (word 83)
+	unsigned i16  command_set_2;	/* (word 83)
 					 * 15:	Shall be ZERO
 					 * 14:	Shall be ONE
 					 * 13:	FLUSH CACHE EXT
@@ -486,7 +486,7 @@ struct hd_driveid {
 					 *  1:	READ/WRITE DMA QUEUED
 					 *  0:	Download MicroCode
 					 */
-	unsigned short  cfsse;		/* (word 84)
+	unsigned i16  cfsse;		/* (word 84)
 					 * cmd set-feature supported extensions
 					 * 15:	Shall be ZERO
 					 * 14:	Shall be ONE
@@ -498,7 +498,7 @@ struct hd_driveid {
 					 *  1:	SMART selt-test supported
 					 *  0:	SMART error logging
 					 */
-	unsigned short  cfs_enable_1;	/* (word 85)
+	unsigned i16  cfs_enable_1;	/* (word 85)
 					 * command set-feature enabled
 					 * 15:	Obsolete
 					 * 14:	NOP command
@@ -517,7 +517,7 @@ struct hd_driveid {
 					 *  1:	Security Feature Set
 					 *  0:	SMART Feature Set
 					 */
-	unsigned short  cfs_enable_2;	/* (word 86)
+	unsigned i16  cfs_enable_2;	/* (word 86)
 					 * command set-feature enabled
 					 * 15:	Shall be ZERO
 					 * 14:	Shall be ONE
@@ -536,7 +536,7 @@ struct hd_driveid {
 					 *  1:	READ/WRITE DMA QUEUED
 					 *  0:	Download MicroCode
 					 */
-	unsigned short  csf_default;	/* (word 87)
+	unsigned i16  csf_default;	/* (word 87)
 					 * command set-feature default
 					 * 15:	Shall be ZERO
 					 * 14:	Shall be ONE
@@ -548,12 +548,12 @@ struct hd_driveid {
 					 *  1:	SMART selt-test supported
 					 *  0:	SMART error logging
 					 */
-	unsigned short  dma_ultra;	/* (word 88) */
-	unsigned short	trseuc;		/* time required for security erase */
-	unsigned short	trsEuc;		/* time required for enhanced erase */
-	unsigned short	CurAPMvalues;	/* current APM values */
-	unsigned short	mprc;		/* master password revision code */
-	unsigned short	hw_config;	/* hardware config (word 93)
+	unsigned i16  dma_ultra;	/* (word 88) */
+	unsigned i16	trseuc;		/* time required for security erase */
+	unsigned i16	trsEuc;		/* time required for enhanced erase */
+	unsigned i16	CurAPMvalues;	/* current APM values */
+	unsigned i16	mprc;		/* master password revision code */
+	unsigned i16	hw_config;	/* hardware config (word 93)
 					 * 15:	Shall be ZERO
 					 * 14:	Shall be ONE
 					 * 13:
@@ -571,18 +571,18 @@ struct hd_driveid {
 					 *  1:
 					 *  0:	Shall be ONE
 					 */
-	unsigned short	acoustic;	/* (word 94)
+	unsigned i16	acoustic;	/* (word 94)
 					 * 15:8	Vendor's recommended value
 					 *  7:0	current value
 					 */
-	unsigned short	msrqs;		/* min stream request size */
-	unsigned short	sxfert;		/* stream transfer time */
-	unsigned short	sal;		/* stream access latency */
-	unsigned int	spg;		/* stream performance granularity */
-	unsigned long long lba_capacity_2;/* 48-bit total number of sectors */
-	unsigned short	words104_125[22];/* reserved words 104-125 */
-	unsigned short	last_lun;	/* (word 126) */
-	unsigned short	word127;	/* (word 127) Feature Set
+	unsigned i16	msrqs;		/* min stream request size */
+	unsigned i16	sxfert;		/* stream transfer time */
+	unsigned i16	sal;		/* stream access latency */
+	unsigned i32	spg;		/* stream performance granularity */
+	unsigned i64 i64 lba_capacity_2;/* 48-bit total number of sectors */
+	unsigned i16	words104_125[22];/* reserved words 104-125 */
+	unsigned i16	last_lun;	/* (word 126) */
+	unsigned i16	word127;	/* (word 127) Feature Set
 					 * Removable Media Notification
 					 * 15:2	reserved
 					 *  1:0	00 = not supported
@@ -590,7 +590,7 @@ struct hd_driveid {
 					 *	10 = reserved
 					 *	11 = reserved
 					 */
-	unsigned short	dlf;		/* (word 128)
+	unsigned i16	dlf;		/* (word 128)
 					 * device lock function
 					 * 15:9	reserved
 					 *  8	security level 1:max 0:high
@@ -602,7 +602,7 @@ struct hd_driveid {
 					 *  1	en/disabled
 					 *  0	capability
 					 */
-	unsigned short  csfo;		/*  (word 129)
+	unsigned i16  csfo;		/*  (word 129)
 					 * current set features options
 					 * 15:4	reserved
 					 *  3:	auto reassign
@@ -610,20 +610,20 @@ struct hd_driveid {
 					 *  1:	read-look-ahead
 					 *  0:	write cache
 					 */
-	unsigned short	words130_155[26];/* reserved vendor words 130-155 */
-	unsigned short	word156;	/* reserved vendor word 156 */
-	unsigned short	words157_159[3];/* reserved vendor words 157-159 */
-	unsigned short	cfa_power;	/* (word 160) CFA Power Mode
+	unsigned i16	words130_155[26];/* reserved vendor words 130-155 */
+	unsigned i16	word156;	/* reserved vendor word 156 */
+	unsigned i16	words157_159[3];/* reserved vendor words 157-159 */
+	unsigned i16	cfa_power;	/* (word 160) CFA Power Mode
 					 * 15 word 160 supported
 					 * 14 reserved
 					 * 13
 					 * 12
 					 * 11:0
 					 */
-	unsigned short	words161_175[15];/* Reserved for CFA */
-	unsigned short	words176_205[30];/* Current Media Serial Number */
-	unsigned short	words206_254[49];/* reserved words 206-254 */
-	unsigned short	integrity_word;	/* (word 255)
+	unsigned i16	words161_175[15];/* Reserved for CFA */
+	unsigned i16	words176_205[30];/* Current Media Serial Number */
+	unsigned i16	words206_254[49];/* reserved words 206-254 */
+	unsigned i16	integrity_word;	/* (word 255)
 					 * 15:8 Checksum
 					 *  7:0 Signature
 					 */

@@ -16,11 +16,11 @@ _ struct timespec
   tv_nsec __syscall_slong_t;	/* Nanoseconds.  */
 #else
 # if (__BYTE_ORDER == __BIG_ENDIAN)
-  _ int: 32;           /* Padding.  */
-  tv_nsec long int;  /* Nanoseconds.  */
+  _ i32: 32;           /* Padding.  */
+  tv_nsec i64;  /* Nanoseconds.  */
 # else
-  tv_nsec long int;  /* Nanoseconds.  */
-  _ int: 32;           /* Padding.  */
+  tv_nsec i64;  /* Nanoseconds.  */
+  _ i32: 32;           /* Padding.  */
 # endif
 #endif
 };

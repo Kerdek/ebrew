@@ -60,9 +60,9 @@ enum {
  * @rx_filter will indicate the actual mode on return.
  */
 struct hwtstamp_config {
-	int flags;
-	int tx_type;
-	int rx_filter;
+	i32 flags;
+	i32 tx_type;
+	i32 rx_filter;
 };
 
 /* possible values for hwtstamp_config->tx_type */

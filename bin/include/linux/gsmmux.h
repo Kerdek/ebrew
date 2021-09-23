@@ -8,18 +8,18 @@
 
 struct gsm_config
 {
-	unsigned int adaption;
-	unsigned int encapsulation;
-	unsigned int initiator;
-	unsigned int t1;
-	unsigned int t2;
-	unsigned int t3;
-	unsigned int n2;
-	unsigned int mru;
-	unsigned int mtu;
-	unsigned int k;
-	unsigned int i;
-	unsigned int unused[8];		/* Padding for expansion without
+	unsigned i32 adaption;
+	unsigned i32 encapsulation;
+	unsigned i32 initiator;
+	unsigned i32 t1;
+	unsigned i32 t2;
+	unsigned i32 t3;
+	unsigned i32 n2;
+	unsigned i32 mru;
+	unsigned i32 mtu;
+	unsigned i32 k;
+	unsigned i32 i;
+	unsigned i32 unused[8];		/* Padding for expansion without
 					   breaking stuff */
 };
 
@@ -27,9 +27,9 @@ struct gsm_config
 #define GSMIOC_SETCONF		_IOW('G', 1, struct gsm_config)
 
 struct gsm_netconfig {
-	unsigned int adaption;  /* Adaption to use in network mode */
-	unsigned short protocol;/* Protocol to use - only ETH_P_IP supported */
-	unsigned short unused2;
+	unsigned i32 adaption;  /* Adaption to use in network mode */
+	unsigned i16 protocol;/* Protocol to use - only ETH_P_IP supported */
+	unsigned i16 unused2;
 	char if_name[IFNAMSIZ];	/* interface name format string */
 	__u8 unused[28];        /* For future use */
 };

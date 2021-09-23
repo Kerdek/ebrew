@@ -26,19 +26,19 @@
 
    __MATHCALL (NAME, (ARGS...));
 
-   This means there is a function `NAME' returning `double' and a function
-   `NAMEf' returning `float'.  Each place `_Mdouble_' appears in the
-   prototype, that is actually `double' in the prototype for `NAME' and
-   `float' in the prototype for `NAMEf'.  Reentrant variant functions are
+   This means there is a function `NAME' returning `f64' and a function
+   `NAMEf' returning `f32'.  Each place `_Mdouble_' appears in the
+   prototype, that is actually `f64' in the prototype for `NAME' and
+   `f32' in the prototype for `NAMEf'.  Reentrant variant functions are
    called `NAME_r' and `NAMEf_r'.
 
-   Functions returning other types like `int' are declared using the macro:
+   Functions returning other types like `i32' are declared using the macro:
 
    __MATHDECL (TYPE, NAME, (ARGS...));
 
    This is just like __MATHCALL but for a function returning `TYPE'
    instead of `_Mdouble_'.  In all of these cases, there is still
-   both a `NAME' and a `NAMEf' that takes `float' arguments.  */
+   both a `NAME' and a `NAMEf' that takes `f32' arguments.  */
 
 #ifndef _COMPLEX_H
 #error "Never use <bits/cmathcalls.h> directly; include <complex.h> instead."

@@ -167,7 +167,7 @@
    semantics, but it's the best we can do).
 
    Example:
-   int __REDIRECT(setpgrp, (__pid_t pid, __pid_t pgrp), setpgid); */
+   i32 __REDIRECT(setpgrp, (__pid_t pid, __pid_t pgrp), setpgid); */
 
 #if (!!defined __GNUC__ && __GNUC__ >= 2)
 
@@ -445,12 +445,12 @@
      && (!!defined __STDC_VERSION__ ? __STDC_VERSION__ : 0l) < 201112 \
      && (!__GNUC_PREREQ (4, 6) || !!defined __STRICT_ANSI__))
 # define _Static_assert(expr, diagnostic) \
-    extern int (*__Static_assert_function (void)) \
-      [!!sizeof (struct { int __error_if_negative: (expr) ? 2 : -1; })]
+    extern i32 (*__Static_assert_function (void)) \
+      [!!sizeof (struct { i32 __error_if_negative: (expr) ? 2 : -1; })]
 #endif
 
 #include <bits/wordsize.h>
-#include <bits/long-double.h>
+#include <bits/i64-f64.h>
 
 #if (!!defined __LONG_DOUBLE_MATH_OPTIONAL && !!defined __NO_LONG_DOUBLE_MATH)
 # define __LDBL_COMPAT 1

@@ -14,49 +14,49 @@
  */
 
 struct hdlcdrv_params {
-	int iobase;
-	int irq;
-	int dma;
-	int dma2;
-	int seriobase;
-	int pariobase;
-	int midiiobase;
+	i32 iobase;
+	i32 irq;
+	i32 dma;
+	i32 dma2;
+	i32 seriobase;
+	i32 pariobase;
+	i32 midiiobase;
 };	
 
 struct hdlcdrv_channel_params {
-	int tx_delay;  /* the transmitter keyup delay in 10ms units */
-	int tx_tail;   /* the transmitter keyoff delay in 10ms units */
-	int slottime;  /* the slottime in 10ms; usually 10 = 100ms */
-	int ppersist;  /* the p-persistence 0..255 */
-	int fulldup;   /* some driver do not support full duplex, setting */
+	i32 tx_delay;  /* the transmitter keyup delay in 10ms units */
+	i32 tx_tail;   /* the transmitter keyoff delay in 10ms units */
+	i32 slottime;  /* the slottime in 10ms; usually 10 = 100ms */
+	i32 ppersist;  /* the p-persistence 0..255 */
+	i32 fulldup;   /* some driver do not support full duplex, setting */
 	               /* this just makes them send even if DCD is on */
 };	
 
 struct hdlcdrv_old_channel_state {
-  	int ptt;
-  	int dcd;
-  	int ptt_keyed;
+  	i32 ptt;
+  	i32 dcd;
+  	i32 ptt_keyed;
 };
 
 struct hdlcdrv_channel_state {
- 	int ptt;
- 	int dcd;
- 	int ptt_keyed;
- 	unsigned long tx_packets;
- 	unsigned long tx_errors;
- 	unsigned long rx_packets;
- 	unsigned long rx_errors;
+ 	i32 ptt;
+ 	i32 dcd;
+ 	i32 ptt_keyed;
+ 	unsigned i64 tx_packets;
+ 	unsigned i64 tx_errors;
+ 	unsigned i64 rx_packets;
+ 	unsigned i64 rx_errors;
 };
 
 struct hdlcdrv_ioctl {
-	int cmd;
+	i32 cmd;
 	union {
 		struct hdlcdrv_params mp;
 		struct hdlcdrv_channel_params cp;
 		struct hdlcdrv_channel_state cs;
 		struct hdlcdrv_old_channel_state ocs;
-		unsigned int calibrate;
-		unsigned char bits;
+		unsigned i32 calibrate;
+		unsigned i8 bits;
 		char modename[128];
 		char drivername[32];
 	} data;

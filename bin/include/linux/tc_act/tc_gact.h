@@ -17,7 +17,7 @@ struct tc_gact_p {
 #define MAX_RAND                (PGACT_DETERM + 1 )
 	__u16                 ptype;
 	__u16                 pval;
-	int                   paction;
+	i32                   paction;
 };
  
 enum {

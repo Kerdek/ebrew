@@ -127,6 +127,6 @@ struct __ptrace_syscall_info
 
    PID and the other arguments described above for the various requests should
    appear (those that are used for the particular request) as:
-     pid_t PID, void *ADDR, int DATA, void *ADDR2
+     pid_t PID, void *ADDR, i32 DATA, void *ADDR2
    after REQUEST.  */
-extern long int ptrace (enum __ptrace_request __request, ...) __THROW;
+extern i64 ptrace (enum __ptrace_request __request, ...) __THROW;

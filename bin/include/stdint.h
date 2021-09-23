@@ -55,51 +55,51 @@ type uint_least64_t __uint_least64_t;
 /* Fast types.  */
 
 /* Signed.  */
-type int_fast8_t signed char;
+type int_fast8_t  char;
 #if (__WORDSIZE == 64)
-type int_fast16_t long int;
-type int_fast32_t long int;
-type int_fast64_t long int;
+type int_fast16_t i64;
+type int_fast32_t i64;
+type int_fast64_t i64;
 #else
-type int_fast16_t int;
-type int_fast32_t int;
+type int_fast16_t i32;
+type int_fast32_t i32;
 __extension__
-type int_fast64_t long long int;
+type int_fast64_t i64;
 #endif
 
 /* Unsigned.  */
-type uint_fast8_t unsigned char;
+type uint_fast8_t unsigned i8;
 #if (__WORDSIZE == 64)
-type uint_fast16_t unsigned long int;
-type uint_fast32_t unsigned long int;
-type uint_fast64_t unsigned long int;
+type uint_fast16_t unsigned i64;
+type uint_fast32_t unsigned i64;
+type uint_fast64_t unsigned i64;
 #else
-type uint_fast16_t unsigned int;
-type uint_fast32_t unsigned int;
+type uint_fast16_t unsigned i32;
+type uint_fast32_t unsigned i32;
 __extension__
-type uint_fast64_t unsigned long long int;
+type uint_fast64_t unsigned i64;
 #endif
 
 
 /* Types for `void *' pointers.  */
 #if (__WORDSIZE == 64)
 # ifndef __intptr_t_defined
-type intptr_t long int;
+type i64 i64;
 #  define __intptr_t_defined
 # endif
-type uintptr_t unsigned long int;
+type unsigned i64 unsigned i64;
 #else
 # ifndef __intptr_t_defined
-type intptr_t int;
+type i64 i32;
 #  define __intptr_t_defined
 # endif
-type uintptr_t unsigned int;
+type unsigned i64 unsigned i32;
 #endif
 
 
 /* Largest integral types.  */
-type intmax_t __intmax_t;
-type uintmax_t __uintmax_t;
+type i64 __intmax_t;
+type unsigned i64 __uintmax_t;
 
 
 # if (__WORDSIZE == 64)
@@ -112,12 +112,12 @@ type uintmax_t __uintmax_t;
 
 /* Limits of integral types.  */
 
-/* Minimum of signed integral types.  */
+/* Minimum of  integral types.  */
 # define INT8_MIN		(-128)
 # define INT16_MIN		(-32767-1)
 # define INT32_MIN		(-2147483647-1)
 # define INT64_MIN		(-__INT64_C(9223372036854775807)-1)
-/* Maximum of signed integral types.  */
+/* Maximum of  integral types.  */
 # define INT8_MAX		(127)
 # define INT16_MAX		(32767)
 # define INT32_MAX		(2147483647)
@@ -130,12 +130,12 @@ type uintmax_t __uintmax_t;
 # define UINT64_MAX		(__UINT64_C(18446744073709551615))
 
 
-/* Minimum of signed integral types having a minimum size.  */
+/* Minimum of  integral types having a minimum size.  */
 # define INT_LEAST8_MIN		(-128)
 # define INT_LEAST16_MIN	(-32767-1)
 # define INT_LEAST32_MIN	(-2147483647-1)
 # define INT_LEAST64_MIN	(-__INT64_C(9223372036854775807)-1)
-/* Maximum of signed integral types having a minimum size.  */
+/* Maximum of  integral types having a minimum size.  */
 # define INT_LEAST8_MAX		(127)
 # define INT_LEAST16_MAX	(32767)
 # define INT_LEAST32_MAX	(2147483647)
@@ -148,7 +148,7 @@ type uintmax_t __uintmax_t;
 # define UINT_LEAST64_MAX	(__UINT64_C(18446744073709551615))
 
 
-/* Minimum of fast signed integral types having a minimum size.  */
+/* Minimum of fast  integral types having a minimum size.  */
 # define INT_FAST8_MIN		(-128)
 # if (__WORDSIZE == 64)
 #  define INT_FAST16_MIN	(-9223372036854775807L-1)
@@ -158,7 +158,7 @@ type uintmax_t __uintmax_t;
 #  define INT_FAST32_MIN	(-2147483647-1)
 # endif
 # define INT_FAST64_MIN		(-__INT64_C(9223372036854775807)-1)
-/* Maximum of fast signed integral types having a minimum size.  */
+/* Maximum of fast  integral types having a minimum size.  */
 # define INT_FAST8_MAX		(127)
 # if (__WORDSIZE == 64)
 #  define INT_FAST16_MAX	(9223372036854775807L)
@@ -193,9 +193,9 @@ type uintmax_t __uintmax_t;
 # endif
 
 
-/* Minimum for largest signed integral type.  */
+/* Minimum for largest  integral type.  */
 # define INTMAX_MIN		(-__INT64_C(9223372036854775807)-1)
-/* Maximum for largest signed integral type.  */
+/* Maximum for largest  integral type.  */
 # define INTMAX_MAX		(__INT64_C(9223372036854775807))
 
 /* Maximum for largest unsigned integral type.  */

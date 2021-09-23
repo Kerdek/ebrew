@@ -9,7 +9,7 @@
 
 struct raw_config_request 
 {
-	int	raw_minor;
+	i32	raw_minor;
 	__u64	block_major;
 	__u64	block_minor;
 };

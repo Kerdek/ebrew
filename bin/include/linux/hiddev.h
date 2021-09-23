@@ -36,7 +36,7 @@
 
 struct hiddev_event {
 	unsigned hid;
-	signed int value;
+	i32 value;
 };
 
 struct hiddev_devinfo {
@@ -152,7 +152,7 @@ struct hiddev_usage_ref_multi {
  * IOCTLs (0x00 - 0x7f)
  */
 
-#define HIDIOCGVERSION		_IOR('H', 0x01, int)
+#define HIDIOCGVERSION		_IOR('H', 0x01, i32)
 #define HIDIOCAPPLICATION	_IO('H', 0x02)
 #define HIDIOCGDEVINFO		_IOR('H', 0x03, struct hiddev_devinfo)
 #define HIDIOCGSTRING		_IOR('H', 0x04, struct hiddev_string_descriptor)
@@ -165,8 +165,8 @@ struct hiddev_usage_ref_multi {
 #define HIDIOCGUSAGE		_IOWR('H', 0x0B, struct hiddev_usage_ref)
 #define HIDIOCSUSAGE		_IOW('H', 0x0C, struct hiddev_usage_ref)
 #define HIDIOCGUCODE		_IOWR('H', 0x0D, struct hiddev_usage_ref)
-#define HIDIOCGFLAG		_IOR('H', 0x0E, int)
-#define HIDIOCSFLAG		_IOW('H', 0x0F, int)
+#define HIDIOCGFLAG		_IOR('H', 0x0E, i32)
+#define HIDIOCSFLAG		_IOW('H', 0x0F, i32)
 #define HIDIOCGCOLLECTIONINDEX	_IOW('H', 0x10, struct hiddev_usage_ref)
 #define HIDIOCGCOLLECTIONINFO	_IOWR('H', 0x11, struct hiddev_collection_info)
 #define HIDIOCGPHYS(len)	_IOC(_IOC_READ, 'H', 0x12, len)

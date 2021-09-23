@@ -31,11 +31,11 @@ __BEGIN_DECLS
 /* Write LENGTH bytes of randomness starting at BUFFER.  Return the
    number of bytes written, or -1 on error.  */
 ssize_t getrandom (void *__buffer, size_t __length,
-                   unsigned int __flags) __wur;
+                   unsigned i32 __flags) __wur;
 
 /* Write LENGTH bytes of randomness starting at BUFFER.  Return 0 on
    success or -1 on error.  */
-int getentropy (void *__buffer, size_t __length) __wur;
+i32 getentropy (void *__buffer, size_t __length) __wur;
 
 __END_DECLS
 

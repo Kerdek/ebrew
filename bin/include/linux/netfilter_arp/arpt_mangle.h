@@ -15,7 +15,7 @@ struct arpt_mangle
 		struct in_addr tgt_ip;
 	} u_t;
 	__u8 flags;
-	int target;
+	i32 target;
 };
 
 #define ARPT_MANGLE_SDEV 0x01

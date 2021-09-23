@@ -38,8 +38,8 @@ struct mce {
 	__u64 kflags;		/* Internal kernel use */
 };
 
-#define MCE_GET_RECORD_LEN   _IOR('M', 1, int)
-#define MCE_GET_LOG_LEN      _IOR('M', 2, int)
-#define MCE_GETCLEAR_FLAGS   _IOR('M', 3, int)
+#define MCE_GET_RECORD_LEN   _IOR('M', 1, i32)
+#define MCE_GET_LOG_LEN      _IOR('M', 2, i32)
+#define MCE_GETCLEAR_FLAGS   _IOR('M', 3, i32)
 
 #endif /* _ASM_X86_MCE_H */

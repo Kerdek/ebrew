@@ -20,7 +20,7 @@ struct xt_connlimit_info {
 			__be32 v6_mask[4];
 		};
 	};
-	unsigned int limit;
+	unsigned i32 limit;
 	/* revision 1 */
 	__u32 flags;
 

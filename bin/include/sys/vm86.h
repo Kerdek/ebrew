@@ -29,7 +29,7 @@
 __BEGIN_DECLS
 
 /* Enter virtual 8086 mode.  */
-extern int vm86 (unsigned long int __subfunction,
+extern i32 vm86 (unsigned i64 __subfunction,
 		 struct vm86plus_struct *__info) __THROW;
 
 __END_DECLS

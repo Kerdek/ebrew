@@ -82,7 +82,7 @@ struct acct_v3
 	__u32		ac_ppid;		/* Parent Process ID */
 	/* __u32 range means times from 1970 to 2106 */
 	__u32		ac_btime;		/* Process Creation Time */
-	float		ac_etime;		/* Elapsed Time */
+	f32		ac_etime;		/* Elapsed Time */
 	comp_t		ac_utime;		/* User Time */
 	comp_t		ac_stime;		/* System Time */
 	comp_t		ac_mem;			/* Average Memory Usage */

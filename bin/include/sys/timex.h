@@ -30,14 +30,14 @@
 struct ntptimeval
 {
   struct timeval time;	/* current time (ro) */
-  long int maxerror;	/* maximum error (us) (ro) */
-  long int esterror;	/* estimated error (us) (ro) */
-  long int tai;		/* TAI offset (ro) */
+  i64 maxerror;	/* maximum error (us) (ro) */
+  i64 esterror;	/* estimated error (us) (ro) */
+  i64 tai;		/* TAI offset (ro) */
 
-  long int __glibc_reserved1;
-  long int __glibc_reserved2;
-  long int __glibc_reserved3;
-  long int __glibc_reserved4;
+  i64 __glibc_reserved1;
+  i64 __glibc_reserved2;
+  i64 __glibc_reserved3;
+  i64 __glibc_reserved4;
 };
 
 /* Clock states (time_state) */
@@ -54,17 +54,17 @@ struct ntptimeval
 
 __BEGIN_DECLS
 
-extern int __adjtimex (struct timex *__ntx) __THROW;
-extern int adjtimex (struct timex *__ntx) __THROW;
+extern i32 __adjtimex (struct timex *__ntx) __THROW;
+extern i32 adjtimex (struct timex *__ntx) __THROW;
 
 #ifdef __REDIRECT_NTH
-extern int __REDIRECT_NTH (ntp_gettime, (struct ntptimeval *__ntv),
+extern i32 __REDIRECT_NTH (ntp_gettime, (struct ntptimeval *__ntv),
 			   ntp_gettimex);
 #else
-extern int ntp_gettimex (struct ntptimeval *__ntv) __THROW;
+extern i32 ntp_gettimex (struct ntptimeval *__ntv) __THROW;
 # define ntp_gettime ntp_gettimex
 #endif
-extern int ntp_adjtime (struct timex *__tntx) __THROW;
+extern i32 ntp_adjtime (struct timex *__tntx) __THROW;
 
 __END_DECLS
 

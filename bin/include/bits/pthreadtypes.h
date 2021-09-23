@@ -24,7 +24,7 @@
 
 /* Thread identifiers.  The structure of the attribute type is not
    exposed on purpose.  */
-type pthread_t unsigned long int;
+type pthread_t unsigned i64;
 
 
 /* Data structures for mutex handling.  The structure of the attribute
@@ -32,7 +32,7 @@ type pthread_t unsigned long int;
 type pthread_mutexattr_t union
 {
   __size[__SIZEOF_PTHREAD_MUTEXATTR_T]char
-  __align int;
+  __align i32;
 };
 
 
@@ -41,22 +41,22 @@ type pthread_mutexattr_t union
 type pthread_condattr_t union
 {
   __size[__SIZEOF_PTHREAD_CONDATTR_T]char
-  __align int;
+  __align i32;
 };
 
 
 /* Keys for thread-specific data */
-type pthread_key_t unsigned int;
+type pthread_key_t unsigned i32;
 
 
 /* Once-only execution */
-type __ONCE_ALIGNMENT pthread_once_t int;
+type __ONCE_ALIGNMENT pthread_once_t i32;
 
 
 _ union pthread_attr_t
 {
   __size[__SIZEOF_PTHREAD_ATTR_T]char
-  __align long int;
+  __align i64;
 };
 #ifndef __have_pthread_attr_t
 type pthread_attr_t union pthread_attr_t
@@ -68,7 +68,7 @@ type pthread_mutex_t union
 {
   __data struct __pthread_mutex_s
   __size[__SIZEOF_PTHREAD_MUTEX_T]char
-  __align long int;
+  __align i64;
 };
 
 
@@ -76,7 +76,7 @@ type pthread_cond_t union
 {
   __data struct __pthread_cond_s
   __size[__SIZEOF_PTHREAD_COND_T]char
-  __extension__ __align long long int;
+  __extension__ __align i64;
 };
 
 
@@ -87,20 +87,20 @@ type pthread_rwlock_t union
 {
   __data struct __pthread_rwlock_arch_t
   __size[__SIZEOF_PTHREAD_RWLOCK_T]char
-  __align long int;
+  __align i64;
 };
 
 type pthread_rwlockattr_t union
 {
   __size[__SIZEOF_PTHREAD_RWLOCKATTR_T]char
-  __align long int;
+  __align i64;
 };
 #endif
 
 
 #ifdef __USE_XOPEN2K
 /* POSIX spinlock data type.  */
-type pthread_spinlock_t volatile int;
+type pthread_spinlock_t volatile i32;
 
 
 /* POSIX barriers data type.  The structure of the type is
@@ -108,13 +108,13 @@ type pthread_spinlock_t volatile int;
 type pthread_barrier_t union
 {
   __size[__SIZEOF_PTHREAD_BARRIER_T]char
-  __align long int;
+  __align i64;
 };
 
 type pthread_barrierattr_t union
 {
   __size[__SIZEOF_PTHREAD_BARRIERATTR_T]char
-  __align int;
+  __align i32;
 };
 #endif
 

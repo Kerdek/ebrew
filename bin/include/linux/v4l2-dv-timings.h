@@ -40,7 +40,7 @@
 }
 
 /* Note: these are the nominal timings, for HDMI links this format is typically
- * double-clocked to meet the minimum pixelclock requirements.  */
+ * f64-clocked to meet the minimum pixelclock requirements.  */
 #define V4L2_DV_BT_CEA_720X480I59_94 { \
 	.type = V4L2_DV_BT_656_1120, \
 	V4L2_INIT_BT_TIMINGS(720, 480, 1, 0, \
@@ -61,7 +61,7 @@
 }
 
 /* Note: these are the nominal timings, for HDMI links this format is typically
- * double-clocked to meet the minimum pixelclock requirements.  */
+ * f64-clocked to meet the minimum pixelclock requirements.  */
 #define V4L2_DV_BT_CEA_720X576I50 { \
 	.type = V4L2_DV_BT_656_1120, \
 	V4L2_INIT_BT_TIMINGS(720, 576, 1, 0, \

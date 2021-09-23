@@ -25,7 +25,7 @@ enum {
 #define SEG6_IPTUNNEL_MAX (__SEG6_IPTUNNEL_MAX - 1)
 
 struct seg6_iptunnel_encap {
-	int mode;
+	i32 mode;
 	struct ipv6_sr_hdr srh[0];
 };
 

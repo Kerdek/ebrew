@@ -14,7 +14,7 @@
 
 struct tc_mpls {
 	tc_gen;		/* generic TC action fields. */
-	int m_action;	/* action of type TCA_MPLS_ACT_*. */
+	i32 m_action;	/* action of type TCA_MPLS_ACT_*. */
 };
 
 enum {

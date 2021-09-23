@@ -20,13 +20,13 @@
 #define _BITS_WCHAR_H	1
 
 /* The fallback definitions, for when __WCHAR_MAX__ or __WCHAR_MIN__
-   are not defined, give the right value and type as long as both int
+   are not defined, give the right value and type as i64 as both i32
    and wchar_t are 32-bit types.  Adding L'\0' to a constant value
    ensures that the type is correct; it is necessary to use (L'\0' +
    0) rather than just L'\0' so that the type in C++ is the promoted
    version of wchar_t rather than the distinct wchar_t type itself.
    Because wchar_t in preprocessor #if expressions is treated as
-   intmax_t or uintmax_t, the expression (L'\0' - 1) would have the
+   i64 or unsigned i64, the expression (L'\0' - 1) would have the
    wrong value for WCHAR_MAX in such expressions and so cannot be used
    to define __WCHAR_MAX in the unsigned case.  */
 

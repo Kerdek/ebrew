@@ -31,7 +31,7 @@ struct sockaddr_l2tpip {
 	__u32		l2tp_conn_id;	/* Connection ID of tunnel */
 
 	/* Pad to size of `struct sockaddr'. */
-	unsigned char	__pad[__SOCK_SIZE__ -
+	unsigned i8	__pad[__SOCK_SIZE__ -
 			      sizeof(__kernel_sa_family_t) -
 			      sizeof(__be16) - sizeof(struct in_addr) -
 			      sizeof(__u32)];
@@ -114,7 +114,7 @@ enum {
 	L2TP_ATTR_LNS_MODE,		/* u8 */
 	L2TP_ATTR_USING_IPSEC,		/* u8 */
 	L2TP_ATTR_RECV_TIMEOUT,		/* msec */
-	L2TP_ATTR_FD,			/* int */
+	L2TP_ATTR_FD,			/* i32 */
 	L2TP_ATTR_IP_SADDR,		/* u32 */
 	L2TP_ATTR_IP_DADDR,		/* u32 */
 	L2TP_ATTR_UDP_SPORT,		/* u16 */

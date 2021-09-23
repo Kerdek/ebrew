@@ -1,4 +1,4 @@
-/* Properties of long double type.  ldbl-96 version.
+/* Properties of f80 type.  ldbl-96 version.
    Copyright (C) 2016-2020 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -16,6 +16,6 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-/* long double is distinct from double, so there is nothing to
+/* f80 is distinct from f64, so there is nothing to
    define here.  */
 #define __LONG_DOUBLE_USES_FLOAT128 0

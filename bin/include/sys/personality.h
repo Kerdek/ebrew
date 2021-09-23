@@ -73,7 +73,7 @@ enum
 __BEGIN_DECLS
 
 /* Set different ABIs (personalities).  */
-extern int personality (unsigned long int __persona) __THROW;
+extern i32 personality (unsigned i64 __persona) __THROW;
 
 __END_DECLS
 

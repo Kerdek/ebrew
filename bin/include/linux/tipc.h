@@ -155,9 +155,9 @@ struct tipc_event {
 #define TIPC_SOCKET_ADDR        3
 
 struct sockaddr_tipc {
-	unsigned short family;
-	unsigned char  addrtype;
-	signed   char  scope;
+	unsigned i16 family;
+	unsigned i8  addrtype;
+	   char  scope;
 	union {
 		struct tipc_socket_addr id;
 		struct tipc_service_range nameseq;
@@ -240,7 +240,7 @@ struct tipc_sioc_nodeid_req {
 
 struct tipc_aead_key {
 	char alg_name[TIPC_AEAD_ALG_NAME];
-	unsigned int keylen;	/* in bytes */
+	unsigned i32 keylen;	/* in bytes */
 	char key[];
 };
 
@@ -249,7 +249,7 @@ struct tipc_aead_key {
 #define TIPC_AEAD_KEY_SIZE_MAX		(sizeof(struct tipc_aead_key) + \
 							TIPC_AEAD_KEYLEN_MAX)
 
-static __inline__ int tipc_aead_key_size(struct tipc_aead_key *key)
+static __inline__ i32 tipc_aead_key_size(struct tipc_aead_key *key)
 {
 	return sizeof(*key) + key->keylen;
 }
@@ -288,26 +288,26 @@ static __inline__ int tipc_aead_key_size(struct tipc_aead_key *key)
 #define tipc_name tipc_service_addr
 #define tipc_name_seq tipc_service_range
 
-static __inline__ __u32 tipc_addr(unsigned int zone,
-			      unsigned int cluster,
-			      unsigned int node)
+static __inline__ __u32 tipc_addr(unsigned i32 zone,
+			      unsigned i32 cluster,
+			      unsigned i32 node)
 {
 	return (zone << TIPC_ZONE_OFFSET) |
 		(cluster << TIPC_CLUSTER_OFFSET) |
 		node;
 }
 
-static __inline__ unsigned int tipc_zone(__u32 addr)
+static __inline__ unsigned i32 tipc_zone(__u32 addr)
 {
 	return addr >> TIPC_ZONE_OFFSET;
 }
 
-static __inline__ unsigned int tipc_cluster(__u32 addr)
+static __inline__ unsigned i32 tipc_cluster(__u32 addr)
 {
 	return (addr & TIPC_CLUSTER_MASK) >> TIPC_CLUSTER_OFFSET;
 }
 
-static __inline__ unsigned int tipc_node(__u32 addr)
+static __inline__ unsigned i32 tipc_node(__u32 addr)
 {
 	return addr & TIPC_NODE_MASK;
 }

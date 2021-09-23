@@ -93,7 +93,7 @@ static __inline__ __u8 cec_msg_destination(const struct cec_msg *msg)
  * cec_msg_opcode - return the opcode of the message, -1 for poll
  * @msg:	the message structure
  */
-static __inline__ int cec_msg_opcode(const struct cec_msg *msg)
+static __inline__ i32 cec_msg_opcode(const struct cec_msg *msg)
 {
 	return msg->len > 1 ? msg->msg[1] : -1;
 }
@@ -102,7 +102,7 @@ static __inline__ int cec_msg_opcode(const struct cec_msg *msg)
  * cec_msg_is_broadcast - return true if this is a broadcast message.
  * @msg:	the message structure
  */
-static __inline__ int cec_msg_is_broadcast(const struct cec_msg *msg)
+static __inline__ i32 cec_msg_is_broadcast(const struct cec_msg *msg)
 {
 	return (msg->msg[0] & 0xf) == 0xf;
 }
@@ -161,7 +161,7 @@ static __inline__ void cec_msg_set_reply_to(struct cec_msg *msg,
 #define CEC_RX_STATUS_FEATURE_ABORT	(1 << 2)
 #define CEC_RX_STATUS_ABORTED		(1 << 3)
 
-static __inline__ int cec_msg_status_is_ok(const struct cec_msg *msg)
+static __inline__ i32 cec_msg_status_is_ok(const struct cec_msg *msg)
 {
 	if (msg->tx_status && !(msg->tx_status & CEC_TX_STATUS_OK))
 		return 0;
@@ -231,47 +231,47 @@ static __inline__ int cec_msg_status_is_ok(const struct cec_msg *msg)
 #define CEC_LOG_ADDR_MASK_SPECIFIC	(1 << CEC_LOG_ADDR_SPECIFIC)
 #define CEC_LOG_ADDR_MASK_UNREGISTERED	(1 << CEC_LOG_ADDR_UNREGISTERED)
 
-static __inline__ int cec_has_tv(__u16 log_addr_mask)
+static __inline__ i32 cec_has_tv(__u16 log_addr_mask)
 {
 	return log_addr_mask & CEC_LOG_ADDR_MASK_TV;
 }
 
-static __inline__ int cec_has_record(__u16 log_addr_mask)
+static __inline__ i32 cec_has_record(__u16 log_addr_mask)
 {
 	return log_addr_mask & CEC_LOG_ADDR_MASK_RECORD;
 }
 
-static __inline__ int cec_has_tuner(__u16 log_addr_mask)
+static __inline__ i32 cec_has_tuner(__u16 log_addr_mask)
 {
 	return log_addr_mask & CEC_LOG_ADDR_MASK_TUNER;
 }
 
-static __inline__ int cec_has_playback(__u16 log_addr_mask)
+static __inline__ i32 cec_has_playback(__u16 log_addr_mask)
 {
 	return log_addr_mask & CEC_LOG_ADDR_MASK_PLAYBACK;
 }
 
-static __inline__ int cec_has_audiosystem(__u16 log_addr_mask)
+static __inline__ i32 cec_has_audiosystem(__u16 log_addr_mask)
 {
 	return log_addr_mask & CEC_LOG_ADDR_MASK_AUDIOSYSTEM;
 }
 
-static __inline__ int cec_has_backup(__u16 log_addr_mask)
+static __inline__ i32 cec_has_backup(__u16 log_addr_mask)
 {
 	return log_addr_mask & CEC_LOG_ADDR_MASK_BACKUP;
 }
 
-static __inline__ int cec_has_specific(__u16 log_addr_mask)
+static __inline__ i32 cec_has_specific(__u16 log_addr_mask)
 {
 	return log_addr_mask & CEC_LOG_ADDR_MASK_SPECIFIC;
 }
 
-static __inline__ int cec_is_unregistered(__u16 log_addr_mask)
+static __inline__ i32 cec_is_unregistered(__u16 log_addr_mask)
 {
 	return log_addr_mask & CEC_LOG_ADDR_MASK_UNREGISTERED;
 }
 
-static __inline__ int cec_is_unconfigured(__u16 log_addr_mask)
+static __inline__ i32 cec_is_unconfigured(__u16 log_addr_mask)
 {
 	return log_addr_mask == 0;
 }
@@ -1134,7 +1134,7 @@ struct cec_event {
 
 /* Helper functions to identify the 'special' CEC devices */
 
-static __inline__ int cec_is_2nd_tv(const struct cec_log_addrs *las)
+static __inline__ i32 cec_is_2nd_tv(const struct cec_log_addrs *las)
 {
 	/*
 	 * It is a second TV if the logical address is 14 or 15 and the
@@ -1145,7 +1145,7 @@ static __inline__ int cec_is_2nd_tv(const struct cec_log_addrs *las)
 	       las->primary_device_type[0] == CEC_OP_PRIM_DEVTYPE_TV;
 }
 
-static __inline__ int cec_is_processor(const struct cec_log_addrs *las)
+static __inline__ i32 cec_is_processor(const struct cec_log_addrs *las)
 {
 	/*
 	 * It is a processor if the logical address is 12-15 and the
@@ -1156,7 +1156,7 @@ static __inline__ int cec_is_processor(const struct cec_log_addrs *las)
 	       las->primary_device_type[0] == CEC_OP_PRIM_DEVTYPE_PROCESSOR;
 }
 
-static __inline__ int cec_is_switch(const struct cec_log_addrs *las)
+static __inline__ i32 cec_is_switch(const struct cec_log_addrs *las)
 {
 	/*
 	 * It is a switch if the logical address is 15 and the
@@ -1168,7 +1168,7 @@ static __inline__ int cec_is_switch(const struct cec_log_addrs *las)
 	       !(las->flags & CEC_LOG_ADDRS_FL_CDC_ONLY);
 }
 
-static __inline__ int cec_is_cdc_only(const struct cec_log_addrs *las)
+static __inline__ i32 cec_is_cdc_only(const struct cec_log_addrs *las)
 {
 	/*
 	 * It is a CDC-only device if the logical address is 15 and the

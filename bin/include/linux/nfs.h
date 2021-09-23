@@ -38,7 +38,7 @@
 /*
  * NFS stats. The good thing with these values is that NFSv3 errors are
  * a superset of NFSv2 errors (with the exception of NFSERR_WFLUSH which
- * no-one uses anyway), so we can happily mix code as long as we make sure
+ * no-one uses anyway), so we can happily mix code as i64 as we make sure
  * no NFSv3 errors are returned to NFSv2 clients.
  * Error codes that have a `--' in the v2 column are not part of the
  * standard, but seem to be widely used nevertheless.

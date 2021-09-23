@@ -93,7 +93,7 @@ struct nilfs_super_root {
 };
 
 #define NILFS_SR_MDT_OFFSET(inode_size, i)  \
-	((unsigned long)&((struct nilfs_super_root *)0)->sr_dat + \
+	((unsigned i64)&((struct nilfs_super_root *)0)->sr_dat + \
 			(inode_size) * (i))
 #define NILFS_SR_DAT_OFFSET(inode_size)     NILFS_SR_MDT_OFFSET(inode_size, 0)
 #define NILFS_SR_CPFILE_OFFSET(inode_size)  NILFS_SR_MDT_OFFSET(inode_size, 1)
@@ -230,7 +230,7 @@ struct nilfs_super_block {
  * Bytes count of super_block for CRC-calculation
  */
 #define NILFS_SB_BYTES  \
-	((long)&((struct nilfs_super_block *)0)->s_reserved)
+	((i64)&((struct nilfs_super_block *)0)->s_reserved)
 
 /*
  * Special inode number
@@ -542,7 +542,7 @@ nilfs_checkpoint_clear_##name(struct nilfs_checkpoint *cp)		\
 	cp->cp_flags = __cpu_to_le32(__le32_to_cpu(cp->cp_flags) &	\
 				   ~(1UL << NILFS_CHECKPOINT_##flag));	\
 }									\
-static __inline__ int							\
+static __inline__ i32							\
 nilfs_checkpoint_##name(const struct nilfs_checkpoint *cp)		\
 {									\
 	return !!(__le32_to_cpu(cp->cp_flags) &				\
@@ -605,7 +605,7 @@ nilfs_segment_usage_clear_##name(struct nilfs_segment_usage *su)	\
 		__cpu_to_le32(__le32_to_cpu(su->su_flags) &		\
 			    ~(1UL << NILFS_SEGMENT_USAGE_##flag));      \
 }									\
-static __inline__ int							\
+static __inline__ i32							\
 nilfs_segment_usage_##name(const struct nilfs_segment_usage *su)	\
 {									\
 	return !!(__le32_to_cpu(su->su_flags) &				\
@@ -624,7 +624,7 @@ nilfs_segment_usage_set_clean(struct nilfs_segment_usage *su)
 	su->su_flags = __cpu_to_le32(0);
 }
 
-static __inline__ int
+static __inline__ i32
 nilfs_segment_usage_clean(const struct nilfs_segment_usage *su)
 {
 	return !__le32_to_cpu(su->su_flags);

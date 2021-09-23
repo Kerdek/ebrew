@@ -144,7 +144,7 @@ static __inline__ __u32 ethtool_cmd_speed(const struct ethtool_cmd *ep)
 /**
  * struct ethtool_drvinfo - general driver and device information
  * @cmd: Command number = %ETHTOOL_GDRVINFO
- * @driver: Driver short name.  This should normally match the name
+ * @driver: Driver i16 name.  This should normally match the name
  *	in its bus driver structure (e.g. pci_driver::name).  Must
  *	not be an empty string.
  * @version: Driver version string; may be an empty string
@@ -964,7 +964,7 @@ union ethtool_flow_union {
  */
 struct ethtool_flow_ext {
 	__u8		padding[2];
-	unsigned char	h_dest[ETH_ALEN];
+	unsigned i8	h_dest[ETH_ALEN];
 	__be16		vlan_etype;
 	__be16		vlan_tci;
 	__be32		data[2];
@@ -1731,7 +1731,7 @@ enum ethtool_link_mode_bit_indices {
 
 #define SPEED_UNKNOWN		-1
 
-static __inline__ int ethtool_validate_speed(__u32 speed)
+static __inline__ i32 ethtool_validate_speed(__u32 speed)
 {
 	return speed <= INT_MAX || speed == (__u32)SPEED_UNKNOWN;
 }
@@ -1741,7 +1741,7 @@ static __inline__ int ethtool_validate_speed(__u32 speed)
 #define DUPLEX_FULL		0x01
 #define DUPLEX_UNKNOWN		0xff
 
-static __inline__ int ethtool_validate_duplex(__u8 duplex)
+static __inline__ i32 ethtool_validate_duplex(__u8 duplex)
 {
 	switch (duplex) {
 	case DUPLEX_HALF:

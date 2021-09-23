@@ -18,10 +18,10 @@
 struct semid64_ds {
 	struct ipc64_perm sem_perm;	/* permissions .. see ipc.h */
 #ifdef __i386__
-	unsigned long	sem_otime;	/* last semop time */
-	unsigned long	sem_otime_high;
-	unsigned long	sem_ctime;	/* last change time */
-	unsigned long	sem_ctime_high;
+	unsigned i64	sem_otime;	/* last semop time */
+	unsigned i64	sem_otime_high;
+	unsigned i64	sem_ctime;	/* last change time */
+	unsigned i64	sem_ctime_high;
 #else
 	__kernel_long_t sem_otime;	/* last semop time */
 	__kernel_ulong_t __unused1;

@@ -22,12 +22,12 @@
 
 /* Check that calls to mq_open with O_CREAT set have an appropriate third and fourth
    parameter.  */
-extern mqd_t mq_open (const char *__name, int __oflag, ...)
+extern mqd_t mq_open (const char *__name, i32 __oflag, ...)
      __THROW __nonnull ((1));
-extern mqd_t __mq_open_2 (const char *__name, int __oflag)
+extern mqd_t __mq_open_2 (const char *__name, i32 __oflag)
      __THROW __nonnull ((1));
 extern mqd_t __REDIRECT_NTH (__mq_open_alias, (const char *__name,
-					       int __oflag, ...), mq_open)
+					       i32 __oflag, ...), mq_open)
      __nonnull ((1));
 __errordecl (__mq_open_wrong_number_of_args,
 	     "mq_open can be called either with 2 or 4 arguments");
@@ -35,7 +35,7 @@ __errordecl (__mq_open_missing_mode_and_attr,
 	     "mq_open with O_CREAT in second argument needs 4 arguments");
 
 __fortify_function mqd_t
-__NTH (mq_open (const char *__name, int __oflag, ...))
+__NTH (mq_open (const char *__name, i32 __oflag, ...))
 {
   if (__va_arg_pack_len () != 0 && __va_arg_pack_len () != 2)
     __mq_open_wrong_number_of_args ();

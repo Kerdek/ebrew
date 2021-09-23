@@ -35,7 +35,7 @@
 
 /* Scalar type that can hold values which represent locale-specific
    character classifications.  */
-typedef unsigned long int wctype_t;
+typedef unsigned i64 wctype_t;
 
 # ifndef _ISwbit
 /* The characteristics are stored always in network byte order (big
@@ -47,10 +47,10 @@ typedef unsigned long int wctype_t;
 #   define _ISwbit(bit)	(1 << (bit))
 #  else /* __BYTE_ORDER == __LITTLE_ENDIAN */
 #   define _ISwbit(bit)	\
-	(((bit) < 8) ? (int) ((1UL << (bit)) << 24)			      \
-	 : (((bit) < 16) ? (int) ((1UL << (bit)) << 8)			      \
-	    : (((bit) < 24) ? (int) ((1UL << (bit)) >> 8)			      \
-	       : (int) ((1UL << (bit)) >> 24))))
+	(((bit) < 8) ? (i32) ((1UL << (bit)) << 24)			      \
+	 : (((bit) < 16) ? (i32) ((1UL << (bit)) << 8)			      \
+	    : (((bit) < 24) ? (i32) ((1UL << (bit)) >> 8)			      \
+	       : (i32) ((1UL << (bit)) >> 24))))
 #  endif
 
 enum
@@ -92,58 +92,58 @@ __BEGIN_DECLS
 
 /* Test for any wide character for which `iswalpha' or `iswdigit' is
    true.  */
-extern int iswalnum (wint_t __wc) __THROW;
+extern i32 iswalnum (wint_t __wc) __THROW;
 
 /* Test for any wide character for which `iswupper' or 'iswlower' is
    true, or any wide character that is one of a locale-specific set of
    wide-characters for which none of `iswcntrl', `iswdigit',
    `iswpunct', or `iswspace' is true.  */
-extern int iswalpha (wint_t __wc) __THROW;
+extern i32 iswalpha (wint_t __wc) __THROW;
 
 /* Test for any control wide character.  */
-extern int iswcntrl (wint_t __wc) __THROW;
+extern i32 iswcntrl (wint_t __wc) __THROW;
 
 /* Test for any wide character that corresponds to a decimal-digit
    character.  */
-extern int iswdigit (wint_t __wc) __THROW;
+extern i32 iswdigit (wint_t __wc) __THROW;
 
 /* Test for any wide character for which `iswprint' is true and
    `iswspace' is false.  */
-extern int iswgraph (wint_t __wc) __THROW;
+extern i32 iswgraph (wint_t __wc) __THROW;
 
 /* Test for any wide character that corresponds to a lowercase letter
    or is one of a locale-specific set of wide characters for which
    none of `iswcntrl', `iswdigit', `iswpunct', or `iswspace' is true.  */
-extern int iswlower (wint_t __wc) __THROW;
+extern i32 iswlower (wint_t __wc) __THROW;
 
 /* Test for any printing wide character.  */
-extern int iswprint (wint_t __wc) __THROW;
+extern i32 iswprint (wint_t __wc) __THROW;
 
 /* Test for any printing wide character that is one of a
    locale-specific et of wide characters for which neither `iswspace'
    nor `iswalnum' is true.  */
-extern int iswpunct (wint_t __wc) __THROW;
+extern i32 iswpunct (wint_t __wc) __THROW;
 
 /* Test for any wide character that corresponds to a locale-specific
    set of wide characters for which none of `iswalnum', `iswgraph', or
    `iswpunct' is true.  */
-extern int iswspace (wint_t __wc) __THROW;
+extern i32 iswspace (wint_t __wc) __THROW;
 
 /* Test for any wide character that corresponds to an uppercase letter
    or is one of a locale-specific set of wide character for which none
    of `iswcntrl', `iswdigit', `iswpunct', or `iswspace' is true.  */
-extern int iswupper (wint_t __wc) __THROW;
+extern i32 iswupper (wint_t __wc) __THROW;
 
 /* Test for any wide character that corresponds to a hexadecimal-digit
    character equivalent to that performed be the functions described
    in the previous subclause.  */
-extern int iswxdigit (wint_t __wc) __THROW;
+extern i32 iswxdigit (wint_t __wc) __THROW;
 
 /* Test for any wide character that corresponds to a standard blank
    wide character or a locale-specific set of wide characters for
    which `iswalnum' is false.  */
 # ifdef __USE_ISOC99
-extern int iswblank (wint_t __wc) __THROW;
+extern i32 iswblank (wint_t __wc) __THROW;
 # endif
 
 /*
@@ -156,7 +156,7 @@ extern wctype_t wctype (const char *__property) __THROW;
 
 /* Determine whether the wide-character WC has the property described by
    DESC.  */
-extern int iswctype (wint_t __wc, wctype_t __desc) __THROW;
+extern i32 iswctype (wint_t __wc, wctype_t __desc) __THROW;
 
 /*
  * Wide-character case-mapping functions: 7.15.3.1.

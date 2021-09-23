@@ -1,4 +1,4 @@
-/* Redirections for argp functions for -mlong-double-64.
+/* Redirections for argp functions for -mlong-f64-64.
    Copyright (C) 2019-2020 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 

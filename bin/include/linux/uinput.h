@@ -134,17 +134,17 @@ struct uinput_abs_setup {
  */
 #define UI_ABS_SETUP _IOW(UINPUT_IOCTL_BASE, 4, struct uinput_abs_setup)
 
-#define UI_SET_EVBIT		_IOW(UINPUT_IOCTL_BASE, 100, int)
-#define UI_SET_KEYBIT		_IOW(UINPUT_IOCTL_BASE, 101, int)
-#define UI_SET_RELBIT		_IOW(UINPUT_IOCTL_BASE, 102, int)
-#define UI_SET_ABSBIT		_IOW(UINPUT_IOCTL_BASE, 103, int)
-#define UI_SET_MSCBIT		_IOW(UINPUT_IOCTL_BASE, 104, int)
-#define UI_SET_LEDBIT		_IOW(UINPUT_IOCTL_BASE, 105, int)
-#define UI_SET_SNDBIT		_IOW(UINPUT_IOCTL_BASE, 106, int)
-#define UI_SET_FFBIT		_IOW(UINPUT_IOCTL_BASE, 107, int)
+#define UI_SET_EVBIT		_IOW(UINPUT_IOCTL_BASE, 100, i32)
+#define UI_SET_KEYBIT		_IOW(UINPUT_IOCTL_BASE, 101, i32)
+#define UI_SET_RELBIT		_IOW(UINPUT_IOCTL_BASE, 102, i32)
+#define UI_SET_ABSBIT		_IOW(UINPUT_IOCTL_BASE, 103, i32)
+#define UI_SET_MSCBIT		_IOW(UINPUT_IOCTL_BASE, 104, i32)
+#define UI_SET_LEDBIT		_IOW(UINPUT_IOCTL_BASE, 105, i32)
+#define UI_SET_SNDBIT		_IOW(UINPUT_IOCTL_BASE, 106, i32)
+#define UI_SET_FFBIT		_IOW(UINPUT_IOCTL_BASE, 107, i32)
 #define UI_SET_PHYS		_IOW(UINPUT_IOCTL_BASE, 108, char*)
-#define UI_SET_SWBIT		_IOW(UINPUT_IOCTL_BASE, 109, int)
-#define UI_SET_PROPBIT		_IOW(UINPUT_IOCTL_BASE, 110, int)
+#define UI_SET_SWBIT		_IOW(UINPUT_IOCTL_BASE, 109, i32)
+#define UI_SET_PROPBIT		_IOW(UINPUT_IOCTL_BASE, 110, i32)
 
 #define UI_BEGIN_FF_UPLOAD	_IOWR(UINPUT_IOCTL_BASE, 200, struct uinput_ff_upload)
 #define UI_END_FF_UPLOAD	_IOW(UINPUT_IOCTL_BASE, 201, struct uinput_ff_upload)
@@ -167,7 +167,7 @@ struct uinput_abs_setup {
  * the integer pointed to by the ioctl argument. The protocol version
  * is hard-coded in the kernel and is independent of the uinput device.
  */
-#define UI_GET_VERSION		_IOR(UINPUT_IOCTL_BASE, 45, unsigned int)
+#define UI_GET_VERSION		_IOR(UINPUT_IOCTL_BASE, 45, unsigned i32)
 
 /*
  * To write a force-feedback-capable driver, the upload_effect
@@ -214,7 +214,7 @@ struct uinput_abs_setup {
  * 'code' is UI_FF_UPLOAD or UI_FF_ERASE, and 'value'
  * is the unique request ID. This number was picked
  * arbitrarily, above EV_MAX (since the input system
- * never sees it) but in the range of a 16-bit int.
+ * never sees it) but in the range of a 16-bit i32.
  */
 #define EV_UINPUT		0x0101
 #define UI_FF_UPLOAD		1

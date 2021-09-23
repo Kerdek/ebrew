@@ -36,7 +36,7 @@
 struct lastlog
   {
 #if __WORDSIZE_TIME64_COMPAT32
-    int32_t ll_time;
+    i32 ll_time;
 #else
     __time_t ll_time;
 #endif
@@ -49,15 +49,15 @@ struct lastlog
    type is used in `struct utmp' below.  */
 struct exit_status
   {
-    short int e_termination;	/* Process termination status.  */
-    short int e_exit;		/* Process exit status.  */
+    i16 i32 e_termination;	/* Process termination status.  */
+    i16 i32 e_exit;		/* Process exit status.  */
   };
 
 
 /* The structure describing an entry in the user accounting database.  */
 struct utmp
 {
-  short int ut_type;		/* Type of login.  */
+  i16 i32 ut_type;		/* Type of login.  */
   pid_t ut_pid;			/* Process ID of login process.  */
   char ut_line[UT_LINESIZE]
     __attribute_nonstring__;	/* Devicename.  */
@@ -73,18 +73,18 @@ struct utmp
    32- and 64-bit.  This allows data files and shared memory to be
    shared between 32- and 64-bit applications.  */
 #if __WORDSIZE_TIME64_COMPAT32
-  int32_t ut_session;		/* Session ID, used for windowing.  */
+  i32 ut_session;		/* Session ID, used for windowing.  */
   struct
   {
-    int32_t tv_sec;		/* Seconds.  */
-    int32_t tv_usec;		/* Microseconds.  */
+    i32 tv_sec;		/* Seconds.  */
+    i32 tv_usec;		/* Microseconds.  */
   } ut_tv;			/* Time entry was made.  */
 #else
-  long int ut_session;		/* Session ID, used for windowing.  */
+  i64 ut_session;		/* Session ID, used for windowing.  */
   struct timeval ut_tv;		/* Time entry was made.  */
 #endif
 
-  int32_t ut_addr_v6[4];	/* Internet address of remote host.  */
+  i32 ut_addr_v6[4];	/* Internet address of remote host.  */
   char __glibc_reserved[20];		/* Reserved for future use.  */
 };
 

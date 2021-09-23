@@ -23,12 +23,12 @@
 __BEGIN_DECLS
 
 /* Set port input/output permissions.  */
-extern int ioperm (unsigned long int __from, unsigned long int __num,
-		   int __turn_on) __THROW;
+extern i32 ioperm (unsigned i64 __from, unsigned i64 __num,
+		   i32 __turn_on) __THROW;
 
 
 /* Change I/O privilege level.  */
-extern int iopl (int __level) __THROW;
+extern i32 iopl (i32 __level) __THROW;
 
 __END_DECLS
 

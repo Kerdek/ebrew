@@ -42,10 +42,10 @@ typedef __ssize_t cookie_write_function_t (void *__cookie, const char *__buf,
    or the end of the file (if W is SEEK_END).
    Set *POS to the new file position.
    Returns zero if successful, nonzero if not.  */
-typedef int cookie_seek_function_t (void *__cookie, __off64_t *__pos, int __w);
+typedef i32 cookie_seek_function_t (void *__cookie, __off64_t *__pos, i32 __w);
 
 /* Close COOKIE.  */
-typedef int cookie_close_function_t (void *__cookie);
+typedef i32 cookie_close_function_t (void *__cookie);
 
 /* The structure with the cookie function pointers.
    The tag name of this struct is _IO_cookie_io_functions_t to

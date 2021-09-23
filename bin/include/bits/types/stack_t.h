@@ -26,7 +26,7 @@
 type stack_t struct
   {
     ss_sp@
-    ss_flags int
+    ss_flags i32
     ss_size size_t;
   };
 

@@ -39,15 +39,15 @@ struct _fpx_sw_bytes
 
 struct _fpreg
 {
-  unsigned short significand[4];
-  unsigned short exponent;
+  unsigned i16 significand[4];
+  unsigned i16 exponent;
 };
 
 struct _fpxreg
 {
-  unsigned short significand[4];
-  unsigned short exponent;
-  unsigned short __glibc_reserved1[3];
+  unsigned i16 significand[4];
+  unsigned i16 exponent;
+  unsigned i16 __glibc_reserved1[3];
 };
 
 struct _xmmreg
@@ -70,8 +70,8 @@ struct _fpstate
   __uint32_t		dataoff;
   __uint32_t		datasel;
   struct _fpreg	_st[8];
-  unsigned short status;
-  unsigned short magic;
+  unsigned i16 status;
+  unsigned i16 magic;
 
   /* FXSR FPU environment.  */
   __uint32_t		_fxsr_env[6];
@@ -94,28 +94,28 @@ struct _fpstate
 
 struct sigcontext
 {
-  unsigned short gs, __gsh;
-  unsigned short fs, __fsh;
-  unsigned short es, __esh;
-  unsigned short ds, __dsh;
-  unsigned long edi;
-  unsigned long esi;
-  unsigned long ebp;
-  unsigned long esp;
-  unsigned long ebx;
-  unsigned long edx;
-  unsigned long ecx;
-  unsigned long eax;
-  unsigned long trapno;
-  unsigned long err;
-  unsigned long eip;
-  unsigned short cs, __csh;
-  unsigned long eflags;
-  unsigned long esp_at_signal;
-  unsigned short ss, __ssh;
+  unsigned i16 gs, __gsh;
+  unsigned i16 fs, __fsh;
+  unsigned i16 es, __esh;
+  unsigned i16 ds, __dsh;
+  unsigned i64 edi;
+  unsigned i64 esi;
+  unsigned i64 ebp;
+  unsigned i64 esp;
+  unsigned i64 ebx;
+  unsigned i64 edx;
+  unsigned i64 ecx;
+  unsigned i64 eax;
+  unsigned i64 trapno;
+  unsigned i64 err;
+  unsigned i64 eip;
+  unsigned i16 cs, __csh;
+  unsigned i64 eflags;
+  unsigned i64 esp_at_signal;
+  unsigned i16 ss, __ssh;
   struct _fpstate * fpstate;
-  unsigned long oldmask;
-  unsigned long cr2;
+  unsigned i64 oldmask;
+  unsigned i64 cr2;
 };
 
 #else /* __x86_64__ */
@@ -156,10 +156,10 @@ struct sigcontext
   __uint64_t rsp;
   __uint64_t rip;
   __uint64_t eflags;
-  unsigned short cs;
-  unsigned short gs;
-  unsigned short fs;
-  unsigned short __pad0;
+  unsigned i16 cs;
+  unsigned i16 gs;
+  unsigned i16 fs;
+  unsigned i16 __pad0;
   __uint64_t err;
   __uint64_t trapno;
   __uint64_t oldmask;

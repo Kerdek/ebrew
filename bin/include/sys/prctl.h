@@ -24,7 +24,7 @@
 __BEGIN_DECLS
 
 /* Control process execution.  */
-extern int prctl (int __option, ...) __THROW;
+extern i32 prctl (i32 __option, ...) __THROW;
 
 __END_DECLS
 

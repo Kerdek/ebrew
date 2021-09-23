@@ -170,7 +170,7 @@ struct canfd_frame {
  */
 struct sockaddr_can {
 	__kernel_sa_family_t can_family;
-	int         can_ifindex;
+	i32         can_ifindex;
 	union {
 		/* transport protocol class address information (e.g. ISOTP) */
 		struct { canid_t rx_id, tx_id; } tp;

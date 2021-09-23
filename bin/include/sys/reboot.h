@@ -47,7 +47,7 @@
 __BEGIN_DECLS
 
 /* Reboot or halt the system.  */
-extern int reboot (int __howto) __THROW;
+extern i32 reboot (i32 __howto) __THROW;
 
 __END_DECLS
 

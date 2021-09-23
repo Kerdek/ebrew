@@ -92,7 +92,7 @@
  * --------
  *	Alan Cox start some incompatibles changes. I've integrated a bit more.
  *	- Encryption renamed to Encode to avoid US regulation problems
- *	- Frequency changed from float to struct to avoid problems on old 386
+ *	- Frequency changed from f32 to struct to avoid problems on old 386
  *
  * V3 to V4
  * --------
@@ -160,7 +160,7 @@
  * V14 to V15
  * ----------
  *	- Add IW_PRIV_TYPE_ADDR for struct sockaddr private arg
- *	- Make struct iw_freq signed (both m & e), add explicit padding
+ *	- Make struct iw_freq  (both m & e), add explicit padding
  *	- Add IWEVCUSTOM for driver specific event/scanning token
  *	- Add IW_MAX_GET_SPY for driver returning a lot of addresses
  *	- Add IW_TXPOW_RANGE for range of Tx Powers
@@ -274,7 +274,7 @@
 #define SIOCGIWESSID	0x8B1B		/* get ESSID */
 #define SIOCSIWNICKN	0x8B1C		/* set node name/nickname */
 #define SIOCGIWNICKN	0x8B1D		/* get node name/nickname */
-/* As the ESSID and NICKN are strings up to 32 bytes long, it doesn't fit
+/* As the ESSID and NICKN are strings up to 32 bytes i64, it doesn't fit
  * within the 'iwreq' structure, so we need to use the 'data' member to
  * point to a string in user space, like it is done for RANGE... */
 
@@ -408,7 +408,7 @@
 #define IW_PRIV_TYPE_NONE	0x0000
 #define IW_PRIV_TYPE_BYTE	0x1000	/* Char as number */
 #define IW_PRIV_TYPE_CHAR	0x2000	/* Char as character */
-#define IW_PRIV_TYPE_INT	0x4000	/* 32 bits int */
+#define IW_PRIV_TYPE_INT	0x4000	/* 32 bits i32 */
 #define IW_PRIV_TYPE_FLOAT	0x5000	/* struct iw_freq */
 #define IW_PRIV_TYPE_ADDR	0x6000	/* struct sockaddr */
 
@@ -523,8 +523,8 @@
 #define IW_RETRY_MIN		0x0001	/* Value is a minimum  */
 #define IW_RETRY_MAX		0x0002	/* Value is a maximum */
 #define IW_RETRY_RELATIVE	0x0004	/* Value is not in seconds/ms/us */
-#define IW_RETRY_SHORT		0x0010	/* Value is for short packets  */
-#define IW_RETRY_LONG		0x0020	/* Value is for long packets */
+#define IW_RETRY_SHORT		0x0010	/* Value is for i16 packets  */
+#define IW_RETRY_LONG		0x0020	/* Value is for i64 packets */
 
 /* Scanning request flags */
 #define IW_SCAN_DEFAULT		0x0000	/* Default scan of the driver */
@@ -671,7 +671,7 @@
 
 /* --------------------------- SUBTYPES --------------------------- */
 /*
- *	Generic format for most parameters that fit in an int
+ *	Generic format for most parameters that fit in an i32
  */
 struct iw_param {
   __s32		value;		/* The value of the parameter itself */
