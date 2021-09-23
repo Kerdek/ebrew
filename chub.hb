@@ -65,7 +65,6 @@ type
     line_delta  i32
     at_bol      bool
     has_space   bool
-    hideset    @Hideset
     origin     @same;
   }
 
@@ -74,16 +73,13 @@ type
     size          i32
     alignment     i32
     offset        i32
+    array_len     i32
     s            @same
     o            @same
     a            @same
-    members      @same
     params       @same
     name         @Token
     name_pos     @Token
-    array_len     i32
-    is_flexible   bool
-    is_packed     bool
     is_variadic   bool;
   }
 

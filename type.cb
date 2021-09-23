@@ -39,7 +39,6 @@ t.kind is c
 ( c == TY_FUNC    ) ? 
   (cast void strcat s "(")  ;:
   t.a.s is p
-    (t.is_variadic && !p && strcat s "void" as void) ;:
     (p for p (!!p && p.s :; format_type p s) as void) ;:
   strcat s ")" :;
   format_type t.a s :
@@ -64,7 +63,6 @@ export type_equal(t @Type u @Type) bool = return
             c == TY_INT32   ||
             c == TY_INT64)  ? true          :
             (c == TY_FUNC)  ? ! type_equal t.a u.a    ? false :
-                          (t.is_variadic != u.is_variadic)            ? false :
                           is_function_type_equal t.a.s u.a.s  :
             (c == TY_ARRAY) ? ! type_equal t.a u.a              ? false :
                           (t.array_len == u.array_len)                :

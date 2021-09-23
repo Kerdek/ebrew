@@ -106,7 +106,7 @@ format_types(t @Type u @Type) = return
 enter_scope() = let sc =cast @Scope  (calloc 1ul sizeof Scope) ; (sc.s = scope); (scope = sc);;
 leave_scope() = (scope = scope.s);;
 push_scope(name@ i8) @Name = return cast @Name calloc 1ul sizeof Name is sc hashmap_put &scope.vars name cast @ sc ;: sc;;
-search_scope(j @Token which(_@ Scope)@HashMap)@ = for (let sc@ Scope = scope; sc; sc = sc.s) { let sc2 = hashmap_get2 which@ sc j.loc j.len; if sc2 return sc2; ; return cast @ 0 ; ;
+search_scope(j @Token which @(scope @Scope) @HashMap)@ = for (let sc@ Scope = scope; sc; sc = sc.s) { let sc2 = hashmap_get2 which@ sc j.loc j.len; if sc2 return sc2; ; return cast @ 0 ; ;
 scope_vars(s @Scope) @HashMap = return &s.vars;;
 scope_tags(s @Scope) @HashMap = return &s.tags;;
 
@@ -122,16 +122,11 @@ new_initializer(t @Type is_flexible bool) @Initializer =
     return e;;
   if (t.kind == TY_STRUCT || t.kind == TY_UNION) {
     let len = 0;
-    for (let g @Type = t.members; g; g = g.s) (len += 1);
+    for (let g @Type = t.a; g; g = g.s) (len += 1);
     (e.children = (calloc cast %i64 len  sizeof @Initializer as @@Initializer));
     let i = 0;
-    for (let g @Type = t.members; g; g = g.s) {
-      if (is_flexible && t.is_flexible && !g.s) {
-        let child = cast @Initializer calloc 1ul sizeof Initializer;
-        (child.t = g );
-        (child.is_flexible = true);
-        (e.children[i] = child);;
-      else (e.children[i] = new_initializer g  false);
+    for (let g @Type = t.a; g; g = g.s) {
+      (e.children[i] = new_initializer g  false);
       (i += 1);;
     return e;;
   return e;;
@@ -424,9 +419,6 @@ func_params(k @@Token) @Type =
     declspec k cast @VarAttr 0;
     let t = declarator k;
     let name = t.name;
-   if (t.kind == TY_FUNC) {
-      (t = pointer_to t);
-      (t.name = name);;
     (cur.s = copy_type t);
     (cur = cur.s);;
   (k@ = k.s);
@@ -544,7 +536,7 @@ array_initializer2(k @@Token e @Initializer i i32)  =
     initializer2 k e.children[i];;;
 struct_initializer1(k @@Token e @Initializer)  =
   expect k "{";
-  let g = e.t.members;
+  let g = e.t.a;
   let i = 0;
   while ! consume k k@ ";" {
     if g {
@@ -561,7 +553,7 @@ struct_initializer2(k @@Token e@ Initializer g @Type)  =
     initializer2 k e.children[i];
     (i += 1);;;
 union_initializer(k @@Token e @Initializer) = return
-  (e.g = e.t.members) ;:
+  (e.g = e.t.a) ;:
   equal k@ "{" ?
     (k@ = k.s) ;:
     initializer2 k e.children[0] :
@@ -576,7 +568,7 @@ initializer2(k @@Token e @Initializer) =
     else {
       let a = tertiary k cast @Type 0;
       if (a.t.kind == TY_STRUCT) (e.expr = a);
-      else struct_initializer2 k e e.t.members;;;
+      else struct_initializer2 k e e.t.a;;;
   else if (e.t.kind == TY_UNION) union_initializer k e;
   else if equal k@ "{" {
     (k@ = k.s);
@@ -588,23 +580,17 @@ copy_struct_type(t @Type) @Type =
   let
     head = new Type {;
     cur = &head;
-  for (let g@ Type = t.members; g; g = g.s) {
+  for (let g@ Type = t.a; g; g = g.s) {
     let m = cast @Type calloc 1ul sizeof Type;
     (m@ = g@);
     (cur.s = m);
     (cur = cur.s);;
-  (t.members = head.s);
+  (t.a = head.s);
   return t;;
 initializer(k @@Token t @@Type) @Initializer =
   let e = new_initializer t@ true;
   initializer2 k e;
-  if ((t.kind == TY_STRUCT || t.kind == TY_UNION) && t.is_flexible) {
-    (t@ = copy_struct_type t@);
-    let g = t.members;
-    let i = 0;
-    while g.s (g = g.s) ;: (i += 1);
-    (t.size += g.size);;
-  else (t@ = e.t);
+  (t@ = e.t);
   (e.t = ty_void);
   return e;;
 init_desg_expr(z @InitDesg j @Token) @Node = return
@@ -643,7 +629,7 @@ write_gvar_data(cur@ Relocation init@ Initializer t@ Type buf@ i8 offset i32)@ R
     return cur;;
   if (t.kind == TY_STRUCT) {
     let i = 0;
-    for (let g@ Type = t.members; g; g = g.s) {
+    for (let g@ Type = t.a; g; g = g.s) {
         (cur = write_gvar_data cur init.children[i] g buf (offset + g.offset));
         (i += 1);;
     return cur;;
@@ -681,7 +667,7 @@ create_lvar_init(e @Initializer t @Type z @InitDesg j @Token)@ Node =
   if (t.kind == TY_STRUCT && !e.expr) {
     let a = new_none j ty_void;
     let i = 0;
-    for (let g @Type = t.members; g; g = g.s) {
+    for (let g @Type = t.a; g; g = g.s) {
       let
         z2 = new InitDesg {z 0 g;
         b = create_lvar_init e.children[i] g  &z2 j;
@@ -689,7 +675,7 @@ create_lvar_init(e @Initializer t @Type z @InitDesg j @Token)@ Node =
       (i += 1);;
     return a;;
   if (t.kind == TY_UNION) {
-    return create_lvar_init e.children[0] t.members &new InitDesg {z 0 t.members; j;;
+    return create_lvar_init e.children[0] t.a &new InitDesg {z 0 t.a; j;;
   if !e.expr
     return new_none j ty_void;
   let a = init_desg_expr z j;
@@ -1204,7 +1190,7 @@ struct_members(k @@Token t @Type)  =
       (g.alignment = v.alignment || g.alignment);
       (cur.s = g);
       (cur = cur.s);;;
-  (t.members = head.s);;
+  (t.a = head.s);;
 
 struct_union_decl(k @@Token) @Type = return
   (struct_type) is t
@@ -1232,11 +1218,11 @@ struct_decl(k @@Token) @Type =
   (t.kind = TY_STRUCT);
   if (t.size < 0) return t;
   let bits = 0;
-  for (let g@ Type = t.members; g; g = g.s) {
-      if !t.is_packed (bits = align_to bits (g.alignment * 8));
+  for (let g@ Type = t.a; g; g = g.s) {
+      (bits = align_to bits (g.alignment * 8));
       (g.offset = bits / 8);
       (bits += g.size * 8);
-    if (!t.is_packed && t.alignment < g.alignment)
+    if (t.alignment < g.alignment)
       (t.alignment = g.alignment);;
   (t.size = align_to bits (t.alignment * 8) / 8);
   return t;;
@@ -1244,13 +1230,13 @@ union_decl(k @@Token) @Type =
   let t = struct_union_decl k;
   (t.kind = TY_UNION);
   if (t.size < 0) return t;
-  for (let g @Type = t.members; g; g = g.s) {
+  for (let g @Type = t.a; g; g = g.s) {
     if (t.alignment < g.alignment) (t.alignment = g.alignment);
     if (t.size < g.size) (t.size = g.size);;
   (t.size = align_to t.size t.alignment);
   return t;;
 get_struct_member(t @Type j @Token) @Type =
-  for (let g @Type = t.members; g; g = g.s) {
+  for (let g @Type = t.a; g; g = g.s) {
     if ((g.kind == TY_STRUCT || g.kind == TY_UNION) && (!g.name || equal g.name "_")) {
       if cast bool get_struct_member g j return g;;
     else if (g.name.len == j.len && ! strncmp cast @  g.name.loc j.loc cast %i64 j.len ) return g;;

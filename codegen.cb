@@ -194,7 +194,7 @@ gen_cast(a@Type b@Type) = return
   none;;
 has_flonum(t@Type lo i32 hi i32 offset i32) bool =
   if (t.kind == TY_STRUCT || t.kind == TY_UNION) {
-    for (let mem @Type = t.members; mem; mem = mem.s) if !has_flonum mem lo hi (offset + mem.offset) return false;
+    for (let mem @Type = t.a; mem; mem = mem.s) if !has_flonum mem lo hi (offset + mem.offset) return false;
     return true;;
   if (t.kind == TY_ARRAY) {
     for (let i i32 = 0; i < t.array_len; i += 1) if !has_flonum t.a lo hi (offset + t.a.size * i) return false;
