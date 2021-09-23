@@ -51,8 +51,8 @@ export type_equal(t @Type u @Type) bool = return
   !!u &&
   t.kind is c (
     t == u || (
-      !!t.o      ? type_equal t.o u :
-      !!u.o      ? type_equal t u.o :
+      !!t.o ? type_equal t.o u :
+      !!u.o ? type_equal t u.o :
       ( c == u.kind     && (
         c == TY_VOID    ||  
         c == TY_BOOL    ||
@@ -94,5 +94,5 @@ export array_of(base @Type len i32)@ Type = return
   (t.a = base) ;:
   (t.array_len = len) ;:
   t;;
-export enum_type  (void) @Type = return new_type TY_ENUM 4 4;;
-export struct_type(void) @Type = return new_type TY_STRUCT 0 1;;
+export enum_type  () @Type = return new_type TY_ENUM 4 4;;
+export struct_type() @Type = return new_type TY_STRUCT 0 1;;

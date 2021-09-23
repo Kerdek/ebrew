@@ -23,7 +23,7 @@ replace_extn(tmpl@ i8 extn@ i8) @i8 = return
   (format "%s%s" filename extn);;
 wait_subprocess(status @i32) = while (wait status > 0);;
 run_subprocess(argv@@i8) =
-  (!fork &&
+  (!(fork) &&
     ( (execvp argv[0] argv as) ;:
       cast void (fprintf stderr "exec failed: %s: %s\n" argv[0] strerror errno) ;:
       exit 1) as void) ;:
@@ -51,7 +51,7 @@ print_tokens(j @Token) = return
 cc1(input @i8 output @i8 include_paths @StringArray) =
   must_tokenize_file input is j
   (j = preprocess j include_paths) ;:
-  print_tokens j ;:
+  //print_tokens j ;:
   parse j is obj
   open_file output is out
   codegen obj out ;:
@@ -68,11 +68,11 @@ find_file( pattern@ i8)@ i8 =
   path;;
 type stat_type struct stat;;
 export file_exists(path@ i8) bool = return ! stat path &new stat_type {;;;
-find_libpath(void) @i8 = return
+find_libpath() @i8 = return
   file_exists "/usr/lib/x86_64-linux-gnu/crti.o" ? "/usr/lib/x86_64-linux-gnu" :
   file_exists "/usr/lib64/crti.o" ? "/usr/lib64" :
   (error "library path is not found") ;: cast @i8 0;;
-find_gcc_libpath(void)@ i8 =
+find_gcc_libpath()@ i8 =
   let paths[]@ i8 = {
     "/usr/lib/gcc/x86_64-linux-gnu/*/crtbegin.o"
     "/usr/lib/gcc/x86_64-pc-linux-gnu/*/crtbegin.o" // For Gentoo
@@ -88,8 +88,8 @@ run_linker(inputs @StringArray flags @StringArray output@ i8 opt_shared bool opt
   strarray_push a output;
   strarray_push a "-m";
   strarray_push a "elf_x86_64";
-  let libpath = find_libpath;
-  let gcc_libpath = find_gcc_libpath;
+  let libpath = (find_libpath);
+  let gcc_libpath = (find_gcc_libpath);
   if opt_shared {
     strarray_push a (format "%s/crti.o" libpath);
     strarray_push a (format "%s/crtbeginS.o" gcc_libpath);;

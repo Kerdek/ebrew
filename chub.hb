@@ -50,11 +50,6 @@ type
     line_delta    i32;
   }
 
-  Hideset struct {
-    s        @same
-    name        @i8;
-  }
-
   Token struct {
     kind        TokenKind
     s       @same
@@ -74,33 +69,21 @@ type
     origin     @same;
   }
 
-  Member struct {
-    s         @same
-    t           @
-    j          @Token
-    name         @Token
-    idx           i32
-    alignment     i32
-    offset        i32
-    is_bitfield   bool
-    bit_offset    i32
-    bit_width     i32;
-  }
-
   Type struct  {
     kind          TypeKind
     size          i32
     alignment     i32
+    offset        i32
     s            @same
     o            @same
     a            @same
+    members      @same
+    params       @same
     name         @Token
     name_pos     @Token
     array_len     i32
-    members      @Member
     is_flexible   bool
     is_packed     bool
-    params       @same
     is_variadic   bool;
   }
 
@@ -154,7 +137,7 @@ type
     j             @Token
     brk_label     @i8
     cont_label    @i8
-    member        @Member
+    member        @Type
     ret_buffer    @Obj
     label         @i8
     unique_label  @i8
@@ -180,6 +163,19 @@ type
     used      i32;
   }
 ;
+
+export extern
+  ty_void @Type
+  ty_bool @Type
+  ty_i8   @Type
+  ty_i16  @Type
+  ty_i32  @Type
+  ty_i64  @Type
+  ty_f32  @Type
+  ty_f64  @Type
+  ty_f80  @Type
+;
+
 export advance(k @@Token) @Token;
 export strarray_push(arr@ StringArray s@ i8);
 export format(fmt@ i8 ...)@ i8;
@@ -192,30 +188,13 @@ export expect(j@@ Token op@ i8);
 export skip(j@ Token op@ i8)@ Token;
 export consume(rest@@ Token j@ Token str@ i8)bool;
 export convert_pp_tokens(j@ Token);
-export get_input_files(void)@@ File;
+export get_input_files()@@ File;
 export new_file(name@ i8 file_no i32 contents@ i8)@ File;
-export tokenize_string_literal(j@ Token basety@ Type)@ Token;
 export tokenize(file@ File)@ Token;
 export tokenize_file(filename@ i8)@ Token;
 export preprocess(j@ Token include_paths @StringArray)@ Token;
 export const_expr(k @@Token) i64;
 export parse(j@ Token)@ Obj;
-
-export extern
-  ty_void       @Type
-  ty_bool       @Type
-  ty_i8       @Type
-  ty_i16      @Type
-  ty_i32        @Type
-  ty_i64       @Type
-  ty_f32      @Type
-  ty_f64     @Type
-  ty_f80    @Type
-;
-
-export is_integer       (t         @Type           ) bool ;
-export is_flonum        (t         @Type           ) bool ;
-export is_numeric       (t         @Type           ) bool ;
 export format_type      (t         @Type s    @i8)      ;
 export type_equal       (t         @Type u    @Type) bool ;
 export copy_type        (t         @Type           ) @Type;
@@ -223,13 +202,11 @@ export pointer_to       (base      @Type           ) @Type;
 export ring_of      (base      @Type           ) @Type;
 export func_type        (return_ty @Type           ) @Type;
 export array_of         (base      @Type size  i32 ) @Type;
-export enum_type        (           void           ) @Type;
-export struct_type      (           void           ) @Type;
+export enum_type        (                          ) @Type;
+export struct_type      (                          ) @Type;
 export preprocess(j@ Token include_paths @StringArray)@ Token;
-
 export codegen(prog@ Obj out@ FILE);
 export align_to(n i32 alignment i32)i32;
-
 export encode_utf8(buf@ i8 c %i32)i32;
 export decode_utf8(new_pos@@ i8 p@ i8)%i32;
 export is_ident1(c %i32)bool;
@@ -241,8 +218,6 @@ export hashmap_get2(map@ HashMap key@ i8 keylen i32)@;
 export hashmap_put(map@ HashMap key@ i8 val@);
 export hashmap_put2(map@ HashMap key@ i8 keylen i32 val@);
 export hashmap_delete(map@ HashMap key@ i8);
-
 export hashmap_delete2(map@ HashMap key@ i8 keylen i32);
-export hashmap_test(void);
 
 export file_exists(path@ i8)bool;

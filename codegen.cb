@@ -24,12 +24,12 @@ println(fmt @i8 ...) =
   (fprintf output_file "\n");;
 
 i counti i32 = 1;
-count(void     ) i32 = return counti :; (counti += 1);;
+count(     ) i32 = return counti :; (counti += 1);;
 
-push (void     )     = return (println "  push %%rax") ;: (depth += 1);;
+push (     )     = return (println "  push %%rax") ;: (depth += 1);;
 pop  (arg @i8)     = return (println "  pop %s" arg) ;: (depth -= 1);;
 
-pushf(void     )     = return (println "  sub $8, %%rsp"             ) ;: (println "  movsd %%xmm0, (%%rsp)") ;: (depth += 1);;
+pushf(     )     = return (println "  sub $8, %%rsp"             ) ;: (println "  movsd %%xmm0, (%%rsp)") ;: (depth += 1);;
 popf (reg   i32)     = return (println "  movsd (%%rsp), %%xmm%d" reg) ;: (println "  add $8, %%rsp"        ) ;: (depth -= 1);;
 
 export align_to(n i32 alignment i32) i32 = return (n + alignment - 1) / alignment * alignment;;
@@ -49,7 +49,7 @@ gen_addr(e @Node) = return
   && (println "  lea %d(%%rbp), %%rax" e.var.offset)
   || (println "  mov %s@GOTPCREL(%%rip), %%rax" e.var.name) as void) :
   ( e.kind    == ND_COMMA   ) ? gen_expr e.a   ;: gen_expr e.a.s  :
-  ( e.kind    == ND_THEN    ) ? gen_expr e.a   ;: push ;: gen_expr e.a.s  ;: pop "%rax" :
+  ( e.kind    == ND_THEN    ) ? gen_expr e.a   ;: (push) ;: gen_expr e.a.s  ;: pop "%rax" :
   ( e.kind    == ND_MEMBER  ) ? gen_addr e.a   ;: (println "  add $%d, %%rax" e.member.offset ) :
   ( e.kind    == ND_THE    ||
     e.kind    == ND_DEREF   ) ? gen_expr e.a  :
@@ -194,7 +194,7 @@ gen_cast(a@Type b@Type) = return
   none;;
 has_flonum(t@Type lo i32 hi i32 offset i32) bool =
   if (t.kind == TY_STRUCT || t.kind == TY_UNION) {
-    for (let mem@Member = t.members; mem; mem = mem.s) if !has_flonum cast @Type mem.t lo hi (offset + mem.offset) return false;
+    for (let mem @Type = t.members; mem; mem = mem.s) if !has_flonum mem lo hi (offset + mem.offset) return false;
     return true;;
   if (t.kind == TY_ARRAY) {
     for (let i i32 = 0; i < t.array_len; i += 1) if !has_flonum t.a lo hi (offset + t.a.size * i) return false;
@@ -221,7 +221,7 @@ push_args2(args@Node first_pass bool) =
     break;
   case TY_FLOAT32:
   case TY_FLOAT64:
-    pushf ;
+    (pushf) ;
     break;
   case TY_FLOAT80:
     (println "  sub $16, %%rsp");
@@ -229,7 +229,7 @@ push_args2(args@Node first_pass bool) =
     (depth += 2);
     break;
   default:
-    push ;;;
+    (push) ;;;
 
 // Load function call arguments. Arguments are already evaluated and
 // stored to the stack as local variables. What we need to do in this
@@ -312,7 +312,7 @@ push_args(e@Node)i32 =
   // a pointer to a buffer as if it were the first argument.
   if (!!e.ret_buffer && e.t.size > 16) {
     (println "  lea %d(%%rbp), %%rax" e.ret_buffer.offset);
-    push ;
+    (push) ;
   ;
 
   return stack;
@@ -348,7 +348,7 @@ copy_ret_buffer(var@Obj) =
   ;
 ;
 
-copy_struct_reg(void) =
+copy_struct_reg() =
   let t = current_fn.t.a gp = 0 fp = 0;
 
   (println "  mov %%rax, %%rdi");
@@ -382,7 +382,7 @@ copy_struct_reg(void) =
   ;
 ;
 
-copy_struct_mem(void) =
+copy_struct_mem() =
   let t = current_fn.t.a var = current_fn.params;
 
   (println "  mov %d(%%rbp), %%rdi" var.offset);
@@ -457,13 +457,7 @@ gen_expr(e @Node) =
     load e.t;
   case ND_MEMBER: return
     gen_addr e  ;:
-    load e.t ;:
-    e.member is mem
-    ( mem.is_bitfield ?
-        (println "  shl $%d, %%rax" (64 - mem.bit_width - mem.bit_offset)) ;:
-        ((cast @Type mem.t).kind == TY_UNSIGNED) ? (println "  shr $%d, %%rax" (64 - mem.bit_width) ) :
-        (println "  sar $%d, %%rax" (64 - mem.bit_width) ) :
-      none );
+    load e.t;
   case ND_DEREF: return
     gen_expr e.a  ;:
     load e.t;
@@ -471,57 +465,31 @@ gen_expr(e @Node) =
     gen_addr e.a ;
   case ND_CASSIGN: return
     gen_addr e.a.a  ;:
-    push ;:
+    (push) ;:
     gen_expr e.a  ;:
-    (e.a.a.kind == ND_MEMBER && e.a.a.member.is_bitfield) ?
-      (println "  mov %%rax, %%r8") ;:
-      e.a.a.member is mem
-      (println "  mov %%rax, %%rdi") ;:
-      (println "  and $%ld, %%rdi" ((1 << mem.bit_width) - 1)) ;:
-      (println "  shl $%d, %%rdi" mem.bit_offset) ;:
-      (println "  mov (%%rsp), %%rax") ;:
-      load cast @Type mem.t ;:
-      (println "  mov $%ld, %%r9" ~(((1 << mem.bit_width) - 1) << mem.bit_offset)) ;:
-      (println "  and %%r9, %%rax") ;:
-      (println "  or %%rdi, %%rax") ;:
-      store e.a.a.t ;:
-      (println "  mov %%r8, %%rax" ):
     store e.a.a.t;
   case ND_ASSIGN: return
     gen_addr e.a  ;:
-    push ;:
+    (push) ;:
     gen_expr e.a.s  ;:
-    (e.a.kind == ND_MEMBER && e.a.member.is_bitfield) ?
-      (println "  mov %%rax, %%r8") ;:
-      e.a.member is mem
-      (println "  mov %%rax, %%rdi") ;:
-      (println "  and $%ld, %%rdi" ((1 << mem.bit_width) - 1)) ;:
-      (println "  shl $%d, %%rdi" mem.bit_offset) ;:
-      (println "  mov (%%rsp), %%rax") ;:
-      load cast @Type mem.t ;:
-      (println "  mov $%ld, %%r9" ~(((1 << mem.bit_width) - 1) << mem.bit_offset)) ;:
-      (println "  and %%r9, %%rax") ;:
-      (println "  or %%rdi, %%rax") ;:
-      store e.a.t ;:
-      (println "  mov %%r8, %%rax" ):
     store e.a.t;
   case ND_THE:
     return gen_expr e.a ;
   case ND_UNTIL: return
-    count is c
+    (count) is c
     (println ".L.until.%d:" c) ;:
     gen_expr e.a  ;:
     cmp_zero e.a.t ;:
     (println "  je .L.until.%d" c);
   case ND_REPEAT: return
-    count is c
+    (count) is c
     (println "  lea %d(%%rbp), %%rax" e.var.offset ) ;:
-    push ;:
+    (push) ;:
     gen_expr e.a  ;:
     (println ".L.repeat.%d:" c) ;:
     store e.a.t ;:
     (println "  lea %d(%%rbp), %%rax" e.var.offset ) ;:
-    push ;:
+    (push) ;:
     gen_expr e.a.s  ;:
     cmp_zero e.a.s.t ;:
     (println "  jne .L.repeat.%d" c) ;:
@@ -532,7 +500,7 @@ gen_expr(e @Node) =
     gen_expr e.a.s ;
   case ND_THEN: return
     gen_expr e.a  ;:
-    push ;:
+    (push) ;:
     gen_expr e.a.s  ;:
     pop "%rax";
   case ND_CAST: return
@@ -544,7 +512,7 @@ gen_expr(e @Node) =
     (println "  mov $0, %%al") ;:
     (println "  rep stosb");
   case ND_COND: return
-    count is c
+    (count) is c
     gen_expr e.a  ;:
     cmp_zero e.a.t ;:
     (println "  je .L.else.%d" c) ;:
@@ -562,14 +530,14 @@ gen_expr(e @Node) =
     gen_expr e.a  ;:
     (println "  not %%rax");
   case ND_LOGAND: return
-    count is c
+    (count) is c
     gen_expr e.a  ;:
     cmp_zero e.a.t ;:
     (println "  je .L.end.%d" c) ;:
     gen_expr e.a.s  ;:
     (println ".L.end.%d:" c);
   case ND_LOGOR: return
-    count is c
+    (count) is c
     gen_expr e.a     ;:
     cmp_zero e.a.t          ;:
     (println "  jne .L.end.%ld" c) ;:
@@ -650,7 +618,7 @@ gen_expr(e @Node) =
   case TY_FLOAT32:
   case TY_FLOAT64: {
     gen_expr e.a.s ;
-    pushf ;
+    (pushf) ;
     gen_expr e.a ;
     popf 1;
 
@@ -743,7 +711,7 @@ gen_expr(e @Node) =
   ;;
 
   gen_expr e.a.s ;
-  push ;
+  ((push)) ;
   gen_expr e.a ;
   pop "%rdi";
 
@@ -852,7 +820,7 @@ gen_stmt(e@Node) =
 
   switch  e.kind {
   case ND_IF: {
-    let c = count ;
+    let c = (count) ;
     gen_expr e.cond ;
     cmp_zero e.cond.t;
     (println "  je  .L.else.%d" c);
@@ -864,7 +832,7 @@ gen_stmt(e@Node) =
     return;
   ;
   case ND_FOR: {
-    let c = count ;
+    let c = (count) ;
     if e.init gen_stmt e.init ;
     (println ".L.begin.%d:" c);
     if e.cond{
@@ -880,7 +848,7 @@ gen_stmt(e@Node) =
     return;
   ;
   case ND_DO: {
-    let c = count ;
+    let c = (count) ;
     (println ".L.begin.%d:" c);
     gen_stmt e.then ;
     (println "%s:" e.cont_label);
@@ -927,8 +895,8 @@ gen_stmt(e@Node) =
       switch  t.kind {
       case TY_STRUCT:
       case TY_UNION:
-        if (t.size <= 16) copy_struct_reg ;
-        else copy_struct_mem ;
+        if (t.size <= 16) (copy_struct_reg) ;
+        else (copy_struct_mem) ;
         break;
       ;
     ;
@@ -1151,7 +1119,7 @@ emit_text(prog@Obj) =
 
 export codegen(prog@Obj out@FILE) = return
   (output_file = out) ;:
-  get_input_files is files
+  (get_input_files) is files
   (  0 for i 
     (  !!files[i] && (i + 1) :;
     (println "  .file %d \"%s\"" files[i].file_no files[i].name) ) as void) ;:

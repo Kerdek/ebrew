@@ -406,7 +406,7 @@ read_file(path@ i8)@ i8 =
   fclose out;
   return buf;;
 
-export get_input_files(void)@@ File =
+export get_input_files()@@ File =
   return input_files;;
 
 export new_file(name@ i8 file_no i32 contents@ i8)@ File =
