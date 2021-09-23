@@ -24,7 +24,7 @@
  * @pad:	padding for 64-bit alignment, should always be zero
  */
 struct sync_merge_data {
-	char	name[32];
+	i8	name[32];
 	__s32	fd2;
 	__s32	fence;
 	__u32	flags;
@@ -40,8 +40,8 @@ struct sync_merge_data {
  * @timestamp_ns:	timestamp of status change in nanoseconds
  */
 struct sync_fence_info {
-	char	obj_name[32];
-	char	driver_name[32];
+	i8	obj_name[32];
+	i8	driver_name[32];
 	__s32	status;
 	__u32	flags;
 	__u64	timestamp_ns;
@@ -58,7 +58,7 @@ struct sync_fence_info {
  *		 fences in the sync_file
  */
 struct sync_file_info {
-	char	name[32];
+	i8	name[32];
 	__s32	status;
 	__u32	flags;
 	__u32	num_fences;

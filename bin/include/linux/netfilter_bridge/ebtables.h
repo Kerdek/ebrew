@@ -42,52 +42,52 @@ struct ebt_counter {
 };
 
 struct ebt_replace {
-	char name[EBT_TABLE_MAXNAMELEN];
-	unsigned i32 valid_hooks;
+	i8 name[EBT_TABLE_MAXNAMELEN];
+	%i32 valid_hooks;
 	/* nr of rules in the table */
-	unsigned i32 nentries;
+	%i32 nentries;
 	/* total size of the entries */
-	unsigned i32 entries_size;
+	%i32 entries_size;
 	/* start of the chains */
 	struct ebt_entries *hook_entry[NF_BR_NUMHOOKS];
 	/* nr of counters userspace expects back */
-	unsigned i32 num_counters;
+	%i32 num_counters;
 	/* where the kernel will put the old counters */
 	struct ebt_counter *counters;
-	char *entries;
+	i8 *entries;
 };
 
 struct ebt_replace_kernel {
-	char name[EBT_TABLE_MAXNAMELEN];
-	unsigned i32 valid_hooks;
+	i8 name[EBT_TABLE_MAXNAMELEN];
+	%i32 valid_hooks;
 	/* nr of rules in the table */
-	unsigned i32 nentries;
+	%i32 nentries;
 	/* total size of the entries */
-	unsigned i32 entries_size;
+	%i32 entries_size;
 	/* start of the chains */
 	struct ebt_entries *hook_entry[NF_BR_NUMHOOKS];
 	/* nr of counters userspace expects back */
-	unsigned i32 num_counters;
+	%i32 num_counters;
 	/* where the kernel will put the old counters */
 	struct ebt_counter *counters;
-	char *entries;
+	i8 *entries;
 };
 
 struct ebt_entries {
 	/* this field is always set to zero
 	 * See EBT_ENTRY_OR_ENTRIES.
 	 * Must be same size as ebt_entry.bitmask */
-	unsigned i32 distinguisher;
+	%i32 distinguisher;
 	/* the chain name */
-	char name[EBT_CHAIN_MAXNAMELEN];
+	i8 name[EBT_CHAIN_MAXNAMELEN];
 	/* counter offset for this chain */
-	unsigned i32 counter_offset;
+	%i32 counter_offset;
 	/* one standard (accept, drop, return) per hook */
 	i32 policy;
 	/* nr. of entries */
-	unsigned i32 nentries;
+	%i32 nentries;
 	/* entry list */
-	char data[0] __attribute__ ((aligned (__alignof__(struct ebt_replace))));
+	i8 data[0] __attribute__ ((aligned (__alignof__(struct ebt_replace))));
 };
 
 /* used for the bitmask of struct ebt_entry */
@@ -122,40 +122,40 @@ struct ebt_entries {
 struct ebt_entry_match {
 	union {
 		struct {
-			char name[EBT_EXTENSION_MAXNAMELEN];
+			i8 name[EBT_EXTENSION_MAXNAMELEN];
 			__u8 revision;
 		};
 		struct xt_match *match;
 	} u;
 	/* size of data */
-	unsigned i32 match_size;
-	unsigned i8 data[0] __attribute__ ((aligned (__alignof__(struct ebt_replace))));
+	%i32 match_size;
+	%i8 data[0] __attribute__ ((aligned (__alignof__(struct ebt_replace))));
 };
 
 struct ebt_entry_watcher {
 	union {
 		struct {
-			char name[EBT_EXTENSION_MAXNAMELEN];
+			i8 name[EBT_EXTENSION_MAXNAMELEN];
 			__u8 revision;
 		};
 		struct xt_target *watcher;
 	} u;
 	/* size of data */
-	unsigned i32 watcher_size;
-	unsigned i8 data[0] __attribute__ ((aligned (__alignof__(struct ebt_replace))));
+	%i32 watcher_size;
+	%i8 data[0] __attribute__ ((aligned (__alignof__(struct ebt_replace))));
 };
 
 struct ebt_entry_target {
 	union {
 		struct {
-			char name[EBT_EXTENSION_MAXNAMELEN];
+			i8 name[EBT_EXTENSION_MAXNAMELEN];
 			__u8 revision;
 		};
 		struct xt_target *target;
 	} u;
 	/* size of data */
-	unsigned i32 target_size;
-	unsigned i8 data[0] __attribute__ ((aligned (__alignof__(struct ebt_replace))));
+	%i32 target_size;
+	%i8 data[0] __attribute__ ((aligned (__alignof__(struct ebt_replace))));
 };
 
 #define EBT_STANDARD_TARGET "standard"
@@ -167,34 +167,34 @@ struct ebt_standard_target {
 /* one entry */
 struct ebt_entry {
 	/* this needs to be the first field */
-	unsigned i32 bitmask;
-	unsigned i32 invflags;
+	%i32 bitmask;
+	%i32 invflags;
 	__be16 ethproto;
 	/* the physical in-dev */
-	char in[IFNAMSIZ];
+	i8 in[IFNAMSIZ];
 	/* the logical in-dev */
-	char logical_in[IFNAMSIZ];
+	i8 logical_in[IFNAMSIZ];
 	/* the physical out-dev */
-	char out[IFNAMSIZ];
+	i8 out[IFNAMSIZ];
 	/* the logical out-dev */
-	char logical_out[IFNAMSIZ];
-	unsigned i8 sourcemac[ETH_ALEN];
-	unsigned i8 sourcemsk[ETH_ALEN];
-	unsigned i8 destmac[ETH_ALEN];
-	unsigned i8 destmsk[ETH_ALEN];
+	i8 logical_out[IFNAMSIZ];
+	%i8 sourcemac[ETH_ALEN];
+	%i8 sourcemsk[ETH_ALEN];
+	%i8 destmac[ETH_ALEN];
+	%i8 destmsk[ETH_ALEN];
 	/* sizeof ebt_entry + matches */
-	unsigned i32 watchers_offset;
+	%i32 watchers_offset;
 	/* sizeof ebt_entry + matches + watchers */
-	unsigned i32 target_offset;
+	%i32 target_offset;
 	/* sizeof ebt_entry + matches + watchers + target */
-	unsigned i32 next_offset;
-	unsigned i8 elems[0] __attribute__ ((aligned (__alignof__(struct ebt_replace))));
+	%i32 next_offset;
+	%i8 elems[0] __attribute__ ((aligned (__alignof__(struct ebt_replace))));
 };
 
 static __inline__ struct ebt_entry_target *
 ebt_get_target(struct ebt_entry *e)
 {
-	return (struct ebt_entry_target *)((char *)e + e->target_offset);
+	return (struct ebt_entry_target *)((i8 *)e + e->target_offset);
 }
 
 /* {g,s}etsockopt numbers */
@@ -215,7 +215,7 @@ ebt_get_target(struct ebt_entry *e)
  * fn returns 0 to continue iteration */
 #define EBT_MATCH_ITERATE(e, fn, args...)                   \
 ({                                                          \
-	unsigned i32 __i;                                   \
+	%i32 __i;                                   \
 	i32 __ret = 0;                                      \
 	struct ebt_entry_match *__match;                    \
 	                                                    \
@@ -238,7 +238,7 @@ ebt_get_target(struct ebt_entry *e)
 
 #define EBT_WATCHER_ITERATE(e, fn, args...)                 \
 ({                                                          \
-	unsigned i32 __i;                                   \
+	%i32 __i;                                   \
 	i32 __ret = 0;                                      \
 	struct ebt_entry_watcher *__watcher;                \
 	                                                    \
@@ -261,7 +261,7 @@ ebt_get_target(struct ebt_entry *e)
 
 #define EBT_ENTRY_ITERATE(entries, size, fn, args...)       \
 ({                                                          \
-	unsigned i32 __i;                                   \
+	%i32 __i;                                   \
 	i32 __ret = 0;                                      \
 	struct ebt_entry *__entry;                          \
 	                                                    \

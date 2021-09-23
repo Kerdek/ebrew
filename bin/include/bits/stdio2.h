@@ -23,15 +23,15 @@
 # error "Never include <bits/stdio2.h> directly; use <stdio.h> instead."
 #endif
 
-extern i32 __sprintf_chk (char *__restrict __s, i32 __flag, size_t __slen,
-			  const char *__restrict __format, ...) __THROW;
-extern i32 __vsprintf_chk (char *__restrict __s, i32 __flag, size_t __slen,
-			   const char *__restrict __format,
+extern i32 __sprintf_chk (i8 *__restrict __s, i32 __flag, size_t __slen,
+			  const i8 *__restrict __format, ...) __THROW;
+extern i32 __vsprintf_chk (i8 *__restrict __s, i32 __flag, size_t __slen,
+			   const i8 *__restrict __format,
 			   __gnuc_va_list __ap) __THROW;
 
 #ifdef __va_arg_pack
 __fortify_function i32
-__NTH (sprintf (char *__restrict __s, const char *__restrict __fmt, ...))
+__NTH (sprintf (i8 *__restrict __s, const i8 *__restrict __fmt, ...))
 {
   return __builtin___sprintf_chk (__s, __USE_FORTIFY_LEVEL - 1,
 				  __bos (__s), __fmt, __va_arg_pack ());
@@ -43,7 +43,7 @@ __NTH (sprintf (char *__restrict __s, const char *__restrict __fmt, ...))
 #endif
 
 __fortify_function i32
-__NTH (vsprintf (char *__restrict __s, const char *__restrict __fmt,
+__NTH (vsprintf (i8 *__restrict __s, const i8 *__restrict __fmt,
 		 __gnuc_va_list __ap))
 {
   return __builtin___vsprintf_chk (__s, __USE_FORTIFY_LEVEL - 1,
@@ -52,17 +52,17 @@ __NTH (vsprintf (char *__restrict __s, const char *__restrict __fmt,
 
 #if defined __USE_ISOC99 || defined __USE_UNIX98
 
-extern i32 __snprintf_chk (char *__restrict __s, size_t __n, i32 __flag,
-			   size_t __slen, const char *__restrict __format,
+extern i32 __snprintf_chk (i8 *__restrict __s, size_t __n, i32 __flag,
+			   size_t __slen, const i8 *__restrict __format,
 			   ...) __THROW;
-extern i32 __vsnprintf_chk (char *__restrict __s, size_t __n, i32 __flag,
-			    size_t __slen, const char *__restrict __format,
+extern i32 __vsnprintf_chk (i8 *__restrict __s, size_t __n, i32 __flag,
+			    size_t __slen, const i8 *__restrict __format,
 			    __gnuc_va_list __ap) __THROW;
 
 # ifdef __va_arg_pack
 __fortify_function i32
-__NTH (snprintf (char *__restrict __s, size_t __n,
-		 const char *__restrict __fmt, ...))
+__NTH (snprintf (i8 *__restrict __s, size_t __n,
+		 const i8 *__restrict __fmt, ...))
 {
   return __builtin___snprintf_chk (__s, __n, __USE_FORTIFY_LEVEL - 1,
 				   __bos (__s), __fmt, __va_arg_pack ());
@@ -74,8 +74,8 @@ __NTH (snprintf (char *__restrict __s, size_t __n,
 # endif
 
 __fortify_function i32
-__NTH (vsnprintf (char *__restrict __s, size_t __n,
-		  const char *__restrict __fmt, __gnuc_va_list __ap))
+__NTH (vsnprintf (i8 *__restrict __s, size_t __n,
+		  const i8 *__restrict __fmt, __gnuc_va_list __ap))
 {
   return __builtin___vsnprintf_chk (__s, __n, __USE_FORTIFY_LEVEL - 1,
 				    __bos (__s), __fmt, __ap);
@@ -86,23 +86,23 @@ __NTH (vsnprintf (char *__restrict __s, size_t __n,
 #if __USE_FORTIFY_LEVEL > 1
 
 extern i32 __fprintf_chk (FILE *__restrict __stream, i32 __flag,
-			  const char *__restrict __format, ...);
-extern i32 __printf_chk (i32 __flag, const char *__restrict __format, ...);
+			  const i8 *__restrict __format, ...);
+extern i32 __printf_chk (i32 __flag, const i8 *__restrict __format, ...);
 extern i32 __vfprintf_chk (FILE *__restrict __stream, i32 __flag,
-			   const char *__restrict __format, __gnuc_va_list __ap);
-extern i32 __vprintf_chk (i32 __flag, const char *__restrict __format,
+			   const i8 *__restrict __format, __gnuc_va_list __ap);
+extern i32 __vprintf_chk (i32 __flag, const i8 *__restrict __format,
 			  __gnuc_va_list __ap);
 
 # ifdef __va_arg_pack
 __fortify_function i32
-fprintf (FILE *__restrict __stream, const char *__restrict __fmt, ...)
+fprintf (FILE *__restrict __stream, const i8 *__restrict __fmt, ...)
 {
   return __fprintf_chk (__stream, __USE_FORTIFY_LEVEL - 1, __fmt,
 			__va_arg_pack ());
 }
 
 __fortify_function i32
-printf (const char *__restrict __fmt, ...)
+printf (const i8 *__restrict __fmt, ...)
 {
   return __printf_chk (__USE_FORTIFY_LEVEL - 1, __fmt, __va_arg_pack ());
 }
@@ -114,7 +114,7 @@ printf (const char *__restrict __fmt, ...)
 # endif
 
 __fortify_function i32
-vprintf (const char *__restrict __fmt, __gnuc_va_list __ap)
+vprintf (const i8 *__restrict __fmt, __gnuc_va_list __ap)
 {
 #ifdef __USE_EXTERN_INLINES
   return __vfprintf_chk (stdout, __USE_FORTIFY_LEVEL - 1, __fmt, __ap);
@@ -125,21 +125,21 @@ vprintf (const char *__restrict __fmt, __gnuc_va_list __ap)
 
 __fortify_function i32
 vfprintf (FILE *__restrict __stream,
-	  const char *__restrict __fmt, __gnuc_va_list __ap)
+	  const i8 *__restrict __fmt, __gnuc_va_list __ap)
 {
   return __vfprintf_chk (__stream, __USE_FORTIFY_LEVEL - 1, __fmt, __ap);
 }
 
 # ifdef __USE_XOPEN2K8
-extern i32 __dprintf_chk (i32 __fd, i32 __flag, const char *__restrict __fmt,
+extern i32 __dprintf_chk (i32 __fd, i32 __flag, const i8 *__restrict __fmt,
 			  ...) __attribute__ ((__format__ (__printf__, 3, 4)));
 extern i32 __vdprintf_chk (i32 __fd, i32 __flag,
-			   const char *__restrict __fmt, __gnuc_va_list __arg)
+			   const i8 *__restrict __fmt, __gnuc_va_list __arg)
      __attribute__ ((__format__ (__printf__, 3, 0)));
 
 #  ifdef __va_arg_pack
 __fortify_function i32
-dprintf (i32 __fd, const char *__restrict __fmt, ...)
+dprintf (i32 __fd, const i8 *__restrict __fmt, ...)
 {
   return __dprintf_chk (__fd, __USE_FORTIFY_LEVEL - 1, __fmt,
 			__va_arg_pack ());
@@ -150,7 +150,7 @@ dprintf (i32 __fd, const char *__restrict __fmt, ...)
 #  endif
 
 __fortify_function i32
-vdprintf (i32 __fd, const char *__restrict __fmt, __gnuc_va_list __ap)
+vdprintf (i32 __fd, const i8 *__restrict __fmt, __gnuc_va_list __ap)
 {
   return __vdprintf_chk (__fd, __USE_FORTIFY_LEVEL - 1, __fmt, __ap);
 }
@@ -158,32 +158,32 @@ vdprintf (i32 __fd, const char *__restrict __fmt, __gnuc_va_list __ap)
 
 # ifdef __USE_GNU
 
-extern i32 __asprintf_chk (char **__restrict __ptr, i32 __flag,
-			   const char *__restrict __fmt, ...)
+extern i32 __asprintf_chk (i8 **__restrict __ptr, i32 __flag,
+			   const i8 *__restrict __fmt, ...)
      __THROW __attribute__ ((__format__ (__printf__, 3, 4))) __wur;
-extern i32 __vasprintf_chk (char **__restrict __ptr, i32 __flag,
-			    const char *__restrict __fmt, __gnuc_va_list __arg)
+extern i32 __vasprintf_chk (i8 **__restrict __ptr, i32 __flag,
+			    const i8 *__restrict __fmt, __gnuc_va_list __arg)
      __THROW __attribute__ ((__format__ (__printf__, 3, 0))) __wur;
 extern i32 __obstack_printf_chk (struct obstack *__restrict __obstack,
-				 i32 __flag, const char *__restrict __format,
+				 i32 __flag, const i8 *__restrict __format,
 				 ...)
      __THROW __attribute__ ((__format__ (__printf__, 3, 4)));
 extern i32 __obstack_vprintf_chk (struct obstack *__restrict __obstack,
 				  i32 __flag,
-				  const char *__restrict __format,
+				  const i8 *__restrict __format,
 				  __gnuc_va_list __args)
      __THROW __attribute__ ((__format__ (__printf__, 3, 0)));
 
 #  ifdef __va_arg_pack
 __fortify_function i32
-__NTH (asprintf (char **__restrict __ptr, const char *__restrict __fmt, ...))
+__NTH (asprintf (i8 **__restrict __ptr, const i8 *__restrict __fmt, ...))
 {
   return __asprintf_chk (__ptr, __USE_FORTIFY_LEVEL - 1, __fmt,
 			 __va_arg_pack ());
 }
 
 __fortify_function i32
-__NTH (__asprintf (char **__restrict __ptr, const char *__restrict __fmt,
+__NTH (__asprintf (i8 **__restrict __ptr, const i8 *__restrict __fmt,
 		   ...))
 {
   return __asprintf_chk (__ptr, __USE_FORTIFY_LEVEL - 1, __fmt,
@@ -192,7 +192,7 @@ __NTH (__asprintf (char **__restrict __ptr, const char *__restrict __fmt,
 
 __fortify_function i32
 __NTH (obstack_printf (struct obstack *__restrict __obstack,
-		       const char *__restrict __fmt, ...))
+		       const i8 *__restrict __fmt, ...))
 {
   return __obstack_printf_chk (__obstack, __USE_FORTIFY_LEVEL - 1, __fmt,
 			       __va_arg_pack ());
@@ -207,7 +207,7 @@ __NTH (obstack_printf (struct obstack *__restrict __obstack,
 #  endif
 
 __fortify_function i32
-__NTH (vasprintf (char **__restrict __ptr, const char *__restrict __fmt,
+__NTH (vasprintf (i8 **__restrict __ptr, const i8 *__restrict __fmt,
 		  __gnuc_va_list __ap))
 {
   return __vasprintf_chk (__ptr, __USE_FORTIFY_LEVEL - 1, __fmt, __ap);
@@ -215,7 +215,7 @@ __NTH (vasprintf (char **__restrict __ptr, const char *__restrict __fmt,
 
 __fortify_function i32
 __NTH (obstack_vprintf (struct obstack *__restrict __obstack,
-			const char *__restrict __fmt, __gnuc_va_list __ap))
+			const i8 *__restrict __fmt, __gnuc_va_list __ap))
 {
   return __obstack_vprintf_chk (__obstack, __USE_FORTIFY_LEVEL - 1, __fmt,
 				__ap);
@@ -226,13 +226,13 @@ __NTH (obstack_vprintf (struct obstack *__restrict __obstack,
 #endif
 
 #if __GLIBC_USE (DEPRECATED_GETS)
-extern char *__gets_chk (char *__str, size_t) __wur;
-extern char *__REDIRECT (__gets_warn, (char *__str), gets)
+extern i8 *__gets_chk (i8 *__str, size_t) __wur;
+extern i8 *__REDIRECT (__gets_warn, (i8 *__str), gets)
      __wur __warnattr ("please use fgets or getline instead, gets can't "
 		       "specify buffer size");
 
-__fortify_function __wur char *
-gets (char *__str)
+__fortify_function __wur i8 *
+gets (i8 *__str)
 {
   if (__bos (__str) != (size_t) -1)
     return __gets_chk (__str, __bos (__str));
@@ -240,19 +240,19 @@ gets (char *__str)
 }
 #endif
 
-extern char *__fgets_chk (char *__restrict __s, size_t __size, i32 __n,
+extern i8 *__fgets_chk (i8 *__restrict __s, size_t __size, i32 __n,
 			  FILE *__restrict __stream) __wur;
-extern char *__REDIRECT (__fgets_alias,
-			 (char *__restrict __s, i32 __n,
+extern i8 *__REDIRECT (__fgets_alias,
+			 (i8 *__restrict __s, i32 __n,
 			  FILE *__restrict __stream), fgets) __wur;
-extern char *__REDIRECT (__fgets_chk_warn,
-			 (char *__restrict __s, size_t __size, i32 __n,
+extern i8 *__REDIRECT (__fgets_chk_warn,
+			 (i8 *__restrict __s, size_t __size, i32 __n,
 			  FILE *__restrict __stream), __fgets_chk)
      __wur __warnattr ("fgets called with bigger size than length "
 		       "of destination buffer");
 
-__fortify_function __wur char *
-fgets (char *__restrict __s, i32 __n, FILE *__restrict __stream)
+__fortify_function __wur i8 *
+fgets (i8 *__restrict __s, i32 __n, FILE *__restrict __stream)
 {
   if (__bos (__s) != (size_t) -1)
     {
@@ -298,19 +298,19 @@ fread (void *__restrict __ptr, size_t __size, size_t __n,
 }
 
 #ifdef __USE_GNU
-extern char *__fgets_unlocked_chk (char *__restrict __s, size_t __size,
+extern i8 *__fgets_unlocked_chk (i8 *__restrict __s, size_t __size,
 				   i32 __n, FILE *__restrict __stream) __wur;
-extern char *__REDIRECT (__fgets_unlocked_alias,
-			 (char *__restrict __s, i32 __n,
+extern i8 *__REDIRECT (__fgets_unlocked_alias,
+			 (i8 *__restrict __s, i32 __n,
 			  FILE *__restrict __stream), fgets_unlocked) __wur;
-extern char *__REDIRECT (__fgets_unlocked_chk_warn,
-			 (char *__restrict __s, size_t __size, i32 __n,
+extern i8 *__REDIRECT (__fgets_unlocked_chk_warn,
+			 (i8 *__restrict __s, size_t __size, i32 __n,
 			  FILE *__restrict __stream), __fgets_unlocked_chk)
      __wur __warnattr ("fgets_unlocked called with bigger size than length "
 		       "of destination buffer");
 
-__fortify_function __wur char *
-fgets_unlocked (char *__restrict __s, i32 __n, FILE *__restrict __stream)
+__fortify_function __wur i8 *
+fgets_unlocked (i8 *__restrict __s, i32 __n, FILE *__restrict __stream)
 {
   if (__bos (__s) != (size_t) -1)
     {
@@ -365,7 +365,7 @@ fread_unlocked (void *__restrict __ptr, size_t __size, size_t __n,
       && __size * __n <= 8)
     {
       size_t __cnt = __size * __n;
-      char *__cptr = (char *) __ptr;
+      i8 *__cptr = (i8 *) __ptr;
       if (__cnt == 0)
 	return 0;
 
@@ -376,7 +376,7 @@ fread_unlocked (void *__restrict __ptr, size_t __size, size_t __n,
 	    break;
 	  *__cptr++ = __c;
 	}
-      return (__cptr - (char *) __ptr) / __size;
+      return (__cptr - (i8 *) __ptr) / __size;
     }
 # endif
   return __fread_unlocked_alias (__ptr, __size, __n, __stream);

@@ -90,7 +90,7 @@ typedef union { __SOCKADDR_ALLTYPES
 struct mmsghdr
   {
     struct msghdr msg_hdr;	/* Actual message header.  */
-    unsigned i32 msg_len;	/* Number of received or sent bytes for the
+    %i32 msg_len;	/* Number of received or sent bytes for the
 				   entry.  */
   };
 #endif
@@ -180,7 +180,7 @@ extern ssize_t sendmsg (i32 __fd, const struct msghdr *__message,
    This function is a cancellation point and therefore not marked with
    __THROW.  */
 extern i32 sendmmsg (i32 __fd, struct mmsghdr *__vmessages,
-		     unsigned i32 __vlen, i32 __flags);
+		     %i32 __vlen, i32 __flags);
 #endif
 
 /* Receive a message as described by MESSAGE from socket FD.
@@ -197,7 +197,7 @@ extern ssize_t recvmsg (i32 __fd, struct msghdr *__message, i32 __flags);
    This function is a cancellation point and therefore not marked with
    __THROW.  */
 extern i32 recvmmsg (i32 __fd, struct mmsghdr *__vmessages,
-		     unsigned i32 __vlen, i32 __flags,
+		     %i32 __vlen, i32 __flags,
 		     struct timespec *__tmo);
 #endif
 

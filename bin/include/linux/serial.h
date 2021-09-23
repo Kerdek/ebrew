@@ -19,22 +19,22 @@
 struct serial_struct {
 	i32	type;
 	i32	line;
-	unsigned i32	port;
+	%i32	port;
 	i32	irq;
 	i32	flags;
 	i32	xmit_fifo_size;
 	i32	custom_divisor;
 	i32	baud_base;
-	unsigned i16	close_delay;
-	char	io_type;
-	char	reserved_char[1];
+	%i16	close_delay;
+	i8	io_type;
+	i8	reserved_char[1];
 	i32	hub6;
-	unsigned i16	closing_wait; /* time to wait before closing */
-	unsigned i16	closing_wait2; /* no longer used... */
-	unsigned i8	*iomem_base;
-	unsigned i16	iomem_reg_shift;
-	unsigned i32	port_high;
-	unsigned i64	iomap_base;	/* cookie passed into ioremap */
+	%i16	closing_wait; /* time to wait before closing */
+	%i16	closing_wait2; /* no longer used... */
+	%i8	*iomem_base;
+	%i16	iomem_reg_shift;
+	%i32	port_high;
+	%i64	iomap_base;	/* cookie passed into ioremap */
 };
 
 /*
@@ -84,13 +84,13 @@ struct serial_struct {
 struct serial_multiport_struct {
 	i32		irq;
 	i32		port1;
-	unsigned i8	mask1, match1;
+	%i8	mask1, match1;
 	i32		port2;
-	unsigned i8	mask2, match2;
+	%i8	mask2, match2;
 	i32		port3;
-	unsigned i8	mask3, match3;
+	%i8	mask3, match3;
 	i32		port4;
-	unsigned i8	mask4, match4;
+	%i8	mask4, match4;
 	i32		port_monitor;
 	i32	reserved[32];
 };

@@ -26,24 +26,24 @@
  */
  
 /* Load a i16 i32 from the following tables with little-endian formats */
-#define COFF_SHORT_L(ps) ((i16)(((unsigned i16)((unsigned i8)ps[1])<<8)|\
-				  ((unsigned i16)((unsigned i8)ps[0]))))
+#define COFF_SHORT_L(ps) ((i16)(((%i16)((%i8)ps[1])<<8)|\
+				  ((%i16)((%i8)ps[0]))))
 
 /* Load a i64 from the following tables with little-endian formats */
-#define COFF_LONG_L(ps) (((i64)(((unsigned i64)((unsigned i8)ps[3])<<24) |\
-				 ((unsigned i64)((unsigned i8)ps[2])<<16) |\
-				 ((unsigned i64)((unsigned i8)ps[1])<<8)  |\
-				 ((unsigned i64)((unsigned i8)ps[0])))))
+#define COFF_LONG_L(ps) (((i64)(((%i64)((%i8)ps[3])<<24) |\
+				 ((%i64)((%i8)ps[2])<<16) |\
+				 ((%i64)((%i8)ps[1])<<8)  |\
+				 ((%i64)((%i8)ps[0])))))
  
 /* Load a i16 i32 from the following tables with big-endian formats */
-#define COFF_SHORT_H(ps) ((i16)(((unsigned i16)((unsigned i8)ps[0])<<8)|\
-				  ((unsigned i16)((unsigned i8)ps[1]))))
+#define COFF_SHORT_H(ps) ((i16)(((%i16)((%i8)ps[0])<<8)|\
+				  ((%i16)((%i8)ps[1]))))
 
 /* Load a i64 from the following tables with big-endian formats */
-#define COFF_LONG_H(ps) (((i64)(((unsigned i64)((unsigned i8)ps[0])<<24) |\
-				 ((unsigned i64)((unsigned i8)ps[1])<<16) |\
-				 ((unsigned i64)((unsigned i8)ps[2])<<8)  |\
-				 ((unsigned i64)((unsigned i8)ps[3])))))
+#define COFF_LONG_H(ps) (((i64)(((%i64)((%i8)ps[0])<<24) |\
+				 ((%i64)((%i8)ps[1])<<16) |\
+				 ((%i64)((%i8)ps[2])<<8)  |\
+				 ((%i64)((%i8)ps[3])))))
 
 /* These may be overridden later by brain dead implementations which generate
    a big-endian header with little-endian data. In that case, generate a
@@ -58,13 +58,13 @@
 /********************** FILE HEADER **********************/
 
 struct COFF_filehdr {
-	char f_magic[2];	/* magic number			*/
-	char f_nscns[2];	/* number of sections		*/
-	char f_timdat[4];	/* time & date stamp		*/
-	char f_symptr[4];	/* file pointer to symtab	*/
-	char f_nsyms[4];	/* number of symtab entries	*/
-	char f_opthdr[2];	/* sizeof(optional hdr)		*/
-	char f_flags[2];	/* flags			*/
+	i8 f_magic[2];	/* magic number			*/
+	i8 f_nscns[2];	/* number of sections		*/
+	i8 f_timdat[4];	/* time & date stamp		*/
+	i8 f_symptr[4];	/* file pointer to symtab	*/
+	i8 f_nsyms[4];	/* number of symtab entries	*/
+	i8 f_opthdr[2];	/* sizeof(optional hdr)		*/
+	i8 f_flags[2];	/* flags			*/
 };
 
 /*
@@ -132,14 +132,14 @@ struct COFF_filehdr {
 
 typedef struct 
 {
-  char 	magic[2];		/* type of file				 */
-  char	vstamp[2];		/* version stamp			 */
-  char	tsize[4];		/* text size in bytes, padded to FW bdry */
-  char	dsize[4];		/* initialized   data "   "		 */
-  char	bsize[4];		/* uninitialized data "   "		 */
-  char	entry[4];		/* entry pt.				 */
-  char 	text_start[4];		/* base of text used for this file       */
-  char 	data_start[4];		/* base of data used for this file       */
+  i8 	magic[2];		/* type of file				 */
+  i8	vstamp[2];		/* version stamp			 */
+  i8	tsize[4];		/* text size in bytes, padded to FW bdry */
+  i8	dsize[4];		/* initialized   data "   "		 */
+  i8	bsize[4];		/* uninitialized data "   "		 */
+  i8	entry[4];		/* entry pt.				 */
+  i8 	text_start[4];		/* base of text used for this file       */
+  i8 	data_start[4];		/* base of data used for this file       */
 }
 COFF_AOUTHDR;
 
@@ -155,16 +155,16 @@ COFF_AOUTHDR;
 /********************** SECTION HEADER **********************/
 
 struct COFF_scnhdr {
-  char		s_name[8];	/* section name			    */
-  char		s_paddr[4];	/* physical address, aliased s_nlib */
-  char		s_vaddr[4];	/* virtual address		    */
-  char		s_size[4];	/* section size			    */
-  char		s_scnptr[4];	/* file ptr to raw data for section */
-  char		s_relptr[4];	/* file ptr to relocation	    */
-  char		s_lnnoptr[4];	/* file ptr to line numbers	    */
-  char		s_nreloc[2];	/* number of relocation entries	    */
-  char		s_nlnno[2];	/* number of line number entries    */
-  char		s_flags[4];	/* flags			    */
+  i8		s_name[8];	/* section name			    */
+  i8		s_paddr[4];	/* physical address, aliased s_nlib */
+  i8		s_vaddr[4];	/* virtual address		    */
+  i8		s_size[4];	/* section size			    */
+  i8		s_scnptr[4];	/* file ptr to raw data for section */
+  i8		s_relptr[4];	/* file ptr to relocation	    */
+  i8		s_lnnoptr[4];	/* file ptr to line numbers	    */
+  i8		s_nreloc[2];	/* number of relocation entries	    */
+  i8		s_nlnno[2];	/* number of line number entries    */
+  i8		s_flags[4];	/* flags			    */
 };
 
 #define	COFF_SCNHDR	struct COFF_scnhdr
@@ -204,8 +204,8 @@ struct COFF_scnhdr {
  */
 
 struct COFF_slib {
-  char		sl_entsz[4];	/* Size of this entry               */
-  char		sl_pathndx[4];	/* size of the header field         */
+  i8		sl_entsz[4];	/* Size of this entry               */
+  i8		sl_pathndx[4];	/* size of the header field         */
 };
 
 #define	COFF_SLIBHD	struct COFF_slib
@@ -221,10 +221,10 @@ struct COFF_slib {
 
 struct COFF_lineno {
   union {
-    char l_symndx[4];	/* function name symbol index, iff l_lnno == 0*/
-    char l_paddr[4];	/* (physical) address of line number	*/
+    i8 l_symndx[4];	/* function name symbol index, iff l_lnno == 0*/
+    i8 l_paddr[4];	/* (physical) address of line number	*/
   } l_addr;
-  char l_lnno[2];	/* line number		*/
+  i8 l_lnno[2];	/* line number		*/
 };
 
 #define	COFF_LINENO	struct COFF_lineno
@@ -243,18 +243,18 @@ struct COFF_lineno {
 struct COFF_syment 
 {
   union {
-    char e_name[E_SYMNMLEN];    /* Symbol name (first 8 characters) */
+    i8 e_name[E_SYMNMLEN];    /* Symbol name (first 8 characters) */
     struct {
-      char e_zeroes[4];         /* Leading zeros */
-      char e_offset[4];         /* Offset if this is a header section */
+      i8 e_zeroes[4];         /* Leading zeros */
+      i8 e_offset[4];         /* Offset if this is a header section */
     } e;
   } e;
 
-  char e_value[4];              /* Value (address) of the segment */
-  char e_scnum[2];              /* Section number */
-  char e_type[2];               /* Type of section */
-  char e_sclass[1];             /* Loader class */
-  char e_numaux[1];             /* Number of auxiliary entries which follow */
+  i8 e_value[4];              /* Value (address) of the segment */
+  i8 e_scnum[2];              /* Section number */
+  i8 e_type[2];               /* Type of section */
+  i8 e_sclass[1];             /* Loader class */
+  i8 e_numaux[1];             /* Number of auxiliary entries which follow */
 };
 
 #define COFF_N_BTMASK	(0xf)   /* Mask for important class bits */
@@ -273,27 +273,27 @@ union COFF_auxent {
  */
 
   struct {
-    char x_tagndx[4];	        /* str, un, or enum tag indx */
+    i8 x_tagndx[4];	        /* str, un, or enum tag indx */
     union {
       struct {
-	char  x_lnno[2];        /* declaration line number */
-	char  x_size[2];        /* str/union/array size */
+	i8  x_lnno[2];        /* declaration line number */
+	i8  x_size[2];        /* str/union/array size */
       } x_lnsz;
-      char x_fsize[4];	        /* size of function */
+      i8 x_fsize[4];	        /* size of function */
     } x_misc;
 
     union {
       struct {		        /* if ISFCN, tag, or .bb */
-	char x_lnnoptr[4];	/* ptr to fcn line # */
-	char x_endndx[4];	/* entry ndx past block end */
+	i8 x_lnnoptr[4];	/* ptr to fcn line # */
+	i8 x_endndx[4];	/* entry ndx past block end */
       } x_fcn;
 
       struct {		        /* if ISARY, up to 4 dimen. */
-	char x_dimen[E_DIMNUM][2];
+	i8 x_dimen[E_DIMNUM][2];
       } x_ary;
     } x_fcnary;
 
-    char x_tvndx[2];	/* tv index */
+    i8 x_tvndx[2];	/* tv index */
   } x_sym;
 
 /*
@@ -301,10 +301,10 @@ union COFF_auxent {
  */
 
   union {
-    char x_fname[E_FILNMLEN];
+    i8 x_fname[E_FILNMLEN];
     struct {
-      char x_zeroes[4];
-      char x_offset[4];
+      i8 x_zeroes[4];
+      i8 x_offset[4];
     } x_n;
   } x_file;
 
@@ -313,9 +313,9 @@ union COFF_auxent {
  */
 
   struct {
-    char x_scnlen[4];	/* section length */
-    char x_nreloc[2];	/* # relocation entries */
-    char x_nlinno[2];	/* # line numbers */
+    i8 x_scnlen[4];	/* section length */
+    i8 x_nreloc[2];	/* # relocation entries */
+    i8 x_nlinno[2];	/* # line numbers */
   } x_scn;
 
 /*
@@ -323,9 +323,9 @@ union COFF_auxent {
  */
   
   struct {
-    char x_tvfill[4];	/* tv fill value */
-    char x_tvlen[2];	/* length of .tv */
-    char x_tvran[2][2];	/* tv range */
+    i8 x_tvfill[4];	/* tv fill value */
+    i8 x_tvlen[2];	/* length of .tv */
+    i8 x_tvran[2][2];	/* tv range */
   } x_tv;		/* info about .tv section (in auxent of symbol .tv)) */
 };
 
@@ -339,9 +339,9 @@ union COFF_auxent {
 /********************** RELOCATION DIRECTIVES **********************/
 
 struct COFF_reloc {
-  char r_vaddr[4];        /* Virtual address of item    */
-  char r_symndx[4];       /* Symbol index in the symtab */
-  char r_type[2];         /* Relocation type            */
+  i8 r_vaddr[4];        /* Virtual address of item    */
+  i8 r_symndx[4];       /* Symbol index in the symtab */
+  i8 r_type[2];         /* Relocation type            */
 };
 
 #define COFF_RELOC struct COFF_reloc

@@ -17,9 +17,9 @@
 #define	SIOCDEVPLIP	SIOCDEVPRIVATE
 
 struct plipconf {
-	unsigned i16 pcmd;
-	unsigned i64  nibble;
-	unsigned i64  trigger;
+	%i16 pcmd;
+	%i64  nibble;
+	%i64  trigger;
 };
 
 #define PLIP_GET_TIMEOUT	0x1

@@ -42,10 +42,10 @@ struct hdlcdrv_channel_state {
  	i32 ptt;
  	i32 dcd;
  	i32 ptt_keyed;
- 	unsigned i64 tx_packets;
- 	unsigned i64 tx_errors;
- 	unsigned i64 rx_packets;
- 	unsigned i64 rx_errors;
+ 	%i64 tx_packets;
+ 	%i64 tx_errors;
+ 	%i64 rx_packets;
+ 	%i64 rx_errors;
 };
 
 struct hdlcdrv_ioctl {
@@ -55,10 +55,10 @@ struct hdlcdrv_ioctl {
 		struct hdlcdrv_channel_params cp;
 		struct hdlcdrv_channel_state cs;
 		struct hdlcdrv_old_channel_state ocs;
-		unsigned i32 calibrate;
-		unsigned i8 bits;
-		char modename[128];
-		char drivername[32];
+		%i32 calibrate;
+		%i8 bits;
+		i8 modename[128];
+		i8 drivername[32];
 	} data;
 };
 

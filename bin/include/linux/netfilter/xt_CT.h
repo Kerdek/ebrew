@@ -21,7 +21,7 @@ struct xt_ct_target_info {
 	__u16 zone;
 	__u32 ct_events;
 	__u32 exp_events;
-	char helper[16];
+	i8 helper[16];
 
 	/* Used internally by the kernel */
 	struct nf_conn	*ct __attribute__((aligned(8)));
@@ -32,8 +32,8 @@ struct xt_ct_target_info_v1 {
 	__u16 zone;
 	__u32 ct_events;
 	__u32 exp_events;
-	char helper[16];
-	char timeout[32];
+	i8 helper[16];
+	i8 timeout[32];
 
 	/* Used internally by the kernel */
 	struct nf_conn	*ct __attribute__((aligned(8)));

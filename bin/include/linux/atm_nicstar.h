@@ -31,9 +31,9 @@
 
 typedef struct buf_nr
 {
-   unsigned min;
-   unsigned init;
-   unsigned max;
+   % min;
+   % init;
+   % max;
 }buf_nr;
 
 

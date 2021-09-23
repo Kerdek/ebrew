@@ -33,15 +33,15 @@ __BEGIN_DECLS
   specific encoding system used.
 */
 
-typedef unsigned i16 comp_t;
+typedef %i16 comp_t;
 
 struct acct
 {
-  char ac_flag;			/* Flags.  */
-  unsigned i16 ac_uid;		/* Real user ID.  */
-  unsigned i16 ac_gid;		/* Real group ID.  */
-  unsigned i16 ac_tty;		/* Controlling terminal.  */
-  unsigned i32 ac_btime;		/* Beginning time.  */
+  i8 ac_flag;			/* Flags.  */
+  %i16 ac_uid;		/* Real user ID.  */
+  %i16 ac_gid;		/* Real group ID.  */
+  %i16 ac_tty;		/* Controlling terminal.  */
+  %i32 ac_btime;		/* Beginning time.  */
   comp_t ac_utime;		/* User time.  */
   comp_t ac_stime;		/* System time.  */
   comp_t ac_etime;		/* Elapsed time.  */
@@ -51,23 +51,23 @@ struct acct
   comp_t ac_minflt;		/* Minor pagefaults.  */
   comp_t ac_majflt;		/* Major pagefaults.  */
   comp_t ac_swaps;		/* Number of swaps.  */
-  unsigned i32 ac_exitcode;		/* Process exitcode.  */
-  char ac_comm[ACCT_COMM+1];	/* Command name.  */
-  char ac_pad[10];		/* Padding bytes.  */
+  %i32 ac_exitcode;		/* Process exitcode.  */
+  i8 ac_comm[ACCT_COMM+1];	/* Command name.  */
+  i8 ac_pad[10];		/* Padding bytes.  */
 };
 
 
 struct acct_v3
 {
-  char ac_flag;			/* Flags */
-  char ac_version;		/* Always set to ACCT_VERSION */
-  unsigned i16 ac_tty;		/* Control Terminal */
-  unsigned i32 ac_exitcode;		/* Exitcode */
-  unsigned i32 ac_uid;		/* Real User ID */
-  unsigned i32 ac_gid;		/* Real Group ID */
-  unsigned i32 ac_pid;		/* Process ID */
-  unsigned i32 ac_ppid;		/* Parent Process ID */
-  unsigned i32 ac_btime;		/* Process Creation Time */
+  i8 ac_flag;			/* Flags */
+  i8 ac_version;		/* Always set to ACCT_VERSION */
+  %i16 ac_tty;		/* Control Terminal */
+  %i32 ac_exitcode;		/* Exitcode */
+  %i32 ac_uid;		/* Real User ID */
+  %i32 ac_gid;		/* Real Group ID */
+  %i32 ac_pid;		/* Process ID */
+  %i32 ac_ppid;		/* Parent Process ID */
+  %i32 ac_btime;		/* Process Creation Time */
   f32 ac_etime;		/* Elapsed Time */
   comp_t ac_utime;		/* User Time */
   comp_t ac_stime;		/* System Time */
@@ -77,7 +77,7 @@ struct acct_v3
   comp_t ac_minflt;		/* Minor Pagefaults */
   comp_t ac_majflt;		/* Major Pagefaults */
   comp_t ac_swaps;		/* Number of Swaps */
-  char ac_comm[ACCT_COMM];	/* Command Name */
+  i8 ac_comm[ACCT_COMM];	/* Command Name */
 };
 
 
@@ -99,7 +99,7 @@ enum
 
 
 /* Switch process accounting on and off.  */
-extern i32 acct (const char *__filename) __THROW;
+extern i32 acct (const i8 *__filename) __THROW;
 
 __END_DECLS
 

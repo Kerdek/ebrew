@@ -49,7 +49,7 @@ __BEGIN_DECLS
 
 struct option
 {
-  const char *name;
+  const i8 *name;
   /* has_arg can't be an enum because some compilers complain about
      type mismatches in all the code that assumes it is an i32.  */
   i32 has_arg;
@@ -63,12 +63,12 @@ struct option
 #define required_argument	1
 #define optional_argument	2
 
-extern i32 getopt_long (i32 ___argc, char *__getopt_argv_const *___argv,
-			const char *__shortopts,
+extern i32 getopt_long (i32 ___argc, i8 *__getopt_argv_const *___argv,
+			const i8 *__shortopts,
 		        const struct option *__longopts, i32 *__longind)
        __THROW __nonnull ((2, 3));
-extern i32 getopt_long_only (i32 ___argc, char *__getopt_argv_const *___argv,
-			     const char *__shortopts,
+extern i32 getopt_long_only (i32 ___argc, i8 *__getopt_argv_const *___argv,
+			     const i8 *__shortopts,
 		             const struct option *__longopts, i32 *__longind)
        __THROW __nonnull ((2, 3));
 

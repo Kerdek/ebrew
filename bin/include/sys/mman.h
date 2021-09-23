@@ -120,7 +120,7 @@ extern i32 munlockall (void) __THROW;
    The status is returned in a vector of bytes.  The least significant
    bit of each byte is 1 if the referenced page is in memory, otherwise
    it is zero.  */
-extern i32 mincore (void *__start, size_t __len, unsigned i8 *__vec)
+extern i32 mincore (void *__start, size_t __len, %i8 *__vec)
      __THROW;
 #endif
 
@@ -141,10 +141,10 @@ extern i32 remap_file_pages (void *__start, size_t __size, i32 __prot,
 
 
 /* Open shared memory segment.  */
-extern i32 shm_open (const char *__name, i32 __oflag, mode_t __mode);
+extern i32 shm_open (const i8 *__name, i32 __oflag, mode_t __mode);
 
 /* Remove shared memory segment.  */
-extern i32 shm_unlink (const char *__name);
+extern i32 shm_unlink (const i8 *__name);
 
 __END_DECLS
 

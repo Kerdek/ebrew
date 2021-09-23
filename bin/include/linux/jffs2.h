@@ -30,7 +30,7 @@
 /* Summary node MAGIC marker */
 #define JFFS2_SUM_MAGIC	0x02851885
 
-/* We only allow a single char for length, and 0xFF is empty flash so
+/* We only allow a single i8 for length, and 0xFF is empty flash so
    we don't want it confused with a real length. Hence max 254.
 */
 #define JFFS2_MAX_NAME_LEN 254

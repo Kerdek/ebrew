@@ -34,7 +34,7 @@ struct atmsvc_msg {
 	struct sockaddr_atmsvc local;	/* local SVC address */
 	struct atm_qos qos;		/* QOS parameters */
 	struct atm_sap sap;		/* SAP */
-	unsigned i32 session;		/* for p2pm */
+	%i32 session;		/* for p2pm */
 	struct sockaddr_atmsvc svc;	/* SVC address */
 } __ATM_API_ALIGN;
 

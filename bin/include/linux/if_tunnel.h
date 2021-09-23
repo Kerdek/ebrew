@@ -46,7 +46,7 @@
 #define GRE_PPTP_KEY_MASK	__cpu_to_be32(0xffff)
 
 struct ip_tunnel_parm {
-	char			name[IFNAMSIZ];
+	i8			name[IFNAMSIZ];
 	i32			link;
 	__be16			i_flags;
 	__be16			o_flags;

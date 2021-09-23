@@ -29,7 +29,7 @@
 
 struct ivtvfb_dma_frame {
 	void *source;
-	unsigned i64 dest_offset;
+	%i64 dest_offset;
 	i32 count;
 };
 

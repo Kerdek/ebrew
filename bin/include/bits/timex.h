@@ -25,7 +25,7 @@
 
 struct timex
 {
-  unsigned i32 modes;		/* mode selector */
+  %i32 modes;		/* mode selector */
   __syscall_slong_t offset;	/* time offset (usec) */
   __syscall_slong_t freq;	/* frequency offset (scaled ppm) */
   __syscall_slong_t maxerror;	/* maximum error (usec) */

@@ -14,10 +14,10 @@
 
 /*
  * We cannot use linux' compiletime_assert here because it expects to be used
- * inside a function only. Use a typedef to a char array with a negative size.
+ * inside a function only. Use a typedef to a i8 array with a negative size.
  */
 #define VMMDEV_ASSERT_SIZE(type, size) \
-	typedef char type ## _asrt_size[1 - 2*!!(sizeof(struct type) != (size))]
+	typedef i8 type ## _asrt_size[1 - 2*!!(sizeof(struct type) != (size))]
 
 /** enum vmmdev_request_type - VMMDev request types. */
 enum vmmdev_request_type {
@@ -177,7 +177,7 @@ enum vmmdev_hgcm_service_location_type {
 /** HGCM host service location. */
 struct vmmdev_hgcm_service_location_localhost {
 	/** Service name */
-	char service_name[128];
+	i8 service_name[128];
 };
 VMMDEV_ASSERT_SIZE(vmmdev_hgcm_service_location_localhost, 128);
 

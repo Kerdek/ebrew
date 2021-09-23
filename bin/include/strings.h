@@ -45,27 +45,27 @@ export extern bzero (__s@void __n size_t) __THROW __nonnull ((1));
 # ifdef __CORRECT_ISO_CPP_STRINGS_H_PROTO
 export extern "C++"
 {
-export extern index (__s@char __c i32)@char 
+export extern index (__s@i8 __c i32)@i8 
      __THROW __asm ("index") __attribute_pure__ __nonnull ((1));
-export extern index (__s@const char __c i32)@const char
+export extern index (__s@const i8 __c i32)@const i8
      __THROW __asm ("index") __attribute_pure__ __nonnull ((1));
 
 #  if defined __OPTIMIZE__
 __extern_always_inline 
-index (__s@char __c i32)@char __THROW
+index (__s@i8 __c i32)@i8 __THROW
 {
   return __builtin_index (__s, __c);
 }
 
 __extern_always_inline
-index (__s const char __c i32)@const char __THROW
+index (__s const i8 __c i32)@const i8 __THROW
 {
   return __builtin_index (__s, __c);
 }
 #  endif
 }
 # else
-export extern index (__s@const char __c i32)@char
+export extern index (__s@const i8 __c i32)@i8
      __THROW __attribute_pure__ __nonnull ((1));
 # endif
 
@@ -73,27 +73,27 @@ export extern index (__s@const char __c i32)@char
 # ifdef __CORRECT_ISO_CPP_STRINGS_H_PROTO
 export extern "C++"
 {
-export extern rindex (__s@char __c i32)@char
+export extern rindex (__s@i8 __c i32)@i8
      __THROW __asm ("rindex") __attribute_pure__ __nonnull ((1));
-export extern rindex (__s@const char __c i32)@const char
+export extern rindex (__s@const i8 __c i32)@const i8
      __THROW __asm ("rindex") __attribute_pure__ __nonnull ((1));
 
 #  if defined __OPTIMIZE__
 __extern_always_inline
-rindex (__s@char __c i32)@char __THROW
+rindex (__s@i8 __c i32)@i8 __THROW
 {
   return __builtin_rindex (__s, __c);
 }
 
-__extern_always_inline const char *
-rindex (__s@const char __c i32) __THROW
+__extern_always_inline const i8 *
+rindex (__s@const i8 __c i32) __THROW
 {
   return __builtin_rindex (__s, __c);
 }
 #  endif
 }
 # else
-export extern rindex (__s@const char __c i32)@char
+export extern rindex (__s@const i8 __c i32)@i8
      __THROW __attribute_pure__ __nonnull ((1));
 # endif
 #endif
@@ -113,11 +113,11 @@ __extension__ export extern i32 ffsll (i64 __ll)
 # endif
 
 /* Compare S1 and S2, ignoring case.  */
-export extern strcasecmp (__s1@const char __s2@const char)i32
+export extern strcasecmp (__s1@const i8 __s2@const i8)i32
      __THROW __attribute_pure__ __nonnull ((1, 2));
 
 /* Compare no more than N chars of S1 and S2, ignoring case.  */
-export extern strncasecmp (__s1@const char __s2@const char __n size_t)i32
+export extern strncasecmp (__s1@const i8 __s2@const i8 __n size_t)i32
      __THROW __attribute_pure__ __nonnull ((1, 2));
 
 #ifdef	__USE_XOPEN2K8
@@ -125,12 +125,12 @@ export extern strncasecmp (__s1@const char __s2@const char __n size_t)i32
 # include <bits/types/locale_t.h>
 
 /* Compare S1 and S2, ignoring case, using collation rules from LOC.  */
-export extern strcasecmp_l (__s1@const char __s2@const char __loc locale_t)i32
+export extern strcasecmp_l (__s1@const i8 __s2@const i8 __loc locale_t)i32
      __THROW __attribute_pure__ __nonnull ((1, 2, 3));
 
 /* Compare no more than N chars of S1 and S2, ignoring case, using
    collation rules from LOC.  */
-export extern strncasecmp_l (__s1@const char __s2@const char
+export extern strncasecmp_l (__s1@const i8 __s2@const i8
 			  __n size_t __loc locale_t)i32
      __THROW __attribute_pure__ __nonnull ((1, 2, 4));
 #endif

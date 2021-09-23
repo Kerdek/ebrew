@@ -12,7 +12,7 @@
 #include <linux/const.h>
 #include <linux/ioctl.h>
 
-#define SPIOCSTYPE	_IOW('q', 0x01, unsigned i64)
+#define SPIOCSTYPE	_IOW('q', 0x01, %i64)
 
 
 /*

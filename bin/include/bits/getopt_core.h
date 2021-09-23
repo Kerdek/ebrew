@@ -33,7 +33,7 @@ __BEGIN_DECLS
    Also, when 'ordering' is RETURN_IN_ORDER,
    each non-option ARGV-element is returned here.  */
 
-export extern optarg@char;
+export extern optarg@i8;
 
 /* Index in ARGV of the next element to be scanned.
    This is used for communication to and from the caller
@@ -84,11 +84,11 @@ export extern optopt i32;
    the environment, then do not permute arguments.
 
    For standards compliance, the 'argv' argument has the type
-   char *const *, but this is inaccurate; if argument permutation is
+   i8 *const *, but this is inaccurate; if argument permutation is
    enabled, the argv array (not the strings it points to) must be
    writable.  */
 
-export extern getopt (___argc i32 ___argv@const@char __shortopts@const char)i32
+export extern getopt (___argc i32 ___argv@const@i8 __shortopts@const i8)i32
        __THROW __nonnull ((2, 3));
 
 __END_DECLS

@@ -61,17 +61,17 @@
  *	@datasize - configuration data size
  */
 struct cycx_fw_info {
-	unsigned i16	codeid;
-	unsigned i16	version;
-	unsigned i16	adapter[CFM_MAX_CYCX];
-	unsigned i64	memsize;
-	unsigned i16	reserved[2];
-	unsigned i16	startoffs;
-	unsigned i16	winoffs;
-	unsigned i16	codeoffs;
-	unsigned i64	codesize;
-	unsigned i16	dataoffs;
-	unsigned i64	datasize;
+	%i16	codeid;
+	%i16	version;
+	%i16	adapter[CFM_MAX_CYCX];
+	%i64	memsize;
+	%i16	reserved[2];
+	%i16	startoffs;
+	%i16	winoffs;
+	%i16	codeoffs;
+	%i64	codesize;
+	%i16	dataoffs;
+	%i64	datasize;
 };
 
 /**
@@ -85,18 +85,18 @@ struct cycx_fw_info {
  *	@image - code image (variable size)
  */
 struct cycx_firmware {
-	char		    signature[80];
-	unsigned i16	    version;
-	unsigned i16	    checksum;
-	unsigned i16	    reserved[6];
-	char		    descr[CFM_DESCR_LEN];
+	i8		    signature[80];
+	%i16	    version;
+	%i16	    checksum;
+	%i16	    reserved[6];
+	i8		    descr[CFM_DESCR_LEN];
 	struct cycx_fw_info info;
-	unsigned i8	    image[0];
+	%i8	    image[0];
 };
 
 struct cycx_fw_header {
-	unsigned i64  reset_size;
-	unsigned i64  data_size;
-	unsigned i64  code_size;
+	%i64  reset_size;
+	%i64  data_size;
+	%i64  code_size;
 };
 #endif	/* _CYCX_CFM_H */

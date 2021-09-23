@@ -38,20 +38,20 @@
 #define	_SYS_TTYCHARS_H 1
 
 struct ttychars {
-	char	tc_erase;	/* erase last character */
-	char	tc_kill;	/* erase entire line */
-	char	tc_intrc;	/* interrupt */
-	char	tc_quitc;	/* quit */
-	char	tc_startc;	/* start output */
-	char	tc_stopc;	/* stop output */
-	char	tc_eofc;	/* end-of-file */
-	char	tc_brkc;	/* input delimiter (like nl) */
-	char	tc_suspc;	/* stop process signal */
-	char	tc_dsuspc;	/* delayed stop process signal */
-	char	tc_rprntc;	/* reprint line */
-	char	tc_flushc;	/* flush output (toggles) */
-	char	tc_werasc;	/* word erase */
-	char	tc_lnextc;	/* literal next character */
+	i8	tc_erase;	/* erase last character */
+	i8	tc_kill;	/* erase entire line */
+	i8	tc_intrc;	/* interrupt */
+	i8	tc_quitc;	/* quit */
+	i8	tc_startc;	/* start output */
+	i8	tc_stopc;	/* stop output */
+	i8	tc_eofc;	/* end-of-file */
+	i8	tc_brkc;	/* input delimiter (like nl) */
+	i8	tc_suspc;	/* stop process signal */
+	i8	tc_dsuspc;	/* delayed stop process signal */
+	i8	tc_rprntc;	/* reprint line */
+	i8	tc_flushc;	/* flush output (toggles) */
+	i8	tc_werasc;	/* word erase */
+	i8	tc_lnextc;	/* literal next character */
 };
 
 #ifdef __USE_OLD_TTY

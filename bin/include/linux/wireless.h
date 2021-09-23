@@ -552,7 +552,7 @@
 #define IW_SCAN_CAPA_TYPE		0x20
 #define IW_SCAN_CAPA_TIME		0x40
 
-/* Max number of char in custom event - use multiple of them if needed */
+/* Max number of i8 in custom event - use multiple of them if needed */
 #define IW_CUSTOM_MAX		256	/* In bytes */
 
 /* Generic information element */
@@ -897,7 +897,7 @@ struct iw_statistics {
  */
 union iwreq_data {
 	/* Config - generic */
-	char		name[IFNAMSIZ];
+	i8		name[IFNAMSIZ];
 	/* Name : used to verify the presence of  wireless extensions.
 	 * Name of the protocol/provider... */
 
@@ -935,7 +935,7 @@ union iwreq_data {
 struct iwreq {
 	union
 	{
-		char	ifrn_name[IFNAMSIZ];	/* if name, e.g. "eth0" */
+		i8	ifrn_name[IFNAMSIZ];	/* if name, e.g. "eth0" */
 	} ifr_ifrn;
 
 	/* Data part (defined just above) */
@@ -1060,7 +1060,7 @@ struct iw_priv_args {
 	__u32		cmd;		/* Number of the ioctl to issue */
 	__u16		set_args;	/* Type and number of args */
 	__u16		get_args;	/* Type and number of args */
-	char		name[IFNAMSIZ];	/* Name of the extension */
+	i8		name[IFNAMSIZ];	/* Name of the extension */
 };
 
 /* ----------------------- WIRELESS EVENTS ----------------------- */

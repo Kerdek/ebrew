@@ -153,8 +153,8 @@
 #define FB_CAP_FOURCC		1	/* Device supports FOURCC-based formats */
 
 struct fb_fix_screeninfo {
-	char id[16];			/* identification string eg "TT Builtin" */
-	unsigned i64 smem_start;	/* Start of frame buffer mem */
+	i8 id[16];			/* identification string eg "TT Builtin" */
+	% i64 smem_start;	/* Start of frame buffer mem */
 					/* (physical address) */
 	__u32 smem_len;			/* Length of frame buffer mem */
 	__u32 type;			/* see FB_TYPE_*		*/
@@ -164,7 +164,7 @@ struct fb_fix_screeninfo {
 	__u16 ypanstep;			/* zero if no hardware panning  */
 	__u16 ywrapstep;		/* zero if no hardware ywrap    */
 	__u32 line_length;		/* length of a line in bytes    */
-	unsigned i64 mmio_start;	/* Start of Memory Mapped I/O   */
+	% i64 mmio_start;	/* Start of Memory Mapped I/O   */
 					/* (physical address) */
 	__u32 mmio_len;			/* Length of Memory Mapped I/O  */
 	__u32 accel;			/* Indicate to driver which	*/
@@ -363,7 +363,7 @@ struct fb_image {
 	__u32 fg_color;		/* Only used when a mono bitmap */
 	__u32 bg_color;
 	__u8  depth;		/* Depth of the image */
-	const char *data;	/* Pointer to image data */
+	const i8 *data;	/* Pointer to image data */
 	struct fb_cmap cmap;	/* color map info */
 };
 
@@ -387,7 +387,7 @@ struct fb_cursor {
 	__u16 set;		/* what to set */
 	__u16 enable;		/* cursor on/off */
 	__u16 rop;		/* bitop operation */
-	const char *mask;	/* cursor mask bits */
+	const i8 *mask;	/* cursor mask bits */
 	struct fbcurpos hot;	/* cursor hot spot */
 	struct fb_image	image;	/* Cursor image */
 };

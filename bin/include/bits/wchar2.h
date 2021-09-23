@@ -429,15 +429,15 @@ fgetws_unlocked (wchar_t *__restrict __s, i32 __n, __FILE *__restrict __stream)
 #endif
 
 
-extern size_t __wcrtomb_chk (char *__restrict __s, wchar_t __wchar,
+extern size_t __wcrtomb_chk (i8 *__restrict __s, wchar_t __wchar,
 			     mbstate_t *__restrict __p,
 			     size_t __buflen) __THROW __wur;
 extern size_t __REDIRECT_NTH (__wcrtomb_alias,
-			      (char *__restrict __s, wchar_t __wchar,
+			      (i8 *__restrict __s, wchar_t __wchar,
 			       mbstate_t *__restrict __ps), wcrtomb) __wur;
 
 __fortify_function __wur size_t
-__NTH (wcrtomb (char *__restrict __s, wchar_t __wchar,
+__NTH (wcrtomb (i8 *__restrict __s, wchar_t __wchar,
 		mbstate_t *__restrict __ps))
 {
   /* We would have to include <limits.h> to get a definition of MB_LEN_MAX.
@@ -454,24 +454,24 @@ __NTH (wcrtomb (char *__restrict __s, wchar_t __wchar,
 
 
 extern size_t __mbsrtowcs_chk (wchar_t *__restrict __dst,
-			       const char **__restrict __src,
+			       const i8 **__restrict __src,
 			       size_t __len, mbstate_t *__restrict __ps,
 			       size_t __dstlen) __THROW;
 extern size_t __REDIRECT_NTH (__mbsrtowcs_alias,
 			      (wchar_t *__restrict __dst,
-			       const char **__restrict __src,
+			       const i8 **__restrict __src,
 			       size_t __len, mbstate_t *__restrict __ps),
 			      mbsrtowcs);
 extern size_t __REDIRECT_NTH (__mbsrtowcs_chk_warn,
 			      (wchar_t *__restrict __dst,
-			       const char **__restrict __src,
+			       const i8 **__restrict __src,
 			       size_t __len, mbstate_t *__restrict __ps,
 			       size_t __dstlen), __mbsrtowcs_chk)
      __warnattr ("mbsrtowcs called with dst buffer smaller than len "
 		 "* sizeof (wchar_t)");
 
 __fortify_function size_t
-__NTH (mbsrtowcs (wchar_t *__restrict __dst, const char **__restrict __src,
+__NTH (mbsrtowcs (wchar_t *__restrict __dst, const i8 **__restrict __src,
 		  size_t __len, mbstate_t *__restrict __ps))
 {
   if (__bos (__dst) != (size_t) -1)
@@ -488,24 +488,24 @@ __NTH (mbsrtowcs (wchar_t *__restrict __dst, const char **__restrict __src,
 }
 
 
-extern size_t __wcsrtombs_chk (char *__restrict __dst,
+extern size_t __wcsrtombs_chk (i8 *__restrict __dst,
 			       const wchar_t **__restrict __src,
 			       size_t __len, mbstate_t *__restrict __ps,
 			       size_t __dstlen) __THROW;
 extern size_t __REDIRECT_NTH (__wcsrtombs_alias,
-			      (char *__restrict __dst,
+			      (i8 *__restrict __dst,
 			       const wchar_t **__restrict __src,
 			       size_t __len, mbstate_t *__restrict __ps),
 			      wcsrtombs);
 extern size_t __REDIRECT_NTH (__wcsrtombs_chk_warn,
-			      (char *__restrict __dst,
+			      (i8 *__restrict __dst,
 			       const wchar_t **__restrict __src,
 			       size_t __len, mbstate_t *__restrict __ps,
 			       size_t __dstlen), __wcsrtombs_chk)
     __warnattr ("wcsrtombs called with dst buffer smaller than len");
 
 __fortify_function size_t
-__NTH (wcsrtombs (char *__restrict __dst, const wchar_t **__restrict __src,
+__NTH (wcsrtombs (i8 *__restrict __dst, const wchar_t **__restrict __src,
 		  size_t __len, mbstate_t *__restrict __ps))
 {
   if (__bos (__dst) != (size_t) -1)
@@ -522,24 +522,24 @@ __NTH (wcsrtombs (char *__restrict __dst, const wchar_t **__restrict __src,
 
 #ifdef __USE_GNU
 extern size_t __mbsnrtowcs_chk (wchar_t *__restrict __dst,
-				const char **__restrict __src, size_t __nmc,
+				const i8 **__restrict __src, size_t __nmc,
 				size_t __len, mbstate_t *__restrict __ps,
 				size_t __dstlen) __THROW;
 extern size_t __REDIRECT_NTH (__mbsnrtowcs_alias,
 			      (wchar_t *__restrict __dst,
-			       const char **__restrict __src, size_t __nmc,
+			       const i8 **__restrict __src, size_t __nmc,
 			       size_t __len, mbstate_t *__restrict __ps),
 			      mbsnrtowcs);
 extern size_t __REDIRECT_NTH (__mbsnrtowcs_chk_warn,
 			      (wchar_t *__restrict __dst,
-			       const char **__restrict __src, size_t __nmc,
+			       const i8 **__restrict __src, size_t __nmc,
 			       size_t __len, mbstate_t *__restrict __ps,
 			       size_t __dstlen), __mbsnrtowcs_chk)
      __warnattr ("mbsnrtowcs called with dst buffer smaller than len "
 		 "* sizeof (wchar_t)");
 
 __fortify_function size_t
-__NTH (mbsnrtowcs (wchar_t *__restrict __dst, const char **__restrict __src,
+__NTH (mbsnrtowcs (wchar_t *__restrict __dst, const i8 **__restrict __src,
 		   size_t __nmc, size_t __len, mbstate_t *__restrict __ps))
 {
   if (__bos (__dst) != (size_t) -1)
@@ -556,18 +556,18 @@ __NTH (mbsnrtowcs (wchar_t *__restrict __dst, const char **__restrict __src,
 }
 
 
-extern size_t __wcsnrtombs_chk (char *__restrict __dst,
+extern size_t __wcsnrtombs_chk (i8 *__restrict __dst,
 				const wchar_t **__restrict __src,
 				size_t __nwc, size_t __len,
 				mbstate_t *__restrict __ps, size_t __dstlen)
      __THROW;
 extern size_t __REDIRECT_NTH (__wcsnrtombs_alias,
-			      (char *__restrict __dst,
+			      (i8 *__restrict __dst,
 			       const wchar_t **__restrict __src,
 			       size_t __nwc, size_t __len,
 			       mbstate_t *__restrict __ps), wcsnrtombs);
 extern size_t __REDIRECT_NTH (__wcsnrtombs_chk_warn,
-			      (char *__restrict __dst,
+			      (i8 *__restrict __dst,
 			       const wchar_t **__restrict __src,
 			       size_t __nwc, size_t __len,
 			       mbstate_t *__restrict __ps,
@@ -575,7 +575,7 @@ extern size_t __REDIRECT_NTH (__wcsnrtombs_chk_warn,
      __warnattr ("wcsnrtombs called with dst buffer smaller than len");
 
 __fortify_function size_t
-__NTH (wcsnrtombs (char *__restrict __dst, const wchar_t **__restrict __src,
+__NTH (wcsnrtombs (i8 *__restrict __dst, const wchar_t **__restrict __src,
 		   size_t __nwc, size_t __len, mbstate_t *__restrict __ps))
 {
   if (__bos (__dst) != (size_t) -1)

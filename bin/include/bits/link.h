@@ -24,40 +24,40 @@
 /* Registers for entry into PLT on IA-32.  */
 typedef struct La_i86_regs
 {
-  unsigned i32 lr_edx;
-  unsigned i32 lr_ecx;
-  unsigned i32 lr_eax;
-  unsigned i32 lr_ebp;
-  unsigned i32 lr_esp;
+  %i32 lr_edx;
+  %i32 lr_ecx;
+  %i32 lr_eax;
+  %i32 lr_ebp;
+  %i32 lr_esp;
 } La_i86_regs;
 
 /* Return values for calls from PLT on IA-32.  */
 typedef struct La_i86_retval
 {
-  unsigned i32 lrv_eax;
-  unsigned i32 lrv_edx;
+  %i32 lrv_eax;
+  %i32 lrv_edx;
   f80 lrv_st0;
   f80 lrv_st1;
-  unsigned i64 lrv_bnd0;
-  unsigned i64 lrv_bnd1;
+  % i64 lrv_bnd0;
+  % i64 lrv_bnd1;
 } La_i86_retval;
 
 
 __BEGIN_DECLS
 
-extern Elf32_Addr la_i86_gnu_pltenter (Elf32_Sym *__sym, unsigned i32 __ndx,
-				       unsigned i64 *__refcook,
-				       unsigned i64 *__defcook,
+extern Elf32_Addr la_i86_gnu_pltenter (Elf32_Sym *__sym, %i32 __ndx,
+				       % i64 *__refcook,
+				       % i64 *__defcook,
 				       La_i86_regs *__regs,
-				       unsigned i32 *__flags,
-				       const char *__symname,
+				       %i32 *__flags,
+				       const i8 *__symname,
 				       i64 *__framesizep);
-extern unsigned i32 la_i86_gnu_pltexit (Elf32_Sym *__sym, unsigned i32 __ndx,
-					unsigned i64 *__refcook,
-					unsigned i64 *__defcook,
+extern %i32 la_i86_gnu_pltexit (Elf32_Sym *__sym, %i32 __ndx,
+					% i64 *__refcook,
+					% i64 *__defcook,
 					const La_i86_regs *__inregs,
 					La_i86_retval *__outregs,
-					const char *symname);
+					const i8 *symname);
 
 __END_DECLS
 
@@ -85,14 +85,14 @@ typedef union
 
 typedef struct La_x86_64_regs
 {
-  unsigned i64 lr_rdx;
-  unsigned i64 lr_r8;
-  unsigned i64 lr_r9;
-  unsigned i64 lr_rcx;
-  unsigned i64 lr_rsi;
-  unsigned i64 lr_rdi;
-  unsigned i64 lr_rbp;
-  unsigned i64 lr_rsp;
+  % i64 lr_rdx;
+  % i64 lr_r8;
+  % i64 lr_r9;
+  % i64 lr_rcx;
+  % i64 lr_rsi;
+  % i64 lr_rdi;
+  % i64 lr_rbp;
+  % i64 lr_rsp;
   La_x86_64_xmm lr_xmm[8];
   La_x86_64_vector lr_vector[8];
 #ifndef __ILP32__
@@ -103,8 +103,8 @@ typedef struct La_x86_64_regs
 /* Return values for calls from PLT on x86-64.  */
 typedef struct La_x86_64_retval
 {
-  unsigned i64 lrv_rax;
-  unsigned i64 lrv_rdx;
+  % i64 lrv_rax;
+  % i64 lrv_rdx;
   La_x86_64_xmm lrv_xmm0;
   La_x86_64_xmm lrv_xmm1;
   f80 lrv_st0;
@@ -123,36 +123,36 @@ typedef struct La_x86_64_retval
 __BEGIN_DECLS
 
 extern Elf64_Addr la_x86_64_gnu_pltenter (Elf64_Sym *__sym,
-					  unsigned i32 __ndx,
-					  unsigned i64 *__refcook,
-					  unsigned i64 *__defcook,
+					  %i32 __ndx,
+					  % i64 *__refcook,
+					  % i64 *__defcook,
 					  La_x86_64_regs *__regs,
-					  unsigned i32 *__flags,
-					  const char *__symname,
+					  %i32 *__flags,
+					  const i8 *__symname,
 					  i64 *__framesizep);
-extern unsigned i32 la_x86_64_gnu_pltexit (Elf64_Sym *__sym,
-					   unsigned i32 __ndx,
-					   unsigned i64 *__refcook,
-					   unsigned i64 *__defcook,
+extern %i32 la_x86_64_gnu_pltexit (Elf64_Sym *__sym,
+					   %i32 __ndx,
+					   % i64 *__refcook,
+					   % i64 *__defcook,
 					   const La_x86_64_regs *__inregs,
 					   La_x86_64_retval *__outregs,
-					   const char *__symname);
+					   const i8 *__symname);
 
 extern Elf32_Addr la_x32_gnu_pltenter (Elf32_Sym *__sym,
-				       unsigned i32 __ndx,
-				       unsigned i64 *__refcook,
-				       unsigned i64 *__defcook,
+				       %i32 __ndx,
+				       % i64 *__refcook,
+				       % i64 *__defcook,
 				       La_x32_regs *__regs,
-				       unsigned i32 *__flags,
-				       const char *__symname,
+				       %i32 *__flags,
+				       const i8 *__symname,
 				       i64 *__framesizep);
-extern unsigned i32 la_x32_gnu_pltexit (Elf32_Sym *__sym,
-					unsigned i32 __ndx,
-					unsigned i64 *__refcook,
-					unsigned i64 *__defcook,
+extern %i32 la_x32_gnu_pltexit (Elf32_Sym *__sym,
+					%i32 __ndx,
+					% i64 *__refcook,
+					% i64 *__defcook,
 					const La_x32_regs *__inregs,
 					La_x32_retval *__outregs,
-					const char *__symname);
+					const i8 *__symname);
 
 __END_DECLS
 

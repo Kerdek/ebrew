@@ -120,23 +120,23 @@ pread64 (i32 __fd, void *__buf, size_t __nbytes, __off64_t __offset)
 #endif
 
 #if defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K
-extern ssize_t __readlink_chk (const char *__restrict __path,
-			       char *__restrict __buf, size_t __len,
+extern ssize_t __readlink_chk (const i8 *__restrict __path,
+			       i8 *__restrict __buf, size_t __len,
 			       size_t __buflen)
      __THROW __nonnull ((1, 2)) __wur;
 extern ssize_t __REDIRECT_NTH (__readlink_alias,
-			       (const char *__restrict __path,
-				char *__restrict __buf, size_t __len), readlink)
+			       (const i8 *__restrict __path,
+				i8 *__restrict __buf, size_t __len), readlink)
      __nonnull ((1, 2)) __wur;
 extern ssize_t __REDIRECT_NTH (__readlink_chk_warn,
-			       (const char *__restrict __path,
-				char *__restrict __buf, size_t __len,
+			       (const i8 *__restrict __path,
+				i8 *__restrict __buf, size_t __len,
 				size_t __buflen), __readlink_chk)
      __nonnull ((1, 2)) __wur __warnattr ("readlink called with bigger length "
 					  "than size of destination buffer");
 
 __fortify_function __nonnull ((1, 2)) __wur ssize_t
-__NTH (readlink (const char *__restrict __path, char *__restrict __buf,
+__NTH (readlink (const i8 *__restrict __path, i8 *__restrict __buf,
 		 size_t __len))
 {
   if (__bos (__buf) != (size_t) -1)
@@ -152,26 +152,26 @@ __NTH (readlink (const char *__restrict __path, char *__restrict __buf,
 #endif
 
 #ifdef __USE_ATFILE
-extern ssize_t __readlinkat_chk (i32 __fd, const char *__restrict __path,
-				 char *__restrict __buf, size_t __len,
+extern ssize_t __readlinkat_chk (i32 __fd, const i8 *__restrict __path,
+				 i8 *__restrict __buf, size_t __len,
 				 size_t __buflen)
      __THROW __nonnull ((2, 3)) __wur;
 extern ssize_t __REDIRECT_NTH (__readlinkat_alias,
-			       (i32 __fd, const char *__restrict __path,
-				char *__restrict __buf, size_t __len),
+			       (i32 __fd, const i8 *__restrict __path,
+				i8 *__restrict __buf, size_t __len),
 			       readlinkat)
      __nonnull ((2, 3)) __wur;
 extern ssize_t __REDIRECT_NTH (__readlinkat_chk_warn,
-			       (i32 __fd, const char *__restrict __path,
-				char *__restrict __buf, size_t __len,
+			       (i32 __fd, const i8 *__restrict __path,
+				i8 *__restrict __buf, size_t __len,
 				size_t __buflen), __readlinkat_chk)
      __nonnull ((2, 3)) __wur __warnattr ("readlinkat called with bigger "
 					  "length than size of destination "
 					  "buffer");
 
 __fortify_function __nonnull ((2, 3)) __wur ssize_t
-__NTH (readlinkat (i32 __fd, const char *__restrict __path,
-		   char *__restrict __buf, size_t __len))
+__NTH (readlinkat (i32 __fd, const i8 *__restrict __path,
+		   i8 *__restrict __buf, size_t __len))
 {
   if (__bos (__buf) != (size_t) -1)
     {
@@ -186,18 +186,18 @@ __NTH (readlinkat (i32 __fd, const char *__restrict __path,
 }
 #endif
 
-extern char *__getcwd_chk (char *__buf, size_t __size, size_t __buflen)
+extern i8 *__getcwd_chk (i8 *__buf, size_t __size, size_t __buflen)
      __THROW __wur;
-extern char *__REDIRECT_NTH (__getcwd_alias,
-			     (char *__buf, size_t __size), getcwd) __wur;
-extern char *__REDIRECT_NTH (__getcwd_chk_warn,
-			     (char *__buf, size_t __size, size_t __buflen),
+extern i8 *__REDIRECT_NTH (__getcwd_alias,
+			     (i8 *__buf, size_t __size), getcwd) __wur;
+extern i8 *__REDIRECT_NTH (__getcwd_chk_warn,
+			     (i8 *__buf, size_t __size, size_t __buflen),
 			     __getcwd_chk)
      __wur __warnattr ("getcwd caller with bigger length than size of "
 		       "destination buffer");
 
-__fortify_function __wur char *
-__NTH (getcwd (char *__buf, size_t __size))
+__fortify_function __wur i8 *
+__NTH (getcwd (i8 *__buf, size_t __size))
 {
   if (__bos (__buf) != (size_t) -1)
     {
@@ -211,14 +211,14 @@ __NTH (getcwd (char *__buf, size_t __size))
 }
 
 #if defined __USE_MISC || defined __USE_XOPEN_EXTENDED
-extern char *__getwd_chk (char *__buf, size_t buflen)
+extern i8 *__getwd_chk (i8 *__buf, size_t buflen)
      __THROW __nonnull ((1)) __wur;
-extern char *__REDIRECT_NTH (__getwd_warn, (char *__buf), getwd)
+extern i8 *__REDIRECT_NTH (__getwd_warn, (i8 *__buf), getwd)
      __nonnull ((1)) __wur __warnattr ("please use getcwd instead, as getwd "
 				       "doesn't specify buffer size");
 
-__fortify_function __nonnull ((1)) __attribute_deprecated__ __wur char *
-__NTH (getwd (char *__buf))
+__fortify_function __nonnull ((1)) __attribute_deprecated__ __wur i8 *
+__NTH (getwd (i8 *__buf))
 {
   if (__bos (__buf) != (size_t) -1)
     return __getwd_chk (__buf, __bos (__buf));
@@ -226,18 +226,18 @@ __NTH (getwd (char *__buf))
 }
 #endif
 
-extern size_t __confstr_chk (i32 __name, char *__buf, size_t __len,
+extern size_t __confstr_chk (i32 __name, i8 *__buf, size_t __len,
 			     size_t __buflen) __THROW;
-extern size_t __REDIRECT_NTH (__confstr_alias, (i32 __name, char *__buf,
+extern size_t __REDIRECT_NTH (__confstr_alias, (i32 __name, i8 *__buf,
 						size_t __len), confstr);
 extern size_t __REDIRECT_NTH (__confstr_chk_warn,
-			      (i32 __name, char *__buf, size_t __len,
+			      (i32 __name, i8 *__buf, size_t __len,
 			       size_t __buflen), __confstr_chk)
      __warnattr ("confstr called with bigger length than size of destination "
 		 "buffer");
 
 __fortify_function size_t
-__NTH (confstr (i32 __name, char *__buf, size_t __len))
+__NTH (confstr (i32 __name, i8 *__buf, size_t __len))
 {
   if (__bos (__buf) != (size_t) -1)
     {
@@ -276,19 +276,19 @@ __NTH (getgroups (i32 __size, __gid_t __list[]))
 }
 
 
-extern i32 __ttyname_r_chk (i32 __fd, char *__buf, size_t __buflen,
+extern i32 __ttyname_r_chk (i32 __fd, i8 *__buf, size_t __buflen,
 			    size_t __nreal) __THROW __nonnull ((2));
-extern i32 __REDIRECT_NTH (__ttyname_r_alias, (i32 __fd, char *__buf,
+extern i32 __REDIRECT_NTH (__ttyname_r_alias, (i32 __fd, i8 *__buf,
 					       size_t __buflen), ttyname_r)
      __nonnull ((2));
 extern i32 __REDIRECT_NTH (__ttyname_r_chk_warn,
-			   (i32 __fd, char *__buf, size_t __buflen,
+			   (i32 __fd, i8 *__buf, size_t __buflen,
 			    size_t __nreal), __ttyname_r_chk)
      __nonnull ((2)) __warnattr ("ttyname_r called with bigger buflen than "
 				 "size of destination buffer");
 
 __fortify_function i32
-__NTH (ttyname_r (i32 __fd, char *__buf, size_t __buflen))
+__NTH (ttyname_r (i32 __fd, i8 *__buf, size_t __buflen))
 {
   if (__bos (__buf) != (size_t) -1)
     {
@@ -303,18 +303,18 @@ __NTH (ttyname_r (i32 __fd, char *__buf, size_t __buflen))
 
 
 #ifdef __USE_POSIX199506
-extern i32 __getlogin_r_chk (char *__buf, size_t __buflen, size_t __nreal)
+extern i32 __getlogin_r_chk (i8 *__buf, size_t __buflen, size_t __nreal)
      __nonnull ((1));
-extern i32 __REDIRECT (__getlogin_r_alias, (char *__buf, size_t __buflen),
+extern i32 __REDIRECT (__getlogin_r_alias, (i8 *__buf, size_t __buflen),
 		       getlogin_r) __nonnull ((1));
 extern i32 __REDIRECT (__getlogin_r_chk_warn,
-		       (char *__buf, size_t __buflen, size_t __nreal),
+		       (i8 *__buf, size_t __buflen, size_t __nreal),
 		       __getlogin_r_chk)
      __nonnull ((1)) __warnattr ("getlogin_r called with bigger buflen than "
 				 "size of destination buffer");
 
 __fortify_function i32
-getlogin_r (char *__buf, size_t __buflen)
+getlogin_r (i8 *__buf, size_t __buflen)
 {
   if (__bos (__buf) != (size_t) -1)
     {
@@ -330,18 +330,18 @@ getlogin_r (char *__buf, size_t __buflen)
 
 
 #if defined __USE_MISC || defined __USE_UNIX98
-extern i32 __gethostname_chk (char *__buf, size_t __buflen, size_t __nreal)
+extern i32 __gethostname_chk (i8 *__buf, size_t __buflen, size_t __nreal)
      __THROW __nonnull ((1));
-extern i32 __REDIRECT_NTH (__gethostname_alias, (char *__buf, size_t __buflen),
+extern i32 __REDIRECT_NTH (__gethostname_alias, (i8 *__buf, size_t __buflen),
 			   gethostname) __nonnull ((1));
 extern i32 __REDIRECT_NTH (__gethostname_chk_warn,
-			   (char *__buf, size_t __buflen, size_t __nreal),
+			   (i8 *__buf, size_t __buflen, size_t __nreal),
 			   __gethostname_chk)
      __nonnull ((1)) __warnattr ("gethostname called with bigger buflen than "
 				 "size of destination buffer");
 
 __fortify_function i32
-__NTH (gethostname (char *__buf, size_t __buflen))
+__NTH (gethostname (i8 *__buf, size_t __buflen))
 {
   if (__bos (__buf) != (size_t) -1)
     {
@@ -357,20 +357,20 @@ __NTH (gethostname (char *__buf, size_t __buflen))
 
 
 #if defined __USE_MISC || (defined __USE_XOPEN && !defined __USE_UNIX98)
-extern i32 __getdomainname_chk (char *__buf, size_t __buflen, size_t __nreal)
+extern i32 __getdomainname_chk (i8 *__buf, size_t __buflen, size_t __nreal)
      __THROW __nonnull ((1)) __wur;
-extern i32 __REDIRECT_NTH (__getdomainname_alias, (char *__buf,
+extern i32 __REDIRECT_NTH (__getdomainname_alias, (i8 *__buf,
 						   size_t __buflen),
 			   getdomainname) __nonnull ((1)) __wur;
 extern i32 __REDIRECT_NTH (__getdomainname_chk_warn,
-			   (char *__buf, size_t __buflen, size_t __nreal),
+			   (i8 *__buf, size_t __buflen, size_t __nreal),
 			   __getdomainname_chk)
      __nonnull ((1)) __wur __warnattr ("getdomainname called with bigger "
 				       "buflen than size of destination "
 				       "buffer");
 
 __fortify_function i32
-__NTH (getdomainname (char *__buf, size_t __buflen))
+__NTH (getdomainname (i8 *__buf, size_t __buflen))
 {
   if (__bos (__buf) != (size_t) -1)
     {

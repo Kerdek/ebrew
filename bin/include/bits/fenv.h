@@ -65,7 +65,7 @@ enum
 
 
 /* Type representing exception flags.  */
-typedef unsigned i16 fexcept_t;
+typedef %i16 fexcept_t;
 
 
 /* Type representing floating-point environment.  This structure
@@ -74,21 +74,21 @@ typedef unsigned i16 fexcept_t;
    register as written by the `stmxcsr' instruction.  */
 typedef struct
   {
-    unsigned i16 __control_word;
-    unsigned i16 __glibc_reserved1;
-    unsigned i16 __status_word;
-    unsigned i16 __glibc_reserved2;
-    unsigned i16 __tags;
-    unsigned i16 __glibc_reserved3;
-    unsigned i32 __eip;
-    unsigned i16 __cs_selector;
-    unsigned i32 __opcode:11;
-    unsigned i32 __glibc_reserved4:5;
-    unsigned i32 __data_offset;
-    unsigned i16 __data_selector;
-    unsigned i16 __glibc_reserved5;
+    %i16 __control_word;
+    %i16 __glibc_reserved1;
+    %i16 __status_word;
+    %i16 __glibc_reserved2;
+    %i16 __tags;
+    %i16 __glibc_reserved3;
+    %i32 __eip;
+    %i16 __cs_selector;
+    %i32 __opcode:11;
+    %i32 __glibc_reserved4:5;
+    %i32 __data_offset;
+    %i16 __data_selector;
+    %i16 __glibc_reserved5;
 #ifdef __x86_64__
-    unsigned i32 __mxcsr;
+    %i32 __mxcsr;
 #endif
   }
 fenv_t;
@@ -105,9 +105,9 @@ fenv_t;
 /* Type representing floating-point control modes.  */
 typedef struct
   {
-    unsigned i16 __control_word;
-    unsigned i16 __glibc_reserved;
-    unsigned i32 __mxcsr;
+    %i16 __control_word;
+    %i16 __glibc_reserved;
+    %i32 __mxcsr;
   }
 femode_t;
 

@@ -6,8 +6,8 @@
 #define ARPT_MANGLE_ADDR_LEN_MAX sizeof(struct in_addr)
 struct arpt_mangle
 {
-	char src_devaddr[ARPT_DEV_ADDR_LEN_MAX];
-	char tgt_devaddr[ARPT_DEV_ADDR_LEN_MAX];
+	i8 src_devaddr[ARPT_DEV_ADDR_LEN_MAX];
+	i8 tgt_devaddr[ARPT_DEV_ADDR_LEN_MAX];
 	union {
 		struct in_addr src_ip;
 	} u_s;

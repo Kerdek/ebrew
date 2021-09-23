@@ -171,7 +171,7 @@ struct vfio_group_status {
 #define VFIO_GROUP_UNSET_CONTAINER	_IO(VFIO_TYPE, VFIO_BASE + 5)
 
 /**
- * VFIO_GROUP_GET_DEVICE_FD - _IOW(VFIO_TYPE, VFIO_BASE + 6, char)
+ * VFIO_GROUP_GET_DEVICE_FD - _IOW(VFIO_TYPE, VFIO_BASE + 6, i8)
  *
  * Return a new file descriptor for the device object described by
  * the provided string.  The string should match a device listed in

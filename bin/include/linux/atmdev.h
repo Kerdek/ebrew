@@ -167,8 +167,8 @@ struct atm_iobuf {
 #define ATM_CI_MAX      -1              /* use maximum range of VPI/VCI */
  
 struct atm_cirange {
-	 char	vpi_bits;	/* 1..8, ATM_CI_MAX (-1) for maximum */
-	 char	vci_bits;	/* 1..16, ATM_CI_MAX (-1) for maximum */
+	 i8	vpi_bits;	/* 1..8, ATM_CI_MAX (-1) for maximum */
+	 i8	vci_bits;	/* 1..16, ATM_CI_MAX (-1) for maximum */
 };
 
 /* for ATM_SETSC; actually taken from the ATM_VF number space */

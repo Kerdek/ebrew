@@ -52,9 +52,9 @@ struct blkpg_partition {
 	i64 start;		/* starting offset in bytes */
 	i64 length;		/* length in bytes */
 	i32 pno;			/* partition number */
-	char devname[BLKPG_DEVNAMELTH];	/* partition name, like sda5 or c0d1p2,
+	i8 devname[BLKPG_DEVNAMELTH];	/* partition name, like sda5 or c0d1p2,
 					   to be used in kernel messages */
-	char volname[BLKPG_VOLNAMELTH];	/* volume label */
+	i8 volname[BLKPG_VOLNAMELTH];	/* volume label */
 };
 
 #endif /* __LINUX_BLKPG_H */

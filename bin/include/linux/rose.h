@@ -44,7 +44,7 @@
 #define	ROSE_SHIP_ABSENT	0x39
 
 typedef struct {
-	char		rose_addr[5];
+	i8		rose_addr[5];
 } rose_address;
 
 struct sockaddr_rose {
@@ -59,31 +59,31 @@ struct full_sockaddr_rose {
 	__kernel_sa_family_t srose_family;
 	rose_address	srose_addr;
 	ax25_address	srose_call;
-	unsigned i32	srose_ndigis;
+	%i32	srose_ndigis;
 	ax25_address	srose_digis[ROSE_MAX_DIGIS];
 };
 
 struct rose_route_struct {
 	rose_address	address;
-	unsigned i16	mask;
+	%i16	mask;
 	ax25_address	neighbour;
-	char		device[16];
-	unsigned i8	ndigis;
+	i8		device[16];
+	%i8	ndigis;
 	ax25_address	digipeaters[AX25_MAX_DIGIS];
 };
 
 struct rose_cause_struct {
-	unsigned i8	cause;
-	unsigned i8	diagnostic;
+	%i8	cause;
+	%i8	diagnostic;
 };
 
 struct rose_facilities_struct {
 	rose_address	source_addr,   dest_addr;
 	ax25_address	source_call,   dest_call;
-	unsigned i8	source_ndigis, dest_ndigis;
+	%i8	source_ndigis, dest_ndigis;
 	ax25_address	source_digis[ROSE_MAX_DIGIS];
 	ax25_address	dest_digis[ROSE_MAX_DIGIS];
-	unsigned i32	rand;
+	%i32	rand;
 	rose_address	fail_addr;
 	ax25_address	fail_call;
 };

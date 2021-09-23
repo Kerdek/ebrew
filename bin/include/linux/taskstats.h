@@ -103,7 +103,7 @@ struct taskstats {
 	/* version 1 ends here */
 
 	/* Basic Accounting Fields start */
-	char	ac_comm[TS_COMM_LEN];	/* Command name */
+	i8	ac_comm[TS_COMM_LEN];	/* Command name */
 	__u8	ac_sched __attribute__((aligned(8)));
 					/* Scheduling discipline */
 	__u8	ac_pad[3];

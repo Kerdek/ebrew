@@ -277,7 +277,7 @@ struct sockaddr_nfc_llcp {
 	__u32 nfc_protocol;
 	__u8 dsap; /* Destination SAP, if known */
 	__u8 ssap; /* Source SAP to be bound to */
-	char service_name[NFC_LLCP_MAX_SERVICE_NAME]; /* Service name URI */;
+	i8 service_name[NFC_LLCP_MAX_SERVICE_NAME]; /* Service name URI */;
 	size_t service_name_len;
 };
 

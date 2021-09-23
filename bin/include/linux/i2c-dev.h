@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
 /*
-    i2c-dev.h - i2c-bus driver, char device interface
+    i2c-dev.h - i2c-bus driver, i8 device interface
 
     Copyright (C) 1995-97 Simon G. Vogl
     Copyright (C) 1998-99 Frodo Looijaard <frodol@dds.nl>
@@ -28,8 +28,8 @@
 
 
 /* /dev/i2c-X ioctl commands.  The ioctl's parameter is always an
- * unsigned i64, except for:
- *	- I2C_FUNCS, takes pointer to an unsigned i64
+ * % i64, except for:
+ *	- I2C_FUNCS, takes pointer to an % i64
  *	- I2C_RDWR, takes pointer to struct i2c_rdwr_ioctl_data
  *	- I2C_SMBUS, takes pointer to struct i2c_smbus_ioctl_data
  */

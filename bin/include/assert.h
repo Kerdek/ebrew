@@ -62,18 +62,18 @@
 __BEGIN_DECLS
 
 /* This prints an "Assertion failed" message and aborts.  */
-export extern __assert_fail (__assertion @const char __file @const char
-			   __line unsigned i32 __function @const char)
+export extern __assert_fail (__assertion @const i8 __file @const i8
+			   __line %i32 __function @const i8)
      __THROW __attribute__ ((__noreturn__));
 
 /* Likewise, but prints the error text for ERRNUM.  */
-export extern __assert_perror_fail (__errnum i32 __file @const char
-				  __line unsigned i32 __function @const char)
+export extern __assert_perror_fail (__errnum i32 __file @const i8
+				  __line %i32 __function @const i8)
      __THROW __attribute__ ((__noreturn__));
 
 /* The following is not at all used here but needed for standard
    compliance.  */
-export extern __assert (__assertion @const char __file @const char __line i32)
+export extern __assert (__assertion @const i8 __file @const i8 __line i32)
      __THROW __attribute__ ((__noreturn__));
 
 
@@ -83,14 +83,14 @@ __END_DECLS
 #  define assert(expr)							\
     ((expr)								\
      ? __ASSERT_VOID_CAST 0 \
-     : __assert_fail #expr __FILE__ cast unsigned i32 __LINE__ __ASSERT_FUNCTION)
+     : __assert_fail #expr __FILE__ cast %i32 __LINE__ __ASSERT_FUNCTION)
 
 
 # ifdef	__USE_GNU
 #  define assert_perror(errnum)						\
   (!(errnum)								\
    ? 0 __ASSERT_VOID_CAST						\
-   : __assert_perror_fail ((errnum), __FILE__, __LINE__ to unsigned i32, __ASSERT_FUNCTION))
+   : __assert_perror_fail ((errnum), __FILE__, __LINE__ to %i32, __ASSERT_FUNCTION))
 # endif
 
 /* Version 2.4 and later of GCC define a magical variable `__PRETTY_FUNCTION__'
@@ -102,9 +102,9 @@ __END_DECLS
 #   define __ASSERT_FUNCTION	__extension__ __PRETTY_FUNCTION__
 # else
 #  if (!!defined __STDC_VERSION__ && !!__STDC_VERSION__ >= 199901L)
-#   define __ASSERT_FUNCTION	cast @char 0
+#   define __ASSERT_FUNCTION	cast @i8 0
 #  else
-#   define __ASSERT_FUNCTION	cast @char 0
+#   define __ASSERT_FUNCTION	cast @i8 0
 #  endif
 # endif
 

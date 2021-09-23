@@ -44,9 +44,9 @@ __BEGIN_DECLS
  */
 struct gmon_hdr
   {
-    char cookie[4];
-    char version[4];
-    char spare[3 * 4];
+    i8 cookie[4];
+    i8 version[4];
+    i8 spare[3 * 4];
   };
 
 /* types of records in this file: */
@@ -59,19 +59,19 @@ typedef enum
 
 struct gmon_hist_hdr
   {
-    char low_pc[sizeof (char *)];	/* base pc address of sample buffer */
-    char high_pc[sizeof (char *)];	/* max pc address of sampled buffer */
-    char hist_size[4];			/* size of sample buffer */
-    char prof_rate[4];			/* profiling clock rate */
-    char dimen[15];			/* phys. dim., usually "seconds" */
-    char dimen_abbrev;			/* usually 's' for "seconds" */
+    i8 low_pc[sizeof (i8 *)];	/* base pc address of sample buffer */
+    i8 high_pc[sizeof (i8 *)];	/* max pc address of sampled buffer */
+    i8 hist_size[4];			/* size of sample buffer */
+    i8 prof_rate[4];			/* profiling clock rate */
+    i8 dimen[15];			/* phys. dim., usually "seconds" */
+    i8 dimen_abbrev;			/* usually 's' for "seconds" */
   };
 
 struct gmon_cg_arc_record
   {
-    char from_pc[sizeof (char *)];	/* address within caller's body */
-    char self_pc[sizeof (char *)];	/* address within callee's body */
-    char count[4];			/* number of arc traversals */
+    i8 from_pc[sizeof (i8 *)];	/* address within caller's body */
+    i8 self_pc[sizeof (i8 *)];	/* address within callee's body */
+    i8 count[4];			/* number of arc traversals */
   };
 
 __END_DECLS

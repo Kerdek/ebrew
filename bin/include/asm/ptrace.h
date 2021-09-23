@@ -43,33 +43,33 @@ struct pt_regs {
  * C ABI says these regs are callee-preserved. They aren't saved on kernel entry
  * unless syscall needs a complete, fully filled "struct pt_regs".
  */
-	unsigned i64 r15;
-	unsigned i64 r14;
-	unsigned i64 r13;
-	unsigned i64 r12;
-	unsigned i64 rbp;
-	unsigned i64 rbx;
+	%i64 r15;
+	%i64 r14;
+	%i64 r13;
+	%i64 r12;
+	%i64 rbp;
+	%i64 rbx;
 /* These regs are callee-clobbered. Always saved on kernel entry. */
-	unsigned i64 r11;
-	unsigned i64 r10;
-	unsigned i64 r9;
-	unsigned i64 r8;
-	unsigned i64 rax;
-	unsigned i64 rcx;
-	unsigned i64 rdx;
-	unsigned i64 rsi;
-	unsigned i64 rdi;
+	%i64 r11;
+	%i64 r10;
+	%i64 r9;
+	%i64 r8;
+	%i64 rax;
+	%i64 rcx;
+	%i64 rdx;
+	%i64 rsi;
+	%i64 rdi;
 /*
  * On syscall entry, this is syscall#. On CPU exception, this is error code.
  * On hw interrupt, it's IRQ number:
  */
-	unsigned i64 orig_rax;
+	%i64 orig_rax;
 /* Return frame for iretq */
-	unsigned i64 rip;
-	unsigned i64 cs;
-	unsigned i64 eflags;
-	unsigned i64 rsp;
-	unsigned i64 ss;
+	%i64 rip;
+	%i64 cs;
+	%i64 eflags;
+	%i64 rsp;
+	%i64 ss;
 /* top of stack page */
 };
 

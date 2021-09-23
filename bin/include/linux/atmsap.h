@@ -102,35 +102,35 @@
 
 
 struct atm_blli {
-    unsigned i8 l2_proto;	/* layer 2 protocol */
+    %i8 l2_proto;	/* layer 2 protocol */
     union {
 	struct {
-	    unsigned i8 mode;	/* mode of operation (ATM_IMD_xxx), 0 if */
+	    %i8 mode;	/* mode of operation (ATM_IMD_xxx), 0 if */
 				/* absent */
-	    unsigned i8 window; /* window size (k), 1-127 (0 to omit) */
+	    %i8 window; /* window size (k), 1-127 (0 to omit) */
 	} itu;			/* ITU-T encoding */
-	unsigned i8 user;	/* user-specified l2 information */
+	%i8 user;	/* user-specified l2 information */
     } l2;
-    unsigned i8 l3_proto;	/* layer 3 protocol */
+    %i8 l3_proto;	/* layer 3 protocol */
     union {
 	struct {
-	    unsigned i8 mode;	/* mode of operation (ATM_IMD_xxx), 0 if */
+	    %i8 mode;	/* mode of operation (ATM_IMD_xxx), 0 if */
 				/* absent */
-	    unsigned i8 def_size; /* default packet size (log2), 4-12 (0 to */
+	    %i8 def_size; /* default packet size (log2), 4-12 (0 to */
 				    /* omit) */
-	    unsigned i8 window;/* packet window size, 1-127 (0 to omit) */
+	    %i8 window;/* packet window size, 1-127 (0 to omit) */
 	} itu;			/* ITU-T encoding */
-	unsigned i8 user;	/* user specified l3 information */
+	%i8 user;	/* user specified l3 information */
 	struct {		      /* if l3_proto = ATM_L3_H310 */
-	    unsigned i8 term_type;  /* terminal type */
-	    unsigned i8 fw_mpx_cap; /* forward multiplexing capability */
+	    %i8 term_type;  /* terminal type */
+	    %i8 fw_mpx_cap; /* forward multiplexing capability */
 				      /* only if term_type != ATM_TT_NONE */
-	    unsigned i8 bw_mpx_cap; /* backward multiplexing capability */
+	    %i8 bw_mpx_cap; /* backward multiplexing capability */
 				      /* only if term_type != ATM_TT_NONE */
 	} h310;
 	struct {		  /* if l3_proto = ATM_L3_TR9577 */
-	    unsigned i8 ipi;	  /* initial protocol id */
-	    unsigned i8 snap[5];/* IEEE 802.1 SNAP identifier */
+	    %i8 ipi;	  /* initial protocol id */
+	    %i8 snap[5];/* IEEE 802.1 SNAP identifier */
 				  /* (only if ipi == NLPID_IEEE802_1_SNAP) */
 	} tr9577;
     } l3;
@@ -138,10 +138,10 @@ struct atm_blli {
 
 
 struct atm_bhli {
-    unsigned i8 hl_type;	/* high layer information type */
-    unsigned i8 hl_length;	/* length (only if hl_type == ATM_HL_USER || */
+    %i8 hl_type;	/* high layer information type */
+    %i8 hl_length;	/* length (only if hl_type == ATM_HL_USER || */
 				/* hl_type == ATM_HL_ISO) */
-    unsigned i8 hl_info[ATM_MAX_HLI];/* high layer information */
+    %i8 hl_info[ATM_MAX_HLI];/* high layer information */
 };
 
 

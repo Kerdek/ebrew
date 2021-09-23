@@ -55,7 +55,7 @@
 struct atm_newif_br2684 {
 	atm_backend_t backend_num;	/* ATM_BACKEND_BR2684 */
 	i32 media;		/* BR2684_MEDIA_*, flags in upper bits */
-	char ifname[IFNAMSIZ];
+	i8 ifname[IFNAMSIZ];
 	i32 mtu;
 };
 
@@ -69,7 +69,7 @@ struct atm_newif_br2684 {
 struct br2684_if_spec {
 	i32 method;		/* BR2684_FIND_* */
 	union {
-		char ifname[IFNAMSIZ];
+		i8 ifname[IFNAMSIZ];
 		i32 devnum;
 	} spec;
 };

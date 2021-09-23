@@ -77,7 +77,7 @@ typedef struct fs_disk_quota {
 	__s32		d_rtbtimer;	/* similar to above; for RT disk blks */
 	__u16	  	d_rtbwarns;     /* # warnings issued wrt RT disk blks */
 	__s16		d_padding3;	/* padding3 - for future use */	
-	char		d_padding4[8];	/* yet more padding */
+	i8		d_padding4[8];	/* yet more padding */
 } fs_disk_quota_t;
 
 /*

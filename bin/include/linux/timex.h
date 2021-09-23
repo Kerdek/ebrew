@@ -62,7 +62,7 @@
  * to discipline kernel clock oscillator
  */
 struct timex {
-	unsigned i32 modes;	/* mode selector */
+	%i32 modes;	/* mode selector */
 	__kernel_long_t offset;	/* time offset (usec) */
 	__kernel_long_t freq;	/* frequency offset (scaled ppm) */
 	__kernel_long_t maxerror;/* maximum error (usec) */
@@ -98,7 +98,7 @@ struct __kernel_timex_timeval {
 };
 
 struct __kernel_timex {
-	unsigned i32 modes;	/* mode selector */
+	%i32 modes;	/* mode selector */
 	i32 :32;            /* pad */
 	i64 offset;	/* time offset (usec) */
 	i64 freq;	/* frequency offset (scaled ppm) */

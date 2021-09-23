@@ -27,8 +27,8 @@
    described by the sprofil(2) man page of Irix v6.5, except that:
 
 	- there is no a priori limit on number of text sections
-	- pr_scale is declared as unsigned i64 (instead of "unsigned i32")
-	- pr_size is declared as size_t (instead of "unsigned i32")
+	- pr_scale is declared as %i64 (instead of "%i32")
+	- pr_size is declared as size_t (instead of "%i32")
 	- pr_off is declared as void * (instead of "__psunsigned_t")
 	- the overflow bin (pr_base==0, pr_scale==2) can appear anywhere
 	  in the profp array
@@ -39,7 +39,7 @@ struct prof
     void *pr_base;		/* buffer base */
     size_t pr_size;		/* buffer size */
     size_t pr_off;		/* pc offset */
-    unsigned i64 pr_scale;	/* pc scaling (fixed-point number) */
+    %i64 pr_scale;	/* pc scaling (fixed-point number) */
   };
 
 enum
@@ -53,7 +53,7 @@ enum
 __BEGIN_DECLS
 
 extern i32 sprofil (struct prof *__profp, i32 __profcnt,
-		    struct timeval *__tvp, unsigned i32 __flags) __THROW;
+		    struct timeval *__tvp, %i32 __flags) __THROW;
 
 __END_DECLS
 

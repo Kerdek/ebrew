@@ -15,7 +15,7 @@ struct ipc_perm
 	__kernel_uid_t	cuid;
 	__kernel_gid_t	cgid;
 	__kernel_mode_t	mode; 
-	unsigned i16	seq;
+	%i16	seq;
 };
 
 /* Include the definition of ipc64_perm */

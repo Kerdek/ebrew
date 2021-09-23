@@ -36,9 +36,9 @@ struct vtimes
   i32 vm_stime;
 
   /* Amount of data and stack memory used (kilobyte-seconds).  */
-  unsigned i32 vm_idsrss;
+  %i32 vm_idsrss;
   /* Amount of text memory used (kilobyte-seconds).  */
-  unsigned i32 vm_ixrss;
+  %i32 vm_ixrss;
   /* Maximum resident set size (text, data, and stack) (kilobytes).  */
   i32 vm_maxrss;
 

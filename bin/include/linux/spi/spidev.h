@@ -123,7 +123,7 @@ struct spi_ioc_transfer {
 #define SPI_MSGSIZE(N) \
 	((((N)*(sizeof (struct spi_ioc_transfer))) < (1 << _IOC_SIZEBITS)) \
 		? ((N)*(sizeof (struct spi_ioc_transfer))) : 0)
-#define SPI_IOC_MESSAGE(N) _IOW(SPI_IOC_MAGIC, 0, char[SPI_MSGSIZE(N)])
+#define SPI_IOC_MESSAGE(N) _IOW(SPI_IOC_MAGIC, 0, i8[SPI_MSGSIZE(N)])
 
 
 /* Read / Write of SPI mode (SPI_MODE_0..SPI_MODE_3) (limited to 8 bits) */

@@ -36,7 +36,7 @@
 struct nvm_ioctl_info_tgt {
 	__u32 version[3];
 	__u32 reserved;
-	char tgtname[NVM_TTYPE_NAME_MAX];
+	i8 tgtname[NVM_TTYPE_NAME_MAX];
 };
 
 struct nvm_ioctl_info {
@@ -52,8 +52,8 @@ enum {
 };
 
 struct nvm_ioctl_device_info {
-	char devname[DISK_NAME_LEN];
-	char bmname[NVM_TTYPE_NAME_MAX];
+	i8 devname[DISK_NAME_LEN];
+	i8 bmname[NVM_TTYPE_NAME_MAX];
 	__u32 bmversion[3];
 	__u32 flags;
 	__u32 reserved[8];
@@ -95,9 +95,9 @@ enum {
 };
 
 struct nvm_ioctl_create {
-	char dev[DISK_NAME_LEN];		/* open-channel SSD device */
-	char tgttype[NVM_TTYPE_NAME_MAX];	/* target type name */
-	char tgtname[DISK_NAME_LEN];		/* dev to expose target as */
+	i8 dev[DISK_NAME_LEN];		/* open-channel SSD device */
+	i8 tgttype[NVM_TTYPE_NAME_MAX];	/* target type name */
+	i8 tgtname[DISK_NAME_LEN];		/* dev to expose target as */
 
 	__u32 flags;
 
@@ -105,14 +105,14 @@ struct nvm_ioctl_create {
 };
 
 struct nvm_ioctl_remove {
-	char tgtname[DISK_NAME_LEN];
+	i8 tgtname[DISK_NAME_LEN];
 
 	__u32 flags;
 };
 
 struct nvm_ioctl_dev_init {
-	char dev[DISK_NAME_LEN];		/* open-channel SSD device */
-	char mmtype[NVM_MMTYPE_LEN];		/* register to media manager */
+	i8 dev[DISK_NAME_LEN];		/* open-channel SSD device */
+	i8 mmtype[NVM_MMTYPE_LEN];		/* register to media manager */
 
 	__u32 flags;
 };
@@ -126,7 +126,7 @@ enum {
 };
 
 struct nvm_ioctl_dev_factory {
-	char dev[DISK_NAME_LEN];
+	i8 dev[DISK_NAME_LEN];
 
 	__u32 flags;
 };

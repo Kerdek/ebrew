@@ -36,18 +36,18 @@
 
 
 typedef struct master_config {
-	char	master_name[16];
+	i8	master_name[16];
 	i32	max_slaves;
 	i32	min_slaves;
 } master_config_t;
 
 typedef struct slave_config {
-	char	slave_name[16];
+	i8	slave_name[16];
 	i64	priority;
 } slave_config_t;
 
 typedef struct slaving_request {
-	char	slave_name[16];
+	i8	slave_name[16];
 	i64	priority;
 } slaving_request_t;
 

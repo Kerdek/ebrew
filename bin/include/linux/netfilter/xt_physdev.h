@@ -13,10 +13,10 @@
 #define XT_PHYSDEV_OP_MASK		(0x20 - 1)
 
 struct xt_physdev_info {
-	char physindev[IFNAMSIZ];
-	char in_mask[IFNAMSIZ];
-	char physoutdev[IFNAMSIZ];
-	char out_mask[IFNAMSIZ];
+	i8 physindev[IFNAMSIZ];
+	i8 in_mask[IFNAMSIZ];
+	i8 physoutdev[IFNAMSIZ];
+	i8 out_mask[IFNAMSIZ];
 	__u8 invert;
 	__u8 bitmask;
 };

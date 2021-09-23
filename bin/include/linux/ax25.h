@@ -44,7 +44,7 @@
 #define AX25_NOUID_BLOCK	1
 
 typedef struct {
-	char		ax25_call[7];	/* 6 call + SSID (shifted ascii!) */
+	i8		ax25_call[7];	/* 6 call + SSID (shifted ascii!) */
 } ax25_address;
 
 struct sockaddr_ax25 {
@@ -64,7 +64,7 @@ struct full_sockaddr_ax25 {
 struct ax25_routes_struct {
 	ax25_address	port_addr;
 	ax25_address	dest_addr;
-	unsigned i8	digi_count;
+	%i8	digi_count;
 	ax25_address	digi_addr[AX25_MAX_DIGIS];
 };
 
@@ -79,34 +79,34 @@ struct ax25_ctl_struct {
         ax25_address            port_addr;
         ax25_address            source_addr;
         ax25_address            dest_addr;
-        unsigned i32            cmd;
-        unsigned i64           arg;
-        unsigned i8           digi_count;
+        %i32            cmd;
+        %i64           arg;
+        %i8           digi_count;
         ax25_address            digi_addr[AX25_MAX_DIGIS];
 };
 
 /* this will go away. Please do not export to user land */
 struct ax25_info_struct_deprecated {
-	unsigned i32	n2, n2count;
-	unsigned i32	t1, t1timer;
-	unsigned i32	t2, t2timer;
-	unsigned i32	t3, t3timer;
-	unsigned i32	idle, idletimer;
-	unsigned i32	state;
-	unsigned i32	rcv_q, snd_q;
+	%i32	n2, n2count;
+	%i32	t1, t1timer;
+	%i32	t2, t2timer;
+	%i32	t3, t3timer;
+	%i32	idle, idletimer;
+	%i32	state;
+	%i32	rcv_q, snd_q;
 };
 
 struct ax25_info_struct {
-	unsigned i32	n2, n2count;
-	unsigned i32	t1, t1timer;
-	unsigned i32	t2, t2timer;
-	unsigned i32	t3, t3timer;
-	unsigned i32	idle, idletimer;
-	unsigned i32	state;
-	unsigned i32	rcv_q, snd_q;
-	unsigned i32	vs, vr, va, vs_max;
-	unsigned i32	paclen;
-	unsigned i32	window;
+	%i32	n2, n2count;
+	%i32	t1, t1timer;
+	%i32	t2, t2timer;
+	%i32	t3, t3timer;
+	%i32	idle, idletimer;
+	%i32	state;
+	%i32	rcv_q, snd_q;
+	%i32	vs, vr, va, vs_max;
+	%i32	paclen;
+	%i32	window;
 };
 
 struct ax25_fwd_struct {

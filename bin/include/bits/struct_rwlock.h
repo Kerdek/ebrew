@@ -22,34 +22,34 @@
 
 _ struct __pthread_rwlock_arch_t
 {
-  __readers unsigned i32
-  __writers unsigned i32
-  __wrphase_futex unsigned i32
-  __writers_futex unsigned i32
-  __pad3 unsigned i32
-  __pad4 unsigned i32
+  __readers %i32
+  __writers %i32
+  __wrphase_futex %i32
+  __writers_futex %i32
+  __pad3 %i32
+  __pad4 %i32
 #ifdef __x86_64__
   __cur_writer i32
   __shared i32
-  __rwelision  char
+  __rwelision  i8
 # ifdef  __ILP32__
-  __pad1[3] unsigned i8
+  __pad1[3] %i8
 #  define __PTHREAD_RWLOCK_ELISION_EXTRA 0, { 0, 0, 0 }
 # else
-  __pad1[7] unsigned i8
+  __pad1[7] %i8
 #  define __PTHREAD_RWLOCK_ELISION_EXTRA 0, { 0, 0, 0, 0, 0, 0, 0 }
 # endif
-  __pad2 unsigned i64
+  __pad2 %i64
   /* FLAGS must stay at this position in the structure to maintain
      binary compatibility.  */
-  __flags unsigned i32;
+  __flags %i32;
 #else /* __x86_64__  */
   /* FLAGS must stay at this position in the structure to maintain
      binary compatibility.  */
-  __flags unsigned i8
-  __shared unsigned i8
-  __rwelision  char
-  __pad2 unsigned i8
+  __flags %i8
+  __shared %i8
+  __rwelision  i8
+  __pad2 %i8
   __cur_writer i32;
 #endif
 };

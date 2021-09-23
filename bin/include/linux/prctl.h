@@ -153,7 +153,7 @@ struct prctl_mm_map {
  * A value of 0 mean "no process".
  */
 #define PR_SET_PTRACER 0x59616d61
-# define PR_SET_PTRACER_ANY ((unsigned i64)-1)
+# define PR_SET_PTRACER_ANY ((%i64)-1)
 
 #define PR_SET_CHILD_SUBREAPER	36
 #define PR_GET_CHILD_SUBREAPER	37

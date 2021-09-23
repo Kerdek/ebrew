@@ -90,8 +90,8 @@
 struct __fat_dirent {
 	i64		d_ino;
 	__kernel_off_t	d_off;
-	unsigned i16	d_reclen;
-	char		d_name[256]; /* We must not include limits.h! */
+	%i16	d_reclen;
+	i8		d_name[256]; /* We must not include limits.h! */
 };
 
 /*

@@ -78,7 +78,7 @@
 #define  TIPC_CMD_SHOW_NAME_TABLE   0x0005    /* tx name_tbl_query, rx ultra_string */
 #define  TIPC_CMD_SHOW_PORTS        0x0006    /* tx none, rx ultra_string */
 #define  TIPC_CMD_SHOW_LINK_STATS   0x000B    /* tx link_name, rx ultra_string */
-#define  TIPC_CMD_SHOW_STATS        0x000F    /* tx unsigned, rx ultra_string */
+#define  TIPC_CMD_SHOW_STATS        0x000F    /* tx %, rx ultra_string */
 
 /*
  * Protected commands:
@@ -87,15 +87,15 @@
  * and this node is zone manager.
  */
 
-#define  TIPC_CMD_GET_REMOTE_MNG    0x4003    /* tx none, rx unsigned */
-#define  TIPC_CMD_GET_MAX_PORTS     0x4004    /* tx none, rx unsigned */
+#define  TIPC_CMD_GET_REMOTE_MNG    0x4003    /* tx none, rx % */
+#define  TIPC_CMD_GET_MAX_PORTS     0x4004    /* tx none, rx % */
 #define  TIPC_CMD_GET_MAX_PUBL      0x4005    /* obsoleted */
 #define  TIPC_CMD_GET_MAX_SUBSCR    0x4006    /* obsoleted */
 #define  TIPC_CMD_GET_MAX_ZONES     0x4007    /* obsoleted */
 #define  TIPC_CMD_GET_MAX_CLUSTERS  0x4008    /* obsoleted */
 #define  TIPC_CMD_GET_MAX_NODES     0x4009    /* obsoleted */
 #define  TIPC_CMD_GET_MAX_SLAVES    0x400A    /* obsoleted */
-#define  TIPC_CMD_GET_NETID         0x400B    /* tx none, rx unsigned */
+#define  TIPC_CMD_GET_NETID         0x400B    /* tx none, rx % */
 
 #define  TIPC_CMD_ENABLE_BEARER     0x4101    /* tx bearer_config, rx none */
 #define  TIPC_CMD_DISABLE_BEARER    0x4102    /* tx bearer_name, rx none */
@@ -113,15 +113,15 @@
  */
 
 #define  TIPC_CMD_SET_NODE_ADDR     0x8001    /* tx net_addr, rx none */
-#define  TIPC_CMD_SET_REMOTE_MNG    0x8003    /* tx unsigned, rx none */
-#define  TIPC_CMD_SET_MAX_PORTS     0x8004    /* tx unsigned, rx none */
+#define  TIPC_CMD_SET_REMOTE_MNG    0x8003    /* tx %, rx none */
+#define  TIPC_CMD_SET_MAX_PORTS     0x8004    /* tx %, rx none */
 #define  TIPC_CMD_SET_MAX_PUBL      0x8005    /* obsoleted */
 #define  TIPC_CMD_SET_MAX_SUBSCR    0x8006    /* obsoleted */
 #define  TIPC_CMD_SET_MAX_ZONES     0x8007    /* obsoleted */
 #define  TIPC_CMD_SET_MAX_CLUSTERS  0x8008    /* obsoleted */
 #define  TIPC_CMD_SET_MAX_NODES     0x8009    /* obsoleted */
 #define  TIPC_CMD_SET_MAX_SLAVES    0x800A    /* obsoleted */
-#define  TIPC_CMD_SET_NETID         0x800B    /* tx unsigned, rx none */
+#define  TIPC_CMD_SET_NETID         0x800B    /* tx %, rx none */
 
 /*
  * Reserved commands:
@@ -138,15 +138,15 @@
 #define TIPC_TLV_NONE		0	/* no TLV present */
 #define TIPC_TLV_VOID		1	/* empty TLV (0 data bytes)*/
 #define TIPC_TLV_UNSIGNED	2	/* 32-bit integer */
-#define TIPC_TLV_STRING		3	/* char[128] (max) */
-#define TIPC_TLV_LARGE_STRING	4	/* char[2048] (max) */
-#define TIPC_TLV_ULTRA_STRING	5	/* char[32768] (max) */
+#define TIPC_TLV_STRING		3	/* i8[128] (max) */
+#define TIPC_TLV_LARGE_STRING	4	/* i8[2048] (max) */
+#define TIPC_TLV_ULTRA_STRING	5	/* i8[32768] (max) */
 
-#define TIPC_TLV_ERROR_STRING	16	/* char[128] containing "error code" */
+#define TIPC_TLV_ERROR_STRING	16	/* i8[128] containing "error code" */
 #define TIPC_TLV_NET_ADDR	17	/* 32-bit integer denoting <Z.C.N> */
-#define TIPC_TLV_MEDIA_NAME	18	/* char[TIPC_MAX_MEDIA_NAME] */
-#define TIPC_TLV_BEARER_NAME	19	/* char[TIPC_MAX_BEARER_NAME] */
-#define TIPC_TLV_LINK_NAME	20	/* char[TIPC_MAX_LINK_NAME] */
+#define TIPC_TLV_MEDIA_NAME	18	/* i8[TIPC_MAX_MEDIA_NAME] */
+#define TIPC_TLV_BEARER_NAME	19	/* i8[TIPC_MAX_BEARER_NAME] */
+#define TIPC_TLV_LINK_NAME	20	/* i8[TIPC_MAX_LINK_NAME] */
 #define TIPC_TLV_NODE_INFO	21	/* struct tipc_node_info */
 #define TIPC_TLV_LINK_INFO	22	/* struct tipc_link_info */
 #define TIPC_TLV_BEARER_CONFIG	23	/* struct tipc_bearer_config */
@@ -197,18 +197,18 @@ struct tipc_node_info {
 struct tipc_link_info {
 	__be32 dest;			/* network address of peer node */
 	__be32 up;			/* 0=down, 1=up */
-	char str[TIPC_MAX_LINK_NAME];	/* link name */
+	i8 str[TIPC_MAX_LINK_NAME];	/* link name */
 };
 
 struct tipc_bearer_config {
 	__be32 priority;		/* Range [1,31]. Override per link  */
 	__be32 disc_domain;		/* <Z.C.N> describing desired nodes */
-	char name[TIPC_MAX_BEARER_NAME];
+	i8 name[TIPC_MAX_BEARER_NAME];
 };
 
 struct tipc_link_config {
 	__be32 value;
-	char name[TIPC_MAX_LINK_NAME];
+	i8 name[TIPC_MAX_LINK_NAME];
 };
 
 #define TIPC_NTQ_ALLTYPES 0x80000000
@@ -253,7 +253,7 @@ struct tlv_desc {
 #define TLV_ALIGN(datalen) (((datalen)+(TLV_ALIGNTO-1)) & ~(TLV_ALIGNTO-1))
 #define TLV_LENGTH(datalen) (sizeof(struct tlv_desc) + (datalen))
 #define TLV_SPACE(datalen) (TLV_ALIGN(TLV_LENGTH(datalen)))
-#define TLV_DATA(tlv) ((void *)((char *)(tlv) + TLV_LENGTH(0)))
+#define TLV_DATA(tlv) ((void *)((i8 *)(tlv) + TLV_LENGTH(0)))
 
 static __inline__ i32 TLV_OK(const void *tlv, __u16 space)
 {
@@ -307,7 +307,7 @@ static __inline__ i32 TLV_SET(void *tlv, __u16 type, void *data, __u16 len)
 	tlv_ptr->tlv_len  = htons(tlv_len);
 	if (len && data) {
 		memcpy(TLV_DATA(tlv_ptr), data, len);
-		memset((char *)TLV_DATA(tlv_ptr) + len, 0, TLV_SPACE(len) - tlv_len);
+		memset((i8 *)TLV_DATA(tlv_ptr) + len, 0, TLV_SPACE(len) - tlv_len);
 	}
 	return TLV_SPACE(len);
 }
@@ -348,7 +348,7 @@ static __inline__ void TLV_LIST_STEP(struct tlv_list_desc *list)
 {
 	__u16 tlv_space = TLV_ALIGN(ntohs(list->tlv_ptr->tlv_len));
 
-	list->tlv_ptr = (struct tlv_desc *)((char *)list->tlv_ptr + tlv_space);
+	list->tlv_ptr = (struct tlv_desc *)((i8 *)list->tlv_ptr + tlv_space);
 	list->tlv_space -= tlv_space;
 }
 
@@ -383,7 +383,7 @@ struct tipc_cfg_msg_hdr {
 	__be32 tcm_len;		/* Message length (including header) */
 	__be16 tcm_type;	/* Command type */
 	__be16 tcm_flags;	/* Additional flags */
-	char  tcm_reserved[8];	/* Unused */
+	i8  tcm_reserved[8];	/* Unused */
 };
 
 #define TCM_F_REQUEST	0x1	/* Flag: Request message */
@@ -392,7 +392,7 @@ struct tipc_cfg_msg_hdr {
 #define TCM_ALIGN(datalen)  (((datalen)+3) & ~3)
 #define TCM_LENGTH(datalen) (sizeof(struct tipc_cfg_msg_hdr) + datalen)
 #define TCM_SPACE(datalen)  (TCM_ALIGN(TCM_LENGTH(datalen)))
-#define TCM_DATA(tcm_hdr)   ((void *)((char *)(tcm_hdr) + TCM_LENGTH(0)))
+#define TCM_DATA(tcm_hdr)   ((void *)((i8 *)(tcm_hdr) + TCM_LENGTH(0)))
 
 static __inline__ i32 TCM_SET(void *msg, __u16 cmd, __u16 flags,
 			  void *data, __u16 data_len)
@@ -407,7 +407,7 @@ static __inline__ i32 TCM_SET(void *msg, __u16 cmd, __u16 flags,
 	tcm_hdr->tcm_flags = htons(flags);
 	if (data_len && data) {
 		memcpy(TCM_DATA(msg), data, data_len);
-		memset((char *)TCM_DATA(msg) + data_len, 0, TCM_SPACE(data_len) - msg_len);
+		memset((i8 *)TCM_DATA(msg) + data_len, 0, TCM_SPACE(data_len) - msg_len);
 	}
 	return TCM_SPACE(data_len);
 }

@@ -220,7 +220,7 @@ struct rio_rdev_info {
 	__u8 hopcount;
 	__u8 pad0;
 	__u32 comptag;
-	char name[RIO_MAX_DEVNAME_SZ + 1];
+	i8 name[RIO_MAX_DEVNAME_SZ + 1];
 };
 
 /* Driver IOCTL codes */

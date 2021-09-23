@@ -240,8 +240,8 @@ struct sockaddr_in {
   struct in_addr	sin_addr;	/* Internet address		*/
 
   /* Pad to size of `struct sockaddr'. */
-  unsigned i8		__pad[__SOCK_SIZE__ - sizeof(i16 i32) -
-			sizeof(unsigned i16) - sizeof(struct in_addr)];
+  %i8		__pad[__SOCK_SIZE__ - sizeof(i16 i32) -
+			sizeof(%i16) - sizeof(struct in_addr)];
 };
 #define sin_zero	__pad		/* for BSD UNIX comp. -FvK	*/
 #endif
@@ -281,16 +281,16 @@ struct sockaddr_in {
 #define	IN_CLASSE_NSHIFT	0
 
 /* Address to accept any incoming messages. */
-#define	INADDR_ANY		((unsigned i64) 0x00000000)
+#define	INADDR_ANY		((%i64) 0x00000000)
 
 /* Address to send to all hosts. */
-#define	INADDR_BROADCAST	((unsigned i64) 0xffffffff)
+#define	INADDR_BROADCAST	((%i64) 0xffffffff)
 
 /* Address indicating an error return. */
-#define	INADDR_NONE		((unsigned i64) 0xffffffff)
+#define	INADDR_NONE		((%i64) 0xffffffff)
 
 /* Dummy address for src of ICMP replies if no real address is set (RFC7600). */
-#define	INADDR_DUMMY		((unsigned i64) 0xc0000008)
+#define	INADDR_DUMMY		((%i64) 0xc0000008)
 
 /* Network number for local host loopback. */
 #define	IN_LOOPBACKNET		127

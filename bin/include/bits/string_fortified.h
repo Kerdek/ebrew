@@ -84,36 +84,36 @@ __NTH (explicit_bzero (void *__dest, size_t __len))
 }
 #endif
 
-__fortify_function char *
-__NTH (strcpy (char *__restrict __dest, const char *__restrict __src))
+__fortify_function i8 *
+__NTH (strcpy (i8 *__restrict __dest, const i8 *__restrict __src))
 {
   return __builtin___strcpy_chk (__dest, __src, __bos (__dest));
 }
 
 #ifdef __USE_GNU
-__fortify_function char *
-__NTH (stpcpy (char *__restrict __dest, const char *__restrict __src))
+__fortify_function i8 *
+__NTH (stpcpy (i8 *__restrict __dest, const i8 *__restrict __src))
 {
   return __builtin___stpcpy_chk (__dest, __src, __bos (__dest));
 }
 #endif
 
 
-__fortify_function char *
-__NTH (strncpy (char *__restrict __dest, const char *__restrict __src,
+__fortify_function i8 *
+__NTH (strncpy (i8 *__restrict __dest, const i8 *__restrict __src,
 		size_t __len))
 {
   return __builtin___strncpy_chk (__dest, __src, __len, __bos (__dest));
 }
 
 /* XXX We have no corresponding builtin yet.  */
-extern char *__stpncpy_chk (char *__dest, const char *__src, size_t __n,
+extern i8 *__stpncpy_chk (i8 *__dest, const i8 *__src, size_t __n,
 			    size_t __destlen) __THROW;
-extern char *__REDIRECT_NTH (__stpncpy_alias, (char *__dest, const char *__src,
+extern i8 *__REDIRECT_NTH (__stpncpy_alias, (i8 *__dest, const i8 *__src,
 					       size_t __n), stpncpy);
 
-__fortify_function char *
-__NTH (stpncpy (char *__dest, const char *__src, size_t __n))
+__fortify_function i8 *
+__NTH (stpncpy (i8 *__dest, const i8 *__src, size_t __n))
 {
   if (__bos (__dest) != (size_t) -1
       && (!__builtin_constant_p (__n) || __n > __bos (__dest)))
@@ -122,15 +122,15 @@ __NTH (stpncpy (char *__dest, const char *__src, size_t __n))
 }
 
 
-__fortify_function char *
-__NTH (strcat (char *__restrict __dest, const char *__restrict __src))
+__fortify_function i8 *
+__NTH (strcat (i8 *__restrict __dest, const i8 *__restrict __src))
 {
   return __builtin___strcat_chk (__dest, __src, __bos (__dest));
 }
 
 
-__fortify_function char *
-__NTH (strncat (char *__restrict __dest, const char *__restrict __src,
+__fortify_function i8 *
+__NTH (strncat (i8 *__restrict __dest, const i8 *__restrict __src,
 		size_t __len))
 {
   return __builtin___strncat_chk (__dest, __src, __len, __bos (__dest));

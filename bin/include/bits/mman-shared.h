@@ -47,21 +47,21 @@ __BEGIN_DECLS
 
 /* Create a new memory file descriptor.  NAME is a name for debugging.
    FLAGS is a combination of the MFD_* constants.  */
-i32 memfd_create (const char *__name, unsigned i32 __flags) __THROW;
+i32 memfd_create (const i8 *__name, %i32 __flags) __THROW;
 
 /* Lock pages from ADDR (inclusive) to ADDR + LENGTH (exclusive) into
    memory.  FLAGS is a combination of the MLOCK_* flags above.  */
-i32 mlock2 (const void *__addr, size_t __length, unsigned i32 __flags) __THROW;
+i32 mlock2 (const void *__addr, size_t __length, %i32 __flags) __THROW;
 
 /* Allocate a new protection key, with the PKEY_DISABLE_* bits
    specified in ACCESS_RIGHTS.  The protection key mask for the
    current thread is updated to match the access privilege for the new
    key.  */
-i32 pkey_alloc (unsigned i32 __flags, unsigned i32 __access_rights) __THROW;
+i32 pkey_alloc (%i32 __flags, %i32 __access_rights) __THROW;
 
 /* Update the access rights for the current thread for KEY, which must
    have been allocated using pkey_alloc.  */
-i32 pkey_set (i32 __key, unsigned i32 __access_rights) __THROW;
+i32 pkey_set (i32 __key, %i32 __access_rights) __THROW;
 
 /* Return the access rights for the current thread for KEY, which must
    have been allocated using pkey_alloc.  */

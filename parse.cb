@@ -1,12 +1,10 @@
 #include "chub.hb"
 
 type
-
-  VarScope struct {
-    var      @Obj
-    type_def @Type
-    enum_ty  @Type
-    enum_val  i32;
+  Name struct {
+    o @Obj
+    t @Type
+    v  i32;
   }
 
   Scope struct {
@@ -51,8 +49,8 @@ current_type   @Type
 current_fn     @Obj
 gotos          @Node
 labels         @Node
-brk_label      @char
-cont_label     @char
+brk_label      @i8
+cont_label     @i8
 current_switch @Node
 
 add                (k @@Token) @Node
@@ -93,15 +91,15 @@ lvar_initializer   (k @@Token o @Obj) @Node
 gvar_initializer   (k @@Token o @Obj)
 
 eval               (node  @Node                                               ) i64
-eval2              (node  @Node   label @@@char                               ) i64
-eval_rval          (node  @Node   label @@@char                               ) i64
+eval2              (node  @Node   label @@@i8                               ) i64
+eval_rval          (node  @Node   label @@@i8                               ) i64
 is_const_expr      (node  @Node                                               ) bool
 eval_double        (node  @Node                                               ) f64
 new_add            (j @Token t @Type a   @Node   b @Node                       ) @Node
 new_sub            (j @Token t @Type a   @Node   b @Node                       ) @Node
 get_struct_member  (t    @Type   j @Token                                  ) @Member;
 
-s1 [1024]char s2 [1024]char;
+s1 [1024]i8 s2 [1024]i8;
 format_types(t @Type u @Type) = return
   (s1[0] = ""@) ;: (s2[0] = ""@) ;:
   format_type t &s1[0] ;:
@@ -109,7 +107,7 @@ format_types(t @Type u @Type) = return
   none;;
 enter_scope(void) = let sc =cast @Scope  (calloc 1ul sizeof Scope) ; (sc.s = scope); (scope = sc);;
 leave_scope(void) = (scope = scope.s);;
-push_scope(name@ char) @VarScope = return cast @VarScope calloc 1ul sizeof VarScope is sc hashmap_put &scope.vars name cast @  sc ;: sc;;
+push_scope(name@ i8) @Name = return cast @Name calloc 1ul sizeof Name is sc hashmap_put &scope.vars name cast @  sc ;: sc;;
 search_scope(j @Token which(_@ Scope)@HashMap)@ = for (let sc@ Scope = scope; sc; sc = sc.s) { let sc2 = hashmap_get2 which@ sc j.loc j.len; if sc2 return sc2; ; return cast @ 0 ; ;
 scope_vars(s @Scope) @HashMap = return &s.vars;;
 scope_tags(s @Scope) @HashMap = return &s.tags;;
@@ -121,13 +119,13 @@ new_initializer(t @Type is_flexible bool) @Initializer =
     if (is_flexible && t.size < 0) {
       (e.is_flexible = true);
       return e;;
-    (e.children = (calloc cast unsigned i64 t.array_len  sizeof @Initializer as @@Initializer));
-    for (let i i32 = 0; i < t.array_len; i += 1) (e.children[i] = new_initializer t.base false);
+    (e.children = (calloc cast %i64 t.array_len  sizeof @Initializer as @@Initializer));
+    for (let i i32 = 0; i < t.array_len; i += 1) (e.children[i] = new_initializer t.a false);
     return e;;
   if (t.kind == TY_STRUCT || t.kind == TY_UNION) {
     let len = 0;
     for (let g@ Member = t.members; g; g = g.s) (len += 1);
-    (e.children = (calloc cast unsigned i64 len  sizeof @Initializer as @@Initializer));
+    (e.children = (calloc cast %i64 len  sizeof @Initializer as @@Initializer));
     for (let g@ Member = t.members; g; g = g.s) {
       if (is_flexible && t.is_flexible && !g.s) {
         let child = cast @Initializer calloc 1ul sizeof Initializer;
@@ -138,20 +136,20 @@ new_initializer(t @Type is_flexible bool) @Initializer =
     return e;;
   return e;;
 
-new_var(name @char t @Type) @Obj = return
+new_var(name @i8 t @Type) @Obj = return
   (calloc 1ul sizeof Obj as @Obj) is o
   (o.name = name) ;:
   (o.t = t) ;:
   (o.alignment = t.alignment) ;:
-  ((push_scope name).var = o) ;:
+  ((push_scope name).o = o) ;:
   o;;
-new_lvar(name @char t @Type) @Obj = return
+new_lvar(name @i8 t @Type) @Obj = return
   new_var name t is o
   (o.is_local = true) ;:
   (o.s = locals) ;:
   (locals = o) ;:
   o;;
-new_gvar(name @char t @Type) @Obj = return
+new_gvar(name @i8 t @Type) @Obj = return
   new_var name t is o
   (o.s = globals) ;:
   (o.is_export = false) ;:
@@ -159,9 +157,9 @@ new_gvar(name @char t @Type) @Obj = return
   (globals = o) ;:
   o;;
 nunid i32 = 0;
-new_unique_name(void) @char = return (format ".L..%d" (nunid += 1));;
+new_unique_name(void) @i8 = return (format ".L..%d" (nunid += 1));;
 new_anon_gvar(t @Type) @Obj = return new_gvar new_unique_name t;;
-new_string_literal(p @char t @Type t2 @Type) @Obj = return new_anon_gvar t2 is o (o.init_data = p) ;: o;;
+new_string_literal(p @i8 t @Type t2 @Type) @Obj = return new_anon_gvar t2 is o (o.init_data = p) ;: o;;
 
 // ######## ########  ######## ########
 //    ##    ##     ## ##       ##
@@ -249,11 +247,11 @@ new_deref(j @Token t @Type a @Node) @Node = return
   (  a.t.kind != TY_PTR
   && format_types a.t ty_void
   ;: (error_tok j "(%s @) must be (@T @)" s1) as void)
-;:(  a.t.base.kind == TY_VOID
+;:(  a.t.a.kind == TY_VOID
   && format_types a.t ty_void
   ;: (error_tok j "(%s @) may not be (@void @)") as void )
-;: expect_type j t a.t.base
-;: new_unary   j   a.t.base ND_DEREF a ;;
+;: expect_type j t a.t.a
+;: new_unary   j   a.t.a ND_DEREF a ;;
 new_deref_all(j @Token t @Type a @Node) @Node = return
    a for e
   (  e.t.kind == TY_PTR
@@ -303,7 +301,7 @@ new_add   (j @Token t @Type a @Node b @Node) @Node = return
     &&     !type_equal a.t b.t
     &&     format_types a.t b.t
     ;: error_tok j "(%s + %s) must be (T + T) or (@T + U) or (T + @U)" s1 s2 ) as void )
-;: new_binary j ((a.t.kind == TY_PTR || a.t.kind == TY_ARRAY) ? pointer_to(a.t.base) : (b.t.kind == TY_PTR || b.t.kind == TY_ARRAY) ? pointer_to(b.t.base) : a.t) ND_ADD a b;;
+;: new_binary j ((a.t.kind == TY_PTR || a.t.kind == TY_ARRAY) ? pointer_to(a.t.a) : (b.t.kind == TY_PTR || b.t.kind == TY_ARRAY) ? pointer_to(b.t.a) : a.t) ND_ADD a b;;
 new_sub(j @Token t @Type a @Node b @Node) @Node = return
   (  a.t.kind != TY_PTR 
   && a.t.kind != TY_ARRAY
@@ -316,7 +314,7 @@ new_sub(j @Token t @Type a @Node b @Node) @Node = return
   && !type_equal a.t b.t
   &&(  format_types a.t b.t
     ;: error_tok j "(%s - %s) must be (T - T) or (@T - U) or (@T - @U)" s1 s2 ) as void )
-;: new_binary j ((a.t.kind == TY_PTR || a.t.kind == TY_ARRAY) ? pointer_to(a.t.base) : (b.t.kind == TY_PTR || b.t.kind == TY_ARRAY) ? ty_i64 : a.t) ND_SUB a b
+;: new_binary j ((a.t.kind == TY_PTR || a.t.kind == TY_ARRAY) ? pointer_to(a.t.a) : (b.t.kind == TY_PTR || b.t.kind == TY_ARRAY) ? ty_i64 : a.t) ND_SUB a b
 ;;
 new_neg(j @Token t @Type a @Node) @Node = return
   new_unary j a.t ND_NEG a ;;
@@ -339,8 +337,8 @@ new_member_access(j @Token t @Type a @Node) @Node = return
 :; (e.member = g)
 ;;
 new_call(j @Token t @Type a @Node) @Node = return
-   expect_type j t a.t.return_ty 
-;: new_unary j a.t.return_ty ND_FUNCALL a is e e
+   expect_type j t a.t.a 
+;: new_unary j a.t.a ND_FUNCALL a is e e
 :;( (  e.t.kind == TY_STRUCT
     || e.t.kind == TY_UNION )
   && (e.ret_buffer = new_lvar "" e.t)
@@ -364,13 +362,13 @@ new_call(j @Token t @Type a @Node) @Node = return
 
 
 
-get_ident(k@ Token) @char = return
+get_ident(k@ Token) @i8 = return
   ((k.kind != TK_IDENT) && (error_tok k "expected an nonymousifier") as void) ;:
-  strndup k.loc cast unsigned i64 k.len ;;
+  strndup k.loc cast %i64 k.len ;;
 find_type(k @Token) @Type = return
   (k.kind != TK_IDENT) ? cast @Type 0  :
-  cast @VarScope search_scope k &scope_vars is sc
-  (!!sc ? sc.type_def : cast @Type 0 );;
+  cast @Name search_scope k &scope_vars is sc
+  (!!sc ? sc.t : cast @Type 0 );;
 push_tag_scope(k@ Token t@ Type) = return hashmap_put2 &scope.tags k.loc k.len cast @ t ;;
 
 declspec(k @@Token v@ VarAttr) =
@@ -391,13 +389,16 @@ declspec(k @@Token v@ VarAttr) =
     else if consume k k@ "restrict";
     else return;;;
 type_specifier(k @@Token)@ Type =
-  if consume k k@ "i8"  return ty_i8; else
-  if consume k k@ "i16" return ty_i16; else
-  if consume k k@ "i32" return ty_i32; else
-  if consume k k@ "i64" return ty_i64; else
-  if consume k k@ "f32" return ty_f32; else
-  if consume k k@ "f64" return ty_f64; else
-  if consume k k@ "f80" return ty_f80; else
+  if consume k k@ "undefined"   return cast @Type 0; else
+  if consume k k@ "void"   return ty_void; else
+  if consume k k@ "bool"   return ty_bool; else
+  if consume k k@ "i8"     return ty_i8;   else
+  if consume k k@ "i16"    return ty_i16;  else
+  if consume k k@ "i32"    return ty_i32;  else
+  if consume k k@ "i64"    return ty_i64;  else
+  if consume k k@ "f32"    return ty_f32;  else
+  if consume k k@ "f64"    return ty_f64;  else
+  if consume k k@ "f80"    return ty_f80;  else
   if consume k k@ "struct" return struct_decl      k; else
   if consume k k@ "union"  return union_decl       k; else
   if consume k k@ "enum"   return enum_specifier   k; else
@@ -407,57 +408,10 @@ type_specifier(k @@Token)@ Type =
     return current_type;;
   else {
     let ty2 = find_type k@;
-    if ty2{
+    if ty2 {
       (k@ = k.s);
       return ty2;;
-    else {
-      let counter = the enum 
-        VOID     =  0
-        BOOL     = (1 <<  2)
-        CHAR     = (1 <<  4)
-        SHORT    = (1 <<  6)
-        INT      = (1 <<  8)
-        LONG     = (1 << 10)
-        FLOAT    = (1 << 12)
-        DOUBLE   = (1 << 14)
-        SIGNED   = (1 << 17)
-        UNSIGNED = (1 << 18);
-        VOID;
-      for (;;) {
-        if equal k@ "void"     (counter += VOID    ); else
-        if equal k@ "bool"     (counter += BOOL    ); else
-        if equal k@ "char"     (counter += CHAR    ); else
-        if equal k@ "i16"    (counter += SHORT   ); else
-        if equal k@ "i32"      (counter += INT     ); else
-        if equal k@ "i64"     (counter += LONG    ); else
-        if equal k@ "f32"    (counter += FLOAT   ); else
-        if equal k@ "f64"   (counter += DOUBLE  ); else
-          break;
-        (k@ = k.s);;
-      switch counter {
-        case (0                           ) : return ty_void;
-        case (BOOL                        ) : return ty_bool;
-        case (CHAR                        ) :
-        case (SIGNED + CHAR               ) : return ty_i8;
-        case (SHORT                       ) :
-        case (SHORT + INT                 ) :
-        case (SIGNED + SHORT              ) :
-        case (SIGNED + SHORT + INT        ) : return ty_i16;
-        case (INT                         ) :
-        case (SIGNED                      ) :
-        case (SIGNED + INT                ) : return ty_i32;
-        case (LONG                        ) :
-        case (LONG + INT                  ) :
-        case (LONG + LONG                 ) :
-        case (LONG + LONG + INT           ) :
-        case (SIGNED + LONG               ) :
-        case (SIGNED + LONG + INT         ) :
-        case (SIGNED + LONG + LONG        ) :
-        case (SIGNED + LONG + LONG + INT  ) : return ty_i64;
-        case (FLOAT                       ) : return ty_f32;
-        case (DOUBLE                      ) : return ty_f64;
-        case (LONG + DOUBLE               ) : return ty_f80;;
-      (error_tok k@ "invalid type");;;;
+    else return ty_void;;;
 func_params(k @@Token) @Type =
   if (equal k@ "void" && consume k k.s ")") return func_type type_suffix k;
   let
@@ -497,7 +451,6 @@ typeof_specifier(k @@Token) @Type = return
 type_suffix(k @@Token) @Type = return
   (k@ = k@ for j ((equal j "const" || equal j "volatile") && j.s)) ;:
   consume k k@ "%" ? ring_of type_suffix k :
-  consume k k@ "unsigned" ? ring_of type_suffix k :
   consume k k@ "(" ? func_params            k :
   consume k k@ "[" ? array_dimensions       k :
   consume k k@ "@" ? pointer_to type_suffix k :
@@ -517,8 +470,8 @@ enum_specifier(k @@Token) @Type =
       (k@ = k.s);
       (l = cast i32 const_expr k);;
     let sc = push_scope p;
-    (sc.enum_ty = t);
-    (sc.enum_val = (l :; (l += 1)));;
+    (sc.t = t);
+    (sc.v = (l :; (l += 1)));;
   return t;;
 declaration(k @@Token v @VarAttr) @Node =
   let
@@ -531,7 +484,7 @@ declaration(k @@Token v @VarAttr) @Node =
     if !equal t.name "_" {
       if (!!v && v.is_static) {
         new_anon_gvar t is o
-        ((push_scope get_ident t.name).var = o) ;:
+        ((push_scope get_ident t.name).o = o) ;:
         (equal k@ "=" && (
           (k@ = k.s) ;:
           gvar_initializer k o));;
@@ -557,17 +510,17 @@ declaration(k @@Token v @VarAttr) @Node =
 
 
 string_initializer(k @@Token e@ Initializer)  =
-  if e.is_flexible (e@ = (new_initializer array_of e.t.base (cast @Type k.t ).array_len false)@);
+  if e.is_flexible (e@ = (new_initializer array_of e.t.a (cast @Type k.t ).array_len false)@);
   let len = minl cast i64 e.t.array_len cast i64 (cast @Type k.t).array_len;
-  switch e.t.base.size {
+  switch e.t.a.size {
   case 1: { let str = k.str                ; for (let i i32 = 0; i < len; i += 1) (e.children[i].expr = new_lit k@ cast @Type 0 ty_i32 cast i64 str[i] 0.0l); (k@ = k.s); return; ;
-  case 2: { let str = cast @unsigned i16 k.str ; for (let i i32 = 0; i < len; i += 1) (e.children[i].expr = new_lit k@ cast @Type 0 ty_i32 cast i64 str[i] 0.0l); (k@ = k.s); return; ;
-  case 4: { let str = cast @unsigned i32 k.str ; for (let i i32 = 0; i < len; i += 1) (e.children[i].expr = new_lit k@ cast @Type 0 ty_i32 cast i64 str[i] 0.0l); (k@ = k.s); return; ;;
+  case 2: { let str = cast @%i16 k.str ; for (let i i32 = 0; i < len; i += 1) (e.children[i].expr = new_lit k@ cast @Type 0 ty_i32 cast i64 str[i] 0.0l); (k@ = k.s); return; ;
+  case 4: { let str = cast @%i32 k.str ; for (let i i32 = 0; i < len; i += 1) (e.children[i].expr = new_lit k@ cast @Type 0 ty_i32 cast i64 str[i] 0.0l); (k@ = k.s); return; ;;
   none ;;
 count_array_init_elements(j @Token t @Type) i32 =
   let
         k = &j
-    dummy = new_initializer t.base true
+    dummy = new_initializer t.a true
     i = 0
     max = 0;
   while ! consume k k@ ";" {
@@ -579,12 +532,12 @@ array_initializer1(k @@Token e@ Initializer)  =
   expect k "{";
   if e.is_flexible {
     let l = count_array_init_elements k@ e.t;
-    (e@ = (new_initializer array_of e.t.base l false)@);;
+    (e@ = (new_initializer array_of e.t.a l false)@);;
   0 for i (!consume k k@ ";" && ((i < e.t.array_len) && initializer2 k e.children[i] as void) ;: (i + 1));;
 array_initializer2(k @@Token e @Initializer i i32)  =
   if e.is_flexible {
     let len = count_array_init_elements k@ e.t;
-    (e@ = (new_initializer array_of e.t.base len false)@);;
+    (e@ = (new_initializer array_of e.t.a len false)@);;
   for (; i < e.t.array_len && ! equal k@ ";"; i += 1) {
     let start = k@;
     if (equal k@ "[" || equal k@ ".") {
@@ -667,25 +620,25 @@ init_desg_expr(z @InitDesg j @Token) @Node = return
 
 
 
-read_buf(x @char n i32) unsigned i64 = return
-  (n == 1) ? cast unsigned i64 (                     x)@ :
-  (n == 2) ? cast unsigned i64 (cast @unsigned i16 x)@ :
-  (n == 4) ? cast unsigned i64 (cast @unsigned i32   x)@ :
-  (n == 8) ?                    (cast @unsigned i64  x)@ :
+read_buf(x @i8 n i32) %i64 = return
+  (n == 1) ? cast %i64 (                     x)@ :
+  (n == 2) ? cast %i64 (cast @%i16 x)@ :
+  (n == 4) ? cast %i64 (cast @%i32   x)@ :
+  (n == 8) ?                    (cast @%i64  x)@ :
              0ul                                         	;;
 
-write_buf(x @char v unsigned i64 sz i32) = return
-  (sz == 1) ? ((cast @unsigned i8  x)@ = cast unsigned i8  v) :
-  (sz == 2) ? ((cast @unsigned i16 x)@ = cast unsigned i16 v) :
-  (sz == 4) ? ((cast @unsigned i32   x)@ = cast unsigned i32   v) :
-  (sz == 8) ? ((cast @unsigned i64  x)@ =                     v) :
+write_buf(x @i8 v %i64 sz i32) = return
+  (sz == 1) ? ((cast @%i8  x)@ = cast %i8  v) :
+  (sz == 2) ? ((cast @%i16 x)@ = cast %i16 v) :
+  (sz == 4) ? ((cast @%i32   x)@ = cast %i32   v) :
+  (sz == 8) ? ((cast @%i64  x)@ =                     v) :
                  none                                                ;;
 
-write_gvar_data(cur@ Relocation init@ Initializer t@ Type buf@ char offset i32)@ Relocation =
+write_gvar_data(cur@ Relocation init@ Initializer t@ Type buf@ i8 offset i32)@ Relocation =
   if (t.kind == TY_ARRAY) {
-    let sz = t.base.size;
+    let sz = t.a.size;
     for (let i i32 = 0; i < t.array_len; i += 1) {
-      (cur = write_gvar_data cur init.children[i] t.base buf (offset + sz * i));;
+      (cur = write_gvar_data cur init.children[i] t.a buf (offset + sz * i));;
     return cur;;
   if (t.kind == TY_STRUCT) {
     for (let g@ Member = t.members; g; g = g.s) {
@@ -696,7 +649,7 @@ write_gvar_data(cur@ Relocation init@ Initializer t@ Type buf@ char offset i32)@
         let oldval = read_buf loc (cast @Type g.t ).size;
         let newval = eval expr;
         let mask = ((1 << g.bit_width) - 1);
-        let combined = (oldval | cast unsigned i64 the i64 ((newval & cast i64 mask) << cast i64 g.bit_offset));
+        let combined = (oldval | cast %i64 the i64 ((newval & cast i64 mask) << cast i64 g.bit_offset));
         write_buf loc combined (cast @Type g.t ).size;;
       else {
         (cur = write_gvar_data cur init.children[g.idx] cast @Type g.t  buf (offset + g.offset));;;
@@ -711,11 +664,11 @@ write_gvar_data(cur@ Relocation init@ Initializer t@ Type buf@ char offset i32)@
   if (t.kind == TY_FLOAT64) {
     ((buf + offset as @f64)@ = eval_double init.expr);
     return cur;;
-  let label = (0 as @@char);
+  let label = (0 as @@i8);
   let val = eval2 init.expr &label;
   if !label {
     let a = (buf + offset);
-    write_buf a cast unsigned i64 val  t.size;
+    write_buf a cast %i64 val  t.size;
     return cur;;
   let rel = (calloc 1ul sizeof Relocation as @Relocation);
   (rel.offset = offset);
@@ -730,7 +683,7 @@ create_lvar_init(e @Initializer t @Type z @InitDesg j @Token)@ Node =
     for (let i i32 = 0; i < t.array_len; i += 1) {
       let
         z2 = new InitDesg {z i;
-        b = create_lvar_init e.children[i] t.base &z2 j;
+        b = create_lvar_init e.children[i] t.a &z2 j;
       (a = new_neth j cast @Type 0 a b);;
     return a;;
   if (t.kind == TY_STRUCT && !e.expr) {
@@ -758,7 +711,7 @@ gvar_initializer(k @@Token o@ Obj) =
   &o.t is t
   initializer k t is e
   new Relocation {; is head
-  cast @char calloc 1ul cast unsigned i64 o.t.size  is buf
+  cast @i8 calloc 1ul cast %i64 o.t.size  is buf
   cast void (write_gvar_data &head e o.t buf 0) ;:
   (o.init_data = buf) ;:
   (o.rel = head.s);;
@@ -785,11 +738,11 @@ stmt(k @@Token) @Node = return
   (consume k k@ "return" ?
     new_node j cast @Type 0 ND_RETURN is e
     (consume k k@ ";" ? e :
-    (e.a = infix k current_fn.t.return_ty)     ;:
+    (e.a = infix k current_fn.t.a)     ;:
     expect k ";"          ;:
-    current_fn.t.return_ty is t
-    (!type_equal current_fn.t.return_ty e.a.t &&
-      ( format_types e.a.t current_fn.t.return_ty ;:
+    current_fn.t.a is t
+    (!type_equal current_fn.t.a e.a.t &&
+      ( format_types e.a.t current_fn.t.a ;:
         (error_tok e.a.j "asymmetric return from %s to %s" s1 s2)) as void) ;:
     e) :
   consume k k@ "if" ?
@@ -946,7 +899,7 @@ expr_stmt(k @@Token)@ Node = return
 //  ####    ####   #    #   ####     #    ######    ##    #    #  ######
 
 
-eval2(e@ Node label @@@char) i64 = return
+eval2(e@ Node label @@@i8) i64 = return
   (e.kind == ND_NOT   ) ? cast i64 !eval e.a              :
   (e.kind == ND_ADD   ) ? (eval2 e.a label + eval e.a.s)   :
   (e.kind == ND_SUB   ) ? (eval2 e.a label - eval e.a.s)   :
@@ -959,19 +912,19 @@ eval2(e@ Node label @@@char) i64 = return
   (e.kind == ND_EQ    ) ? (eval e.a == eval e.a.s as i64) :
   (e.kind == ND_NE    ) ? (eval e.a != eval e.a.s as i64) :
   (e.kind == ND_SHR   ) ? ((e.a.t.kind == TY_UNSIGNED) &&
-                           e.t.size == 8        )  ? (cast unsigned i64 eval e.a >> cast unsigned i64 eval e.a.s as i64) :
+                           e.t.size == 8        )  ? (cast %i64 eval e.a >> cast %i64 eval e.a.s as i64) :
                                                       (                   eval e.a >>                    eval e.a.s        ) :
-  (e.kind == ND_DIV   ) ?  (e.a.t.kind == TY_UNSIGNED)     ? (cast unsigned i64 eval e.a /  cast unsigned i64 eval e.a.s as i64) :
+  (e.kind == ND_DIV   ) ?  (e.a.t.kind == TY_UNSIGNED)     ? (cast %i64 eval e.a /  cast %i64 eval e.a.s as i64) :
                                                       (                   eval e.a /                     eval e.a.s        ) :
-  (e.kind == ND_MOD   ) ?  (e.a.t.kind == TY_UNSIGNED)     ? (cast unsigned i64 eval e.a %  cast unsigned i64 eval e.a.s as i64) :
+  (e.kind == ND_MOD   ) ?  (e.a.t.kind == TY_UNSIGNED)     ? (cast %i64 eval e.a %  cast %i64 eval e.a.s as i64) :
                                                       (                   eval e.a %                     eval e.a.s        ) :
-  (e.kind == ND_LT    ) ?  (e.a.t.kind == TY_UNSIGNED)     ? (cast unsigned i64 eval e.a <  cast unsigned i64 eval e.a.s as i64) :
+  (e.kind == ND_LT    ) ?  (e.a.t.kind == TY_UNSIGNED)     ? (cast %i64 eval e.a <  cast %i64 eval e.a.s as i64) :
                                                       (                   eval e.a <                     eval e.a.s as i64) :
-  (e.kind == ND_LE    ) ?  (e.a.t.kind == TY_UNSIGNED)     ? (cast unsigned i64 eval e.a <= cast unsigned i64 eval e.a.s as i64) :
+  (e.kind == ND_LE    ) ?  (e.a.t.kind == TY_UNSIGNED)     ? (cast %i64 eval e.a <= cast %i64 eval e.a.s as i64) :
                                                       (                   eval e.a <=                    eval e.a.s as i64) :
-  (e.kind == ND_GT    ) ?  (e.a.t.kind == TY_UNSIGNED)     ? (cast unsigned i64 eval e.a >  cast unsigned i64 eval e.a.s as i64) :
+  (e.kind == ND_GT    ) ?  (e.a.t.kind == TY_UNSIGNED)     ? (cast %i64 eval e.a >  cast %i64 eval e.a.s as i64) :
                                                       (                   eval e.a >                     eval e.a.s as i64) :
-  (e.kind == ND_GE    ) ?  (e.a.t.kind == TY_UNSIGNED)     ? (cast unsigned i64 eval e.a >= cast unsigned i64 eval e.a.s as i64) :
+  (e.kind == ND_GE    ) ?  (e.a.t.kind == TY_UNSIGNED)     ? (cast %i64 eval e.a >= cast %i64 eval e.a.s as i64) :
                                                       (                   eval e.a >=                    eval e.a.s as i64) :
   (e.kind == ND_COND  ) ? !!eval e.a ? eval2 e.a.s label :
                                           eval2 e.a.s.s  label :
@@ -985,9 +938,9 @@ eval2(e@ Node label @@@char) i64 = return
   (e.kind == ND_CAST  ) ?
     eval2 e.a label is l
     (
-    (e.t.size == 1) ? ((e.t.kind == TY_UNSIGNED) ? cast i64 cast unsigned i8  the i64 l : cast i64 cast  char  the i64 l) :
-    (e.t.size == 2) ? ((e.t.kind == TY_UNSIGNED) ? cast i64 cast unsigned i16 the i64 l : cast i64 cast i16 the i64 l) :
-    (e.t.size == 4) ? ((e.t.kind == TY_UNSIGNED) ? cast i64 cast unsigned i32 the i64 l : cast i64 cast i32 the i64 l) :
+    (e.t.size == 1) ? ((e.t.kind == TY_UNSIGNED) ? cast i64 cast %i8  the i64 l : cast i64 cast  i8  the i64 l) :
+    (e.t.size == 2) ? ((e.t.kind == TY_UNSIGNED) ? cast i64 cast %i16 the i64 l : cast i64 cast i16 the i64 l) :
+    (e.t.size == 4) ? ((e.t.kind == TY_UNSIGNED) ? cast i64 cast %i32 the i64 l : cast i64 cast i32 the i64 l) :
                                                                             l)                                      :
   (e.kind == ND_ADDR     ) ? eval_rval e.a label :
   (e.kind == ND_MEMBER   ) ?
@@ -1001,8 +954,8 @@ eval2(e@ Node label @@@char) i64 = return
   (e.kind == ND_NUM      ) ? e.val :
   (error_tok e.j "not a compile-time constant") ;:
   0l;;
-eval(e@ Node) i64 = return eval2 e cast @@@char 0;;
-eval_rval(e@ Node label @@@char) i64 = return
+eval(e@ Node) i64 = return eval2 e cast @@@i8 0;;
+eval_rval(e@ Node label @@@i8) i64 = return
   (e.kind == ND_VAR) ?
     e.var.is_local ? (error_tok e.j "not a compile-time constant") ;: 0l :
     (label@ = &e.var.name) ;: 0l :
@@ -1048,17 +1001,17 @@ export const_expr(k@@ Token) i64 = return eval tertiary k ty_i64;;
 // #        #  #   #       #   #   #       #    #  #    #  #  #    #  #   ## 
 // ######  #    #  #       #    #  ######   ####    ####   #   ####   #    # 
 
-nullary        (k @@Token t @Type          op @char                                 new_@ (j @Token t @Type                                ) @Node                             ) @Node = return equal k@ op && (advance k is j                                  new_@ j t                             );;
-nullary_type   (k @@Token t @Type          op @char                                 new_@ (j @Token t @Type                 t2 @Type       ) @Node                             ) @Node = return equal k@ op && (advance k is j type_suffix k is t2              new_@ j t           t2                 );;
-unary          (k @@Token t @Type          op @char                                 new_@ (j @Token t @Type a @Node                        ) @Node s@ (k @@Token t @Type) @Node) @Node = return equal k@ op && (advance k is j                                  new_@ j t    s@ k t                  );;
-unary_type     (k @@Token t @Type          op @char                                 new_@ (j @Token t @Type a @Node         t2 @Type       ) @Node s@ (k @@Token t @Type) @Node) @Node = return equal k@ op && (advance k is j type_suffix k is t2              new_@ j t    s@ k t t2                 );;
-binary_right   (k @@Token t @Type a @@Node op @char                                 new_@ (j @Token t @Type a @Node b @Node                ) @Node b@ (k @@Token t @Type) @Node) bool  = return equal k@ op && (advance k is j                          (a@ =   new_@ j t a@ b@ k t) ;: true            );;
-binary_left    (k @@Token t @Type a @Node  op @char                                 new_@ (j @Token t @Type a @Node b @Node                ) @Node s@ (k @@Token t @Type) @Node) @Node = return equal k@ op && (advance k is j                                  new_@ j t a  s@ k t                   );;
-binary_left_var(k @@Token t @Type a @Node  op @char lvar_@ (k @@Token t @Type) @Obj new_@ (j @Token t @Type a @Node b @Node         o @Obj ) @Node s@ (k @@Token t @Type) @Node) @Node = return equal k@ op && (advance k is j enter_scope ;: lvar_@ k a.t is o new_@ j t a  s@ k t   o :; leave_scope);;
+nullary        (k @@Token t @Type          op @i8                                 new_@ (j @Token t @Type                                ) @Node                             ) @Node = return equal k@ op && (advance k is j                                  new_@ j t                             );;
+nullary_type   (k @@Token t @Type          op @i8                                 new_@ (j @Token t @Type                 t2 @Type       ) @Node                             ) @Node = return equal k@ op && (advance k is j type_suffix k is t2              new_@ j t           t2                 );;
+unary          (k @@Token t @Type          op @i8                                 new_@ (j @Token t @Type a @Node                        ) @Node s@ (k @@Token t @Type) @Node) @Node = return equal k@ op && (advance k is j                                  new_@ j t    s@ k t                  );;
+unary_type     (k @@Token t @Type          op @i8                                 new_@ (j @Token t @Type a @Node         t2 @Type       ) @Node s@ (k @@Token t @Type) @Node) @Node = return equal k@ op && (advance k is j type_suffix k is t2              new_@ j t    s@ k t t2                 );;
+binary_right   (k @@Token t @Type a @@Node op @i8                                 new_@ (j @Token t @Type a @Node b @Node                ) @Node b@ (k @@Token t @Type) @Node) bool  = return equal k@ op && (advance k is j                          (a@ =   new_@ j t a@ b@ k t) ;: true            );;
+binary_left    (k @@Token t @Type a @Node  op @i8                                 new_@ (j @Token t @Type a @Node b @Node                ) @Node s@ (k @@Token t @Type) @Node) @Node = return equal k@ op && (advance k is j                                  new_@ j t a  s@ k t                   );;
+binary_left_var(k @@Token t @Type a @Node  op @i8 lvar_@ (k @@Token t @Type) @Obj new_@ (j @Token t @Type a @Node b @Node         o @Obj ) @Node s@ (k @@Token t @Type) @Node) @Node = return equal k@ op && (advance k is j enter_scope ;: lvar_@ k a.t is o new_@ j t a  s@ k t   o :; leave_scope);;
 
-left(k @@Token t @Type op @char parse_@ (k @@Token t @Type) @Node) @Node = return
+left(k @@Token t @Type op @i8 parse_@ (k @@Token t @Type) @Node) @Node = return
 equal k@ op && parse_@ k t ;;
-right(k @@Token t @Type a @Node op @char parse_@ (k @@Token t @Type a @Node) @Node) @Node = return
+right(k @@Token t @Type a @Node op @i8 parse_@ (k @@Token t @Type a @Node) @Node) @Node = return
 equal k@ op && parse_@ k t a ;;
 
 array_access(k @@Token t @Type a @Node) @Node = return
@@ -1134,20 +1087,20 @@ primary(k @@Token t @Type) @Node = return
       !a ? new_reference k@ t o : new_neth j t a new_reference k@ t o :
     consume k k@ "(" ? quaternary k t :; expect k ")" :
     (k.kind == TK_IDENT) ?
-      cast @VarScope search_scope k@ &scope_vars is sc
+      cast @Name search_scope k@ &scope_vars is sc
       (k@ = k.s) ;:
       (!!sc ?
-        ( !!sc.var && sc.var.is_function &&
+        ( !!sc.o && sc.o.is_function &&
           ( &current_fn.refs is a
-            (!!current_fn ? strarray_push a sc.var.name :
-            ( sc.var.is_root = true ) ) ) as void) ;:
-        !!sc.var     ? new_reference k@ t sc.var                     :
-        !!sc.enum_ty ? new_lit k@ t sc.enum_ty cast i64 sc.enum_val 0.0l:
+            (!!current_fn ? strarray_push a sc.o.name :
+            ( sc.o.is_root = true ) ) ) as void) ;:
+        !!sc.o     ? new_reference k@ t sc.o                     :
+        !!sc.t ? new_lit k@ t sc.t cast i64 sc.v 0.0l:
         (error_tok k@ "internal compiler error") ;: cast @Node 0   :
       (error_tok k@ "lookup failed") ;: cast @Node 0) :
     (k.kind == TK_STR) ?
       new_string_literal k.str t cast @Type k.t  is o
-      new_cast k@ t new_the k@ cast @Type k.t new_reference k@ cast @Type k.t o o.t pointer_to (cast @Type k.t).base :;
+      new_cast k@ t new_the k@ cast @Type k.t new_reference k@ cast @Type k.t o o.t pointer_to (cast @Type k.t).a :;
       cast void advance k :
     (k.kind == TK_NUM) ?
       ( new_lit k@ t cast @Type k.t k.val k.fval :; cast void advance k ) :
@@ -1267,7 +1220,7 @@ struct_members(k @@Token t @Type)  =
       (cur.s = g);
       (cur = cur.s);;;
   if (cur != &head && (cast @Type cur.t ).kind == TY_ARRAY && (cast @Type cur.t ).array_len < 0) {
-    (cur.t = array_of (cast @Type cur.t ).base 0 as @);
+    (cur.t = array_of (cast @Type cur.t ).a 0 as @);
     (t.is_flexible = true);;
   (t.members = head.s);;
 
@@ -1327,14 +1280,14 @@ get_struct_member(t @Type j @Token) @Member =
   for (let g@ Member = t.members; g; g = g.s) {
     if (((cast @Type g.t ).kind == TY_STRUCT || (cast @Type g.t ).kind == TY_UNION) && (!g.name || equal g.name "_")) {
       if cast bool get_struct_member cast @Type g.t j return g;;
-    else if (g.name.len == j.len && ! strncmp cast @  g.name.loc j.loc cast unsigned i64 j.len ) return g;;
+    else if (g.name.len == j.len && ! strncmp cast @  g.name.loc j.loc cast %i64 j.len ) return g;;
   return 0 as @Member;;
 typedecl(j @Token) @Token = return
   j for j
   (  !equal j ";" &&
     (  declarator &j is t
        (!t.name && (error_tok t.name_pos "type name may not be omitted in type alias declaration") as void)
-    ;: ((push_scope get_ident t.name).type_def = t)
+    ;: ((push_scope get_ident t.name).t = t)
     ;: j ) );;
 create_param_lvars(param@ Type) = return
   !!param ?
@@ -1343,9 +1296,9 @@ create_param_lvars(param@ Type) = return
       (error_tok param.name_pos "parameter name omitted") :
     (new_lvar get_ident param.name param as) :
   none;;
-find_func(name @char) @Obj = return
-  cast @VarScope hashmap_get &(scope for s s.s).vars name is s
-  (!!s && s.var.is_function && s.var);;
+find_func(name @i8) @Obj = return
+  cast @Name hashmap_get &(scope for s s.s).vars name is s
+  (!!s && s.o.is_function && s.o);;
 mark_live(o@ Obj) = return
     o.is_function
   && !o.is_live
@@ -1377,7 +1330,7 @@ function(k @@Token attr @VarAttr) = return
   (locals = 0 as @Obj) ;:
   enter_scope ;:
   create_param_lvars t.params ;:
-  t.return_ty is rty
+  t.a is rty
   (((rty.kind == TY_STRUCT || rty.kind == TY_UNION) && rty.size > 16) && new_lvar "" pointer_to rty as) ;:
   (o.params = locals) ;:
   (t.is_variadic && (o.va_area = new_lvar "__va_area__" array_of ty_i8 136) as void) ;:
@@ -1429,8 +1382,8 @@ export parse(j @Token) @Obj = return
   (current_fn     = cast @Obj   0) ;:
   (gotos          = cast @Node  0) ;:
   (labels         = cast @Node  0) ;:
-  (brk_label      = cast @char  0) ;:
-  (cont_label     = cast @char  0) ;:
+  (brk_label      = cast @i8  0) ;:
+  (cont_label     = cast @i8  0) ;:
   (current_switch = cast @Node  0) ;:
   (j for j (j.kind != TK_EOF && 
     new VarAttr {; is v

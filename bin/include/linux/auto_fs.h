@@ -31,9 +31,9 @@
  * do not break the binary ABI interface by changing the structure size.
  */
 #if defined(__ia64__) || defined(__alpha__) /* pure 64bit architectures */
-typedef unsigned i64 autofs_wqt_t;
+typedef %i64 autofs_wqt_t;
 #else
-typedef unsigned i32 autofs_wqt_t;
+typedef %i32 autofs_wqt_t;
 #endif
 
 /* Packet types */
@@ -49,14 +49,14 @@ struct autofs_packet_missing {
 	struct autofs_packet_hdr hdr;
 	autofs_wqt_t wait_queue_token;
 	i32 len;
-	char name[NAME_MAX+1];
+	i8 name[NAME_MAX+1];
 };	
 
 /* v3 expire (via ioctl) */
 struct autofs_packet_expire {
 	struct autofs_packet_hdr hdr;
 	i32 len;
-	char name[NAME_MAX+1];
+	i8 name[NAME_MAX+1];
 };
 
 #define AUTOFS_IOCTL 0x93
@@ -80,7 +80,7 @@ enum {
 				      compat_ulong_t)
 #define AUTOFS_IOC_SETTIMEOUT   _IOWR(AUTOFS_IOCTL, \
 				      AUTOFS_IOC_SETTIMEOUT_CMD, \
-				      unsigned i64)
+				      %i64)
 #define AUTOFS_IOC_EXPIRE       _IOR(AUTOFS_IOCTL, \
 				     AUTOFS_IOC_EXPIRE_CMD, \
 				     struct autofs_packet_expire)
@@ -98,37 +98,37 @@ enum {
 #define AUTOFS_TYPE_DIRECT		2U
 #define AUTOFS_TYPE_OFFSET		4U
 
-static __inline__ void set_autofs_type_indirect(unsigned i32 *type)
+static __inline__ void set_autofs_type_indirect(%i32 *type)
 {
 	*type = AUTOFS_TYPE_INDIRECT;
 }
 
-static __inline__ unsigned i32 autofs_type_indirect(unsigned i32 type)
+static __inline__ %i32 autofs_type_indirect(%i32 type)
 {
 	return (type == AUTOFS_TYPE_INDIRECT);
 }
 
-static __inline__ void set_autofs_type_direct(unsigned i32 *type)
+static __inline__ void set_autofs_type_direct(%i32 *type)
 {
 	*type = AUTOFS_TYPE_DIRECT;
 }
 
-static __inline__ unsigned i32 autofs_type_direct(unsigned i32 type)
+static __inline__ %i32 autofs_type_direct(%i32 type)
 {
 	return (type == AUTOFS_TYPE_DIRECT);
 }
 
-static __inline__ void set_autofs_type_offset(unsigned i32 *type)
+static __inline__ void set_autofs_type_offset(%i32 *type)
 {
 	*type = AUTOFS_TYPE_OFFSET;
 }
 
-static __inline__ unsigned i32 autofs_type_offset(unsigned i32 type)
+static __inline__ %i32 autofs_type_offset(%i32 type)
 {
 	return (type == AUTOFS_TYPE_OFFSET);
 }
 
-static __inline__ unsigned i32 autofs_type_trigger(unsigned i32 type)
+static __inline__ %i32 autofs_type_trigger(%i32 type)
 {
 	return (type == AUTOFS_TYPE_DIRECT || type == AUTOFS_TYPE_OFFSET);
 }
@@ -138,12 +138,12 @@ static __inline__ unsigned i32 autofs_type_trigger(unsigned i32 type)
  * indicate we want to search for "any" mount in the
  * autofs_dev_ioctl_ismountpoint() device ioctl function.
  */
-static __inline__ void set_autofs_type_any(unsigned i32 *type)
+static __inline__ void set_autofs_type_any(%i32 *type)
 {
 	*type = AUTOFS_TYPE_ANY;
 }
 
-static __inline__ unsigned i32 autofs_type_any(unsigned i32 type)
+static __inline__ %i32 autofs_type_any(%i32 type)
 {
 	return (type == AUTOFS_TYPE_ANY);
 }
@@ -175,7 +175,7 @@ struct autofs_packet_expire_multi {
 	struct autofs_packet_hdr hdr;
 	autofs_wqt_t wait_queue_token;
 	i32 len;
-	char name[NAME_MAX+1];
+	i8 name[NAME_MAX+1];
 };
 
 union autofs_packet_union {
@@ -196,7 +196,7 @@ struct autofs_v5_packet {
 	__u32 pid;
 	__u32 tgid;
 	__u32 len;
-	char name[NAME_MAX+1];
+	i8 name[NAME_MAX+1];
 };
 
 typedef struct autofs_v5_packet autofs_packet_missing_indirect_t;

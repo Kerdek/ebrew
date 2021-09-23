@@ -134,34 +134,34 @@
 #define ATM_MAX_PCR	-1		/* maximum available PCR */
 
 struct atm_trafprm {
-	unsigned i8	traffic_class;	/* traffic class (ATM_UBR, ...) */
+	%i8	traffic_class;	/* traffic class (ATM_UBR, ...) */
 	i32		max_pcr;	/* maximum PCR in cells per second */
 	i32		pcr;		/* desired PCR in cells per second */
 	i32		min_pcr;	/* minimum PCR in cells per second */
 	i32		max_cdv;	/* maximum CDV in microseconds */
 	i32		max_sdu;	/* maximum SDU in bytes */
         /* extra params for ABR */
-        unsigned i32 	icr;         	/* Initial Cell Rate (24-bit) */
-        unsigned i32	tbe;		/* Transient Buffer Exposure (24-bit) */ 
-        unsigned i32 	frtt : 24;	/* Fixed Round Trip Time (24-bit) */
-        unsigned i32 	rif  : 4;       /* Rate Increment Factor (4-bit) */
-        unsigned i32 	rdf  : 4;       /* Rate Decrease Factor (4-bit) */
-        unsigned i32 nrm_pres  :1;      /* nrm present bit */
-        unsigned i32 trm_pres  :1;     	/* rm present bit */
-        unsigned i32 adtf_pres :1;     	/* adtf present bit */
-        unsigned i32 cdf_pres  :1;    	/* cdf present bit*/
-        unsigned i32 nrm       :3;     	/* Max # of Cells for each forward RM cell (3-bit) */
-        unsigned i32 trm       :3;    	/* Time between forward RM cells (3-bit) */    
-	unsigned i32 adtf      :10;     /* ACR Decrease Time Factor (10-bit) */
-	unsigned i32 cdf       :3;      /* Cutoff Decrease Factor (3-bit) */
-        unsigned i32 spare     :9;      /* spare bits */ 
+        %i32 	icr;         	/* Initial Cell Rate (24-bit) */
+        %i32	tbe;		/* Transient Buffer Exposure (24-bit) */ 
+        %i32 	frtt : 24;	/* Fixed Round Trip Time (24-bit) */
+        %i32 	rif  : 4;       /* Rate Increment Factor (4-bit) */
+        %i32 	rdf  : 4;       /* Rate Decrease Factor (4-bit) */
+        %i32 nrm_pres  :1;      /* nrm present bit */
+        %i32 trm_pres  :1;     	/* rm present bit */
+        %i32 adtf_pres :1;     	/* adtf present bit */
+        %i32 cdf_pres  :1;    	/* cdf present bit*/
+        %i32 nrm       :3;     	/* Max # of Cells for each forward RM cell (3-bit) */
+        %i32 trm       :3;    	/* Time between forward RM cells (3-bit) */    
+	%i32 adtf      :10;     /* ACR Decrease Time Factor (10-bit) */
+	%i32 cdf       :3;      /* Cutoff Decrease Factor (3-bit) */
+        %i32 spare     :9;      /* spare bits */ 
 };
 
 struct atm_qos {
 	struct atm_trafprm txtp;	/* parameters in TX direction */
 	struct atm_trafprm rxtp __ATM_API_ALIGN;
 					/* parameters in RX direction */
-	unsigned i8 aal __ATM_API_ALIGN;
+	%i8 aal __ATM_API_ALIGN;
 };
 
 /* PVC addressing */
@@ -174,7 +174,7 @@ struct atm_qos {
 
 
 struct sockaddr_atmpvc {
-	unsigned i16 	sap_family;	/* address family, AF_ATMPVC  */
+	%i16 	sap_family;	/* address family, AF_ATMPVC  */
 	struct {			/* PVC address */
 		i16	itf;		/* ATM interface */
 		i16	vpi;		/* VPI (only 8 bits at UNI) */
@@ -204,12 +204,12 @@ struct sockaddr_atmpvc {
 
 
 struct sockaddr_atmsvc {
-    unsigned i16 	sas_family;	/* address family, AF_ATMSVC */
+    %i16 	sas_family;	/* address family, AF_ATMSVC */
     struct {				/* SVC address */
-        unsigned i8	prv[ATM_ESA_LEN];/* private ATM address */
-        char		pub[ATM_E164_LEN+1]; /* public address (E.164) */
+        %i8	prv[ATM_ESA_LEN];/* private ATM address */
+        i8		pub[ATM_E164_LEN+1]; /* public address (E.164) */
     					/* unused addresses must be bzero'ed */
-	char		lij_type;	/* role in LIJ call; one of ATM_LIJ* */
+	i8		lij_type;	/* role in LIJ call; one of ATM_LIJ* */
 	__u32	lij_id;		/* LIJ call identifier */
     } sas_addr __ATM_API_ALIGN;		/* SVC address */
 };
@@ -238,5 +238,5 @@ struct atmif_sioc {
 };
 
 
-typedef unsigned i16 atm_backend_t;
+typedef %i16 atm_backend_t;
 #endif /* _LINUX_ATM_H */

@@ -29,20 +29,20 @@
 
 /* This structure gets passed by the SIOCADDRT and SIOCDELRT calls. */
 struct rtentry {
-	unsigned i64	rt_pad1;
+	%i64	rt_pad1;
 	struct sockaddr	rt_dst;		/* target address		*/
 	struct sockaddr	rt_gateway;	/* gateway addr (RTF_GATEWAY)	*/
 	struct sockaddr	rt_genmask;	/* target network mask (IP)	*/
-	unsigned i16	rt_flags;
+	%i16	rt_flags;
 	i16		rt_pad2;
-	unsigned i64	rt_pad3;
+	%i64	rt_pad3;
 	void		*rt_pad4;
 	i16		rt_metric;	/* +1 for binary compatibility!	*/
-	char *rt_dev;	/* forcing the device at add	*/
-	unsigned i64	rt_mtu;		/* per route MTU/Window 	*/
+	i8 *rt_dev;	/* forcing the device at add	*/
+	%i64	rt_mtu;		/* per route MTU/Window 	*/
 #define rt_mss	rt_mtu			/* Compatibility :-(            */
-	unsigned i64	rt_window;	/* Window clamping 		*/
-	unsigned i16	rt_irtt;	/* Initial RTT			*/
+	%i64	rt_window;	/* Window clamping 		*/
+	%i16	rt_irtt;	/* Initial RTT			*/
 };
 
 

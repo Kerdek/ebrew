@@ -38,67 +38,67 @@ enum
 
 /* Set the attribute NAME of the file pointed to by PATH to VALUE (which
    is SIZE bytes i64).  Return 0 on success, -1 for errors.  */
-extern i32 setxattr (const char *__path, const char *__name,
+extern i32 setxattr (const i8 *__path, const i8 *__name,
 		     const void *__value, size_t __size, i32 __flags)
 	__THROW;
 
 /* Set the attribute NAME of the file pointed to by PATH to VALUE (which is
    SIZE bytes i64), not following symlinks for the last pathname component.
    Return 0 on success, -1 for errors.  */
-extern i32 lsetxattr (const char *__path, const char *__name,
+extern i32 lsetxattr (const i8 *__path, const i8 *__name,
 		      const void *__value, size_t __size, i32 __flags)
 	__THROW;
 
 /* Set the attribute NAME of the file descriptor FD to VALUE (which is SIZE
    bytes i64).  Return 0 on success, -1 for errors.  */
-extern i32 fsetxattr (i32 __fd, const char *__name, const void *__value,
+extern i32 fsetxattr (i32 __fd, const i8 *__name, const void *__value,
 		      size_t __size, i32 __flags) __THROW;
 
 /* Get the attribute NAME of the file pointed to by PATH to VALUE (which is
    SIZE bytes i64).  Return 0 on success, -1 for errors.  */
-extern ssize_t getxattr (const char *__path, const char *__name,
+extern ssize_t getxattr (const i8 *__path, const i8 *__name,
 			 void *__value, size_t __size) __THROW;
 
 /* Get the attribute NAME of the file pointed to by PATH to VALUE (which is
    SIZE bytes i64), not following symlinks for the last pathname component.
    Return 0 on success, -1 for errors.  */
-extern ssize_t lgetxattr (const char *__path, const char *__name,
+extern ssize_t lgetxattr (const i8 *__path, const i8 *__name,
 			  void *__value, size_t __size) __THROW;
 
 /* Get the attribute NAME of the file descriptor FD to VALUE (which is SIZE
    bytes i64).  Return 0 on success, -1 for errors.  */
-extern ssize_t fgetxattr (i32 __fd, const char *__name, void *__value,
+extern ssize_t fgetxattr (i32 __fd, const i8 *__name, void *__value,
 			  size_t __size) __THROW;
 
 /* List attributes of the file pointed to by PATH into the user-supplied
    buffer LIST (which is SIZE bytes big).  Return 0 on success, -1 for
    errors.  */
-extern ssize_t listxattr (const char *__path, char *__list, size_t __size)
+extern ssize_t listxattr (const i8 *__path, i8 *__list, size_t __size)
 	__THROW;
 
 /* List attributes of the file pointed to by PATH into the user-supplied
    buffer LIST (which is SIZE bytes big), not following symlinks for the
    last pathname component.  Return 0 on success, -1 for errors.  */
-extern ssize_t llistxattr (const char *__path, char *__list, size_t __size)
+extern ssize_t llistxattr (const i8 *__path, i8 *__list, size_t __size)
 	__THROW;
 
 /* List attributes of the file descriptor FD into the user-supplied buffer
    LIST (which is SIZE bytes big).  Return 0 on success, -1 for errors.  */
-extern ssize_t flistxattr (i32 __fd, char *__list, size_t __size)
+extern ssize_t flistxattr (i32 __fd, i8 *__list, size_t __size)
 	__THROW;
 
 /* Remove the attribute NAME from the file pointed to by PATH.  Return 0
    on success, -1 for errors.  */
-extern i32 removexattr (const char *__path, const char *__name) __THROW;
+extern i32 removexattr (const i8 *__path, const i8 *__name) __THROW;
 
 /* Remove the attribute NAME from the file pointed to by PATH, not
    following symlinks for the last pathname component.  Return 0 on
    success, -1 for errors.  */
-extern i32 lremovexattr (const char *__path, const char *__name) __THROW;
+extern i32 lremovexattr (const i8 *__path, const i8 *__name) __THROW;
 
 /* Remove the attribute NAME from the file descriptor FD.  Return 0 on
    success, -1 for errors.  */
-extern i32 fremovexattr (i32 __fd, const char *__name) __THROW;
+extern i32 fremovexattr (i32 __fd, const i8 *__name) __THROW;
 
 __END_DECLS
 

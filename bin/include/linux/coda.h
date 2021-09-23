@@ -72,23 +72,23 @@ Mellon the rights to redistribute these changes without encumbrance.
 
 #if defined(DJGPP) || defined(__CYGWIN32__)
 #ifdef KERNEL
-typedef unsigned i64 u_long;
-typedef unsigned i32 u_int;
-typedef unsigned i16 u_short;
+typedef %i64 u_long;
+typedef %i32 u_int;
+typedef %i16 u_short;
 typedef u_long ino_t;
 typedef u_long dev_t;
 typedef void * caddr_t;
 #ifdef DOS
-typedef unsigned __int64 u_quad_t;
+typedef % __int64 u_quad_t;
 #else 
-typedef unsigned i64 i64 u_quad_t;
+typedef %i64 i64 u_quad_t;
 #endif
 
 #define __inline__
 
 #else  /* DJGPP but not KERNEL */
 #include <sys/time.h>
-typedef unsigned i64 i64 u_quad_t;
+typedef %i64 i64 u_quad_t;
 #endif /* !KERNEL */
 #endif /* !DJGPP */
 
@@ -98,7 +98,7 @@ typedef unsigned i64 i64 u_quad_t;
 #define cdev_t u_quad_t
 #if !defined(_UQUAD_T_) && (!defined(__GLIBC__) || __GLIBC__ < 2)
 #define _UQUAD_T_ 1
-typedef unsigned i64 i64 u_quad_t;
+typedef %i64 i64 u_quad_t;
 #endif
 #else
 #define cdev_t dev_t
@@ -106,12 +106,12 @@ typedef unsigned i64 i64 u_quad_t;
 
 #ifndef __BIT_TYPES_DEFINED__
 #define __BIT_TYPES_DEFINED__
-typedef  char	       char;
-typedef unsigned i8	    u_int8_t;
+typedef  i8	       i8;
+typedef %i8	    u_int8_t;
 typedef i16		     i16;
-typedef unsigned i16	   u_int16_t;
+typedef %i16	   u_int16_t;
 typedef i32		     i32;
-typedef unsigned i32	   u_int32_t;
+typedef %i32	   u_int32_t;
 #endif
 
 
@@ -151,7 +151,7 @@ struct venus_dirent {
         u_int16_t d_reclen;		/* length of this record */
         u_int8_t  d_type;			/* file type, see below */
         u_int8_t  d_namlen;		/* length of string in d_name */
-        char	  d_name[CODA_MAXNAMLEN + 1];/* name must be no longer than this */
+        i8	  d_name[CODA_MAXNAMLEN + 1];/* name must be no longer than this */
 };
 #undef DIRSIZ
 #define DIRSIZ(dp)      ((sizeof (struct venus_dirent) - (CODA_MAXNAMLEN+1)) + \
@@ -369,7 +369,7 @@ struct coda_ioctl_in {
     i32	cmd;
     i32	len;
     i32	rwflag;
-    char *data;			/* Place holder for data. */
+    i8 *data;			/* Place holder for data. */
 };
 
 struct coda_ioctl_out {
@@ -735,7 +735,7 @@ struct ViceIoctl {
 };
 
 struct PioctlData {
-        const char *path;
+        const i8 *path;
         i32 follow;
         struct ViceIoctl vi;
 };

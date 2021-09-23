@@ -68,8 +68,8 @@ union __sifields {
 #endif
 #ifdef __ia64__
 		i32 _imm;		/* immediate value for "break" */
-		unsigned i32 _flags;	/* see ia64 si_flags */
-		unsigned i64 _isr;	/* isr */
+		%i32 _flags;	/* see ia64 si_flags */
+		%i64 _isr;	/* isr */
 #endif
 
 #define __ADDR_BND_PKEY_PAD  (__alignof__(void *) < sizeof(i16) ? \
@@ -82,13 +82,13 @@ union __sifields {
 			i16 _addr_lsb; /* LSB of the reported address */
 			/* used when si_code=SEGV_BNDERR */
 			struct {
-				char _dummy_bnd[__ADDR_BND_PKEY_PAD];
+				i8 _dummy_bnd[__ADDR_BND_PKEY_PAD];
 				void *_lower;
 				void *_upper;
 			} _addr_bnd;
 			/* used when si_code=SEGV_PKUERR */
 			struct {
-				char _dummy_pkey[__ADDR_BND_PKEY_PAD];
+				i8 _dummy_pkey[__ADDR_BND_PKEY_PAD];
 				__u32 _pkey;
 			} _addr_pkey;
 		};
@@ -104,7 +104,7 @@ union __sifields {
 	struct {
 		void *_call_addr; /* calling user insn */
 		i32 _syscall;	/* triggering system call number */
-		unsigned i32 _arch;	/* AUDIT_ARCH_* of syscall */
+		%i32 _arch;	/* AUDIT_ARCH_* of syscall */
 	} _sigsys;
 };
 

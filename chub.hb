@@ -2,8 +2,8 @@
 
 maxl(a i64 b i64) i64 = (a > b) ? a : b;;
 minl(a i64 b i64) i64 = (a < b) ? a : b;;
-maxul(a unsigned i64 b unsigned i64) unsigned i64 = (a > b) ? a : b;;
-minul(a unsigned i64 b unsigned i64) unsigned i64 = (a < b) ? a : b;;
+maxul(a % i64 b % i64) % i64 = (a > b) ? a : b;;
+minul(a % i64 b % i64) % i64 = (a < b) ? a : b;;
 
 type
   NodeKind enum
@@ -37,22 +37,22 @@ type
   ;
 
   StringArray struct {
-    data     @@char
+    data     @@i8
     capacity   i32
     len        i32;
   }
 
   File struct {
-    name         @char
+    name         @i8
     file_no       i32
-    contents     @char
-    display_name @char
+    contents     @i8
+    display_name @i8
     line_delta    i32;
   }
 
   Hideset struct {
     s        @same
-    name        @char;
+    name        @i8;
   }
 
   Token struct {
@@ -60,12 +60,12 @@ type
     s       @same
     val         i64
     fval        f80
-    loc        @char
+    loc        @i8
     len         i32
     t         @
-    str        @char
+    str        @i8
     file       @File
-    filename   @char
+    filename   @i8
     line_no     i32
     line_delta  i32
     at_bol      bool
@@ -91,17 +91,15 @@ type
     kind          TypeKind
     size          i32
     alignment     i32
-    s         @same
-    is_atomic     bool
-    origin       @same
-    base         @same
+    s            @same
+    o            @same
+    a            @same
     name         @Token
     name_pos     @Token
     array_len     i32
     members      @Member
     is_flexible   bool
     is_packed     bool
-    return_ty    @same
     params       @same
     is_variadic   bool;
   }
@@ -109,13 +107,13 @@ type
   Relocation struct {
     s       @same
     offset      i32
-    label     @@char
+    label     @@i8
     addend      i64;
   }
 
   Obj struct {
     s            @same
-    name            @char
+    name            @i8
     t              @Type
     j             @Token
     is_local         bool
@@ -126,7 +124,7 @@ type
     is_export        bool
     is_tentative     bool
     is_tls           bool
-    init_data       @char
+    init_data       @i8
     rel             @Relocation
     is_inline        bool
     params          @same
@@ -154,13 +152,13 @@ type
     a             @same
     t             @Type
     j             @Token
-    brk_label     @char
-    cont_label    @char
+    brk_label     @i8
+    cont_label    @i8
     member        @Member
     ret_buffer    @Obj
-    label         @char
-    unique_label  @char
-    asm_str       @char
+    label         @i8
+    unique_label  @i8
+    asm_str       @i8
     var           @Obj
     kind           NodeKind
     begin          i64
@@ -171,7 +169,7 @@ type
   }
 
   HashEntry struct {
-    key    @char
+    key    @i8
     keylen  i32
     val    @;
   }
@@ -183,22 +181,22 @@ type
   }
 ;
 export advance(k @@Token) @Token;
-export strarray_push(arr@ StringArray s@ char);
-export format(fmt@ char ...)@ char;
-export error(fmt@ char ...);
-export error_at(loc@ char fmt@ char ...);
-export error_tok(j@ Token fmt@ char ...);
-export warn_tok(j@ Token fmt@ char ...);
-export equal(j@ Token op@ char)bool;
-export expect(j@@ Token op@ char);
-export skip(j@ Token op@ char)@ Token;
-export consume(rest@@ Token j@ Token str@ char)bool;
+export strarray_push(arr@ StringArray s@ i8);
+export format(fmt@ i8 ...)@ i8;
+export error(fmt@ i8 ...);
+export error_at(loc@ i8 fmt@ i8 ...);
+export error_tok(j@ Token fmt@ i8 ...);
+export warn_tok(j@ Token fmt@ i8 ...);
+export equal(j@ Token op@ i8)bool;
+export expect(j@@ Token op@ i8);
+export skip(j@ Token op@ i8)@ Token;
+export consume(rest@@ Token j@ Token str@ i8)bool;
 export convert_pp_tokens(j@ Token);
 export get_input_files(void)@@ File;
-export new_file(name@ char file_no i32 contents@ char)@ File;
+export new_file(name@ i8 file_no i32 contents@ i8)@ File;
 export tokenize_string_literal(j@ Token basety@ Type)@ Token;
 export tokenize(file@ File)@ Token;
-export tokenize_file(filename@ char)@ Token;
+export tokenize_file(filename@ i8)@ Token;
 export preprocess(j@ Token include_paths @StringArray)@ Token;
 export const_expr(k @@Token) i64;
 export parse(j@ Token)@ Obj;
@@ -218,7 +216,7 @@ export extern
 export is_integer       (t         @Type           ) bool ;
 export is_flonum        (t         @Type           ) bool ;
 export is_numeric       (t         @Type           ) bool ;
-export format_type      (t         @Type s    @char)      ;
+export format_type      (t         @Type s    @i8)      ;
 export type_equal       (t         @Type u    @Type) bool ;
 export copy_type        (t         @Type           ) @Type;
 export pointer_to       (base      @Type           ) @Type;
@@ -232,19 +230,19 @@ export preprocess(j@ Token include_paths @StringArray)@ Token;
 export codegen(prog@ Obj out@ FILE);
 export align_to(n i32 alignment i32)i32;
 
-export encode_utf8(buf@ char c unsigned i32)i32;
-export decode_utf8(new_pos@@ char p@ char)unsigned i32;
-export is_ident1(c unsigned i32)bool;
-export is_ident2(c unsigned i32)bool;
-export display_width(p@ char len i32)i32;
+export encode_utf8(buf@ i8 c %i32)i32;
+export decode_utf8(new_pos@@ i8 p@ i8)%i32;
+export is_ident1(c %i32)bool;
+export is_ident2(c %i32)bool;
+export display_width(p@ i8 len i32)i32;
 
-export hashmap_get(map@ HashMap key@ char)@;
-export hashmap_get2(map@ HashMap key@ char keylen i32)@;
-export hashmap_put(map@ HashMap key@ char val@);
-export hashmap_put2(map@ HashMap key@ char keylen i32 val@);
-export hashmap_delete(map@ HashMap key@ char);
+export hashmap_get(map@ HashMap key@ i8)@;
+export hashmap_get2(map@ HashMap key@ i8 keylen i32)@;
+export hashmap_put(map@ HashMap key@ i8 val@);
+export hashmap_put2(map@ HashMap key@ i8 keylen i32 val@);
+export hashmap_delete(map@ HashMap key@ i8);
 
-export hashmap_delete2(map@ HashMap key@ char keylen i32);
+export hashmap_delete2(map@ HashMap key@ i8 keylen i32);
 export hashmap_test(void);
 
-export file_exists(path@ char)bool;
+export file_exists(path@ i8)bool;

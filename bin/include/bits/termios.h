@@ -20,9 +20,9 @@
 # error "Never include <bits/termios.h> directly; use <termios.h> instead."
 #endif
 
-typedef unsigned i8	cc_t;
-typedef unsigned i32	speed_t;
-typedef unsigned i32	tcflag_t;
+typedef %i8	cc_t;
+typedef %i32	speed_t;
+typedef %i32	tcflag_t;
 
 #include <bits/termios-struct.h>
 #include <bits/termios-c_cc.h>

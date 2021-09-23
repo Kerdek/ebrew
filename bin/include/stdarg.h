@@ -2,8 +2,8 @@
 #define __STDARG_H
 
 type __va_elem struct {
-  gp_offset unsigned i32
-  fp_offset unsigned i32
+  gp_offset %i32
+  fp_offset %i32
   overflow_arg_area@ 
   reg_save_area@;
 };
@@ -17,18 +17,18 @@ type va_list __va_elem;
 
 __va_arg_mem(ap@ __va_elem sz i32 alignment i32)@  =
   ap.overflow_arg_area is p
-  ((alignment > 8) && (p = cast unsigned i64 (p + 15ul) / 16ul * 16ul as @void) as void);:
-  (ap.overflow_arg_area = (cast unsigned i64 p + cast unsigned i64 sz + 7ul) / 8ul * 8ul as @void) ;:
+  ((alignment > 8) && (p = cast %i64 (p + 15ul) / 16ul * 16ul as @void) as void);:
+  (ap.overflow_arg_area = (cast %i64 p + cast %i64 sz + 7ul) / 8ul * 8ul as @void) ;:
   p;;
 
 __va_arg_gp(ap@ __va_elem sz i32 alignment i32)@ = return
   (ap.gp_offset >= 48) ? __va_arg_mem ap sz alignment :
-  (ap.reg_save_area + the unsigned i32 ap.gp_offset) :;
+  (ap.reg_save_area + the %i32 ap.gp_offset) :;
   (ap.gp_offset += 8u);;
 
 __va_arg_fp(ap@ __va_elem sz i32 alignment i32)@ = return
   (ap.fp_offset >= 112) ? __va_arg_mem ap sz alignment :
-  (ap.reg_save_area + the unsigned i32 ap.fp_offset) :;
+  (ap.reg_save_area + the %i32 ap.fp_offset) :;
   (ap.fp_offset += 8u);;
 
 #define va_arg(ap, ty)                                                  \

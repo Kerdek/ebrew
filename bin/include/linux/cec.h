@@ -329,8 +329,8 @@ static __inline__ i32 cec_is_unconfigured(__u16 log_addr_mask)
  * @version: version of the CEC adapter framework.
  */
 struct cec_caps {
-	char driver[32];
-	char name[32];
+	i8 driver[32];
+	i8 name[32];
 	__u32 available_log_addrs;
 	__u32 capabilities;
 	__u32 version;
@@ -361,7 +361,7 @@ struct cec_log_addrs {
 	__u8 num_log_addrs;
 	__u32 vendor_id;
 	__u32 flags;
-	char osd_name[15];
+	i8 osd_name[15];
 	__u8 primary_device_type[CEC_MAX_LOG_ADDRS];
 	__u8 log_addr_type[CEC_MAX_LOG_ADDRS];
 

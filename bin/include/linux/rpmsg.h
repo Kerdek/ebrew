@@ -16,7 +16,7 @@
  * @dst: destination address
  */
 struct rpmsg_endpoint_info {
-	char name[32];
+	i8 name[32];
 	__u32 src;
 	__u32 dst;
 };

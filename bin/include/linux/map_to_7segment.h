@@ -42,14 +42,14 @@
  *	seg7 = map_to_seg7(&map_seg7, some_char);
  *	...
  *
- * In device drivers it is recommended, if required, to make the char map
+ * In device drivers it is recommended, if required, to make the i8 map
  * accessible via the sysfs interface using the following scheme:
  *
- * static ssize_t show_map(struct device *dev, char *buf) {
+ * static ssize_t show_map(struct device *dev, i8 *buf) {
  *	memcpy(buf, &map_seg7, sizeof(map_seg7));
  *	return sizeof(map_seg7);
  * }
- * static ssize_t store_map(struct device *dev, const char *buf, size_t cnt) {
+ * static ssize_t store_map(struct device *dev, const i8 *buf, size_t cnt) {
  *	if(cnt != sizeof(map_seg7))
  *		return -EINVAL;
  *	memcpy(&map_seg7, buf, cnt);
@@ -73,7 +73,7 @@
 #define BIT_SEG7_RESERVED	7
 
 struct seg7_conversion_map {
-	unsigned i8	table[128];
+	%i8	table[128];
 };
 
 static __inline__ i32 map_to_seg7(struct seg7_conversion_map *map, i32 c)

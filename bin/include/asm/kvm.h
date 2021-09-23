@@ -125,7 +125,7 @@ struct kvm_regs {
 /* for KVM_GET_LAPIC and KVM_SET_LAPIC */
 #define KVM_APIC_REG_SIZE 0x400
 struct kvm_lapic_state {
-	char regs[KVM_APIC_REG_SIZE];
+	i8 regs[KVM_APIC_REG_SIZE];
 };
 
 struct kvm_segment {

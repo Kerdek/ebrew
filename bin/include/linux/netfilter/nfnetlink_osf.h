@@ -44,7 +44,7 @@ struct nf_osf_opt {
 };
 
 struct nf_osf_info {
-	char	genre[MAXGENRELEN];
+	i8	genre[MAXGENRELEN];
 	__u32	len;
 	__u32	flags;
 	__u32	loglevel;
@@ -58,9 +58,9 @@ struct nf_osf_user_finger {
 	__u16	ss, mss;
 	__u16	opt_num;
 
-	char	genre[MAXGENRELEN];
-	char	version[MAXGENRELEN];
-	char	subtype[MAXGENRELEN];
+	i8	genre[MAXGENRELEN];
+	i8	version[MAXGENRELEN];
+	i8	subtype[MAXGENRELEN];
 
 	/* MAX_IPOPTLEN is maximum if all options are NOPs or EOLs */
 	struct nf_osf_opt	opt[MAX_IPOPTLEN];

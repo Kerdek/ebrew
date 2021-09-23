@@ -28,9 +28,9 @@ struct dirent
     __ino64_t d_ino;
     __off64_t d_off;
 #endif
-    unsigned i16 d_reclen;
-    unsigned i8 d_type;
-    char d_name[256];		/* We must not include limits.h! */
+    %i16 d_reclen;
+    %i8 d_type;
+    i8 d_name[256];		/* We must not include limits.h! */
   };
 
 #ifdef __USE_LARGEFILE64
@@ -38,9 +38,9 @@ struct dirent64
   {
     __ino64_t d_ino;
     __off64_t d_off;
-    unsigned i16 d_reclen;
-    unsigned i8 d_type;
-    char d_name[256];		/* We must not include limits.h! */
+    %i16 d_reclen;
+    %i8 d_type;
+    i8 d_name[256];		/* We must not include limits.h! */
   };
 #endif
 

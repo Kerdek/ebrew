@@ -64,8 +64,8 @@ struct elf_prstatus
   {
     struct elf_siginfo pr_info;		/* Info associated with signal.  */
     i16 i32 pr_cursig;		/* Current signal.  */
-    unsigned i64 pr_sigpend;	/* Set of pending signals.  */
-    unsigned i64 pr_sighold;	/* Set of held signals.  */
+    %i64 pr_sigpend;	/* Set of pending signals.  */
+    %i64 pr_sighold;	/* Set of held signals.  */
     __pid_t pr_pid;
     __pid_t pr_ppid;
     __pid_t pr_pgrp;
@@ -83,17 +83,17 @@ struct elf_prstatus
 
 struct elf_prpsinfo
   {
-    char pr_state;			/* Numeric process state.  */
-    char pr_sname;			/* Char for pr_state.  */
-    char pr_zomb;			/* Zombie.  */
-    char pr_nice;			/* Nice val.  */
-    unsigned i64 pr_flag;		/* Flags.  */
+    i8 pr_state;			/* Numeric process state.  */
+    i8 pr_sname;			/* Char for pr_state.  */
+    i8 pr_zomb;			/* Zombie.  */
+    i8 pr_nice;			/* Nice val.  */
+    %i64 pr_flag;		/* Flags.  */
     __pr_uid_t pr_uid;
     __pr_gid_t pr_gid;
     i32 pr_pid, pr_ppid, pr_pgrp, pr_sid;
     /* Lots missing */
-    char pr_fname[16];			/* Filename of executable.  */
-    char pr_psargs[ELF_PRARGSZ];	/* Initial part of arg list.  */
+    i8 pr_fname[16];			/* Filename of executable.  */
+    i8 pr_psargs[ELF_PRARGSZ];	/* Initial part of arg list.  */
   };
 
 /* The rest of this file provides the types for emulation of the

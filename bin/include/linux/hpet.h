@@ -6,10 +6,10 @@
 
 
 struct hpet_info {
-	unsigned i64 hi_ireqfreq;	/* Hz */
-	unsigned i64 hi_flags;	/* information */
-	unsigned i16 hi_hpet;
-	unsigned i16 hi_timer;
+	%i64 hi_ireqfreq;	/* Hz */
+	%i64 hi_flags;	/* information */
+	%i16 hi_hpet;
+	%i16 hi_timer;
 };
 
 #define HPET_INFO_PERIODIC	0x0010	/* periodic-capable comparator */
@@ -19,7 +19,7 @@ struct hpet_info {
 #define	HPET_INFO	_IOR('h', 0x03, struct hpet_info)
 #define	HPET_EPI	_IO('h', 0x04)	/* enable periodic */
 #define	HPET_DPI	_IO('h', 0x05)	/* disable periodic */
-#define	HPET_IRQFREQ	_IOW('h', 0x6, unsigned i64)	/* IRQFREQ usec */
+#define	HPET_IRQFREQ	_IOW('h', 0x6, %i64)	/* IRQFREQ usec */
 
 #define MAX_HPET_TBS	8		/* maximum hpet timer blocks */
 

@@ -34,15 +34,15 @@ struct efs_super {
 	__be16		fs_dirty;       /* fs needs to be fsck'd */
 	__be32		fs_time;        /* last super-block update */
 	__be32		fs_magic;       /* magic number */
-	char		fs_fname[6];    /* file system name */
-	char		fs_fpack[6];    /* file system pack name */
+	i8		fs_fname[6];    /* file system name */
+	i8		fs_fpack[6];    /* file system pack name */
 	__be32		fs_bmsize;      /* size of bitmap in bytes */
 	__be32		fs_tfree;       /* total free data blocks */
 	__be32		fs_tinode;      /* total free inodes */
 	__be32		fs_bmblock;     /* bitmap location. */
 	__be32		fs_replsb;      /* Location of replicated superblock. */
 	__be32		fs_lastialloc;  /* last allocated inode */
-	char		fs_spare[20];   /* space for expansion - MUST BE ZERO */
+	i8		fs_spare[20];   /* space for expansion - MUST BE ZERO */
 	__be32		fs_checksum;    /* checksum of volume portion of fs */
 };
 

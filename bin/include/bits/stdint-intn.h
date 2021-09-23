@@ -21,7 +21,7 @@
 
 #include <bits/types.h>
 
-type  char __int8_t;
+type  i8 __int8_t;
 type i16 __int16_t;
 type i32 __int32_t;
 type i64 __int64_t;

@@ -66,7 +66,7 @@ struct uinput_ff_erase {
 
 struct uinput_setup {
 	struct input_id id;
-	char name[UINPUT_MAX_NAME_SIZE];
+	i8 name[UINPUT_MAX_NAME_SIZE];
 	__u32 ff_effects_max;
 };
 
@@ -142,7 +142,7 @@ struct uinput_abs_setup {
 #define UI_SET_LEDBIT		_IOW(UINPUT_IOCTL_BASE, 105, i32)
 #define UI_SET_SNDBIT		_IOW(UINPUT_IOCTL_BASE, 106, i32)
 #define UI_SET_FFBIT		_IOW(UINPUT_IOCTL_BASE, 107, i32)
-#define UI_SET_PHYS		_IOW(UINPUT_IOCTL_BASE, 108, char*)
+#define UI_SET_PHYS		_IOW(UINPUT_IOCTL_BASE, 108, i8*)
 #define UI_SET_SWBIT		_IOW(UINPUT_IOCTL_BASE, 109, i32)
 #define UI_SET_PROPBIT		_IOW(UINPUT_IOCTL_BASE, 110, i32)
 
@@ -167,7 +167,7 @@ struct uinput_abs_setup {
  * the integer pointed to by the ioctl argument. The protocol version
  * is hard-coded in the kernel and is independent of the uinput device.
  */
-#define UI_GET_VERSION		_IOR(UINPUT_IOCTL_BASE, 45, unsigned i32)
+#define UI_GET_VERSION		_IOR(UINPUT_IOCTL_BASE, 45, %i32)
 
 /*
  * To write a force-feedback-capable driver, the upload_effect
@@ -221,7 +221,7 @@ struct uinput_abs_setup {
 #define UI_FF_ERASE		2
 
 struct uinput_user_dev {
-	char name[UINPUT_MAX_NAME_SIZE];
+	i8 name[UINPUT_MAX_NAME_SIZE];
 	struct input_id id;
 	__u32 ff_effects_max;
 	__s32 absmax[ABS_CNT];

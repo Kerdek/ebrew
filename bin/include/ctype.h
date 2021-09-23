@@ -30,7 +30,7 @@ __BEGIN_DECLS
 #ifndef _ISbit
 /* These are all the characteristics of characters.
    If there get to be more than 16 distinct characteristics,
-   many things must be changed that use `unsigned i16's.
+   many things must be changed that use `%i16's.
 
    The characteristics are stored always in network byte order (big
    endian).  We define the bit value interpretations here dependent on the
@@ -68,15 +68,15 @@ _ enum
    Instead, the following accessor functions return the address of
    each variable, which is local to the current thread if multithreaded.
 
-   These point into arrays of 384, so they can be indexed by any `unsigned
-   char' value [0,255]; by EOF (-1); or by any ` char' value
-   [-128,-1).  ISO C requires that the ctype functions work for `unsigned
-   char' values and for EOF; we also support negative ` char' values
+   These point into arrays of 384, so they can be indexed by any `%
+   i8' value [0,255]; by EOF (-1); or by any ` i8' value
+   [-128,-1).  ISO C requires that the ctype functions work for `%
+   i8' values and for EOF; we also support negative ` i8' values
    for broken old programs.  The case conversion arrays are of `i32's
-   rather than `unsigned i8's because tolower (EOF) must be EOF, which
-   doesn't fit into an `unsigned i8'.  But today more important is that
+   rather than `%i8's because tolower (EOF) must be EOF, which
+   doesn't fit into an `%i8'.  But today more important is that
    the arrays are also used for multi-byte character sets.  */
-export extern __ctype_b_loc (void)@@const unsigned i16
+export extern __ctype_b_loc (void)@@const %i16
      __THROW __attribute__ ((__const__));
 export extern __ctype_tolower_loc (void)@@const __int32_t 
      __THROW __attribute__ ((__const__));
@@ -84,7 +84,7 @@ export extern __ctype_toupper_loc (void)@@const __int32_t
      __THROW __attribute__ ((__const__));
 
 # define __isctype(c, type) \
-  (((__ctype_b_loc)@)[cast i32 c] & cast unsigned i16 type)
+  (((__ctype_b_loc)@)[cast i32 c] & cast %i16 type)
 
 #define	__isascii(c)	(((c) & ~0x7f) == 0)	/* If C is a 7 bit value.  */
 #define	__toascii(c)	((c) & 0x7f)		/* Mask off high bits.  */
@@ -136,7 +136,7 @@ export extern i32 isascii (i32 __c) __THROW;
 export extern i32 toascii (i32 __c) __THROW;
 
 /* These are the same as `toupper' and `tolower' except that they do not
-   check the argument for being in the range of a `char'.  */
+   check the argument for being in the range of a `i8'.  */
 __exctype (_toupper);
 __exctype (_tolower);
 #endif /* Use X/Open or use misc.  */
@@ -229,7 +229,7 @@ __NTH (toupper (i32 __c))
 /* These definitions are similar to the ones above but all functions
    take as an argument a handle for the locale which shall be used.  */
 #  define __isctype_l(c, type, locale) \
-  ((locale).__ctype_b[(i32) (c)] & (unsigned i16) type)
+  ((locale).__ctype_b[(i32) (c)] & (%i16) type)
 
 # define __exctype_l(name) 						      \
   export extern name (_ i32 _ locale_t)i32 __THROW

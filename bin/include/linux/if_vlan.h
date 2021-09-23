@@ -49,15 +49,15 @@ enum vlan_name_types {
 
 struct vlan_ioctl_args {
 	i32 cmd; /* Should be one of the vlan_ioctl_cmds enum above. */
-	char device1[24];
+	i8 device1[24];
 
         union {
-		char device2[24];
+		i8 device2[24];
 		i32 VID;
-		unsigned i32 skb_priority;
-		unsigned i32 name_type;
-		unsigned i32 bind_type;
-		unsigned i32 flag; /* Matches vlan_dev_priv flags */
+		%i32 skb_priority;
+		%i32 name_type;
+		%i32 bind_type;
+		%i32 flag; /* Matches vlan_dev_priv flags */
         } u;
 
 	i16 vlan_qos;   

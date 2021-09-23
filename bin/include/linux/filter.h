@@ -29,7 +29,7 @@ struct sock_filter {	/* Filter block */
 };
 
 struct sock_fprog {	/* Required for SO_ATTACH_FILTER. */
-	unsigned i16		len;	/* Number of filter blocks */
+	%i16		len;	/* Number of filter blocks */
 	struct sock_filter *filter;
 };
 
@@ -46,10 +46,10 @@ struct sock_fprog {	/* Required for SO_ATTACH_FILTER. */
  * Macros for filter block array initializers.
  */
 #ifndef BPF_STMT
-#define BPF_STMT(code, k) { (unsigned i16)(code), 0, 0, k }
+#define BPF_STMT(code, k) { (%i16)(code), 0, 0, k }
 #endif
 #ifndef BPF_JUMP
-#define BPF_JUMP(code, k, jt, jf) { (unsigned i16)(code), jt, jf, k }
+#define BPF_JUMP(code, k, jt, jf) { (%i16)(code), jt, jf, k }
 #endif
 
 /*

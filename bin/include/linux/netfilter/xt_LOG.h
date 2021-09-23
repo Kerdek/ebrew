@@ -12,9 +12,9 @@
 #define XT_LOG_MASK		0x2f
 
 struct xt_log_info {
-	unsigned i8 level;
-	unsigned i8 logflags;
-	char prefix[30];
+	%i8 level;
+	%i8 logflags;
+	i8 prefix[30];
 };
 
 #endif /* _XT_LOG_H */

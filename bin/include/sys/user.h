@@ -26,48 +26,48 @@
 
 struct user_fpregs_struct
 {
-  unsigned i16	cwd;
-  unsigned i16	swd;
-  unsigned i16	ftw;
-  unsigned i16	fop;
-  __extension__ unsigned i64 rip;
-  __extension__ unsigned i64 rdp;
-  unsigned i32		mxcsr;
-  unsigned i32		mxcr_mask;
-  unsigned i32		st_space[32];   /* 8*16 bytes for each FP-reg = 128 bytes */
-  unsigned i32		xmm_space[64];  /* 16*16 bytes for each XMM-reg = 256 bytes */
-  unsigned i32		padding[24];
+  %i16	cwd;
+  %i16	swd;
+  %i16	ftw;
+  %i16	fop;
+  __extension__ %i64 rip;
+  __extension__ %i64 rdp;
+  %i32		mxcsr;
+  %i32		mxcr_mask;
+  %i32		st_space[32];   /* 8*16 bytes for each FP-reg = 128 bytes */
+  %i32		xmm_space[64];  /* 16*16 bytes for each XMM-reg = 256 bytes */
+  %i32		padding[24];
 };
 
 struct user_regs_struct
 {
-  __extension__ unsigned i64 r15;
-  __extension__ unsigned i64 r14;
-  __extension__ unsigned i64 r13;
-  __extension__ unsigned i64 r12;
-  __extension__ unsigned i64 rbp;
-  __extension__ unsigned i64 rbx;
-  __extension__ unsigned i64 r11;
-  __extension__ unsigned i64 r10;
-  __extension__ unsigned i64 r9;
-  __extension__ unsigned i64 r8;
-  __extension__ unsigned i64 rax;
-  __extension__ unsigned i64 rcx;
-  __extension__ unsigned i64 rdx;
-  __extension__ unsigned i64 rsi;
-  __extension__ unsigned i64 rdi;
-  __extension__ unsigned i64 orig_rax;
-  __extension__ unsigned i64 rip;
-  __extension__ unsigned i64 cs;
-  __extension__ unsigned i64 eflags;
-  __extension__ unsigned i64 rsp;
-  __extension__ unsigned i64 ss;
-  __extension__ unsigned i64 fs_base;
-  __extension__ unsigned i64 gs_base;
-  __extension__ unsigned i64 ds;
-  __extension__ unsigned i64 es;
-  __extension__ unsigned i64 fs;
-  __extension__ unsigned i64 gs;
+  __extension__ %i64 r15;
+  __extension__ %i64 r14;
+  __extension__ %i64 r13;
+  __extension__ %i64 r12;
+  __extension__ %i64 rbp;
+  __extension__ %i64 rbx;
+  __extension__ %i64 r11;
+  __extension__ %i64 r10;
+  __extension__ %i64 r9;
+  __extension__ %i64 r8;
+  __extension__ %i64 rax;
+  __extension__ %i64 rcx;
+  __extension__ %i64 rdx;
+  __extension__ %i64 rsi;
+  __extension__ %i64 rdi;
+  __extension__ %i64 orig_rax;
+  __extension__ %i64 rip;
+  __extension__ %i64 cs;
+  __extension__ %i64 eflags;
+  __extension__ %i64 rsp;
+  __extension__ %i64 ss;
+  __extension__ %i64 fs_base;
+  __extension__ %i64 gs_base;
+  __extension__ %i64 ds;
+  __extension__ %i64 es;
+  __extension__ %i64 fs;
+  __extension__ %i64 gs;
 };
 
 struct user
@@ -75,26 +75,26 @@ struct user
   struct user_regs_struct	regs;
   i32				u_fpvalid;
   struct user_fpregs_struct	i387;
-  __extension__ unsigned i64	u_tsize;
-  __extension__ unsigned i64	u_dsize;
-  __extension__ unsigned i64	u_ssize;
-  __extension__ unsigned i64	start_code;
-  __extension__ unsigned i64	start_stack;
+  __extension__ %i64	u_tsize;
+  __extension__ %i64	u_dsize;
+  __extension__ %i64	u_ssize;
+  __extension__ %i64	start_code;
+  __extension__ %i64	start_stack;
   __extension__ i64		signal;
   i32				reserved;
   __extension__ union
     {
       struct user_regs_struct*	u_ar0;
-      __extension__ unsigned i64	__u_ar0_word;
+      __extension__ %i64	__u_ar0_word;
     };
   __extension__ union
     {
       struct user_fpregs_struct*	u_fpstate;
-      __extension__ unsigned i64	__u_fpstate_word;
+      __extension__ %i64	__u_fpstate_word;
     };
-  __extension__ unsigned i64	magic;
-  char				u_comm [32];
-  __extension__ unsigned i64	u_debugreg [8];
+  __extension__ %i64	magic;
+  i8				u_comm [32];
+  __extension__ %i64	u_debugreg [8];
 };
 
 #else
@@ -113,10 +113,10 @@ struct user_fpregs_struct
 
 struct user_fpxregs_struct
 {
-  unsigned i16 cwd;
-  unsigned i16 swd;
-  unsigned i16 twd;
-  unsigned i16 fop;
+  %i16 cwd;
+  %i16 swd;
+  %i16 twd;
+  %i16 fop;
   i64 fip;
   i64 fcs;
   i64 foo;
@@ -154,17 +154,17 @@ struct user
   struct user_regs_struct	regs;
   i32				u_fpvalid;
   struct user_fpregs_struct	i387;
-  unsigned i64		u_tsize;
-  unsigned i64		u_dsize;
-  unsigned i64		u_ssize;
-  unsigned i64		start_code;
-  unsigned i64		start_stack;
+  %i64		u_tsize;
+  %i64		u_dsize;
+  %i64		u_ssize;
+  %i64		start_code;
+  %i64		start_stack;
   i64			signal;
   i32				reserved;
   struct user_regs_struct*	u_ar0;
   struct user_fpregs_struct*	u_fpstate;
-  unsigned i64		magic;
-  char				u_comm [32];
+  %i64		magic;
+  i8				u_comm [32];
   i32				u_debugreg [8];
 };
 #endif  /* __x86_64__ */

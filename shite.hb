@@ -18,7 +18,7 @@ _ISalnum = (((11) < 8) ? ((1 << (11)) << 8) : ((1 << (11)) >> 8))
 _ struct __locale_struct
 {
 __locales[13]@struct __locale_data
-__ctype_b@const unsigned i16
+__ctype_b@const %i16
 __ctype_tolower@const i32
 __ctype_toupper@const i32
 __names[13]@const i8;
@@ -28,9 +28,9 @@ type locale_t __locale_t;
 
 type glob_t struct
 {
-gl_pathc unsigned i64
+gl_pathc %i64
 gl_pathv@@i8
-gl_offs unsigned i64
+gl_offs %i64
 gl_flags i32
 gl_closedir@(@)
 gl_readdir@(@)@
@@ -40,31 +40,31 @@ gl_stat@(@const i8 @ )i32;
 };
 
 type __va_elem struct {
-gp_offset unsigned i32
-fp_offset unsigned i32
+gp_offset %i32
+fp_offset %i32
 overflow_arg_area@
 reg_save_area@;
 };
 type va_list __va_elem;
 __va_arg_mem(ap@ __va_elem sz i32 alignment i32)@ =
 ap.overflow_arg_area is p
-((alignment > 8) && (p = cast unsigned i64 (p + 15ul) / 16ul * 16ul as @void) as void);:
-(ap.overflow_arg_area = (cast unsigned i64 p + cast unsigned i64 sz + 7ul) / 8ul * 8ul as @void) ;:
+((alignment > 8) && (p = cast %i64 (p + 15ul) / 16ul * 16ul as @void) as void);:
+(ap.overflow_arg_area = (cast %i64 p + cast %i64 sz + 7ul) / 8ul * 8ul as @void) ;:
 p;;
 __va_arg_gp(ap@ __va_elem sz i32 alignment i32)@ = return
 (ap.gp_offset >= 48) ? __va_arg_mem ap sz alignment :
-(ap.reg_save_area + the unsigned i32 ap.gp_offset) :;
+(ap.reg_save_area + the %i32 ap.gp_offset) :;
 (ap.gp_offset += 8u);;
 __va_arg_fp(ap@ __va_elem sz i32 alignment i32)@ = return
 (ap.fp_offset >= 112) ? __va_arg_mem ap sz alignment :
-(ap.reg_save_area + the unsigned i32 ap.fp_offset) :;
+(ap.reg_save_area + the %i32 ap.fp_offset) :;
 (ap.fp_offset += 8u);;
 type __mbstate_t struct
 {
 __count i32
 __value union
 {
-__wch unsigned i32
+__wch %i32
 __wchb[4] i8;
 };
 };
@@ -106,7 +106,7 @@ _chain@struct _IO_FILE
 _fileno i32
 _flags2 i32
 _old_offset i64
-_cur_column unsigned i16
+_cur_column %i16
 _vtable_offset  i8
 _shortbuf[1]i8
 _lock@_IO_lock_t
@@ -115,9 +115,9 @@ _codecvt@struct _IO_codecvt
 _wide_data@struct _IO_wide_data
 _freeres_list@struct _IO_FILE
 _freeres_buf@
-__pad5 unsigned i64
+__pad5 %i64
 _mode i32
-_unused2[15ul * sizeof i32 - 4ul * sizeof @ - sizeof unsigned i64]i8;
+_unused2[15ul * sizeof i32 - 4ul * sizeof @ - sizeof %i64]i8;
 };
 type off_t i64;
 
@@ -155,22 +155,22 @@ tv_sec i64
 tv_nsec i64;
 };
 type time_t i64;
-type dev_t unsigned i64;
-type gid_t unsigned i32;
-type ino_t unsigned i64;
-type mode_t unsigned i32;
-type nlink_t unsigned i64;
-type uid_t unsigned i32;
+type dev_t %i64;
+type gid_t %i32;
+type ino_t %i64;
+type mode_t %i32;
+type nlink_t %i64;
+type uid_t %i32;
 _ struct stat
 {
-st_dev unsigned i64
-st_ino unsigned i64
-st_nlink unsigned i64
-st_mode unsigned i32
-st_uid unsigned i32
-st_gid unsigned i32
+st_dev %i64
+st_ino %i64
+st_nlink %i64
+st_mode %i32
+st_uid %i32
+st_gid %i32
 __pad0 i32
-st_rdev unsigned i64
+st_rdev %i64
 st_size i64
 st_blksize i64
 st_blocks i64
@@ -182,19 +182,19 @@ __glibc_reserved[3]i64;
 
 
 type pid_t i32;
-type id_t unsigned i32;
+type id_t %i32;
 type clock_t i64;
 type clockid_t i32;
 type timer_t void;
-type u_int8_t unsigned i8;
-type u_int16_t unsigned i16;
-type u_int32_t unsigned i32;
-type u_int64_t unsigned i64;
+type u_int8_t %i8;
+type u_int16_t %i16;
+type u_int32_t %i32;
+type u_int64_t %i64;
 type register_t i32;
 type blkunsigned i64;
 type blkcnt_t i64;
-type fsblkcnt_t unsigned i64;
-type fsfilcnt_t unsigned i64;
+type fsblkcnt_t %i64;
+type fsfilcnt_t %i64;
 type __pthread_list_t struct __pthread_internal_list
 {
 __prev@struct __pthread_internal_list
@@ -207,9 +207,9 @@ __next@struct __pthread_internal_slist;
 _ struct __pthread_mutex_s
 {
 __lock i32
-__count unsigned i32
+__count %i32
 __owner i32
-__nusers unsigned i32
+__nusers %i32
 __kind i32
 __spins i16
 __elision i16
@@ -217,45 +217,45 @@ __list __pthread_list_t;
 };
 _ struct __pthread_rwlock_arch_t
 {
-__readers unsigned i32
-__writers unsigned i32
-__wrphase_futex unsigned i32
-__writers_futex unsigned i32
-__pad3 unsigned i32
-__pad4 unsigned i32
+__readers %i32
+__writers %i32
+__wrphase_futex %i32
+__writers_futex %i32
+__pad3 %i32
+__pad4 %i32
 __cur_writer i32
 __shared i32
 __rwelision  i8
-__pad1[7] unsigned i8
-__pad2 unsigned i64
-__flags unsigned i32;
+__pad1[7] %i8
+__pad2 %i64
+__flags %i32;
 };
 _ struct __pthread_cond_s
 {
 _ union
 {
-__wseq unsigned i64 i64 intyy
+__wseq %i64 i64 intyy
 __wseq32 struct
 {
-__low unsigned i32
-__high unsigned i32;
+__low %i32
+__high %i32;
 };
 }
 _ union
 {
-__g1_start unsigned i64
+__g1_start %i64
 __g1_start32 struct
 {
-__low unsigned i32
-__high unsigned i32;
+__low %i32
+__high %i32;
 };
 }
-__g_refs[2]unsigned i32 __g_size[2]unsigned i32
+__g_refs[2]%i32 __g_size[2]%i32
 __g1_orig_sizeunsigned i32
 __wrefunsigned i32
-__g_signals[2]unsigned i32;
+__g_signals[2]%i32;
 };
-type pthread_t unsigned i64;
+type pthread_t %i64;
 type pthread_mutexattr_t union
 {
 __size[4]i8
@@ -266,7 +266,7 @@ type pthread_condattr_t union
 __size[4]i8
 __align i32;
 };
-type pthread_key_t unsigned i32;
+type pthread_key_t %i32;
 type pthread_once_t i32;
 _ union pthread_attr_t
 {
@@ -311,7 +311,7 @@ __align i32;
 type sig_atomic_t i32;
 type __sigset_t struct
 {
-__val[(1024ul / (8ul * sizeof unsigned i64))]unsigned i64;
+__val[(1024ul / (8ul * sizeof %i64))]%i64;
 };
 type sigset_t __sigset_t;
 _ union sigval
@@ -332,7 +332,7 @@ _pad[((128ul / sizeof i32) - 4ul)]i32
 _kill struct
 {
 si_pid i32
-si_uid unsigned i32;
+si_uid %i32;
 }
 _timer struct
 {
@@ -343,13 +343,13 @@ si_sigval __sigval_t;
 _rt struct
 {
 si_pid i32
-si_uid unsigned i32
+si_uid %i32
 si_sigval __sigval_t;
 }
 _sigchld struct
 {
 si_pid i32
-si_uid unsigned i32
+si_uid %i32
 si_status i32
 si_utime i64
 si_stime i64;
@@ -365,7 +365,7 @@ _addr_bnd struct
 _lower@
 _upper@;
 }
-_pkey unsigned i32;
+_pkey %i32;
 };
 }
 _sigpoll struct
@@ -377,7 +377,7 @@ _sigsys struct
 {
 _call_addr@
 _syscall i32
-_arch unsigned i32;
+_arch %i32;
 };
 };
 };
@@ -489,19 +489,19 @@ type stack_t struct
 {
 ss_sp@
 ss_flags i32
-ss_size unsigned i64;
+ss_size %i64;
 };
 type greg_t i64;
 type gregset_t[23]greg_t;
 _ struct _libc_fpxreg
 {
-__significand[4]unsigned i16
+__significand[4]%i16
 __exponentunsigned i16 i32
-__glibc_reserved1[3]unsigned i16;
+__glibc_reserved1[3]%i16;
 };
 _ struct _libc_xmmreg
 {
-__element[4]unsigned i32;
+__element[4]%i32;
 };
 _ struct _libc_fpstate
 {
@@ -515,14 +515,14 @@ __mxcsrunsigned i32
 __mxcr_maskunsigned i32
 _st[8]struct _libc_fpxreg
 _xmm[16]struct _libc_xmmreg
-__glibc_reserved1[24]unsigned i32;
+__glibc_reserved1[24]%i32;
 };
 type fpregset_t@struct _libc_fpstate;
 type mcontext_t struct
 {
 __gregsgregset_t
 __fpregsfpregset_t
-__reserved1[8]unsigned i64 i64;
+__reserved1[8]%i64 i64;
 } ;
 type ucontext_t struct ucontext_t
 {
@@ -532,7 +532,7 @@ uc_stack stack_t
 uc_mcontext mcontext_t
 uc_sigmask sigset_t
 __fpregs_mem struct _libc_fpstate
-__ssp[4]unsigned i64;
+__ssp[4]%i64;
 };
 
 
@@ -558,7 +558,7 @@ it_value struct timespec;
 };
 _ struct sigevent;
 
-type useconds_t unsigned i32;
+type useconds_t %i32;
 
 _ enum
 _PC_LINK_MAX
@@ -905,14 +905,14 @@ export extern tmpnam              (s             @i8)@i8 ;
 export extern fopen               (filename      @const i8 modes@const i8)@FILE ;
 export extern freopen             (filename      @const i8 modes@const i8 stream@FILE)@FILE ;
 export extern fdopen              (fd            i32 modes@const i8)@FILE ;
-export extern fmemopen            (s             @ len unsigned i64 modes@const i8)@FILE;
-export extern open_memstream      (bufloc        @@i8 sizeloc@unsigned i64)@FILE ;
+export extern fmemopen            (s             @ len %i64 modes@const i8)@FILE;
+export extern open_memstream      (bufloc        @@i8 sizeloc@%i64)@FILE ;
 export extern printf              (format        @const i8 ...)i32;
 export extern sprintf             (s             @i8 format@const i8 ...)i32 ;
 export extern vprintf             (format        @const i8 arg @va_list)i32;
 export extern vsprintf            (s             @i8  format@const i8 arg @va_list)i32 ;
-export extern snprintf            (s             @i8 maxlen unsigned i64 format@const i8 ...)i32;
-export extern vsnprintf           (s             @i8 maxlen unsigned i64 format@const i8 arg @va_list)i32;
+export extern snprintf            (s             @i8 maxlen %i64 format@const i8 ...)i32;
+export extern vsnprintf           (s             @i8 maxlen %i64 format@const i8 arg @va_list)i32;
 export extern vdprintf            (fd            i32  fmt@const i8 arg @va_list)i32;
 export extern dprintf             (fd            i32  fmt@const i8 ...)i32;
 export extern scanf               (format        @const i8 ...)i32 ;
@@ -927,20 +927,20 @@ export extern putchar             (c             i32)i32;
 export extern putc_unlocked       (c             i32 stream@FILE)i32;
 export extern putchar_unlocked    (c             i32)i32;
 export extern fgets               (s             @i8 n i32  stream@FILE)@i8;
-export extern getdelim            (lineptr       @@i8 n@unsigned i64 delimiter i32 stream@FILE)i64 ;
-export extern getline             (lineptr       @i8 n@unsigned i64 stream@FILE)i64 ;
+export extern getdelim            (lineptr       @@i8 n@%i64 delimiter i32 stream@FILE)i64 ;
+export extern getline             (lineptr       @i8 n@%i64 stream@FILE)i64 ;
 export extern fputs               (s             @const i8  stream@FILE )i32;
 export extern puts                (s             @const i8)i32;
 export extern ungetc              (c             @i32 stream@FILE)i32;
-export extern fread               (ptr           @ size unsigned i64 n unsigned i64  stream@FILE)unsigned i64 ;
-export extern fwrite              (ptr           @const size unsigned i64 n unsigned i64  s@FILE)unsigned i64;
+export extern fread               (ptr           @ size %i64 n %i64  stream@FILE)%i64 ;
+export extern fwrite              (ptr           @const size %i64 n %i64  s@FILE)%i64;
 export extern perror              (s             @const i8);
 export extern popen               (command       @const i8 modes@const i8)@FILE ;
 export extern ctermid             (s             @i8)@i8 ;
 export extern fclose              (stream        @FILE)i32;
 export extern fflush              (stream        @FILE)i32;
 export extern setbuf              (stream        @FILE  buf@i8) ;
-export extern setvbuf             (stream        @FILE  buf@i8 modes i32 n unsigned i64)i32 ;
+export extern setvbuf             (stream        @FILE  buf@i8 modes i32 n %i64)i32 ;
 export extern fprintf             (stream        @FILE format@const i8 ...)i32;
 export extern vfprintf            (s             @FILE  format@const i8 arg @va_list)i32;
 export extern fscanf              (stream        @FILE format@const i8 ...)i32 ;
@@ -971,18 +971,18 @@ export extern strtod              (nptr          @const i8 endptr@@i8)f64;
 export extern strtof              (nptr          @const i8 endptr@@i8)f32 ;
 export extern strtold             (nptr          @const i8 endptr@@i8)f80;
 export extern strtol              (nptr          @const i8 endptr@@i8 base i32)i64;
-export extern strtoul             (nptr          @const i8 endptr@@i8 base i32)unsigned i64;
+export extern strtoul             (nptr          @const i8 endptr@@i8 base i32)%i64;
 export extern strtoll             (nptr          @const i8 endptr@@i8 base i32)i64;
-export extern strtoull            (nptr          @const i8 endptr@@i8 base i32)unsigned i64;
+export extern strtoull            (nptr          @const i8 endptr@@i8 base i32)%i64;
 export extern rand                (void          )i32 ;
-export extern srand               (seed          unsigned i32) ;
-export extern rand_r              (seed          @unsigned i32)i32 ;
-export extern malloc              (size          unsigned i64)@ ;
-export extern calloc              (nmemb         unsigned i64 size unsigned i64)@;
-export extern realloc             (ptr           @ size unsigned i64)@;
+export extern srand               (seed          %i32) ;
+export extern rand_r              (seed          @%i32)i32 ;
+export extern malloc              (size          %i64)@ ;
+export extern calloc              (nmemb         %i64 size %i64)@;
+export extern realloc             (ptr           @ size %i64)@;
 export extern free                (ptr           @) ;
-export extern posix_memalign      (memptr        @@ alignment unsigned i64 size unsigned i64)i32;
-export extern aligned_alloc       (alignment     unsigned i64 size unsigned i64)@;
+export extern posix_memalign      (memptr        @@ alignment %i64 size %i64)i32;
+export extern aligned_alloc       (alignment     %i64 size %i64)@;
 export extern abort               (void          ) ;
 export extern atexit              (func          @(void))i32 ;
 export extern at_quick_exit       (func          @(void))i32 ;
@@ -995,80 +995,80 @@ export extern unsetenv            (name          @const i8)i32 ;
 export extern mkstemp             (template      @i8)i32 ;
 export extern mkdtemp             (template      @i8)@i8 ;
 export extern system              (command       @const i8)i32 ;
-export extern bsearch             (key           @const base@const nmemb unsigned i64 size unsigned i64 compar compar_fn_t)@;
-export extern qsort               (base          @ nmemb unsigned i64 size unsigned i64 compar compar_fn_t) ;
+export extern bsearch             (key           @const base@const nmemb %i64 size %i64 compar compar_fn_t)@;
+export extern qsort               (base          @ nmemb %i64 size %i64 compar compar_fn_t) ;
 export extern abs                 (x             i32)i32 ;
 export extern labs                (x             i64)i64 ;
 export extern llabs               (x             i64)i64;
 export extern div                 (numer         i32 denom i32)div_t;
 export extern ldiv                (numer         i64 denom i64)ldiv_t;
 export extern lldiv               (numer         i64 denom i64)lldiv_t;
-export extern mblen               (s             @const i8 n unsigned i64)i32 ;
-export extern mbtowc              (pwc           @wchar_t  s@ const i8 n unsigned i64)i32 ;
+export extern mblen               (s             @const i8 n %i64)i32 ;
+export extern mbtowc              (pwc           @wchar_t  s@ const i8 n %i64)i32 ;
 export extern wctomb              (s             @i8 wchar wchar_t)i32 ;
-export extern mbstowcs            (pwcs          @wchar_t  s@ const i8 n unsigned i64)unsigned i64 ;
-export extern wcstombs            (s             @i8  pwcs@ const wchar_t n unsigned i64)unsigned i64;
+export extern mbstowcs            (pwcs          @wchar_t  s@ const i8 n %i64)%i64 ;
+export extern wcstombs            (s             @i8  pwcs@ const wchar_t n %i64)%i64;
 export extern getsubopt           (optionp       @@i8 tokens@const i8 valuep@@i8)i32;
-export extern memcpy              (dest          @  src@const n unsigned i64)@ ;
-export extern memmove             (dest          @src@ const n unsigned i64)@;
-export extern memset              (s             @ c i32 n unsigned i64)@ ;
-export extern memcmp              (s1            @ const s2@ const n unsigned i64)i32;
-export extern memchr              (s             @const c i32 n unsigned i64)@;
+export extern memcpy              (dest          @  src@const n %i64)@ ;
+export extern memmove             (dest          @src@ const n %i64)@;
+export extern memset              (s             @ c i32 n %i64)@ ;
+export extern memcmp              (s1            @ const s2@ const n %i64)i32;
+export extern memchr              (s             @const c i32 n %i64)@;
 export extern strcpy              (dest          @i8  src@const i8)@i8;
-export extern strncpy             (dest          @i8 src@const i8 n unsigned i64)@i8;
+export extern strncpy             (dest          @i8 src@const i8 n %i64)@i8;
 export extern strcat              (dest          @i8  src@const i8)@i8;
-export extern strncat             (dest          @i8  src@const i8 n unsigned i64)@i8 ;
+export extern strncat             (dest          @i8  src@const i8 n %i64)@i8 ;
 export extern strcmp              (s1            @const chars2@ const i8)i32;
-export extern strncmp             (s1            @const chars2@ const i8 n unsigned i64)i32;
+export extern strncmp             (s1            @const chars2@ const i8 n %i64)i32;
 export extern strcoll             (s1            @const chars2@ const i8)i32;
-export extern strxfrm             (dest          @i8 src@const i8 n unsigned i64)unsigned i64;
+export extern strxfrm             (dest          @i8 src@const i8 n %i64)%i64;
 export extern strcoll_l           (s1            @const chars2@ const i8 l locale_t)i32;
-export extern strxfrm_l           (dest          @charsrc@ const i8 n unsigned i64 l locale_t)unsigned i64 ;
+export extern strxfrm_l           (dest          @charsrc@ const i8 n %i64 l locale_t)%i64 ;
 export extern strdup              (s             @const i8)@i8;
-export extern strndup             (string        @const i8 n unsigned i64)@i8;
+export extern strndup             (string        @const i8 n %i64)@i8;
 export extern strchr              (s             @const i8 c i32)@i8;
 export extern strrchr             (s             @const i8 c i32)@i8;
-export extern strcspn             (s             @const i8 reject@ const i8)unsigned i64;
-export extern strspn              (s             @const i8 accept@ const i8)unsigned i64;
+export extern strcspn             (s             @const i8 reject@ const i8)%i64;
+export extern strspn              (s             @const i8 accept@ const i8)%i64;
 export extern strpbrk             (s             @const i8 accept@ const i8)@i8;
 export extern strstr              (haystack      @const i8 needle@ const i8)@i8;
 export extern strtok              (s             @i8  delim@const i8)@i8;
 export extern strtok_r            (s             @i8 delim@const i8 save_ptr@@i8)@i8;
 export extern strtok_r            (s             @i8  delim@const i8 save_ptr@@i8)@i8;
-export extern strlen              (s             @const i8)unsigned i64;
-export extern strnlen             (string        @const i8 maxlen unsigned i64)unsigned i64;
+export extern strlen              (s             @const i8)%i64;
+export extern strnlen             (string        @const i8 maxlen %i64)%i64;
 export extern strerror            (errnum        i32)@i8 ;
-export extern xpg_strerror_r      (errnum        i32 buf@ i8 buflen unsigned i64)i32;
+export extern xpg_strerror_r      (errnum        i32 buf@ i8 buflen %i64)i32;
 export extern strerror_l          (errnum        i32 l locale_t)@i8 ;
 export extern strsignal           (sig           i32)@i8 ;
 export extern stpcpy              (dest          @i8  src@const i8)@i8;
 export extern stpcpy              (dest          @i8  src@const i8)@i8;
-export extern stpncpy             (dest          @i8 src@const i8 n unsigned i64)@i8;
-export extern stpncpy             (dest          @i8 src@const i8 n unsigned i64)@i8;
+export extern stpncpy             (dest          @i8 src@const i8 n %i64)@i8;
+export extern stpncpy             (dest          @i8 src@const i8 n %i64)@i8;
 export extern strcasecmp          (s1            @const i8 s2@const i8)i32;
-export extern strncasecmp         (s1            @const i8 s2@const i8 n unsigned i64)i32;
+export extern strncasecmp         (s1            @const i8 s2@const i8 n %i64)i32;
 export extern strcasecmp_l        (s1            @const i8 s2@const i8 loc locale_t)i32;
-export extern strncasecmp_l       (s1            @const i8 s2@const i8 n unsigned i64 loc locale_t)i32;
+export extern strncasecmp_l       (s1            @const i8 s2@const i8 n %i64 loc locale_t)i32;
 export extern stat                (file          @const i8 buf@struct stat)i32 ;
 export extern fstat               (fd            i32 buf@struct stat)i32 ;
 export extern fstatat             (fd            i32  file@const i8 buf@struct stat flag i32)i32;
 export extern lstat               (file          @const i8 buf@struct stat)i32 ;
-export extern chmod               (file          @const i8 mode unsigned i32)i32;
-export extern fchmod              (fd            i32 mode unsigned i32)i32 ;
-export extern fchmodat            (fd            i32 file@const i8 mode unsigned i32 flag i32)i32;
-export extern umask               (mask          unsigned i32)unsigned i32 ;
-export extern mkdir               (path          @const i8 mode unsigned i32)i32;
-export extern mkdirat             (fd            i32 path@const i8 mode unsigned i32)i32;
-export extern mkfifo              (path          @const i8 mode unsigned i32)i32;
-export extern mkfifoat            (fd            i32 path@const i8 mode unsigned i32)i32;
+export extern chmod               (file          @const i8 mode %i32)i32;
+export extern fchmod              (fd            i32 mode %i32)i32 ;
+export extern fchmodat            (fd            i32 file@const i8 mode %i32 flag i32)i32;
+export extern umask               (mask          %i32)%i32 ;
+export extern mkdir               (path          @const i8 mode %i32)i32;
+export extern mkdirat             (fd            i32 path@const i8 mode %i32)i32;
+export extern mkfifo              (path          @const i8 mode %i32)i32;
+export extern mkfifoat            (fd            i32 path@const i8 mode %i32)i32;
 export extern utimensat           (fd            i32 path@const i8 times[2]const struct timespec flags i32)i32;
 export extern futimens            (fd            i32 times[2]const struct timespec)i32 ;
 export extern fxstat              (ver           i32 fildes i32 stat_buf@struct stat)i32;
 export extern xstat               (ver           i32 filename@const i8 stat_buf@struct stat)i32 ;
 export extern lxstat              (ver           i32 filename@const i8 stat_buf@struct stat)i32 ;
 export extern fxstatat            (ver           i32 fildes i32 filename@const i8 stat_buf@struct stat flag i32)i32;
-export extern xmknod              (ver           i32 path@const i8 mode unsigned i32 dev@unsigned i64)i32 ;
-export extern xmknodat            (ver           i32 fd i32 path@const i8 mode unsigned i32 dev@unsigned i64)i32;
+export extern xmknod              (ver           i32 path@const i8 mode %i32 dev@%i64)i32 ;
+export extern xmknodat            (ver           i32 fd i32 path@const i8 mode %i32 dev@%i64)i32;
 export extern kill                (pid           i32 sig i32)i32 ;
 export extern raise               (sig           i32) i32 ;
 export extern psignal             (sig           i32 s@const i8);
@@ -1090,13 +1090,13 @@ export extern pthread_sigmask     (how           i32 newmask@const sigset_t oldm
 export extern pthread_kill        (threadid      pthread_t signo i32)i32 ;
 export extern wait                (stat_loc      @i32)i32;
 export extern waitpid             (pid           i32 stat_loc@i32 options i32)i32;
-export extern waitid              (idtype        idtype_t id unsigned i32 infop@siginfo_t options i32)i32;
+export extern waitid              (idtype        idtype_t id %i32 infop@siginfo_t options i32)i32;
 export extern clock               (void          )clock_t ;
 export extern time                (timer         @time_t)time_t ;
 export extern difftime            (time1         time_t time0 time_t)f64;
 export extern mktime              (tp            @struct tm)time_t ;
-export extern strftime            (s             @i8 maxsize unsigned i64 format@const i8 tp@const struct tm)unsigned i64 ;
-export extern strftime_l          (s             @i8 maxsize unsigned i64 format@const i8 tp@const struct tm loc locale_t)unsigned i64 ;
+export extern strftime            (s             @i8 maxsize %i64 format@const i8 tp@const struct tm)%i64 ;
+export extern strftime_l          (s             @i8 maxsize %i64 format@const i8 tp@const struct tm loc locale_t)%i64 ;
 export extern gmtime              (timer         @const time_t)@struct tm ;
 export extern localtime           (timer         @const time_t)@struct tm ;
 export extern gmtime_r            (timer         @const time_t tp@struct tm)@struct tm ;
@@ -1122,21 +1122,21 @@ export extern access              (name          @const i8 kind i32)i32 ;
 export extern faccessat           (fd            i32 file@ const i8 kind i32 flag i32)i32;
 export extern lseek               (fd            i32 offset i64 whence i32)i64 ;
 export extern close               (fd            i32)i32;
-export extern read                (fd            i32 buf@ nbytes unsigned i64)unsigned i64 ;
-export extern write               (fd            i32 buf@const n unsigned i64)unsigned i64 ;
-export extern pread               (fd            i32 buf@ nbytes unsigned i64 offset i64)unsigned i64 ;
-export extern pwrite              (fd            i32 buf@const n unsigned i64 offset i64)unsigned i64 ;
+export extern read                (fd            i32 buf@ nbytes %i64)%i64 ;
+export extern write               (fd            i32 buf@const n %i64)%i64 ;
+export extern pread               (fd            i32 buf@ nbytes %i64 offset i64)%i64 ;
+export extern pwrite              (fd            i32 buf@const n %i64 offset i64)%i64 ;
 export extern pipe                (pipedes       [2]i32)i32 ;
-export extern alarm               (seconds       unsigned i32)unsigned i32 ;
-export extern sleep               (seconds       unsigned i32)unsigned i32;
+export extern alarm               (seconds       %i32)%i32 ;
+export extern sleep               (seconds       %i32)%i32;
 export extern pause               ()             i32;
-export extern chown               (file          @const i8 owner unsigned i32 group unsigned i32)i32;
-export extern fchown              (fd            i32 owner unsigned i32 group unsigned i32)i32 ;
-export extern lchown              (file          @const i8 owner unsigned i32 group unsigned i32)i32;
-export extern fchownat            (fd            i32 file@const i8 owner unsigned i32 group unsigned i32 flag i32)i32;
+export extern chown               (file          @const i8 owner %i32 group %i32)i32;
+export extern fchown              (fd            i32 owner %i32 group %i32)i32 ;
+export extern lchown              (file          @const i8 owner %i32 group %i32)i32;
+export extern fchownat            (fd            i32 file@const i8 owner %i32 group %i32 flag i32)i32;
 export extern chdir               (path          @const i8)i32 ;
 export extern fchdir              (fd            i32)i32 ;
-export extern getcwd              (buf           @i8 size unsigned i64)@i8 ;
+export extern getcwd              (buf           @i8 size %i64)@i8 ;
 export extern dup                 (fd            i32)i32 ;
 export extern dup2                (fd            i32 fd2 i32)i32 ;
 export extern execve              (path          @const i8 argv const[]@i8 envp const[]@i8)i32 ;
@@ -1149,7 +1149,7 @@ export extern execlp              (file          @const i8 arg@const i8 ...)i32;
 export extern pathconf            (path          @const i8 name i32)i64;
 export extern fpathconf           (fd            i32 name i32)i64 ;
 export extern sysconf             (name          i32)i64 ;
-export extern confstr             (name          i32 buf@i8 len unsigned i64)unsigned i64 ;
+export extern confstr             (name          i32 buf@i8 len %i64)%i64 ;
 export extern getpid              (void          )i32 ;
 export extern getppid             (void          )i32 ;
 export extern getpgrp             (void          )i32 ;
@@ -1157,34 +1157,34 @@ export extern getpgid             (pid           i32)i32 ;
 export extern setpgid             (pid           i32 pgid i32)i32 ;
 export extern setsid              (void          )i32 ;
 export extern getsid              (pid           i32)i32 ;
-export extern getuid              (void          )unsigned i32 ;
-export extern geteuid             (void          )unsigned i32 ;
-export extern getgid              (void          )unsigned i32 ;
-export extern getegid             (void          )unsigned i32 ;
-export extern getgroups           (size          i32 list[]unsigned i32)i32 ;
-export extern setuid              (uid           unsigned i32)i32 ;
-export extern seteuid             (uid           unsigned i32)i32 ;
-export extern setgid              (gid           unsigned i32)i32 ;
-export extern setegid             (gid           unsigned i32)i32 ;
+export extern getuid              (void          )%i32 ;
+export extern geteuid             (void          )%i32 ;
+export extern getgid              (void          )%i32 ;
+export extern getegid             (void          )%i32 ;
+export extern getgroups           (size          i32 list[]%i32)i32 ;
+export extern setuid              (uid           %i32)i32 ;
+export extern seteuid             (uid           %i32)i32 ;
+export extern setgid              (gid           %i32)i32 ;
+export extern setegid             (gid           %i32)i32 ;
 export extern fork                (void          )i32 ;
 export extern ttyname             (fd            i32)@i8 ;
-export extern ttyname_r           (fd            i32 buf@i8 buflen unsigned i64)i32;
+export extern ttyname_r           (fd            i32 buf@i8 buflen %i64)i32;
 export extern isatty              (fd            i32)i32 ;
 export extern link                (from          @const i8 to@const i8)i32;
 export extern linkat              (fromfd        i32 from@const i8 tofd i32 to@const i8 flags i32)i32;
 export extern symlink             (from          @const i8 to@const i8)i32;
-export extern readlink            ( path         @const i8  buf@i8 len unsigned i64)unsigned i64;
+export extern readlink            ( path         @const i8  buf@i8 len %i64)%i64;
 export extern symlinkat           (from          @const i8 tofd i32 to@const i8)i32 ;
-export extern readlinkat          (fd            i32  path@const i8  buf@i8 len unsigned i64)unsigned i64;
+export extern readlinkat          (fd            i32  path@const i8  buf@i8 len %i64)%i64;
 export extern unlink              (name          @const i8)i32 ;
 export extern unlinkat            (fd            i32 name@const i8 flag i32)i32;
 export extern rmdir               (path          @const i8)i32 ;
 export extern tcgetpgrp           (fd            i32)i32 ;
 export extern tcsetpgrp           (fd            i32 pgrp_id i32)i32 ;
 export extern getlogin            (void          )@i8;
-export extern getlogin_r          (name          @i8 name_len unsigned i64)i32 ;
+export extern getlogin_r          (name          @i8 name_len %i64)i32 ;
 export extern getopt              (argc          i32 _argv@const@i8 shortopts@const i8)i32;
-export extern gethostname         (name          @i8 len unsigned i64)i32 ;
+export extern gethostname         (name          @i8 len %i64)i32 ;
 export extern fsync               (fd            i32)i32;
 export extern truncate            (file          @const i8 length i64)i32;
 export extern ftruncate           (fd            i32 length i64)i32 ;

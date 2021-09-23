@@ -45,7 +45,7 @@ struct can_bittiming {
  * Used for calculating and checking bit-timing parameters
  */
 struct can_bittiming_const {
-	char name[16];		/* Name of the CAN controller hardware */
+	i8 name[16];		/* Name of the CAN controller hardware */
 	__u32 tseg1_min;	/* Time segment 1 = prop_seg + phase_seg1 */
 	__u32 tseg1_max;
 	__u32 tseg2_min;	/* Time segment 2 = phase_seg2 */

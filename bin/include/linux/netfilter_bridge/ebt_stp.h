@@ -26,10 +26,10 @@
 struct ebt_stp_config_info {
 	__u8 flags;
 	__u16 root_priol, root_priou;
-	char root_addr[6], root_addrmsk[6];
+	i8 root_addr[6], root_addrmsk[6];
 	__u32 root_costl, root_costu;
 	__u16 sender_priol, sender_priou;
-	char sender_addr[6], sender_addrmsk[6];
+	i8 sender_addr[6], sender_addrmsk[6];
 	__u16 portl, portu;
 	__u16 msg_agel, msg_ageu;
 	__u16 max_agel, max_ageu;

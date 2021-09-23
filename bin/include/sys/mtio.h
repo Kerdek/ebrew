@@ -127,7 +127,7 @@ struct mtget
 struct mt_tape_info
   {
     i64 t_type;		/* Device type id (mt_type).  */
-    char *t_name;		/* Descriptive name.  */
+    i8 *t_name;		/* Descriptive name.  */
   };
 
 #define MT_TAPE_INFO \
@@ -168,26 +168,26 @@ struct mtconfiginfo
   {
     i64 mt_type;		/* Drive type.  */
     i64 ifc_type;		/* Interface card type.  */
-    unsigned i16 irqnr;	/* IRQ number to use.  */
-    unsigned i16 dmanr;	/* DMA channel to use.  */
-    unsigned i16 port;	/* IO port base address.  */
+    %i16 irqnr;	/* IRQ number to use.  */
+    %i16 dmanr;	/* DMA channel to use.  */
+    %i16 port;	/* IO port base address.  */
 
-    unsigned i64 debug;	/* Debugging flags.  */
+    %i64 debug;	/* Debugging flags.  */
 
-    unsigned have_dens:1;
-    unsigned have_bsf:1;
-    unsigned have_fsr:1;
-    unsigned have_bsr:1;
-    unsigned have_eod:1;
-    unsigned have_seek:1;
-    unsigned have_tell:1;
-    unsigned have_ras1:1;
-    unsigned have_ras2:1;
-    unsigned have_ras3:1;
-    unsigned have_qfa:1;
+    % have_dens:1;
+    % have_bsf:1;
+    % have_fsr:1;
+    % have_bsr:1;
+    % have_eod:1;
+    % have_seek:1;
+    % have_tell:1;
+    % have_ras1:1;
+    % have_ras2:1;
+    % have_ras3:1;
+    % have_qfa:1;
 
-    unsigned pad1:5;
-    char reserved[10];
+    % pad1:5;
+    i8 reserved[10];
   };
 #define _IOT_mtconfiginfo /* Hurd ioctl type field.  */ \
   _IOT (_IOTS (i64), 2, _IOTS (i16), 3, _IOTS (i64), 1) /* XXX wrong */

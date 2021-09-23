@@ -39,15 +39,15 @@ struct _fpx_sw_bytes
 
 struct _fpreg
 {
-  unsigned i16 significand[4];
-  unsigned i16 exponent;
+  %i16 significand[4];
+  %i16 exponent;
 };
 
 struct _fpxreg
 {
-  unsigned i16 significand[4];
-  unsigned i16 exponent;
-  unsigned i16 __glibc_reserved1[3];
+  %i16 significand[4];
+  %i16 exponent;
+  %i16 __glibc_reserved1[3];
 };
 
 struct _xmmreg
@@ -70,8 +70,8 @@ struct _fpstate
   __uint32_t		dataoff;
   __uint32_t		datasel;
   struct _fpreg	_st[8];
-  unsigned i16 status;
-  unsigned i16 magic;
+  %i16 status;
+  %i16 magic;
 
   /* FXSR FPU environment.  */
   __uint32_t		_fxsr_env[6];
@@ -94,28 +94,28 @@ struct _fpstate
 
 struct sigcontext
 {
-  unsigned i16 gs, __gsh;
-  unsigned i16 fs, __fsh;
-  unsigned i16 es, __esh;
-  unsigned i16 ds, __dsh;
-  unsigned i64 edi;
-  unsigned i64 esi;
-  unsigned i64 ebp;
-  unsigned i64 esp;
-  unsigned i64 ebx;
-  unsigned i64 edx;
-  unsigned i64 ecx;
-  unsigned i64 eax;
-  unsigned i64 trapno;
-  unsigned i64 err;
-  unsigned i64 eip;
-  unsigned i16 cs, __csh;
-  unsigned i64 eflags;
-  unsigned i64 esp_at_signal;
-  unsigned i16 ss, __ssh;
+  %i16 gs, __gsh;
+  %i16 fs, __fsh;
+  %i16 es, __esh;
+  %i16 ds, __dsh;
+  %i64 edi;
+  %i64 esi;
+  %i64 ebp;
+  %i64 esp;
+  %i64 ebx;
+  %i64 edx;
+  %i64 ecx;
+  %i64 eax;
+  %i64 trapno;
+  %i64 err;
+  %i64 eip;
+  %i16 cs, __csh;
+  %i64 eflags;
+  %i64 esp_at_signal;
+  %i16 ss, __ssh;
   struct _fpstate * fpstate;
-  unsigned i64 oldmask;
-  unsigned i64 cr2;
+  %i64 oldmask;
+  %i64 cr2;
 };
 
 #else /* __x86_64__ */
@@ -156,10 +156,10 @@ struct sigcontext
   __uint64_t rsp;
   __uint64_t rip;
   __uint64_t eflags;
-  unsigned i16 cs;
-  unsigned i16 gs;
-  unsigned i16 fs;
-  unsigned i16 __pad0;
+  %i16 cs;
+  %i16 gs;
+  %i16 fs;
+  %i16 __pad0;
   __uint64_t err;
   __uint64_t trapno;
   __uint64_t oldmask;

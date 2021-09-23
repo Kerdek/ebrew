@@ -43,8 +43,8 @@ typedef __u32	comp2_t;
 
 struct acct
 {
-	char		ac_flag;		/* Flags */
-	char		ac_version;		/* Always set to ACCT_VERSION */
+	i8		ac_flag;		/* Flags */
+	i8		ac_version;		/* Always set to ACCT_VERSION */
 	/* for binary compatibility back until 2.0 */
 	__u16		ac_uid16;		/* LSB of Real User ID */
 	__u16		ac_gid16;		/* LSB of Real Group ID */
@@ -63,7 +63,7 @@ struct acct
 /* m68k had no padding here. */
 	__u16		ac_ahz;			/* AHZ */
 	__u32		ac_exitcode;		/* Exitcode */
-	char		ac_comm[ACCT_COMM + 1];	/* Command Name */
+	i8		ac_comm[ACCT_COMM + 1];	/* Command Name */
 	__u8		ac_etime_hi;		/* Elapsed Time MSB */
 	__u16		ac_etime_lo;		/* Elapsed Time LSB */
 	__u32		ac_uid;			/* Real User ID */
@@ -72,8 +72,8 @@ struct acct
 
 struct acct_v3
 {
-	char		ac_flag;		/* Flags */
-	char		ac_version;		/* Always set to ACCT_VERSION */
+	i8		ac_flag;		/* Flags */
+	i8		ac_version;		/* Always set to ACCT_VERSION */
 	__u16		ac_tty;			/* Control Terminal */
 	__u32		ac_exitcode;		/* Exitcode */
 	__u32		ac_uid;			/* Real User ID */
@@ -91,7 +91,7 @@ struct acct_v3
 	comp_t		ac_minflt;		/* Minor Pagefaults */
 	comp_t		ac_majflt;		/* Major Pagefaults */
 	comp_t		ac_swaps;		/* Number of Swaps */
-	char		ac_comm[ACCT_COMM];	/* Command Name */
+	i8		ac_comm[ACCT_COMM];	/* Command Name */
 };
 
 /*

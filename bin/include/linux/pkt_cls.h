@@ -240,9 +240,9 @@ struct tc_u32_key {
 };
 
 struct tc_u32_sel {
-	unsigned i8		flags;
-	unsigned i8		offshift;
-	unsigned i8		nkeys;
+	%i8		flags;
+	%i8		offshift;
+	%i8		nkeys;
 
 	__be16			offmask;
 	__u16			off;

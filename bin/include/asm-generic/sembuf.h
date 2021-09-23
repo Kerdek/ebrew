@@ -15,7 +15,7 @@
  * optimizations, so we may just as well all use the same one.
  *
  * 64 bit architectures use a 64-bit i64 time field here, while
- * 32 bit architectures have a pair of unsigned i64 values.
+ * 32 bit architectures have a pair of %i64 values.
  *
  * On big-endian systems, the padding is in the wrong place for
  * historic reasons, so user space has to reconstruct a time_t
@@ -32,14 +32,14 @@ struct semid64_ds {
 	i64		sem_otime;	/* last semop time */
 	i64		sem_ctime;	/* last change time */
 #else
-	unsigned i64	sem_otime;	/* last semop time */
-	unsigned i64	sem_otime_high;
-	unsigned i64	sem_ctime;	/* last change time */
-	unsigned i64	sem_ctime_high;
+	%i64	sem_otime;	/* last semop time */
+	%i64	sem_otime_high;
+	%i64	sem_ctime;	/* last change time */
+	%i64	sem_ctime_high;
 #endif
-	unsigned i64	sem_nsems;	/* no. of semaphores in array */
-	unsigned i64	__unused3;
-	unsigned i64	__unused4;
+	%i64	sem_nsems;	/* no. of semaphores in array */
+	%i64	__unused3;
+	%i64	__unused4;
 };
 
 #endif /* __ASM_GENERIC_SEMBUF_H */

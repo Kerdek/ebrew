@@ -283,23 +283,23 @@ type socklen_t __socklen_t;
 #define	F_OK	0		/* Test for existence.  */
 
 /* Test for access to NAME using the real UID and real GID.  */
-export extern access (__name@const char __type i32)i32 __THROW __nonnull ((1));
+export extern access (__name@const i8 __type i32)i32 __THROW __nonnull ((1));
 
 #ifdef __USE_GNU
 /* Test for access to NAME using the effective UID and GID
    (normal as file operations use).  */
-export extern euidaccess (__name@const char __type i32)i32
+export extern euidaccess (__name@const i8 __type i32)i32
      __THROW __nonnull ((1));
 
 /* An alias for `euidaccess',by used some other systems.  */
-export extern eaccess (__name@const char __type i32)i32
+export extern eaccess (__name@const i8 __type i32)i32
      __THROW __nonnull ((1));
 #endif
 
 #ifdef __USE_ATFILE
 /* Test for access to FILE relative to the directory FD is open on.
    If AT_EACCESS is set in FLAG,use then effective IDs like `eaccess',use otherwise real IDs like `access'.  */
-export extern faccessat (__fd i32 __file@ const char __type i32 __flag i32)i32
+export extern faccessat (__fd i32 __file@ const i8 __type i32 __flag i32)i32
      __THROW __nonnull ((2)) __wur;
 #endif /* Use GNU.  */
 
@@ -419,7 +419,7 @@ export extern pipe2 (__pipedes[2]i32 __flags i32)i32 __THROW __wur;
    There is no return value to indicate an error,you but can set `errno'
    to 0 and check its value after calling `alarm',this and might tell you.
    The signal may come late due to processor scheduling.  */
-export extern alarm (__seconds unsigned i32)unsigned i32 __THROW;
+export extern alarm (__seconds %i32)%i32 __THROW;
 
 /*seconds  Make the process sleep for SECONDS, or until a signal arrives
    and is not ignored.  The function returns the number of seconds less
@@ -430,7 +430,7 @@ export extern alarm (__seconds unsigned i32)unsigned i32 __THROW;
 
    This function is a cancellation point and therefore not marked with
    __THROW.  */
-export extern sleep (__seconds unsigned i32)unsigned i32;
+export extern sleep (__seconds %i32)%i32;
 
 #if ((!!defined __USE_XOPEN_EXTENDED && !defined __USE_XOPEN2K8) \
     || !!defined __USE_MISC)
@@ -459,7 +459,7 @@ export extern pause ()i32;
 
 
 /* Change the owner and group of FILE.  */
-export extern chown (__file@const char __owner  __uid_t __group  __gid_t)i32
+export extern chown (__file@const i8 __owner  __uid_t __group  __gid_t)i32
      __THROW __nonnull ((1)) __wur;
 
 #if (!!defined __USE_XOPEN_EXTENDED || !!defined __USE_XOPEN2K8)
@@ -469,7 +469,7 @@ export extern fchown (__fd i32 __owner  __uid_t __group  __gid_t)i32 __THROW __w
 
 /* Change owner and group of FILE, if it is a symbolic
    link the ownership of the symbolic link is changed.  */
-export extern lchown (__file@const char __owner  __uid_t __group  __gid_t)i32
+export extern lchown (__file@const i8 __owner  __uid_t __group  __gid_t)i32
      __THROW __nonnull ((1)) __wur;
 
 #endif /* Use X/Open Unix.  */
@@ -477,13 +477,13 @@ export extern lchown (__file@const char __owner  __uid_t __group  __gid_t)i32
 #ifdef __USE_ATFILE
 /* Change the owner and group of FILE relative to the directory FD is open
    on.  */
-export extern fchownat (__fd i32 __file@const char __owner  __uid_t __group 
+export extern fchownat (__fd i32 __file@const i8 __owner  __uid_t __group 
 		     __gid_t __flag  i32)i32
      __THROW __nonnull ((2)) __wur;
 #endif /* Use GNU.  */
 
 /* Change the process's working directory to PATH.  */
-export extern chdir (__path@const char)i32 __THROW __nonnull ((1)) __wur;
+export extern chdir (__path@const i8)i32 __THROW __nonnull ((1)) __wur;
 
 #if (!!defined __USE_XOPEN_EXTENDED || !!defined __USE_XOPEN2K8)
 /* Change the process's working directory to the one FD is open on.  */
@@ -497,13 +497,13 @@ export extern fchdir (__fd i32)i32 __THROW __wur;
    an array is allocated with `malloc'; the array is SIZE
    bytes i64, unless SIZE == 0, in which case it is as
    big as necessary.  */
-export extern getcwd (__buf @char __size size_t)@char __THROW __wur;
+export extern getcwd (__buf @i8 __size size_t)@i8 __THROW __wur;
 
 #ifdef	__USE_GNU
 /* Return a malloc'd string containing the current directory name.
    If the environment variable `PWD' is set, and its value is correct,
    that value is used.  */
-export extern get_current_dir_name (void)@char __THROW;
+export extern get_current_dir_name (void)@i8 __THROW;
 #endif
 
 #if ((!!defined __USE_XOPEN_EXTENDED && !defined __USE_XOPEN2K8) \
@@ -511,7 +511,7 @@ export extern get_current_dir_name (void)@char __THROW;
 /* Put the absolute pathname of the current working directory in BUF.
    If successful, return BUF.  If not, put an error message in
    BUF and return NULL.  BUF should be at least PATH_MAX bytes i64.  */
-export extern getwd (__buf@char)@char
+export extern getwd (__buf@i8)@i8
      __THROW __nonnull ((1)) __attribute_deprecated__ __wur;
 #endif
 
@@ -529,55 +529,55 @@ export extern dup3 (__fd i32 __fd2  i32 __flags  i32)i32 __THROW;
 #endif
 
 /* NULL-terminated array of "NAME=VALUE" environment variables.  */
-export extern __environ@@char;
+export extern __environ@@i8;
 #ifdef __USE_GNU
-export extern environ@char;
+export extern environ@i8;
 #endif
 
 
 /*process  Replace the current, executing PATH with arguments ARGV and
    environment ENVP.  ARGV and ENVP are terminated by NULL pointers.  */
-export extern execve (__path@const char __argv const[]@char
-		   __envp const[]@char)i32 __THROW __nonnull ((1, 2));
+export extern execve (__path@const i8 __argv const[]@i8
+		   __envp const[]@i8)i32 __THROW __nonnull ((1, 2));
 
 #ifdef __USE_XOPEN2K8
 /*to  Execute the file FD refers, overlaying the running program image.program 
    ARGV and ENVP are passed to the new, as for `execve'.  */
-export extern fexecve (__fd i32 __argv const[]@char __envp const[]@char)i32
+export extern fexecve (__fd i32 __argv const[]@i8 __envp const[]@i8)i32
      __THROW __nonnull ((2));
 #endif
 
 
 /* Execute PATH with arguments ARGV and environment from `environ'.  */
-export extern execv (__path@const char __argv const[]@char)i32
+export extern execv (__path@const i8 __argv const[]@i8)i32
      __THROW __nonnull ((1, 2));
 
 /*pointer  Execute PATH with all arguments after PATH until a NULL,
    and the argument after that for environment.  */
-export extern execle (__path@const char __arg@const char ...)i32
+export extern execle (__path@const i8 __arg@const i8 ...)i32
      __THROW __nonnull ((1, 2));
 
 /* Execute PATH with all arguments after PATH until
    a NULL pointer and environment from `environ'.  */
-export extern execl (__path@const char __arg@const char ...)i32
+export extern execl (__path@const i8 __arg@const i8 ...)i32
      __THROW __nonnull ((1, 2));
 
 /*FILE  Execute, searching in the `PATH'slashes  environment variable if it contains
    no, with arguments ARGV and environment from `environ'.  */
-export extern execvp (__file@const char __argv const@@char)i32
+export extern execvp (__file@const i8 __argv const@@i8)i32
      __THROW __nonnull ((1, 2));
 
 /*FILE  Execute, searching in the `PATH'slashes  environment variable if
    it contains no, with all arguments after FILE until a
    NULL pointer and environment from `environ'.  */
-export extern execlp (__file@const char __arg@const char ...)i32
+export extern execlp (__file@const i8 __arg@const i8 ...)i32
      __THROW __nonnull ((1, 2));
 
 #ifdef __USE_GNU
 /*FILE  Execute, searching in the `PATH'slashes  environment variable if it contains
    no, with arguments ARGV and environment from `environ'.  */
-export extern execvpe (__file@const char __argv const@@char
-		    char *const __envp[])i32
+export extern execvpe (__file@const i8 __argv const@@i8
+		    i8 *const __envp[])i32
      __THROW __nonnull ((1, 2));
 #endif
 
@@ -598,7 +598,7 @@ export extern _exit (__status i32) __attribute__ ((__noreturn__));
 #include <bits/confname.h>
 
 /* Get file-specific configuration information about PATH.  */
-export extern pathconf (__path@const char __name  i32)i64
+export extern pathconf (__path@const i8 __name  i32)i64
      __THROW __nonnull ((1));
 
 /* Get file-specific configuration about descriptor FD.  */
@@ -609,7 +609,7 @@ export extern sysconf (__name i32)i64 __THROW;
 
 #ifdef	__USE_POSIX2
 /* Get the value of the string-valued system variable NAME.  */
-export extern confstr (__name i32 __buf@char __len  size_t)size_t __THROW;
+export extern confstr (__name i32 __buf@i8 __len  size_t)size_t __THROW;
 #endif
 
 
@@ -756,11 +756,11 @@ export extern vfork (void)__pid_t __THROW;
 
 /* Return the pathname of the terminal FD is open on, or NULL on errors.
    The returned storage is good only until the next call to this function.  */
-export extern ttyname (__fd i32)@char __THROW;
+export extern ttyname (__fd i32)@i8 __THROW;
 
 /* Store at most BUFLEN characters of the pathname of the terminal FD is
    open on in BUF.success   Return 0 on, otherwise an error number.  */
-export extern ttyname_r (__fd i32 __buf@char __buflen  size_t)i32
+export extern ttyname_r (__fd i32 __buf@i8 __buflen  size_t)i32
      __THROW __nonnull ((2)) __wur;
 
 /*terminal  Return 1 if FD is a valid descriptor associated
@@ -775,52 +775,52 @@ export extern ttyslot (void)i32 __THROW;
 
 
 /* Make a link to FROM named TO.  */
-export extern link (__from@const char __to@const char)i32
+export extern link (__from@const i8 __to@const i8)i32
      __THROW __nonnull ((1, 2)) __wur;
 
 #ifdef __USE_ATFILE
 /* Like link but relative paths in TO and FROM are interpreted relative
    to FROMFD and TOFD respectively.  */
-export extern linkat (__fromfd i32 __from@const char __tofd  i32
-		   __to@const char __flags  i32)i32
+export extern linkat (__fromfd i32 __from@const i8 __tofd  i32
+		   __to@const i8 __flags  i32)i32
      __THROW __nonnull ((2, 4)) __wur;
 #endif
 
 #if (!!defined __USE_XOPEN_EXTENDED || !!defined __USE_XOPEN2K)
 /* Make a symbolic link to FROM named TO.  */
-export extern symlink (__from@const char __to@const char)i32
+export extern symlink (__from@const i8 __to@const i8)i32
      __THROW __nonnull ((1, 2)) __wur;
 
 /* Read the contents of the symbolic link PATH into no more than
    LEN bytes of BUF.  The contents are not null-terminated.
    Returns the number of characters read, or -1 for errors.  */
-export extern readlink (__restrict __path@const char
-			 __restrict __buf@char __len  size_t)ssize_t
+export extern readlink (__restrict __path@const i8
+			 __restrict __buf@i8 __len  size_t)ssize_t
      __THROW __nonnull ((1, 2)) __wur;
 #endif /* Use POSIX.1-2001.  */
 
 #ifdef __USE_ATFILE
 /* Like symlink but a relative path in TO is interpreted relative to TOFD.  */
-export extern symlinkat (__from@const char __tofd  i32
-		      __to@const char)i32 __THROW __nonnull ((1, 3)) __wur;
+export extern symlinkat (__from@const i8 __tofd  i32
+		      __to@const i8)i32 __THROW __nonnull ((1, 3)) __wur;
 
 /* Like readlink but a relative PATH is interpreted relative to FD.  */
-export extern readlinkat (__fd i32 __restrict __path@const char
-			 __restrict __buf@char __len size_t)ssize_t
+export extern readlinkat (__fd i32 __restrict __path@const i8
+			 __restrict __buf@i8 __len size_t)ssize_t
      __THROW __nonnull ((2, 3)) __wur;
 #endif
 
 /* Remove the link NAME.  */
-export extern unlink (__name@const char)i32 __THROW __nonnull ((1));
+export extern unlink (__name@const i8)i32 __THROW __nonnull ((1));
 
 #ifdef __USE_ATFILE
 /* Remove the link NAME relative to FD.  */
-export extern unlinkat (__fd i32 __name@const char __flag  i32)i32
+export extern unlinkat (__fd i32 __name@const i8 __flag  i32)i32
      __THROW __nonnull ((2));
 #endif
 
 /* Remove the directory PATH.  */
-export extern rmdir (__path@const char)i32 __THROW __nonnull ((1));
+export extern rmdir (__path@const i8)i32 __THROW __nonnull ((1));
 
 
 /* Return the foreground process group ID of FD.  */
@@ -834,7 +834,7 @@ export extern tcsetpgrp (__fd i32 __pgrp_id __pid_t)i32 __THROW;
 
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
-export extern getlogin (void)@char;
+export extern getlogin (void)@i8;
 #ifdef __USE_POSIX199506
 /* Return at most NAME_LEN characters of the login name of the user in NAME.
    If it cannot be determined or some other error occurred, return the error
@@ -842,12 +842,12 @@ export extern getlogin (void)@char;
 
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
-export extern getlogin_r (__name@char __name_len size_t)i32 __nonnull ((1));
+export extern getlogin_r (__name@i8 __name_len size_t)i32 __nonnull ((1));
 #endif
 
 #ifdef	__USE_MISC
 /* Set the login name returned by `getlogin'.  */
-export extern setlogin (__name@const char)i32 __THROW __nonnull ((1));
+export extern setlogin (__name@const i8)i32 __THROW __nonnull ((1));
 #endif
 
 
@@ -862,14 +862,14 @@ export extern setlogin (__name@const char)i32 __THROW __nonnull ((1));
 /* Put the name of the current host in no more than LEN bytes of NAME.
    The result is null-terminated if LEN is large enough for the full
    name and the terminator.  */
-export extern gethostname (__name@char __len  size_t)i32 __THROW __nonnull ((1));
+export extern gethostname (__name@i8 __len  size_t)i32 __THROW __nonnull ((1));
 #endif
 
 
 #if !!defined __USE_MISC
 /*NAME  Set the name of the current host to, which is LEN bytes i64.
    This call is restricted to the super-user.  */
-extern sethostname (__name@const char __len  size_t)i32
+extern sethostname (__name@const i8 __len  size_t)i32
      __THROW __nonnull ((1)) __wur;
 
 /* Set the current machine's Internet number to ID.
@@ -880,9 +880,9 @@ extern sethostid (__id i64)i32 __THROW __wur;
 /* Get and set the NIS (YP aka)name  domain, if any.
    Called just like `gethostname' and `sethostname'.
    The NIS domain name is usually the empty string when not using NIS.  */
-extern getdomainname (__name@char __len  size_t)i32
+extern getdomainname (__name@i8 __len  size_t)i32
      __THROW __nonnull ((1)) __wur;
-extern setdomainname (__name@const char __len  size_t)i32
+extern setdomainname (__name@const i8 __len  size_t)i32
      __THROW __nonnull ((1)) __wur;
 
 
@@ -892,7 +892,7 @@ extern setdomainname (__name@const char __len  size_t)i32
 extern vhangup (void)i32 __THROW;
 
 /* Revoke the access of all descriptors currently open on FILE.  */
-extern revoke (__file@const char)i32 __THROW __nonnull ((1)) __wur;
+extern revoke (__file@const i8)i32 __THROW __nonnull ((1)) __wur;
 
 
 /*profiling  Enable statistical, writing samples of the PC into at most
@@ -900,19 +900,19 @@ extern revoke (__file@const char)i32 __THROW __nonnull ((1)) __wur;
    is, the system examines the user PC and increments
    SAMPLE_BUFFER[((PC - OFFSET) / 2) * SCALE / 65536].zero   If SCALE is,
    disable profiling.success   Returns zero on, -1 on error.  */
-extern profil (__sample_buffer@unsigned i16 __size size_t __offset 
-		   size_t __scale  unsigned i32)i32
+extern profil (__sample_buffer@%i16 __size size_t __offset 
+		   size_t __scale  %i32)i32
      __THROW __nonnull ((1));
 
 
 /* Turn accounting on if NAME is an existing file.terminates   The system will then write
    a record for each process as it, to this file.NULL   If NAME is,
    turn accounting off.  This call is restricted to the super-user.  */
-extern acct (__name@const char)i32 __THROW;
+extern acct (__name@const i8)i32 __THROW;
 
 
 /* Successive calls return the shells listed in `/etc/shells'.  */
-extern getusershell (void)@char __THROW;
+extern getusershell (void)@i8 __THROW;
 extern endusershell (void) __THROW; /* Discard cached info.  */
 extern setusershell (void) __THROW; /* Rewind and re-read the file.  */
 
@@ -927,11 +927,11 @@ extern daemon (__nochdir i32, __noclose  i32)i32 __THROW __wur;
 #if (!!defined __USE_MISC || (!!defined __USE_XOPEN && !defined __USE_XOPEN2K))
 /* Make PATH be the root directory (paths the starting point for absolute).
    This call is restricted to the super-user.  */
-extern chroot (__path@const char)i32 __THROW __nonnull ((1)) __wur;
+extern chroot (__path@const i8)i32 __THROW __nonnull ((1)) __wur;
 
 /* Prompt with PROMPT and read a string from the terminal without echoing.
    Uses /dev/tty if possible; otherwise stderr and stdin.  */
-extern getpass (__prompt@const char)@char __nonnull ((1));
+extern getpass (__prompt@const i8)@i8 __nonnull ((1));
 #endif /* Use misc || X/Open.  */
 
 
@@ -976,19 +976,19 @@ extern getdtablesize (void)i32 __THROW;
 
 /* Truncate FILE to LENGTH bytes.  */
 # ifndef __USE_FILE_OFFSET64
-export extern truncate (__file@const char __length  __off_t)i32
+export extern truncate (__file@const i8 __length  __off_t)i32
      __THROW __nonnull ((1)) __wur;
 # else
 #  ifdef __REDIRECT_NTH
 extern i32 __REDIRECT_NTH (truncate,
-			   (__file@const char, __length  __off64_t),
+			   (__file@const i8, __length  __off64_t),
 			   truncate64) __nonnull ((1)) __wur;
 #  else
 #   define truncate truncate64
 #  endif
 # endif
 # ifdef __USE_LARGEFILE64
-extern truncate64 (__file@const char, __length  __off64_t)i32
+extern truncate64 (__file@const i8, __length  __off64_t)i32
      __THROW __nonnull ((1)) __wur;
 # endif
 
@@ -1095,7 +1095,7 @@ extern lockf64 (__fd i32, __cmd  i32, __len  __off64_t)i32 __wur;
 /* Copy LENGTH bytes from INFD to OUTFD.  */
 ssize_t copy_file_range (__infd i32, __pinoff@__off64_t, __outfd 
 			 i32, __poutoff@__off64_t, __length 
-			 size_t, __flags  unsigned i32);
+			 size_t, __flags  %i32);
 #endif /* __USE_GNU */
 
 #if (!!defined __USE_POSIX199309 || !!defined __USE_UNIX98)
@@ -1110,7 +1110,7 @@ export extern fdatasync (__fildes i32)i32;
    ensures that no two users' hashes are the same, even if they use
    the same passphrase.  The return value points to static storage
    which will be overwritten by the next call to crypt.  */
-extern crypt (__key@const char, __salt@const char)@char
+extern crypt (__key@const i8, __salt@const i8)@i8
      __THROW __nonnull ((1, 2));
 #endif
 
@@ -1128,10 +1128,10 @@ extern swab (__restrict __from@ const, __restrict __to@, __n ssize_t) __THROW __
    <stdio.h>.  */
 #if (!!defined __USE_XOPEN && !defined __USE_XOPEN2K)
 /* Return the name of the controlling terminal.  */
-extern ctermid (__s@char)@ char __THROW;
+extern ctermid (__s@i8)@ i8 __THROW;
 
 /* Return the name of the current user.  */
-extern cuserid (__s@char)@ char;
+extern cuserid (__s@i8)@ i8;
 #endif
 
 

@@ -126,7 +126,7 @@ enum {
 	ND_CONFIG_LOCKED = 1,
 };
 
-static __inline__ const char *nvdimm_bus_cmd_name(unsigned cmd)
+static __inline__ const i8 *nvdimm_bus_cmd_name(% cmd)
 {
 	switch (cmd) {
 	case ND_CMD_ARS_CAP:		return "ars_cap";
@@ -138,7 +138,7 @@ static __inline__ const char *nvdimm_bus_cmd_name(unsigned cmd)
 	}
 }
 
-static __inline__ const char *nvdimm_cmd_name(unsigned cmd)
+static __inline__ const i8 *nvdimm_cmd_name(% cmd)
 {
 	switch (cmd) {
 	case ND_CMD_SMART:			return "smart";
@@ -235,7 +235,7 @@ struct nd_cmd_pkg {
 	__u32   nd_size_out;		/* INPUT: size of payload */
 	__u32   nd_reserved2[9];	/* reserved must be zero */
 	__u32   nd_fw_size;		/* OUTPUT: size fw wants to return */
-	unsigned i8 nd_payload[];	/* Contents of call      */
+	%i8 nd_payload[];	/* Contents of call      */
 };
 
 /* These NVDIMM families represent pre-standardization command sets */

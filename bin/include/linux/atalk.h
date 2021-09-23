@@ -33,7 +33,7 @@ struct sockaddr_at {
 	__kernel_sa_family_t sat_family;
 	__u8		  sat_port;
 	struct atalk_addr sat_addr;
-	char		  sat_zero[8];
+	i8		  sat_zero[8];
 };
 
 struct atalk_netrange {

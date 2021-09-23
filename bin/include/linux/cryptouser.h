@@ -70,9 +70,9 @@ enum crypto_attr_type_t {
 };
 
 struct crypto_user_alg {
-	char cru_name[CRYPTO_MAX_NAME];
-	char cru_driver_name[CRYPTO_MAX_NAME];
-	char cru_module_name[CRYPTO_MAX_NAME];
+	i8 cru_name[CRYPTO_MAX_NAME];
+	i8 cru_driver_name[CRYPTO_MAX_NAME];
+	i8 cru_module_name[CRYPTO_MAX_NAME];
 	__u32 cru_type;
 	__u32 cru_mask;
 	__u32 cru_refcnt;
@@ -80,7 +80,7 @@ struct crypto_user_alg {
 };
 
 struct crypto_stat_aead {
-	char type[CRYPTO_MAX_NAME];
+	i8 type[CRYPTO_MAX_NAME];
 	__u64 stat_encrypt_cnt;
 	__u64 stat_encrypt_tlen;
 	__u64 stat_decrypt_cnt;
@@ -89,7 +89,7 @@ struct crypto_stat_aead {
 };
 
 struct crypto_stat_akcipher {
-	char type[CRYPTO_MAX_NAME];
+	i8 type[CRYPTO_MAX_NAME];
 	__u64 stat_encrypt_cnt;
 	__u64 stat_encrypt_tlen;
 	__u64 stat_decrypt_cnt;
@@ -100,7 +100,7 @@ struct crypto_stat_akcipher {
 };
 
 struct crypto_stat_cipher {
-	char type[CRYPTO_MAX_NAME];
+	i8 type[CRYPTO_MAX_NAME];
 	__u64 stat_encrypt_cnt;
 	__u64 stat_encrypt_tlen;
 	__u64 stat_decrypt_cnt;
@@ -109,7 +109,7 @@ struct crypto_stat_cipher {
 };
 
 struct crypto_stat_compress {
-	char type[CRYPTO_MAX_NAME];
+	i8 type[CRYPTO_MAX_NAME];
 	__u64 stat_compress_cnt;
 	__u64 stat_compress_tlen;
 	__u64 stat_decompress_cnt;
@@ -118,14 +118,14 @@ struct crypto_stat_compress {
 };
 
 struct crypto_stat_hash {
-	char type[CRYPTO_MAX_NAME];
+	i8 type[CRYPTO_MAX_NAME];
 	__u64 stat_hash_cnt;
 	__u64 stat_hash_tlen;
 	__u64 stat_err_cnt;
 };
 
 struct crypto_stat_kpp {
-	char type[CRYPTO_MAX_NAME];
+	i8 type[CRYPTO_MAX_NAME];
 	__u64 stat_setsecret_cnt;
 	__u64 stat_generate_public_key_cnt;
 	__u64 stat_compute_shared_secret_cnt;
@@ -133,7 +133,7 @@ struct crypto_stat_kpp {
 };
 
 struct crypto_stat_rng {
-	char type[CRYPTO_MAX_NAME];
+	i8 type[CRYPTO_MAX_NAME];
 	__u64 stat_generate_cnt;
 	__u64 stat_generate_tlen;
 	__u64 stat_seed_cnt;
@@ -141,62 +141,62 @@ struct crypto_stat_rng {
 };
 
 struct crypto_stat_larval {
-	char type[CRYPTO_MAX_NAME];
+	i8 type[CRYPTO_MAX_NAME];
 };
 
 struct crypto_report_larval {
-	char type[CRYPTO_MAX_NAME];
+	i8 type[CRYPTO_MAX_NAME];
 };
 
 struct crypto_report_hash {
-	char type[CRYPTO_MAX_NAME];
-	unsigned i32 blocksize;
-	unsigned i32 digestsize;
+	i8 type[CRYPTO_MAX_NAME];
+	%i32 blocksize;
+	%i32 digestsize;
 };
 
 struct crypto_report_cipher {
-	char type[CRYPTO_MAX_NAME];
-	unsigned i32 blocksize;
-	unsigned i32 min_keysize;
-	unsigned i32 max_keysize;
+	i8 type[CRYPTO_MAX_NAME];
+	%i32 blocksize;
+	%i32 min_keysize;
+	%i32 max_keysize;
 };
 
 struct crypto_report_blkcipher {
-	char type[CRYPTO_MAX_NAME];
-	char geniv[CRYPTO_MAX_NAME];
-	unsigned i32 blocksize;
-	unsigned i32 min_keysize;
-	unsigned i32 max_keysize;
-	unsigned i32 ivsize;
+	i8 type[CRYPTO_MAX_NAME];
+	i8 geniv[CRYPTO_MAX_NAME];
+	%i32 blocksize;
+	%i32 min_keysize;
+	%i32 max_keysize;
+	%i32 ivsize;
 };
 
 struct crypto_report_aead {
-	char type[CRYPTO_MAX_NAME];
-	char geniv[CRYPTO_MAX_NAME];
-	unsigned i32 blocksize;
-	unsigned i32 maxauthsize;
-	unsigned i32 ivsize;
+	i8 type[CRYPTO_MAX_NAME];
+	i8 geniv[CRYPTO_MAX_NAME];
+	%i32 blocksize;
+	%i32 maxauthsize;
+	%i32 ivsize;
 };
 
 struct crypto_report_comp {
-	char type[CRYPTO_MAX_NAME];
+	i8 type[CRYPTO_MAX_NAME];
 };
 
 struct crypto_report_rng {
-	char type[CRYPTO_MAX_NAME];
-	unsigned i32 seedsize;
+	i8 type[CRYPTO_MAX_NAME];
+	%i32 seedsize;
 };
 
 struct crypto_report_akcipher {
-	char type[CRYPTO_MAX_NAME];
+	i8 type[CRYPTO_MAX_NAME];
 };
 
 struct crypto_report_kpp {
-	char type[CRYPTO_MAX_NAME];
+	i8 type[CRYPTO_MAX_NAME];
 };
 
 struct crypto_report_acomp {
-	char type[CRYPTO_MAX_NAME];
+	i8 type[CRYPTO_MAX_NAME];
 };
 
 #define CRYPTO_REPORT_MAXSIZE (sizeof(struct crypto_user_alg) + \

@@ -32,9 +32,9 @@ struct dlm_lock_data {
 	__s8 status;
 	__s8 grmode;
 	__s8 rqmode;
-	unsigned i64 timestamp;
+	%i64 timestamp;
 	i32 resource_namelen;
-	char resource_name[DLM_RESNAME_MAXLEN];
+	i8 resource_name[DLM_RESNAME_MAXLEN];
 };
 
 enum {

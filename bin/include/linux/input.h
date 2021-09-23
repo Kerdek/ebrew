@@ -31,8 +31,8 @@ struct input_event {
 #else
 	__kernel_ulong_t __sec;
 #if defined(__sparc__) && defined(__arch64__)
-	unsigned i32 __usec;
-	unsigned i32 __pad;
+	%i32 __usec;
+	%i32 __pad;
 #else
 	__kernel_ulong_t __usec;
 #endif
@@ -126,12 +126,12 @@ struct input_mask {
 
 #define EVIOCGVERSION		_IOR('E', 0x01, i32)			/* get driver version */
 #define EVIOCGID		_IOR('E', 0x02, struct input_id)	/* get device ID */
-#define EVIOCGREP		_IOR('E', 0x03, unsigned i32[2])	/* get repeat settings */
-#define EVIOCSREP		_IOW('E', 0x03, unsigned i32[2])	/* set repeat settings */
+#define EVIOCGREP		_IOR('E', 0x03, %i32[2])	/* get repeat settings */
+#define EVIOCSREP		_IOW('E', 0x03, %i32[2])	/* set repeat settings */
 
-#define EVIOCGKEYCODE		_IOR('E', 0x04, unsigned i32[2])        /* get keycode */
+#define EVIOCGKEYCODE		_IOR('E', 0x04, %i32[2])        /* get keycode */
 #define EVIOCGKEYCODE_V2	_IOR('E', 0x04, struct input_keymap_entry)
-#define EVIOCSKEYCODE		_IOW('E', 0x04, unsigned i32[2])        /* set keycode */
+#define EVIOCSKEYCODE		_IOW('E', 0x04, %i32[2])        /* set keycode */
 #define EVIOCSKEYCODE_V2	_IOW('E', 0x04, struct input_keymap_entry)
 
 #define EVIOCGNAME(len)		_IOC(_IOC_READ, 'E', 0x06, len)		/* get device name */

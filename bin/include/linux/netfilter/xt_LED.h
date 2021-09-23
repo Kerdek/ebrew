@@ -5,7 +5,7 @@
 #include <linux/types.h>
 
 struct xt_led_info {
-	char id[27];        /* Unique ID for this trigger in the LED class */
+	i8 id[27];        /* Unique ID for this trigger in the LED class */
 	__u8 always_blink;  /* Blink even if the LED is already on */
 	__u32 delay;        /* Delay until LED is switched off after trigger */
 

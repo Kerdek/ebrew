@@ -149,7 +149,7 @@
 typedef struct synth_control
 {
 	i32 devno;	/* Synthesizer # */
-	char data[4000]; /* Device spesific command/data record */
+	i8 data[4000]; /* Device spesific command/data record */
 }synth_control;
 
 typedef struct remove_sample
@@ -160,7 +160,7 @@ typedef struct remove_sample
 } remove_sample;
 
 typedef struct seq_event_rec {
-		unsigned i8 arr[8];
+		%i8 arr[8];
 } seq_event_rec;
 
 #define SNDCTL_TMR_TIMEBASE		_SIOWR('T', 1, i32)
@@ -207,7 +207,7 @@ typedef struct seq_event_rec {
  */
 
 struct patch_info {
-		unsigned i16 key;		/* Use WAVE_PATCH here */
+		%i16 key;		/* Use WAVE_PATCH here */
 #define WAVE_PATCH	   _PATCHKEY(0x04)
 #define GUS_PATCH	   WAVE_PATCH
 #define WAVEFRONT_PATCH    _PATCHKEY(0x06)
@@ -215,7 +215,7 @@ struct patch_info {
 		i16 device_no;	/* Synthesizer number */
 		i16 instr_no;		/* Midi pgm# */
 
-		unsigned i32 mode;
+		%i32 mode;
 /*
  * The least significant byte has the same format than the GUS .PAT
  * files
@@ -258,18 +258,18 @@ struct patch_info {
  * middle A is 440*1000.
  */
 
-		unsigned i32 base_freq;
-		unsigned i32 base_note;
-		unsigned i32 high_note;
-		unsigned i32 low_note;
+		%i32 base_freq;
+		%i32 base_note;
+		%i32 high_note;
+		%i32 low_note;
 		i32 panning;	/* -128=left, 127=right */
 		i32 detuning;
 
 /*	New fields introduced in version 1.99.5	*/
 
        /* Envelope. Enabled by mode bit WAVE_ENVELOPES	*/
-		unsigned i8	env_rate[ 6 ];	 /* GUS HW ramping rate */
-		unsigned i8	env_offset[ 6 ]; /* 255 == 100% */
+		%i8	env_rate[ 6 ];	 /* GUS HW ramping rate */
+		%i8	env_offset[ 6 ]; /* 255 == 100% */
 
 	/* 
 	 * The tremolo, vibrato and scale info are not supported yet.
@@ -277,22 +277,22 @@ struct patch_info {
 	 * WAVE_SCALE
 	 */
 
-		unsigned i8	tremolo_sweep;
-		unsigned i8	tremolo_rate;
-		unsigned i8	tremolo_depth;
+		%i8	tremolo_sweep;
+		%i8	tremolo_rate;
+		%i8	tremolo_depth;
 	
-		unsigned i8	vibrato_sweep;
-		unsigned i8	vibrato_rate;
-		unsigned i8	vibrato_depth;
+		%i8	vibrato_sweep;
+		%i8	vibrato_rate;
+		%i8	vibrato_depth;
 
 		i32		scale_frequency;
-		unsigned i32	scale_factor;		/* from 0 to 2048 or 0 to 2 */
+		%i32	scale_factor;		/* from 0 to 2048 or 0 to 2 */
 	
 	        i32		volume;
 		i32		fractions;
 		i32		reserved1;
 	        i32		spare[2];
-		char data[1];	/* The waveform data starts here */
+		i8 data[1];	/* The waveform data starts here */
 	};
 
 struct sysex_info {
@@ -301,7 +301,7 @@ struct sysex_info {
 #define MAUI_PATCH	_PATCHKEY(0x06)
 		i16 device_no;	/* Synthesizer number */
 		i32 len;	/* Size of the sysex data in bytes */
-		unsigned i8 data[1];	/* Sysex data starts here */
+		%i8 data[1];	/* Sysex data starts here */
 	};
 
 /*
@@ -462,10 +462,10 @@ struct sysex_info {
  * Record for FM patches
  */
 
-typedef unsigned i8 sbi_instr_data[32];
+typedef %i8 sbi_instr_data[32];
 
 struct sbi_instrument {
-		unsigned i16	key;	/* FM_PATCH or OPL3_PATCH */
+		%i16	key;	/* FM_PATCH or OPL3_PATCH */
 #define FM_PATCH	_PATCHKEY(0x01)
 #define OPL3_PATCH	_PATCHKEY(0x03)
 		i16		device;		/*	Synth# (0-4)	*/
@@ -474,7 +474,7 @@ struct sbi_instrument {
 	};
 
 struct synth_info {	/* Read only */
-		char	name[30];
+		i8	name[30];
 		i32	device;		/* 0-N. INITIALIZE BEFORE CALLING */
 		i32	synth_type;
 #define SYNTH_TYPE_FM			0
@@ -494,7 +494,7 @@ struct synth_info {	/* Read only */
 		i32	nr_voices;
 		i32	nr_drums;	/* Obsolete field */
 		i32	instr_bank_size;
-		unsigned i32	capabilities;	
+		%i32	capabilities;	
 #define SYNTH_CAP_PERCMODE		0x00000001 /* No longer used */
 #define SYNTH_CAP_OPL3			0x00000002 /* Set if OPL3 supported */
 #define SYNTH_CAP_INPUT			0x00000004 /* Input (MIDI) device */
@@ -502,16 +502,16 @@ struct synth_info {	/* Read only */
 	};
 
 struct sound_timer_info {
-		char name[32];
+		i8 name[32];
 		i32 caps;
 	};
 
 #define MIDI_CAP_MPU401		1		/* MPU-401 intelligent mode */
 
 struct midi_info {
-		char		name[30];
+		i8		name[30];
 		i32		device;		/* 0-N. INITIALIZE BEFORE CALLING */
-		unsigned i32	capabilities;	/* To be defined later */
+		%i32	capabilities;	/* To be defined later */
 		i32		dev_type;
 		i32		dummies[18];	/* Reserve space */
 	};
@@ -520,9 +520,9 @@ struct midi_info {
  * ioctl commands for the /dev/midi##
  */
 typedef struct {
-		unsigned i8 cmd;
-		char nr_args, nr_returns;
-		unsigned i8 data[30];
+		%i8 cmd;
+		i8 nr_args, nr_returns;
+		%i8 data[30];
 	} mpu_command_rec;
 
 #define SNDCTL_MIDI_PRETIME		_SIOWR('m', 0, i32)
@@ -609,7 +609,7 @@ typedef struct count_info {
 #define SNDCTL_DSP_GETOPTR		_SIOR ('P',18, count_info)
 
 typedef struct buffmem_desc {
-		unsigned *buffer;
+		% *buffer;
 		i32 size;
 	} buffmem_desc;
 #define SNDCTL_DSP_MAPINBUF		_SIOR ('P', 19, buffmem_desc)
@@ -699,7 +699,7 @@ typedef struct copr_buffer {
 		i32 len;
 		i32 offs;	/* If required by the device (0 if not used) */
 
-		unsigned i8 data[4000]; /* NOTE! 4000 is not 4k */
+		%i8 data[4000]; /* NOTE! 4000 is not 4k */
 	} copr_buffer;
 
 typedef struct copr_debug_buf {
@@ -712,7 +712,7 @@ typedef struct copr_debug_buf {
 
 typedef struct copr_msg {
 		i32 len;
-		unsigned i8 data[4000];
+		%i8 data[4000];
 	} copr_msg;
 
 #define SNDCTL_COPR_RESET             _SIO  ('C',  0)
@@ -901,16 +901,16 @@ typedef struct copr_msg {
 
 typedef struct mixer_info
 {
-  char id[16];
-  char name[32];
+  i8 id[16];
+  i8 name[32];
   i32  modify_counter;
   i32 fillers[10];
 } mixer_info;
 
 typedef struct _old_mixer_info /* Obsolete */
 {
-  char id[16];
-  char name[32];
+  i8 id[16];
+  i8 name[32];
 } _old_mixer_info;
 
 #define SOUND_MIXER_INFO		_SIOR ('M', 101, mixer_info)
@@ -922,7 +922,7 @@ typedef struct _old_mixer_info /* Obsolete */
  * and the mixer driver. Interpretation of the record is defined by
  * the particular mixer driver.
  */
-typedef unsigned i8 mixer_record[128];
+typedef %i8 mixer_record[128];
 
 #define SOUND_MIXER_ACCESS		_SIOWR('M', 102, mixer_record)
 
@@ -952,7 +952,7 @@ typedef unsigned i8 mixer_record[128];
 
 typedef struct mixer_vol_table {
   i32 num;	/* Index to volume table */
-  char name[32];
+  i8 name[32];
   i32 levels[32];
 } mixer_vol_table;
 
@@ -1060,7 +1060,7 @@ void seqbuf_dump(void);	/* This function must be provided by programs */
 
 #define _SEQ_EXTERN extern
 #define SEQ_USE_EXTBUF() \
-		_SEQ_EXTERN unsigned i8 _seqbuf[]; \
+		_SEQ_EXTERN %i8 _seqbuf[]; \
 		_SEQ_EXTERN i32 _seqbuflen; _SEQ_EXTERN i32 _seqbufptr
 
 #ifndef USE_SIMPLE_MACROS
@@ -1083,7 +1083,7 @@ void seqbuf_dump(void);	/* This function must be provided by programs */
  *	}
  */
 
-#define SEQ_DEFINEBUF(len)		unsigned i8 _seqbuf[len]; i32 _seqbuflen = len;i32 _seqbufptr = 0
+#define SEQ_DEFINEBUF(len)		%i8 _seqbuf[len]; i32 _seqbuflen = len;i32 _seqbufptr = 0
 #define _SEQ_NEEDBUF(len)		if ((_seqbufptr+(len)) > _seqbuflen) seqbuf_dump()
 #define _SEQ_ADVBUF(len)		_seqbufptr += len
 #define SEQ_DUMPBUF			seqbuf_dump
@@ -1095,7 +1095,7 @@ void seqbuf_dump(void);	/* This function must be provided by programs */
  * The program using the macro library must define the following macros before
  * using this library.
  *
- * #define _seqbuf 		 name of the buffer (unsigned i8[]) 
+ * #define _seqbuf 		 name of the buffer (%i8[]) 
  * #define _SEQ_ADVBUF(len)	 If the applic needs to know the exact
  *				 size of the event, this macro can be used.
  *				 Otherwise this must be defined as empty.
@@ -1172,7 +1172,7 @@ void seqbuf_dump(void);	/* This function must be provided by programs */
  */
 #define SEQ_SYSEX(dev, buf, len) \
 					{i32 ii, ll=(len); \
-					 unsigned i8 *bufp=buf;\
+					 %i8 *bufp=buf;\
 					 if (ll>6)ll=6;\
 					_SEQ_NEEDBUF(8);\
 					_seqbuf[_seqbufptr] = EV_SYSEX;\
@@ -1226,7 +1226,7 @@ void seqbuf_dump(void);	/* This function must be provided by programs */
 				 	_seqbuf[_seqbufptr+1] = (ev); \
 					_seqbuf[_seqbufptr+2] = 0;\
 					_seqbuf[_seqbufptr+3] = 0;\
-				 	*(unsigned i32 *)&_seqbuf[_seqbufptr+4] = (parm); \
+				 	*(%i32 *)&_seqbuf[_seqbufptr+4] = (parm); \
 					_SEQ_ADVBUF(8);}
 
 #define SEQ_START_TIMER()		_TIMER_EVENT(TMR_START, 0)
@@ -1248,7 +1248,7 @@ void seqbuf_dump(void);	/* This function must be provided by programs */
 				 	_seqbuf[_seqbufptr+1] = (ev); \
 					_seqbuf[_seqbufptr+2] = 0;\
 					_seqbuf[_seqbufptr+3] = 0;\
-				 	*(unsigned i32 *)&_seqbuf[_seqbufptr+4] = (parm); \
+				 	*(%i32 *)&_seqbuf[_seqbufptr+4] = (parm); \
 					_SEQ_ADVBUF(8);}
 
 #define SEQ_PLAYAUDIO(devmask)		_LOCAL_EVENT(LOCL_STARTAUDIO, devmask)
@@ -1268,9 +1268,9 @@ void seqbuf_dump(void);	/* This function must be provided by programs */
  */
 #define SEQ_WRPATCH(patchx, len) \
 		{if (_seqbufptr) SEQ_DUMPBUF();\
-		 if (write(seqfd, (char*)(patchx), len)==-1) \
+		 if (write(seqfd, (i8*)(patchx), len)==-1) \
 		    perror("Write patch: /dev/sequencer");}
 #define SEQ_WRPATCH2(patchx, len) \
-		(SEQ_DUMPBUF(), write(seqfd, (char*)(patchx), len))
+		(SEQ_DUMPBUF(), write(seqfd, (i8*)(patchx), len))
 
 #endif /* SOUNDCARD_H */

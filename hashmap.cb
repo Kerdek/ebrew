@@ -2,22 +2,22 @@
 
 #include "chub.hb"
 
-fnv_hash(s@ char len i32) unsigned i64 =
+fnv_hash(s@ i8 len i32) %i64 =
   let hash = 0xcbf29ce484222325;
   for (let i i32 = 0; i < len; i += 1) {
     (hash *= 0x100000001b3ul);
-    (hash ^= cast unsigned i64 cast unsigned i8 s[i]);
+    (hash ^= cast %i64 cast %i8 s[i]);
   ;
   return hash;
 ;
 
 // Make room for new entires in a given hashmap by removing
-// /* TOMBSTONE */ cast @char -1s and possibly extending the bucket size.
+// /* TOMBSTONE */ cast @i8 -1s and possibly extending the bucket size.
 rehash(map@ HashMap)  =
   // Compute the size of the new hashmap.
   let nkeys = 0;
   for (let i i32 = 0; i < map.capacity; i += 1)
-    if (!!map.buckets[i].key && map.buckets[i].key != /* TOMBSTONE */ cast @char -1)
+    if (!!map.buckets[i].key && map.buckets[i].key != /* TOMBSTONE */ cast @i8 -1)
       (nkeys += 1);
 
   let cap = map.capacity;
@@ -26,35 +26,35 @@ rehash(map@ HashMap)  =
 
   // Create a new hashmap and copy all key-values.
   let map2 = new HashMap {;;
-  (map2.buckets = cast @HashEntry calloc cast unsigned i64 cap sizeof HashEntry);
+  (map2.buckets = cast @HashEntry calloc cast %i64 cap sizeof HashEntry);
   (map2.capacity = cap);
 
   for (let i i32 = 0; i < map.capacity; i += 1) {
     let ent = &map.buckets[i];
     let a = &map2;
-    if (!!ent.key && ent.key != /* TOMBSTONE */ cast @char -1) hashmap_put2 a ent.key ent.keylen ent.val;;
+    if (!!ent.key && ent.key != /* TOMBSTONE */ cast @i8 -1) hashmap_put2 a ent.key ent.keylen ent.val;;
   (map@ = map2);;
 
-match(ent@ HashEntry key@ char keylen i32) bool =
-  return !!ent.key && ent.key != /* TOMBSTONE */ cast @char -1 && ent.keylen == keylen && !memcmp cast @ ent.key cast @ key cast unsigned i64 keylen;;
-get_entry(map@ HashMap key@ char keylen i32)@ HashEntry =
+match(ent@ HashEntry key@ i8 keylen i32) bool =
+  return !!ent.key && ent.key != /* TOMBSTONE */ cast @i8 -1 && ent.keylen == keylen && !memcmp cast @ ent.key cast @ key cast %i64 keylen;;
+get_entry(map@ HashMap key@ i8 keylen i32)@ HashEntry =
   if !map.buckets return cast @HashEntry 0;
   let hash = fnv_hash key keylen;
   for (let i i32 = 0; i < map.capacity; i += 1) {
-    let ent = &map.buckets[(hash + cast unsigned i64 i) % cast unsigned i64 map.capacity];
+    let ent = &map.buckets[(hash + cast %i64 i) % cast %i64 map.capacity];
     if match ent key keylen return ent;
     if !ent.key return cast @HashEntry 0;;
   none;;
-get_or_insert_entry(map@ HashMap key@ char keylen i32)@ HashEntry =
+get_or_insert_entry(map@ HashMap key@ i8 keylen i32)@ HashEntry =
   if !map.buckets {
     (map.buckets = (calloc /* INIT_SIZE */ 16ul sizeof HashEntry as @HashEntry));
     (map.capacity = /* INIT_SIZE */ 16ul as i32);;
   else if ((map.used * 100) / map.capacity >= /* HIGH_WATERMARK */ 70) rehash map;
   let hash = fnv_hash key keylen;
   for (let i i32 = 0; i < map.capacity; i += 1) {
-    let ent = &map.buckets[(hash + cast unsigned i64 i) % cast unsigned i64 map.capacity];
+    let ent = &map.buckets[(hash + cast %i64 i) % cast %i64 map.capacity];
     if match ent key keylen return ent;
-    if (ent.key == /* TOMBSTONE */ cast @char -1) {
+    if (ent.key == /* TOMBSTONE */ cast @i8 -1) {
       (ent.key = key);
       (ent.keylen = keylen);
       return ent;;
@@ -64,17 +64,17 @@ get_or_insert_entry(map@ HashMap key@ char keylen i32)@ HashEntry =
       (map.used += 1);
       return ent;;;
   none;;
-export hashmap_get(map@ HashMap key@ char)@ = { return hashmap_get2 map key cast i32 strlen key;;;
-export hashmap_get2(map@ HashMap key@ char keylen i32)@ =
+export hashmap_get(map@ HashMap key@ i8)@ = { return hashmap_get2 map key cast i32 strlen key;;;
+export hashmap_get2(map@ HashMap key@ i8 keylen i32)@ =
   let ent = get_entry map key keylen;
   return !!ent ? ent.val : cast @ 0;;
-export hashmap_put(map@ HashMap key@ char val@) =
+export hashmap_put(map@ HashMap key@ i8 val@) =
   hashmap_put2 map key cast i32 strlen key val;;
-export hashmap_put2(map@HashMap key@ char keylen i32 val@) =
+export hashmap_put2(map@HashMap key@ i8 keylen i32 val@) =
   let ent = get_or_insert_entry map key keylen;
   (ent.val = val);;
-export hashmap_delete(map@HashMap key@ char) =
+export hashmap_delete(map@HashMap key@ i8) =
   hashmap_delete2 map key cast i32 strlen key;;
-export hashmap_delete2(map@HashMap key@ char keylen i32) =
+export hashmap_delete2(map@HashMap key@ i8 keylen i32) =
   let ent = get_entry map key keylen;
-  if ent (ent.key = /* TOMBSTONE */ cast @char -1);;
+  if ent (ent.key = /* TOMBSTONE */ cast @i8 -1);;

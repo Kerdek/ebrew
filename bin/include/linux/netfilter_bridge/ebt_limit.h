@@ -17,7 +17,7 @@ struct ebt_limit_info {
 	__u32 burst;  /* Period multiplier for upper limit. */
 
 	/* Used internally by the kernel */
-	unsigned i64 prev;
+	%i64 prev;
 	__u32 credit;
 	__u32 credit_cap, cost;
 };

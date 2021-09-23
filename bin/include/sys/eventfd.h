@@ -24,14 +24,14 @@
 #include <bits/eventfd.h>
 
 /* Type for event counter.  */
-typedef unsigned i64 eventfd_t;
+typedef %i64 eventfd_t;
 
 
 __BEGIN_DECLS
 
 /* Return file descriptor for generic event channel.  Set initial
    value to COUNT.  */
-extern i32 eventfd (unsigned i32 __count, i32 __flags) __THROW;
+extern i32 eventfd (%i32 __count, i32 __flags) __THROW;
 
 /* Read event counter and possibly wait for events.  */
 extern i32 eventfd_read (i32 __fd, eventfd_t *__value);

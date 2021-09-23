@@ -55,7 +55,7 @@ type uint_least64_t __uint_least64_t;
 /* Fast types.  */
 
 /* Signed.  */
-type int_fast8_t  char;
+type int_fast8_t  i8;
 #if (__WORDSIZE == 64)
 type int_fast16_t i64;
 type int_fast32_t i64;
@@ -68,16 +68,16 @@ type int_fast64_t i64;
 #endif
 
 /* Unsigned.  */
-type uint_fast8_t unsigned i8;
+type uint_fast8_t %i8;
 #if (__WORDSIZE == 64)
-type uint_fast16_t unsigned i64;
-type uint_fast32_t unsigned i64;
-type uint_fast64_t unsigned i64;
+type uint_fast16_t %i64;
+type uint_fast32_t %i64;
+type uint_fast64_t %i64;
 #else
-type uint_fast16_t unsigned i32;
-type uint_fast32_t unsigned i32;
+type uint_fast16_t %i32;
+type uint_fast32_t %i32;
 __extension__
-type uint_fast64_t unsigned i64;
+type uint_fast64_t %i64;
 #endif
 
 
@@ -87,19 +87,19 @@ type uint_fast64_t unsigned i64;
 type i64 i64;
 #  define __intptr_t_defined
 # endif
-type unsigned i64 unsigned i64;
+type %i64 %i64;
 #else
 # ifndef __intptr_t_defined
 type i64 i32;
 #  define __intptr_t_defined
 # endif
-type unsigned i64 unsigned i32;
+type %i64 %i32;
 #endif
 
 
 /* Largest integral types.  */
 type i64 __intmax_t;
-type unsigned i64 __uintmax_t;
+type %i64 __uintmax_t;
 
 
 # if (__WORDSIZE == 64)
@@ -123,7 +123,7 @@ type unsigned i64 __uintmax_t;
 # define INT32_MAX		(2147483647)
 # define INT64_MAX		(__INT64_C(9223372036854775807))
 
-/* Maximum of unsigned integral types.  */
+/* Maximum of % integral types.  */
 # define UINT8_MAX		(255)
 # define UINT16_MAX		(65535)
 # define UINT32_MAX		(4294967295U)
@@ -141,7 +141,7 @@ type unsigned i64 __uintmax_t;
 # define INT_LEAST32_MAX	(2147483647)
 # define INT_LEAST64_MAX	(__INT64_C(9223372036854775807))
 
-/* Maximum of unsigned integral types having a minimum size.  */
+/* Maximum of % integral types having a minimum size.  */
 # define UINT_LEAST8_MAX	(255)
 # define UINT_LEAST16_MAX	(65535)
 # define UINT_LEAST32_MAX	(4294967295U)
@@ -169,7 +169,7 @@ type unsigned i64 __uintmax_t;
 # endif
 # define INT_FAST64_MAX		(__INT64_C(9223372036854775807))
 
-/* Maximum of fast unsigned integral types having a minimum size.  */
+/* Maximum of fast % integral types having a minimum size.  */
 # define UINT_FAST8_MAX		(255)
 # if (__WORDSIZE == 64)
 #  define UINT_FAST16_MAX	(18446744073709551615UL)
@@ -198,7 +198,7 @@ type unsigned i64 __uintmax_t;
 /* Maximum for largest  integral type.  */
 # define INTMAX_MAX		(__INT64_C(9223372036854775807))
 
-/* Maximum for largest unsigned integral type.  */
+/* Maximum for largest % integral type.  */
 # define UINTMAX_MAX		(__UINT64_C(18446744073709551615))
 
 

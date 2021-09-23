@@ -11,9 +11,9 @@
 
 typedef struct _cciss_pci_info_struct
 {
-	unsigned i8 	bus;
-	unsigned i8 	dev_fn;
-	unsigned i16	domain;
+	%i8 	bus;
+	%i8 	dev_fn;
+	%i16	domain;
 	__u32 		board_id;
 } cciss_pci_info_struct; 
 
@@ -23,7 +23,7 @@ typedef struct _cciss_coalint_struct
 	__u32  count;
 } cciss_coalint_struct;
 
-typedef char NodeName_type[16];
+typedef i8 NodeName_type[16];
 
 typedef __u32 Heartbeat_type;
 
@@ -33,7 +33,7 @@ typedef __u32 Heartbeat_type;
 #define CISS_FIBRE2G	0x0200
 typedef __u32 BusTypes_type;
 
-typedef char FirmwareVer_type[4];
+typedef i8 FirmwareVer_type[4];
 typedef __u32 DriverVer_type;
 
 #define MAX_KMALLOC_SIZE 128000

@@ -21,12 +21,12 @@
 #endif
 
 
-extern void __syslog_chk (i32 __pri, i32 __flag, const char *__fmt, ...)
+extern void __syslog_chk (i32 __pri, i32 __flag, const i8 *__fmt, ...)
      __attribute__ ((__format__ (__printf__, 3, 4)));
 
 #ifdef __va_arg_pack
 __fortify_function void
-syslog (i32 __pri, const char *__fmt, ...)
+syslog (i32 __pri, const i8 *__fmt, ...)
 {
   __syslog_chk (__pri, __USE_FORTIFY_LEVEL - 1, __fmt, __va_arg_pack ());
 }
@@ -37,12 +37,12 @@ syslog (i32 __pri, const char *__fmt, ...)
 
 
 #ifdef __USE_MISC
-extern void __vsyslog_chk (i32 __pri, i32 __flag, const char *__fmt,
+extern void __vsyslog_chk (i32 __pri, i32 __flag, const i8 *__fmt,
 			   __gnuc_va_list __ap)
      __attribute__ ((__format__ (__printf__, 3, 0)));
 
 __fortify_function void
-vsyslog (i32 __pri, const char *__fmt, __gnuc_va_list __ap)
+vsyslog (i32 __pri, const i8 *__fmt, __gnuc_va_list __ap)
 {
   __vsyslog_chk (__pri,  __USE_FORTIFY_LEVEL - 1, __fmt, __ap);
 }

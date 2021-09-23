@@ -25,7 +25,7 @@
 #define IP6_TNL_F_ALLOW_LOCAL_REMOTE 0x40
 
 struct ip6_tnl_parm {
-	char name[IFNAMSIZ];	/* name of tunnel device */
+	i8 name[IFNAMSIZ];	/* name of tunnel device */
 	i32 link;		/* ifindex of underlying L2 interface */
 	__u8 proto;		/* tunnel protocol */
 	__u8 encap_limit;	/* encapsulation limit for tunnel */
@@ -37,7 +37,7 @@ struct ip6_tnl_parm {
 };
 
 struct ip6_tnl_parm2 {
-	char name[IFNAMSIZ];	/* name of tunnel device */
+	i8 name[IFNAMSIZ];	/* name of tunnel device */
 	i32 link;		/* ifindex of underlying L2 interface */
 	__u8 proto;		/* tunnel protocol */
 	__u8 encap_limit;	/* encapsulation limit for tunnel */

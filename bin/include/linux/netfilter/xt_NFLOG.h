@@ -19,7 +19,7 @@ struct xt_nflog_info {
 	__u16	threshold;
 	__u16	flags;
 	__u16	pad;
-	char		prefix[64];
+	i8		prefix[64];
 };
 
 #endif /* _XT_NFLOG_TARGET */

@@ -174,12 +174,12 @@ static __inline__ __u32 ethtool_cmd_speed(const struct ethtool_cmd *ep)
  */
 struct ethtool_drvinfo {
 	__u32	cmd;
-	char	driver[32];
-	char	version[32];
-	char	fw_version[ETHTOOL_FWVERS_LEN];
-	char	bus_info[ETHTOOL_BUSINFO_LEN];
-	char	erom_version[ETHTOOL_EROMVERS_LEN];
-	char	reserved2[12];
+	i8	driver[32];
+	i8	version[32];
+	i8	fw_version[ETHTOOL_FWVERS_LEN];
+	i8	bus_info[ETHTOOL_BUSINFO_LEN];
+	i8	erom_version[ETHTOOL_EROMVERS_LEN];
+	i8	reserved2[12];
 	__u32	n_priv_flags;
 	__u32	n_stats;
 	__u32	testinfo_len;
@@ -964,7 +964,7 @@ union ethtool_flow_union {
  */
 struct ethtool_flow_ext {
 	__u8		padding[2];
-	unsigned i8	h_dest[ETH_ALEN];
+	%i8	h_dest[ETH_ALEN];
 	__be16		vlan_etype;
 	__be16		vlan_tci;
 	__be32		data[2];
@@ -1215,7 +1215,7 @@ enum ethtool_flash_op_type {
 struct ethtool_flash {
 	__u32	cmd;
 	__u32	region;
-	char	data[ETHTOOL_FLASH_MAX_FILENAME];
+	i8	data[ETHTOOL_FLASH_MAX_FILENAME];
 };
 
 /**
@@ -1370,7 +1370,7 @@ struct ethtool_per_queue_op {
 	__u32	cmd;
 	__u32	sub_command;
 	__u32	queue_mask[__KERNEL_DIV_ROUND_UP(MAX_NUM_QUEUE, 32)];
-	char	data[];
+	i8	data[];
 };
 
 /**

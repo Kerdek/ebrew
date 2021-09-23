@@ -38,13 +38,13 @@ struct changer_params {
 };
 struct changer_vendor_params {
 	i32  cvp_n1;       /* number of vendor specific elems   (CHET_V1) */
-	char cvp_label1[16];
+	i8 cvp_label1[16];
 	i32  cvp_n2;       /* number of vendor specific elems   (CHET_V2) */
-	char cvp_label2[16];
+	i8 cvp_label2[16];
 	i32  cvp_n3;       /* number of vendor specific elems   (CHET_V3) */
-	char cvp_label3[16];
+	i8 cvp_label3[16];
 	i32  cvp_n4;       /* number of vendor specific elems   (CHET_V4) */
-	char cvp_label4[16];
+	i8 cvp_label4[16];
 	i32  reserved[8];
 };
 
@@ -100,7 +100,7 @@ struct changer_position {
  */
 struct changer_element_status {
 	i32             ces_type;
-	unsigned i8   *ces_data;
+	%i8   *ces_data;
 };
 #define CESTATUS_FULL     0x01 /* full */
 #define CESTATUS_IMPEXP   0x02	/* media was imported (inserted by sysop) */
@@ -123,8 +123,8 @@ struct changer_get_element {
 	i32     cge_srcunit;
 	i32     cge_id;          /* scsi id  (for data transfer elements) */
 	i32     cge_lun;         /* scsi lun (for data transfer elements) */
-	char    cge_pvoltag[36]; /* primary volume tag */
-	char    cge_avoltag[36]; /* alternate volume tag */
+	i8    cge_pvoltag[36]; /* primary volume tag */
+	i8    cge_avoltag[36]; /* alternate volume tag */
 	i32     cge_flags;
 };
 /* flags */
@@ -143,7 +143,7 @@ struct changer_get_element {
 struct changer_set_voltag {
 	i32	csv_type;	 /* type/unit */
 	i32	csv_unit;
-	char    csv_voltag[36];  /* volume tag */
+	i8    csv_voltag[36];  /* volume tag */
 	i32     csv_flags;
 };
 #define CSV_PVOLTAG   0x01       /* primary volume tag */

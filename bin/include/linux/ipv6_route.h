@@ -48,7 +48,7 @@ struct in6_rtmsg {
 	__u16			rtmsg_dst_len;
 	__u16			rtmsg_src_len;
 	__u32			rtmsg_metric;
-	unsigned i64		rtmsg_info;
+	%i64		rtmsg_info;
         __u32			rtmsg_flags;
 	i32			rtmsg_ifindex;
 };

@@ -23,13 +23,13 @@
 /* Check that calls to open and openat with O_CREAT or O_TMPFILE set have an
    appropriate third/fourth parameter.  */
 #ifndef __USE_FILE_OFFSET64
-extern i32 __open_2 (const char *__path, i32 __oflag) __nonnull ((1));
-extern i32 __REDIRECT (__open_alias, (const char *__path, i32 __oflag, ...),
+extern i32 __open_2 (const i8 *__path, i32 __oflag) __nonnull ((1));
+extern i32 __REDIRECT (__open_alias, (const i8 *__path, i32 __oflag, ...),
 		       open) __nonnull ((1));
 #else
-extern i32 __REDIRECT (__open_2, (const char *__path, i32 __oflag),
+extern i32 __REDIRECT (__open_2, (const i8 *__path, i32 __oflag),
 		       __open64_2) __nonnull ((1));
-extern i32 __REDIRECT (__open_alias, (const char *__path, i32 __oflag, ...),
+extern i32 __REDIRECT (__open_alias, (const i8 *__path, i32 __oflag, ...),
 		       open64) __nonnull ((1));
 #endif
 __errordecl (__open_too_many_args,
@@ -38,7 +38,7 @@ __errordecl (__open_missing_mode,
 	     "open with O_CREAT or O_TMPFILE in second argument needs 3 arguments");
 
 __fortify_function i32
-open (const char *__path, i32 __oflag, ...)
+open (const i8 *__path, i32 __oflag, ...)
 {
   if (__va_arg_pack_len () > 1)
     __open_too_many_args ();
@@ -61,8 +61,8 @@ open (const char *__path, i32 __oflag, ...)
 
 
 #ifdef __USE_LARGEFILE64
-extern i32 __open64_2 (const char *__path, i32 __oflag) __nonnull ((1));
-extern i32 __REDIRECT (__open64_alias, (const char *__path, i32 __oflag,
+extern i32 __open64_2 (const i8 *__path, i32 __oflag) __nonnull ((1));
+extern i32 __REDIRECT (__open64_alias, (const i8 *__path, i32 __oflag,
 					...), open64) __nonnull ((1));
 __errordecl (__open64_too_many_args,
 	     "open64 can be called either with 2 or 3 arguments, not more");
@@ -70,7 +70,7 @@ __errordecl (__open64_missing_mode,
 	     "open64 with O_CREAT or O_TMPFILE in second argument needs 3 arguments");
 
 __fortify_function i32
-open64 (const char *__path, i32 __oflag, ...)
+open64 (const i8 *__path, i32 __oflag, ...)
 {
   if (__va_arg_pack_len () > 1)
     __open64_too_many_args ();
@@ -95,16 +95,16 @@ open64 (const char *__path, i32 __oflag, ...)
 
 #ifdef __USE_ATFILE
 # ifndef __USE_FILE_OFFSET64
-extern i32 __openat_2 (i32 __fd, const char *__path, i32 __oflag)
+extern i32 __openat_2 (i32 __fd, const i8 *__path, i32 __oflag)
      __nonnull ((2));
-extern i32 __REDIRECT (__openat_alias, (i32 __fd, const char *__path,
+extern i32 __REDIRECT (__openat_alias, (i32 __fd, const i8 *__path,
 					i32 __oflag, ...), openat)
      __nonnull ((2));
 # else
-extern i32 __REDIRECT (__openat_2, (i32 __fd, const char *__path,
+extern i32 __REDIRECT (__openat_2, (i32 __fd, const i8 *__path,
 				    i32 __oflag), __openat64_2)
      __nonnull ((2));
-extern i32 __REDIRECT (__openat_alias, (i32 __fd, const char *__path,
+extern i32 __REDIRECT (__openat_alias, (i32 __fd, const i8 *__path,
 					i32 __oflag, ...), openat64)
      __nonnull ((2));
 # endif
@@ -114,7 +114,7 @@ __errordecl (__openat_missing_mode,
 	     "openat with O_CREAT or O_TMPFILE in third argument needs 4 arguments");
 
 __fortify_function i32
-openat (i32 __fd, const char *__path, i32 __oflag, ...)
+openat (i32 __fd, const i8 *__path, i32 __oflag, ...)
 {
   if (__va_arg_pack_len () > 1)
     __openat_too_many_args ();
@@ -137,9 +137,9 @@ openat (i32 __fd, const char *__path, i32 __oflag, ...)
 
 
 # ifdef __USE_LARGEFILE64
-extern i32 __openat64_2 (i32 __fd, const char *__path, i32 __oflag)
+extern i32 __openat64_2 (i32 __fd, const i8 *__path, i32 __oflag)
      __nonnull ((2));
-extern i32 __REDIRECT (__openat64_alias, (i32 __fd, const char *__path,
+extern i32 __REDIRECT (__openat64_alias, (i32 __fd, const i8 *__path,
 					  i32 __oflag, ...), openat64)
      __nonnull ((2));
 __errordecl (__openat64_too_many_args,
@@ -148,7 +148,7 @@ __errordecl (__openat64_missing_mode,
 	     "openat64 with O_CREAT or O_TMPFILE in third argument needs 4 arguments");
 
 __fortify_function i32
-openat64 (i32 __fd, const char *__path, i32 __oflag, ...)
+openat64 (i32 __fd, const i8 *__path, i32 __oflag, ...)
 {
   if (__va_arg_pack_len () > 1)
     __openat64_too_many_args ();

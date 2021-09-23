@@ -73,7 +73,7 @@
  * struct ptp_clock_time - represents a time value
  *
  * The sign of the seconds field applies to the whole value. The
- * nanoseconds field is always unsigned. The reserved field is
+ * nanoseconds field is always %. The reserved field is
  * included for sub-nanosecond resolution, should the demand for
  * this ever appear.
  *
@@ -99,9 +99,9 @@ struct ptp_clock_caps {
 };
 
 struct ptp_extts_request {
-	unsigned i32 index;  /* Which channel to configure. */
-	unsigned i32 flags;  /* Bit field for PTP_xxx flags. */
-	unsigned i32 rsv[2]; /* Reserved for future use. */
+	%i32 index;  /* Which channel to configure. */
+	%i32 flags;  /* Bit field for PTP_xxx flags. */
+	%i32 rsv[2]; /* Reserved for future use. */
 };
 
 struct ptp_perout_request {
@@ -120,8 +120,8 @@ struct ptp_perout_request {
 		struct ptp_clock_time phase;
 	};
 	struct ptp_clock_time period; /* Desired period, zero means disable. */
-	unsigned i32 index;           /* Which channel to configure. */
-	unsigned i32 flags;
+	%i32 index;           /* Which channel to configure. */
+	%i32 flags;
 	union {
 		/*
 		 * The "on" time of the signal.
@@ -130,15 +130,15 @@ struct ptp_perout_request {
 		 */
 		struct ptp_clock_time on;
 		/* Reserved for future use. */
-		unsigned i32 rsv[4];
+		%i32 rsv[4];
 	};
 };
 
 #define PTP_MAX_SAMPLES 25 /* Maximum allowed offset measurement samples. */
 
 struct ptp_sys_offset {
-	unsigned i32 n_samples; /* Desired number of measurements. */
-	unsigned i32 rsv[3];    /* Reserved for future use. */
+	%i32 n_samples; /* Desired number of measurements. */
+	%i32 rsv[3];    /* Reserved for future use. */
 	/*
 	 * Array of interleaved system/phc time stamps. The kernel
 	 * will provide 2*n_samples + 1 time stamps, with the last
@@ -148,8 +148,8 @@ struct ptp_sys_offset {
 };
 
 struct ptp_sys_offset_extended {
-	unsigned i32 n_samples; /* Desired number of measurements. */
-	unsigned i32 rsv[3];    /* Reserved for future use. */
+	%i32 n_samples; /* Desired number of measurements. */
+	%i32 rsv[3];    /* Reserved for future use. */
 	/*
 	 * Array of [system, phc, system] time stamps. The kernel will provide
 	 * 3*n_samples time stamps.
@@ -161,7 +161,7 @@ struct ptp_sys_offset_precise {
 	struct ptp_clock_time device;
 	struct ptp_clock_time sys_realtime;
 	struct ptp_clock_time sys_monoraw;
-	unsigned i32 rsv[4];    /* Reserved for future use. */
+	%i32 rsv[4];    /* Reserved for future use. */
 };
 
 enum ptp_pin_function {
@@ -177,25 +177,25 @@ struct ptp_pin_desc {
 	 * set by the kernel during the PTP_PIN_GETFUNC ioctl and is
 	 * ignored for the PTP_PIN_SETFUNC ioctl.
 	 */
-	char name[64];
+	i8 name[64];
 	/*
 	 * Pin index in the range of zero to ptp_clock_caps.n_pins - 1.
 	 */
-	unsigned i32 index;
+	%i32 index;
 	/*
 	 * Which of the PTP_PF_xxx functions to use on this pin.
 	 */
-	unsigned i32 func;
+	%i32 func;
 	/*
 	 * The specific channel to use for this function.
 	 * This corresponds to the 'index' field of the
 	 * PTP_EXTTS_REQUEST and PTP_PEROUT_REQUEST ioctls.
 	 */
-	unsigned i32 chan;
+	%i32 chan;
 	/*
 	 * Reserved for future use.
 	 */
-	unsigned i32 rsv[5];
+	%i32 rsv[5];
 };
 
 #define PTP_CLK_MAGIC '='
@@ -226,9 +226,9 @@ struct ptp_pin_desc {
 
 struct ptp_extts_event {
 	struct ptp_clock_time t; /* Time event occured. */
-	unsigned i32 index;      /* Which channel produced the event. */
-	unsigned i32 flags;      /* Reserved for future use. */
-	unsigned i32 rsv[2];     /* Reserved for future use. */
+	%i32 index;      /* Which channel produced the event. */
+	%i32 flags;      /* Reserved for future use. */
+	%i32 rsv[2];     /* Reserved for future use. */
 };
 
 #endif

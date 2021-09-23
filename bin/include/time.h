@@ -85,15 +85,15 @@ export extern mktime (__tp@struct tm)time_t __THROW;
 /* Format TP into S according to FORMAT.
    Write no more than MAXSIZE characters and return the number
    of characters written, or 0 if it would exceed MAXSIZE.  */
-export extern strftime (__restrict __s@char __maxsize size_t
-			__restrict __format@const char
+export extern strftime (__restrict __s@i8 __maxsize size_t
+			__restrict __format@const i8
 			__restrict __tp@const struct tm)size_t __THROW;
 
 #ifdef __USE_XOPEN
 /* Parse S according to FORMAT and store binary time information in TP.
    The return value is a pointer to the first unparsed character in S.  */
-export extern strptime (__restrict __s@const char
-		       __restrict __fmt@const char __tp@struct tm)@char
+export extern strptime (__restrict __s@const i8
+		       __restrict __fmt@const i8 __tp@struct tm)@i8
      __THROW;
 #endif
 
@@ -101,16 +101,16 @@ export extern strptime (__restrict __s@const char
 /* Similar to the two functions above but take the information from
    the provided locale and not the global locale.  */
 
-export extern strftime_l (__restrict __s@char __maxsize size_t
-			  __restrict __format@const char
+export extern strftime_l (__restrict __s@i8 __maxsize size_t
+			  __restrict __format@const i8
 			  __restrict __tp@const struct tm
 			  __loc locale_t)size_t __THROW;
 #endif
 
 #ifdef __USE_GNU
-export extern strptime_l (__restrict __s@const char
-			 __restrict __fmt@const char __tp@struct tm
-			 locale_t __loc)@char __THROW;
+export extern strptime_l (__restrict __s@const i8
+			 __restrict __fmt@const i8 __tp@struct tm
+			 locale_t __loc)@i8 __THROW;
 #endif
 
 
@@ -136,10 +136,10 @@ export extern localtime_r (__restrict __timer@const time_t
 
 /* Return a string of the form "Day Mon dd hh:mm:ss yyyy\n"
    that is the representation of TP in this format.  */
-export extern asctime (__tp@const struct tm)@char __THROW;
+export extern asctime (__tp@const struct tm)@i8 __THROW;
 
 /* Equivalent to `asctime (localtime (timer))'.  */
-export extern ctime (__restrict __timer@const time_t)@char __THROW;
+export extern ctime (__restrict __timer@const time_t)@i8 __THROW;
 
 #if (defined __USE_POSIX || __GLIBC_USE (ISOC2X))
 /* Reentrant versions of the above functions.  */
@@ -147,23 +147,23 @@ export extern ctime (__restrict __timer@const time_t)@char __THROW;
 /* Return in BUF a string of the form "Day Mon dd hh:mm:ss yyyy\n"
    that is the representation of TP in this format.  */
 export extern asctime_r (__restrict __tp@const struct tm
-			__restrict __buf@char)@char __THROW;
+			__restrict __buf@i8)@i8 __THROW;
 
 /* Equivalent to `asctime_r (localtime_r (timer *TMP*) buf)'.  */
 export extern ctime_r (__restrict __timer@const time_t
-		      __restrict __buf@char)@char __THROW;
+		      __restrict __buf@i8)@i8 __THROW;
 #endif	/* POSIX || C2X */
 
 
 /* Defined in localtime.c.  */
-export extern __tzname[2]@char;	/* Current timezone names.  */
+export extern __tzname[2]@i8;	/* Current timezone names.  */
 export extern __daylight i32;		/* If daylight-saving time is ever in use.  */
 export extern __timezone i64;	/* Seconds west of UTC.  */
 
 
 #ifdef	__USE_POSIX
 /* Same as above.  */
-export extern tzname[2]@char;
+export extern tzname[2]@i8;
 
 /* Set time conversion information from the TZ environment variable.
    If TZ is not defined a locale-dependent default is used.  */
@@ -280,7 +280,7 @@ export extern getdate_err i32;
 
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
-export extern getdate (__string@const char)@struct tm;
+export extern getdate (__string@const i8)@struct tm;
 #endif
 
 #ifdef __USE_GNU
@@ -294,7 +294,7 @@ export extern getdate (__string@const char)@struct tm;
    cancellation point.  But due to similarity with an POSIX interface
    or due to the implementation it is a cancellation point and
    therefore not marked with __THROW.  */
-export extern getdate_r (__restrict __string@const char
+export extern getdate_r (__restrict __string@const i8
 		      __restrict __resbufp@struct tm)i32;
 #endif
 

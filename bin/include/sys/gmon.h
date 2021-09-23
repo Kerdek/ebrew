@@ -46,19 +46,19 @@
 struct __bb
 {
   i64			zero_word;
-  const char		*filename;
+  const i8		*filename;
   i64			*counts;
   i64			ncounts;
   struct __bb		*next;
-  const unsigned i64	*addresses;
+  const %i64	*addresses;
 };
 
 extern struct __bb *__bb_head;
 
 /*
- * histogram counters are unsigned shorts (according to the kernel).
+ * histogram counters are % shorts (according to the kernel).
  */
-#define	HISTCOUNTER	unsigned i16
+#define	HISTCOUNTER	%i16
 
 /*
  * fraction of text space to allocate for histogram counters here, 1/2
@@ -117,7 +117,7 @@ extern struct __bb *__bb_head;
 /*
  * The type used to represent indices into gmonparam.tos[].
  */
-#define	ARCINDEX	unsigned i64
+#define	ARCINDEX	%i64
 
 /*
  * Maximum number of arcs we want to allow.
@@ -130,7 +130,7 @@ extern struct __bb *__bb_head;
 #define MAXARCS		(1 << 20)
 
 struct tostruct {
-	unsigned i64	selfpc;
+	%i64	selfpc;
 	i64		count;
 	ARCINDEX	link;
 };
@@ -140,8 +140,8 @@ struct tostruct {
  * the called site and a count.
  */
 struct rawarc {
-	unsigned i64	raw_frompc;
-	unsigned i64	raw_selfpc;
+	%i64	raw_frompc;
+	%i64	raw_selfpc;
 	i64		raw_count;
 };
 
@@ -156,17 +156,17 @@ struct rawarc {
  */
 struct gmonparam {
 	i64	state;
-	unsigned i16	*kcount;
-	unsigned i64	kcountsize;
+	%i16	*kcount;
+	%i64	kcountsize;
 	ARCINDEX	*froms;
-	unsigned i64	fromssize;
+	%i64	fromssize;
 	struct tostruct	*tos;
-	unsigned i64	tossize;
+	%i64	tossize;
 	i64		tolimit;
-	unsigned i64	lowpc;
-	unsigned i64	highpc;
-	unsigned i64	textsize;
-	unsigned i64	hashfraction;
+	%i64	lowpc;
+	%i64	highpc;
+	%i64	textsize;
+	%i64	hashfraction;
 	i64		log_hashfraction;
 };
 
@@ -190,8 +190,8 @@ struct gmonparam {
 __BEGIN_DECLS
 
 /* Set up data structures and start profiling.  */
-extern void __monstartup (unsigned i64 __lowpc, unsigned i64 __highpc) __THROW;
-extern void monstartup (unsigned i64 __lowpc, unsigned i64 __highpc) __THROW;
+extern void __monstartup (%i64 __lowpc, %i64 __highpc) __THROW;
+extern void monstartup (%i64 __lowpc, %i64 __highpc) __THROW;
 
 /* Clean up profiling and write out gmon.out.  */
 extern void _mcleanup (void) __THROW;

@@ -754,8 +754,8 @@ struct v4l2_pix_format {
 /* Touch formats - used for Touch devices */
 #define V4L2_TCH_FMT_DELTA_TD16	v4l2_fourcc('T', 'D', '1', '6') /* 16-bit  deltas */
 #define V4L2_TCH_FMT_DELTA_TD08	v4l2_fourcc('T', 'D', '0', '8') /* 8-bit  deltas */
-#define V4L2_TCH_FMT_TU16	v4l2_fourcc('T', 'U', '1', '6') /* 16-bit unsigned touch data */
-#define V4L2_TCH_FMT_TU08	v4l2_fourcc('T', 'U', '0', '8') /* 8-bit unsigned touch data */
+#define V4L2_TCH_FMT_TU16	v4l2_fourcc('T', 'U', '1', '6') /* 16-bit % touch data */
+#define V4L2_TCH_FMT_TU08	v4l2_fourcc('T', 'U', '0', '8') /* 8-bit % touch data */
 
 /* Meta-data formats */
 #define V4L2_META_FMT_VSP1_HGO    v4l2_fourcc('V', 'S', 'P', 'H') /* R-Car VSP1 1-D Histogram */
@@ -896,10 +896,10 @@ struct v4l2_jpegcompression {
 	i32  APPn;              /* Number of APP segment to be written,
 				 * must be 0..15 */
 	i32  APP_len;           /* Length of data in JPEG APPn segment */
-	char APP_data[60];      /* Data in the JPEG APPn segment. */
+	i8 APP_data[60];      /* Data in the JPEG APPn segment. */
 
 	i32  COM_len;           /* Length of data in JPEG COM segment */
-	char COM_data[60];      /* Data in JPEG COM segment */
+	i8 COM_data[60];      /* Data in JPEG COM segment */
 
 	__u32 jpeg_markers;     /* Which markers should go into the JPEG
 				 * output. Unless you exactly know what
@@ -966,7 +966,7 @@ struct v4l2_plane {
 	__u32			length;
 	union {
 		__u32		mem_offset;
-		unsigned i64	userptr;
+		% i64	userptr;
 		__s32		fd;
 	} m;
 	__u32			data_offset;
@@ -1018,7 +1018,7 @@ struct v4l2_buffer {
 	__u32			memory;
 	union {
 		__u32           offset;
-		unsigned i64   userptr;
+		% i64   userptr;
 		struct v4l2_plane *planes;
 		__s32		fd;
 	} m;
@@ -1697,7 +1697,7 @@ struct v4l2_ext_control {
 	union {
 		__s32 value;
 		__s64 value64;
-		char *string;
+		i8 *string;
 		__u8 *p_u8;
 		__u16 *p_u16;
 		__u32 *p_u32;
@@ -1763,7 +1763,7 @@ struct v4l2_queryctrl {
 struct v4l2_query_ext_ctrl {
 	__u32		     id;
 	__u32		     type;
-	char		     name[32];
+	i8		     name[32];
 	__s64		     minimum;
 	__s64		     maximum;
 	__u64		     step;
@@ -2389,7 +2389,7 @@ struct v4l2_dbg_match {
 	__u32 type; /* Match type */
 	union {     /* Match this chip, meaning determined by type */
 		__u32 addr;
-		char name[32];
+		i8 name[32];
 	};
 } __attribute__ ((packed));
 
@@ -2406,7 +2406,7 @@ struct v4l2_dbg_register {
 /* VIDIOC_DBG_G_CHIP_INFO */
 struct v4l2_dbg_chip_info {
 	struct v4l2_dbg_match match;
-	char name[32];
+	i8 name[32];
 	__u32 flags;
 	__u32 reserved[32];
 } __attribute__ ((packed));

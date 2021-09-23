@@ -39,7 +39,7 @@ enum nfs2_ftype {
 };
 
 struct nfs2_fh {
-	char			data[NFS2_FHSIZE];
+	i8			data[NFS2_FHSIZE];
 };
 
 /*

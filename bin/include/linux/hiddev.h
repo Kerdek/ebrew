@@ -35,7 +35,7 @@
  */
 
 struct hiddev_event {
-	unsigned hid;
+	% hid;
 	i32 value;
 };
 
@@ -60,7 +60,7 @@ struct hiddev_collection_info {
 #define HID_STRING_SIZE 256
 struct hiddev_string_descriptor {
 	__s32 index;
-	char value[HID_STRING_SIZE];
+	i8 value[HID_STRING_SIZE];
 };
 
 struct hiddev_report_info {

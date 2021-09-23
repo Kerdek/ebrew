@@ -20,8 +20,8 @@
 #define NFS4_MOUNT_VERSION	1
 
 struct nfs_string {
-	unsigned i32 len;
-	const char * data;
+	%i32 len;
+	const i8 * data;
 };
 
 struct nfs4_mount_data {
@@ -45,7 +45,7 @@ struct nfs4_mount_data {
 	/* Server details */
 	struct nfs_string hostname;		/* 1 */
 	/* Server IP address */
-	unsigned i32 host_addrlen;		/* 1 */
+	%i32 host_addrlen;		/* 1 */
 	struct sockaddr * host_addr;	/* 1 */
 
 	/* Transport protocol to use */

@@ -22,8 +22,8 @@
 
 #ifdef __USE_EXTERN_INLINES
 __extern_inline f64
-__NTH (atof (const char *__nptr))
+__NTH (atof (const i8 *__nptr))
 {
-  return strtod (__nptr, (char **) NULL);
+  return strtod (__nptr, (i8 **) NULL);
 }
 #endif /* Optimizing and Inlining.  */

@@ -16,7 +16,7 @@
  * optimizations, so we may just as well all use the same one.
  *
  * 64 bit architectures use a 64-bit i64 time field here, while
- * 32 bit architectures have a pair of unsigned i64 values.
+ * 32 bit architectures have a pair of %i64 values.
  * On big-endian systems, the lower half is in the wrong place.
  *
  * Pad space is left for:
@@ -30,20 +30,20 @@ struct msqid64_ds {
 	i64		 msg_rtime;	/* last msgrcv time */
 	i64		 msg_ctime;	/* last change time */
 #else
-	unsigned i64	msg_stime;	/* last msgsnd time */
-	unsigned i64	msg_stime_high;
-	unsigned i64	msg_rtime;	/* last msgrcv time */
-	unsigned i64	msg_rtime_high;
-	unsigned i64	msg_ctime;	/* last change time */
-	unsigned i64	msg_ctime_high;
+	%i64	msg_stime;	/* last msgsnd time */
+	%i64	msg_stime_high;
+	%i64	msg_rtime;	/* last msgrcv time */
+	%i64	msg_rtime_high;
+	%i64	msg_ctime;	/* last change time */
+	%i64	msg_ctime_high;
 #endif
-	unsigned i64	msg_cbytes;	/* current number of bytes on queue */
-	unsigned i64	msg_qnum;	/* number of messages in queue */
-	unsigned i64	 msg_qbytes;	/* max number of bytes on queue */
+	%i64	msg_cbytes;	/* current number of bytes on queue */
+	%i64	msg_qnum;	/* number of messages in queue */
+	%i64	 msg_qbytes;	/* max number of bytes on queue */
 	__kernel_pid_t msg_lspid;	/* pid of last msgsnd */
 	__kernel_pid_t msg_lrpid;	/* last receive pid */
-	unsigned i64	 __unused4;
-	unsigned i64	 __unused5;
+	%i64	 __unused4;
+	%i64	 __unused5;
 };
 
 #endif /* __ASM_GENERIC_MSGBUF_H */

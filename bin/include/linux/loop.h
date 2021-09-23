@@ -42,16 +42,16 @@ enum {
 struct loop_info {
 	i32		   lo_number;		/* ioctl r/o */
 	__kernel_old_dev_t lo_device; 		/* ioctl r/o */
-	unsigned i64	   lo_inode; 		/* ioctl r/o */
+	%i64	   lo_inode; 		/* ioctl r/o */
 	__kernel_old_dev_t lo_rdevice; 		/* ioctl r/o */
 	i32		   lo_offset;
 	i32		   lo_encrypt_type;
 	i32		   lo_encrypt_key_size; 	/* ioctl w/o */
 	i32		   lo_flags;
-	char		   lo_name[LO_NAME_SIZE];
-	unsigned i8	   lo_encrypt_key[LO_KEY_SIZE]; /* ioctl w/o */
-	unsigned i64	   lo_init[2];
-	char		   reserved[4];
+	i8		   lo_name[LO_NAME_SIZE];
+	%i8	   lo_encrypt_key[LO_KEY_SIZE]; /* ioctl w/o */
+	%i64	   lo_init[2];
+	i8		   reserved[4];
 };
 
 struct loop_info64 {

@@ -8,24 +8,24 @@
 
 #ifdef __i386__
 struct stat {
-	unsigned i64  st_dev;
-	unsigned i64  st_ino;
-	unsigned i16 st_mode;
-	unsigned i16 st_nlink;
-	unsigned i16 st_uid;
-	unsigned i16 st_gid;
-	unsigned i64  st_rdev;
-	unsigned i64  st_size;
-	unsigned i64  st_blksize;
-	unsigned i64  st_blocks;
-	unsigned i64  st_atime;
-	unsigned i64  st_atime_nsec;
-	unsigned i64  st_mtime;
-	unsigned i64  st_mtime_nsec;
-	unsigned i64  st_ctime;
-	unsigned i64  st_ctime_nsec;
-	unsigned i64  __unused4;
-	unsigned i64  __unused5;
+	%i64  st_dev;
+	%i64  st_ino;
+	%i16 st_mode;
+	%i16 st_nlink;
+	%i16 st_uid;
+	%i16 st_gid;
+	%i64  st_rdev;
+	%i64  st_size;
+	%i64  st_blksize;
+	%i64  st_blocks;
+	%i64  st_atime;
+	%i64  st_atime_nsec;
+	%i64  st_mtime;
+	%i64  st_mtime_nsec;
+	%i64  st_ctime;
+	%i64  st_ctime_nsec;
+	%i64  __unused4;
+	%i64  __unused5;
 };
 
 /* We don't need to memset the whole thing just to initialize the padding */
@@ -40,36 +40,36 @@ struct stat {
  * insane amounts of padding around dev_t's.
  */
 struct stat64 {
-	unsigned i64 i64	st_dev;
-	unsigned i8	__pad0[4];
+	%i64 i64	st_dev;
+	%i8	__pad0[4];
 
-	unsigned i64	__st_ino;
+	%i64	__st_ino;
 
-	unsigned i32	st_mode;
-	unsigned i32	st_nlink;
+	%i32	st_mode;
+	%i32	st_nlink;
 
-	unsigned i64	st_uid;
-	unsigned i64	st_gid;
+	%i64	st_uid;
+	%i64	st_gid;
 
-	unsigned i64 i64	st_rdev;
-	unsigned i8	__pad3[4];
+	%i64 i64	st_rdev;
+	%i8	__pad3[4];
 
 	i64	st_size;
-	unsigned i64	st_blksize;
+	%i64	st_blksize;
 
 	/* Number 512-byte blocks allocated. */
-	unsigned i64 i64	st_blocks;
+	%i64 i64	st_blocks;
 
-	unsigned i64	st_atime;
-	unsigned i64	st_atime_nsec;
+	%i64	st_atime;
+	%i64	st_atime_nsec;
 
-	unsigned i64	st_mtime;
-	unsigned i32	st_mtime_nsec;
+	%i64	st_mtime;
+	%i32	st_mtime_nsec;
 
-	unsigned i64	st_ctime;
-	unsigned i64	st_ctime_nsec;
+	%i64	st_ctime;
+	%i64	st_ctime_nsec;
 
-	unsigned i64 i64	st_ino;
+	%i64 i64	st_ino;
 };
 
 /* We don't need to memset the whole thing just to initialize the padding */
@@ -85,10 +85,10 @@ struct stat {
 	__kernel_ulong_t	st_ino;
 	__kernel_ulong_t	st_nlink;
 
-	unsigned i32		st_mode;
-	unsigned i32		st_uid;
-	unsigned i32		st_gid;
-	unsigned i32		__pad0;
+	%i32		st_mode;
+	%i32		st_uid;
+	%i32		st_gid;
+	%i32		__pad0;
 	__kernel_ulong_t	st_rdev;
 	__kernel_long_t		st_size;
 	__kernel_long_t		st_blksize;
@@ -115,23 +115,23 @@ struct stat {
 
 /* for 32bit emulation and 32 bit kernels */
 struct __old_kernel_stat {
-	unsigned i16 st_dev;
-	unsigned i16 st_ino;
-	unsigned i16 st_mode;
-	unsigned i16 st_nlink;
-	unsigned i16 st_uid;
-	unsigned i16 st_gid;
-	unsigned i16 st_rdev;
+	%i16 st_dev;
+	%i16 st_ino;
+	%i16 st_mode;
+	%i16 st_nlink;
+	%i16 st_uid;
+	%i16 st_gid;
+	%i16 st_rdev;
 #ifdef __i386__
-	unsigned i64  st_size;
-	unsigned i64  st_atime;
-	unsigned i64  st_mtime;
-	unsigned i64  st_ctime;
+	%i64  st_size;
+	%i64  st_atime;
+	%i64  st_mtime;
+	%i64  st_ctime;
 #else
-	unsigned i32  st_size;
-	unsigned i32  st_atime;
-	unsigned i32  st_mtime;
-	unsigned i32  st_ctime;
+	%i32  st_size;
+	%i32  st_atime;
+	%i32  st_mtime;
+	%i32  st_ctime;
 #endif
 };
 

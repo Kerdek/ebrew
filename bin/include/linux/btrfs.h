@@ -30,7 +30,7 @@
 #define BTRFS_PATH_NAME_MAX 4087
 struct btrfs_ioctl_vol_args {
 	__s64 fd;
-	char name[BTRFS_PATH_NAME_MAX + 1];
+	i8 name[BTRFS_PATH_NAME_MAX + 1];
 };
 
 #define BTRFS_DEVICE_PATH_NAME_MAX	1024
@@ -135,7 +135,7 @@ struct btrfs_ioctl_vol_args_v2 {
 		__u64 unused[4];
 	};
 	union {
-		char name[BTRFS_SUBVOL_NAME_MAX + 1];
+		i8 name[BTRFS_SUBVOL_NAME_MAX + 1];
 		__u64 devid;
 		__u64 subvolid;
 	};
@@ -455,7 +455,7 @@ struct btrfs_ioctl_balance_args {
 struct btrfs_ioctl_ino_lookup_args {
 	__u64 treeid;
 	__u64 objectid;
-	char name[BTRFS_INO_LOOKUP_PATH_MAX];
+	i8 name[BTRFS_INO_LOOKUP_PATH_MAX];
 };
 
 #define BTRFS_INO_LOOKUP_USER_PATH_MAX (4080 - BTRFS_VOL_NAME_MAX - 1)
@@ -465,12 +465,12 @@ struct btrfs_ioctl_ino_lookup_user_args {
 	/* in */
 	__u64 treeid;
 	/* out, name of the subvolume of 'treeid' */
-	char name[BTRFS_VOL_NAME_MAX + 1];
+	i8 name[BTRFS_VOL_NAME_MAX + 1];
 	/*
 	 * out, constructed path from the directory with which the ioctl is
 	 * called to dirid
 	 */
-	char path[BTRFS_INO_LOOKUP_USER_PATH_MAX];
+	i8 path[BTRFS_INO_LOOKUP_USER_PATH_MAX];
 };
 
 /* Search criteria for the btrfs SEARCH ioctl family. */
@@ -548,7 +548,7 @@ struct btrfs_ioctl_search_header {
  */
 struct btrfs_ioctl_search_args {
 	struct btrfs_ioctl_search_key key;
-	char buf[BTRFS_SEARCH_ARGS_BUFSIZE];
+	i8 buf[BTRFS_SEARCH_ARGS_BUFSIZE];
 };
 
 struct btrfs_ioctl_search_args_v2 {
@@ -738,7 +738,7 @@ struct btrfs_ioctl_timespec {
 };
 
 struct btrfs_ioctl_received_subvol_args {
-	char	uuid[BTRFS_UUID_SIZE];	/* in */
+	i8	uuid[BTRFS_UUID_SIZE];	/* in */
 	__u64	stransid;		/* in */
 	__u64	rtransid;		/* out */
 	struct btrfs_ioctl_timespec stime; /* in */
@@ -791,7 +791,7 @@ struct btrfs_ioctl_get_subvol_info_args {
 	__u64 treeid;
 
 	/* Name of this subvolume, used to get the real name at mount point */
-	char name[BTRFS_VOL_NAME_MAX + 1];
+	i8 name[BTRFS_VOL_NAME_MAX + 1];
 
 	/*
 	 * Id of the subvolume which contains this subvolume.

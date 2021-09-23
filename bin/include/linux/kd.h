@@ -12,9 +12,9 @@
 #define GIO_FONTX	0x4B6B	/* get font using struct consolefontdesc */
 #define PIO_FONTX	0x4B6C	/* set font using struct consolefontdesc */
 struct consolefontdesc {
-	unsigned i16 charcount;	/* characters in font (256 or 512) */
-	unsigned i16 charheight;	/* scan lines per character (1-32) */
-	char *chardata;		/* font data in expanded form */
+	%i16 charcount;	/* characters in font (256 or 512) */
+	%i16 charheight;	/* scan lines per character (1-32) */
+	i8 *chardata;		/* font data in expanded form */
 };
 
 #define PIO_FONTRESET   0x4B6D	/* reset to default font */
@@ -51,7 +51,7 @@ struct consolefontdesc {
 #define KDMAPDISP	0x4B3C	/* map display into address space */
 #define KDUNMAPDISP	0x4B3D	/* unmap display from address space */
 
-typedef char scrnmap_t;
+typedef i8 scrnmap_t;
 #define		E_TABSZ		256
 #define GIO_SCRNMAP	0x4B40	/* get screen mapping from kernel */
 #define PIO_SCRNMAP	0x4B41	/* put screen mapping table in kernel */
@@ -60,19 +60,19 @@ typedef char scrnmap_t;
 
 #define GIO_UNIMAP	0x4B66	/* get unicode-to-font mapping from kernel */
 struct unipair {
-	unsigned i16 unicode;
-	unsigned i16 fontpos;
+	%i16 unicode;
+	%i16 fontpos;
 };
 struct unimapdesc {
-	unsigned i16 entry_ct;
+	%i16 entry_ct;
 	struct unipair *entries;
 };
 #define PIO_UNIMAP	0x4B67	/* put unicode-to-font mapping in kernel */
 #define PIO_UNIMAPCLR	0x4B68	/* clear table, possibly advise hash algorithm */
 struct unimapinit {
-	unsigned i16 advised_hashsize;  /* 0 if no opinion */
-	unsigned i16 advised_hashstep;  /* 0 if no opinion */
-	unsigned i16 advised_hashlevel; /* 0 if no opinion */
+	%i16 advised_hashsize;  /* 0 if no opinion */
+	%i16 advised_hashstep;  /* 0 if no opinion */
+	%i16 advised_hashlevel; /* 0 if no opinion */
 };
 
 #define UNI_DIRECT_BASE 0xF000	/* start of Direct Font Region */
@@ -98,9 +98,9 @@ struct unimapinit {
 #define	KDSKBLED	0x4B65	/* set led flags (not lights) */
 
 struct kbentry {
-	unsigned i8 kb_table;
-	unsigned i8 kb_index;
-	unsigned i16 kb_value;
+	%i8 kb_table;
+	%i8 kb_index;
+	%i16 kb_value;
 };
 #define		K_NORMTAB	0x00
 #define		K_SHIFTTAB	0x01
@@ -111,34 +111,34 @@ struct kbentry {
 #define KDSKBENT	0x4B47	/* sets one entry in translation table */
 
 struct kbsentry {
-	unsigned i8 kb_func;
-	unsigned i8 kb_string[512];
+	%i8 kb_func;
+	%i8 kb_string[512];
 };
 #define KDGKBSENT	0x4B48	/* gets one function key string entry */
 #define KDSKBSENT	0x4B49	/* sets one function key string entry */
 
 struct kbdiacr {
-        unsigned i8 diacr, base, result;
+        %i8 diacr, base, result;
 };
 struct kbdiacrs {
-        unsigned i32 kb_cnt;    /* number of entries in following array */
+        %i32 kb_cnt;    /* number of entries in following array */
 	struct kbdiacr kbdiacr[256];    /* MAX_DIACR from keyboard.h */
 };
 #define KDGKBDIACR      0x4B4A  /* read kernel accent table */
 #define KDSKBDIACR      0x4B4B  /* write kernel accent table */
 
 struct kbdiacruc {
-	unsigned i32 diacr, base, result;
+	%i32 diacr, base, result;
 };
 struct kbdiacrsuc {
-        unsigned i32 kb_cnt;    /* number of entries in following array */
+        %i32 kb_cnt;    /* number of entries in following array */
 	struct kbdiacruc kbdiacruc[256];    /* MAX_DIACR from keyboard.h */
 };
 #define KDGKBDIACRUC    0x4BFA  /* read kernel accent table - UCS */
 #define KDSKBDIACRUC    0x4BFB  /* write kernel accent table - UCS */
 
 struct kbkeycode {
-	unsigned i32 scancode, keycode;
+	%i32 scancode, keycode;
 };
 #define KDGETKEYCODE	0x4B4C	/* read kernel keycode table entry */
 #define KDSETKEYCODE	0x4B4D	/* write kernel keycode table entry */
@@ -157,17 +157,17 @@ struct kbd_repeat {
 #define KDFONTOP	0x4B72	/* font operations */
 
 struct console_font_op {
-	unsigned i32 op;	/* operation code KD_FONT_OP_* */
-	unsigned i32 flags;	/* KD_FONT_FLAG_* */
-	unsigned i32 width, height;	/* font size */
-	unsigned i32 charcount;
-	unsigned i8 *data;	/* font data with height fixed to 32 */
+	%i32 op;	/* operation code KD_FONT_OP_* */
+	%i32 flags;	/* KD_FONT_FLAG_* */
+	%i32 width, height;	/* font size */
+	%i32 charcount;
+	%i8 *data;	/* font data with height fixed to 32 */
 };
 
 struct console_font {
-	unsigned i32 width, height;	/* font size */
-	unsigned i32 charcount;
-	unsigned i8 *data;	/* font data with height fixed to 32 */
+	%i32 width, height;	/* font size */
+	%i32 charcount;
+	%i8 *data;	/* font data with height fixed to 32 */
 };
 
 #define KD_FONT_OP_SET		0	/* Set font */

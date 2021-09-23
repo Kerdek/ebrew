@@ -49,7 +49,7 @@
 /*
  * DM_ULOG_CTR corresponds to (found in dm-dirty-log.h):
  * i32 (*ctr)(struct dm_dirty_log *log, struct dm_target *ti,
- *	      unsigned argc, char **argv);
+ *	      % argc, i8 **argv);
  *
  * Payload-to-userspace:
  *	A single string containing all the argv arguments separated by ' 's
@@ -318,7 +318,7 @@
 /*
  * DM_ULOG_STATUS_INFO corresponds to (found in dm-dirty-log.h):
  * i32 (*status)(struct dm_dirty_log *log, STATUSTYPE_INFO,
- *		 char *result, unsigned maxlen);
+ *		 i8 *result, % maxlen);
  *
  * Payload-to-userspace:
  *	None.
@@ -334,7 +334,7 @@
 /*
  * DM_ULOG_STATUS_TABLE corresponds to (found in dm-dirty-log.h):
  * i32 (*status)(struct dm_dirty_log *log, STATUSTYPE_TABLE,
- *		 char *result, unsigned maxlen);
+ *		 i8 *result, % maxlen);
  *
  * Payload-to-userspace:
  *	None.
@@ -416,8 +416,8 @@ struct dm_ulog_request {
 	 * same 'uuid'.  (Think "live" and "inactive" device-mapper tables.)
 	 */
 	__u64 luid;
-	char uuid[DM_UUID_LEN];
-	char padding[3];        /* Padding because DM_UUID_LEN = 129 */
+	i8 uuid[DM_UUID_LEN];
+	i8 padding[3];        /* Padding because DM_UUID_LEN = 129 */
 
 	__u32 version;       /* See DM_ULOG_REQUEST_VERSION */
 	__s32 error;          /* Used to report back processing errors */
@@ -426,7 +426,7 @@ struct dm_ulog_request {
 	__u32 request_type;  /* DM_ULOG_* defined above */
 	__u32 data_size;     /* How much data (not including this struct) */
 
-	char data[0];
+	i8 data[0];
 };
 
 #endif /* __DM_LOG_USERSPACE_H__ */

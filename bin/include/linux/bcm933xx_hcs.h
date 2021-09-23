@@ -16,7 +16,7 @@ struct bcm_hcs {
 	__u32 build_date;
 	__u32 filelen;
 	__u32 ldaddress;
-	char filename[64];
+	i8 filename[64];
 	__u16 hcs;
 	__u16 her_znaet_chto;
 	__u32 crc;

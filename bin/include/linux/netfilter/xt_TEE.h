@@ -6,7 +6,7 @@
 
 struct xt_tee_tginfo {
 	union nf_inet_addr gw;
-	char oif[16];
+	i8 oif[16];
 
 	/* used internally by the kernel */
 	struct xt_tee_priv *priv __attribute__((aligned(8)));

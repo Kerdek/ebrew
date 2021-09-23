@@ -24,30 +24,30 @@
 #define PPSETMODE	_IOW(PP_IOCTL, 0x80, i32)
 
 /* Read status */
-#define PPRSTATUS	_IOR(PP_IOCTL, 0x81, unsigned i8)
-#define PPWSTATUS	OBSOLETE__IOW(PP_IOCTL, 0x82, unsigned i8)
+#define PPRSTATUS	_IOR(PP_IOCTL, 0x81, %i8)
+#define PPWSTATUS	OBSOLETE__IOW(PP_IOCTL, 0x82, %i8)
 
 /* Read/write control */
-#define PPRCONTROL	_IOR(PP_IOCTL, 0x83, unsigned i8)
-#define PPWCONTROL	_IOW(PP_IOCTL, 0x84, unsigned i8)
+#define PPRCONTROL	_IOR(PP_IOCTL, 0x83, %i8)
+#define PPWCONTROL	_IOW(PP_IOCTL, 0x84, %i8)
 
 struct ppdev_frob_struct {
-	unsigned i8 mask;
-	unsigned i8 val;
+	%i8 mask;
+	%i8 val;
 };
 #define PPFCONTROL      _IOW(PP_IOCTL, 0x8e, struct ppdev_frob_struct)
 
 /* Read/write data */
-#define PPRDATA		_IOR(PP_IOCTL, 0x85, unsigned i8)
-#define PPWDATA		_IOW(PP_IOCTL, 0x86, unsigned i8)
+#define PPRDATA		_IOR(PP_IOCTL, 0x85, %i8)
+#define PPWDATA		_IOW(PP_IOCTL, 0x86, %i8)
 
 /* Read/write econtrol (not used) */
-#define PPRECONTROL	OBSOLETE__IOR(PP_IOCTL, 0x87, unsigned i8)
-#define PPWECONTROL	OBSOLETE__IOW(PP_IOCTL, 0x88, unsigned i8)
+#define PPRECONTROL	OBSOLETE__IOR(PP_IOCTL, 0x87, %i8)
+#define PPWECONTROL	OBSOLETE__IOW(PP_IOCTL, 0x88, %i8)
 
 /* Read/write FIFO (not used) */
-#define PPRFIFO		OBSOLETE__IOR(PP_IOCTL, 0x89, unsigned i8)
-#define PPWFIFO		OBSOLETE__IOW(PP_IOCTL, 0x8a, unsigned i8)
+#define PPRFIFO		OBSOLETE__IOR(PP_IOCTL, 0x89, %i8)
+#define PPWFIFO		OBSOLETE__IOW(PP_IOCTL, 0x8a, %i8)
 
 /* Claim the port to start using it */
 #define PPCLAIM		_IO(PP_IOCTL, 0x8b)
@@ -69,7 +69,7 @@ struct ppdev_frob_struct {
 #define PPNEGOT		_IOW(PP_IOCTL, 0x91, i32)
 
 /* Set control lines when an interrupt occurs. */
-#define PPWCTLONIRQ	_IOW(PP_IOCTL, 0x92, unsigned i8)
+#define PPWCTLONIRQ	_IOW(PP_IOCTL, 0x92, %i8)
 
 /* Clear (and return) interrupt count. */
 #define PPCLRIRQ	_IOR(PP_IOCTL, 0x93, i32)
@@ -82,7 +82,7 @@ struct ppdev_frob_struct {
 #define PPSETTIME	_IOW(PP_IOCTL, 0x96, struct timeval)
 
 /* Get available modes (what the hardware can do) */
-#define PPGETMODES	_IOR(PP_IOCTL, 0x97, unsigned i32)
+#define PPGETMODES	_IOR(PP_IOCTL, 0x97, %i32)
 
 /* Get the current mode and phaze */
 #define PPGETMODE	_IOR(PP_IOCTL, 0x98, i32)

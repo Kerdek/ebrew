@@ -30,7 +30,7 @@ struct semid_ds {
 	struct sem_queue *sem_pending;		/* pending operations to be processed */
 	struct sem_queue **sem_pending_last;	/* last pending operation */
 	struct sem_undo	*undo;			/* undo requests on this array */
-	unsigned i16	sem_nsems;		/* no. of semaphores in array */
+	%i16	sem_nsems;		/* no. of semaphores in array */
 };
 
 /* Include the definition of semid64_ds */
@@ -38,7 +38,7 @@ struct semid_ds {
 
 /* semop system calls takes an array of these. */
 struct sembuf {
-	unsigned i16  sem_num;	/* semaphore index in array */
+	%i16  sem_num;	/* semaphore index in array */
 	i16		sem_op;		/* semaphore operation */
 	i16		sem_flg;	/* operation flags */
 };
@@ -47,7 +47,7 @@ struct sembuf {
 union semun {
 	i32 val;			/* value for SETVAL */
 	struct semid_ds *buf;	/* buffer for IPC_STAT & IPC_SET */
-	unsigned i16 *array;	/* array for GETALL & SETALL */
+	%i16 *array;	/* array for GETALL & SETALL */
 	struct seminfo *__buf;	/* buffer for IPC_INFO */
 	void *__pad;
 };

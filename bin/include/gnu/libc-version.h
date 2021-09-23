@@ -24,10 +24,10 @@
 __BEGIN_DECLS
 
 /* Return string describing release status of currently running GNU libc.  */
-extern const char *gnu_get_libc_release (void) __THROW;
+extern const i8 *gnu_get_libc_release (void) __THROW;
 
 /* Return string describing version of currently running GNU libc.  */
-extern const char *gnu_get_libc_version (void) __THROW;
+extern const i8 *gnu_get_libc_version (void) __THROW;
 
 __END_DECLS
 

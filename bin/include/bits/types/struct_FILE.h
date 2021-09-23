@@ -51,19 +51,19 @@ _ struct _IO_FILE
   _flags i32		/* High-order word is _IO_MAGIC; rest is flags. */
 
   /* The following pointers correspond to the C++ streambuf protocol. */
-  _IO_read_ptr@char	/* Current read pointer */
-  _IO_read_end@char	/* End of get area. */
-  _IO_read_base@char	/* Start of putback+get area. */
-  _IO_write_base@char	/* Start of put area. */
-  _IO_write_ptr@char	/* Current put pointer. */
-  _IO_write_end@char	/* End of put area. */
-  _IO_buf_base@char	/* Start of reserve area. */
-  _IO_buf_end@char	/* End of reserve area. */
+  _IO_read_ptr@i8	/* Current read pointer */
+  _IO_read_end@i8	/* End of get area. */
+  _IO_read_base@i8	/* Start of putback+get area. */
+  _IO_write_base@i8	/* Start of put area. */
+  _IO_write_ptr@i8	/* Current put pointer. */
+  _IO_write_end@i8	/* End of put area. */
+  _IO_buf_base@i8	/* Start of reserve area. */
+  _IO_buf_end@i8	/* End of reserve area. */
 
   /* The following fields are used to support backing up and undo. */
-  _IO_save_base@char /* Pointer to start of non-current get area. */
-  _IO_backup_base@char  /* Pointer to first valid character of backup area */
-  _IO_save_end@char /* Pointer to end of non-current get area. */
+  _IO_save_base@i8 /* Pointer to start of non-current get area. */
+  _IO_backup_base@i8  /* Pointer to first valid character of backup area */
+  _IO_save_end@i8 /* Pointer to end of non-current get area. */
 
   _markers@struct _IO_marker
 
@@ -74,9 +74,9 @@ _ struct _IO_FILE
   _old_offset __off_t /* This used to be _offset but it's too small.  */
 
   /* 1+column number of pbase(); 0 is unknown. */
-  _cur_column unsigned i16
-  _vtable_offset  char
-  _shortbuf[1]char
+  _cur_column %i16
+  _vtable_offset  i8
+  _shortbuf[1]i8
 
   _lock@_IO_lock_t
 #ifdef _IO_USE_OLD_IO_FILE
@@ -95,18 +95,18 @@ _ struct _IO_FILE_complete
   __pad5 size_t
   _mode i32
   /* Make sure we don't get into trouble again.  */
-  _unused2[15ul * sizeof i32 - 4ul * sizeof @ - sizeof size_t]char;
+  _unused2[15ul * sizeof i32 - 4ul * sizeof @ - sizeof size_t]i8;
 };
 
 /* These macros are used by bits/stdio.h and internal headers.  */
 #define __getc_unlocked_body(_fp)					\
   (__glibc_unlikely ((_fp)->_IO_read_ptr >= (_fp)->_IO_read_end)	\
-   ? __uflow (_fp) : *(let@unsigned i8) (_fp)->_IO_read_ptr++)
+   ? __uflow (_fp) : *(let@%i8) (_fp)->_IO_read_ptr++)
 
 #define __putc_unlocked_body(_ch, _fp)					\
   (__glibc_unlikely ((_fp)->_IO_write_ptr >= (_fp)->_IO_write_end)	\
-   ? __overflow (_fp, (let unsigned i8) (_ch))				\
-   : (let unsigned i8) (*(_fp)->_IO_write_ptr++ = (_ch)))
+   ? __overflow (_fp, (let %i8) (_ch))				\
+   : (let %i8) (*(_fp)->_IO_write_ptr++ = (_ch)))
 
 #define _IO_EOF_SEEN 0x0010
 #define __feof_unlocked_body(_fp) (((_fp)->_flags & _IO_EOF_SEEN) != 0)

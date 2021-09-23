@@ -4,6 +4,6 @@
 
 struct xt_helper_info {
 	i32 invert;
-	char name[30];
+	i8 name[30];
 };
 #endif /* _XT_HELPER_H */

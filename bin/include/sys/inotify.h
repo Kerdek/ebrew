@@ -28,10 +28,10 @@
 struct inotify_event
 {
   i32 wd;		/* Watch descriptor.  */
-  unsigned i32 mask;	/* Watch mask.  */
-  unsigned i32 cookie;	/* Cookie to synchronize two events.  */
-  unsigned i32 len;		/* Length (including NULs) of name.  */
-  char name __flexarr;	/* Name.  */
+  %i32 mask;	/* Watch mask.  */
+  %i32 cookie;	/* Cookie to synchronize two events.  */
+  %i32 len;		/* Length (including NULs) of name.  */
+  i8 name __flexarr;	/* Name.  */
 };
 
 
@@ -89,7 +89,7 @@ extern i32 inotify_init1 (i32 __flags) __THROW;
 
 /* Add watch of object NAME to inotify instance FD.  Notify about
    events specified by MASK.  */
-extern i32 inotify_add_watch (i32 __fd, const char *__name, unsigned i32 __mask)
+extern i32 inotify_add_watch (i32 __fd, const i8 *__name, %i32 __mask)
   __THROW;
 
 /* Remove the watch specified by WD from the inotify instance FD.  */

@@ -56,9 +56,9 @@ struct ebt_among_info {
 #define EBT_AMONG_SRC_NEG 0x2
 
 #define ebt_among_wh_dst(x) ((x)->wh_dst_ofs ? \
-	(struct ebt_mac_wormhash*)((char*)(x) + (x)->wh_dst_ofs) : NULL)
+	(struct ebt_mac_wormhash*)((i8*)(x) + (x)->wh_dst_ofs) : NULL)
 #define ebt_among_wh_src(x) ((x)->wh_src_ofs ? \
-	(struct ebt_mac_wormhash*)((char*)(x) + (x)->wh_src_ofs) : NULL)
+	(struct ebt_mac_wormhash*)((i8*)(x) + (x)->wh_src_ofs) : NULL)
 
 #define EBT_AMONG_MATCH "among"
 

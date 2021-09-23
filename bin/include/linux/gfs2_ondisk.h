@@ -125,8 +125,8 @@ struct gfs2_sb {
 	struct gfs2_inum __pad2; /* Was rindex dinode in gfs1 */
 	struct gfs2_inum sb_root_dir;
 
-	char sb_lockproto[GFS2_LOCKNAME_LEN];
-	char sb_locktable[GFS2_LOCKNAME_LEN];
+	i8 sb_lockproto[GFS2_LOCKNAME_LEN];
+	i8 sb_locktable[GFS2_LOCKNAME_LEN];
 
 	struct gfs2_inum __pad3; /* Was quota inode in gfs1 */
 	struct gfs2_inum __pad4; /* Was licence inode in gfs1 */

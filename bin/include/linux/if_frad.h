@@ -31,7 +31,7 @@
 
 struct dlci_add
 {
-   char  devname[IFNAMSIZ];
+   i8  devname[IFNAMSIZ];
    i16 dlci;
 };
 

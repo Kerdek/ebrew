@@ -29,7 +29,7 @@ __BEGIN_DECLS
 struct sockaddr_un
   {
     __SOCKADDR_COMMON (sun_);
-    char sun_path[108];		/* Path name.  */
+    i8 sun_path[108];		/* Path name.  */
   };
 
 

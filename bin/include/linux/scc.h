@@ -105,7 +105,7 @@ enum TX_state {
 	TXS_TIMEOUT	/* We had a transmission timeout */
 };
 
-typedef unsigned i64 io_port;	/* type definition for an 'io port address' */
+typedef %i64 io_port;	/* type definition for an 'io port address' */
 
 /* SCC statistical information */
 
@@ -120,26 +120,26 @@ struct scc_stat {
         i64 rxerrs;            /* CRC Errors */
         i64 txerrs;		/* KISS errors */
         
-	unsigned i32 nospace;	/* "Out of buffers" */
-	unsigned i32 rx_over;	/* Receiver Overruns */
-	unsigned i32 tx_under;	/* Transmitter Underruns */
+	%i32 nospace;	/* "Out of buffers" */
+	%i32 rx_over;	/* Receiver Overruns */
+	%i32 tx_under;	/* Transmitter Underruns */
 
-	unsigned i32 tx_state;	/* Transmitter state */
+	%i32 tx_state;	/* Transmitter state */
 	i32 tx_queued;		/* tx frames enqueued */
 
-	unsigned i32 maxqueue;	/* allocated tx_buffers */
-	unsigned i32 bufsize;	/* used buffersize */
+	%i32 maxqueue;	/* allocated tx_buffers */
+	%i32 bufsize;	/* used buffersize */
 };
 
 struct scc_modem {
 	i64 speed;		/* Line speed, bps */
-	char clocksrc;		/* 0 = DPLL, 1 = external, 2 = divider */
-	char nrz;		/* NRZ instead of NRZI */	
+	i8 clocksrc;		/* 0 = DPLL, 1 = external, 2 = divider */
+	i8 nrz;		/* NRZ instead of NRZI */	
 };
 
 struct scc_kiss_cmd {
 	i32  	 command;	/* one of the KISS-Commands defined above */
-	unsigned param;		/* KISS-Param */
+	% param;		/* KISS-Param */
 };
 
 struct scc_hw_config {
@@ -152,23 +152,23 @@ struct scc_hw_config {
 
 	i32	irq;		/* irq */
 	i64	clock;		/* clock */
-	char	option;		/* command for function port */
+	i8	option;		/* command for function port */
 
-	char brand;		/* hardware type */
-	char escc;		/* use ext. features of a 8580/85180/85280 */
+	i8 brand;		/* hardware type */
+	i8 escc;		/* use ext. features of a 8580/85180/85280 */
 };
 
 /* (#) only one INTACK latch allowed. */
 
 
 struct scc_mem_config {
-	unsigned i32 dummy;
-	unsigned i32 bufsize;
+	%i32 dummy;
+	%i32 bufsize;
 };
 
 struct scc_calibrate {
-	unsigned i32 time;
-	unsigned i8 pattern;
+	%i32 time;
+	%i8 pattern;
 };
 
 #endif /* _SCC_H */

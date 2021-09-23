@@ -33,7 +33,7 @@ struct xfrm_sec_ctx {
 	__u8	ctx_alg;
 	__u16	ctx_len;
 	__u32	ctx_sid;
-	char	ctx_str[0];
+	i8	ctx_str[0];
 };
 
 /* Security Context Domains of Interpretation */
@@ -90,7 +90,7 @@ struct xfrm_replay_state {
 #define XFRMA_REPLAY_ESN_MAX	4096
 
 struct xfrm_replay_state_esn {
-	unsigned i32	bmp_len;
+	%i32	bmp_len;
 	__u32		oseq;
 	__u32		seq;
 	__u32		oseq_hi;
@@ -100,23 +100,23 @@ struct xfrm_replay_state_esn {
 };
 
 struct xfrm_algo {
-	char		alg_name[64];
-	unsigned i32	alg_key_len;    /* in bits */
-	char		alg_key[0];
+	i8		alg_name[64];
+	%i32	alg_key_len;    /* in bits */
+	i8		alg_key[0];
 };
 
 struct xfrm_algo_auth {
-	char		alg_name[64];
-	unsigned i32	alg_key_len;    /* in bits */
-	unsigned i32	alg_trunc_len;  /* in bits */
-	char		alg_key[0];
+	i8		alg_name[64];
+	%i32	alg_key_len;    /* in bits */
+	%i32	alg_trunc_len;  /* in bits */
+	i8		alg_key[0];
 };
 
 struct xfrm_algo_aead {
-	char		alg_name[64];
-	unsigned i32	alg_key_len;	/* in bits */
-	unsigned i32	alg_icv_len;	/* in bits */
-	char		alg_key[0];
+	i8		alg_name[64];
+	%i32	alg_key_len;	/* in bits */
+	%i32	alg_icv_len;	/* in bits */
+	i8		alg_key[0];
 };
 
 struct xfrm_stats {
@@ -291,7 +291,7 @@ enum xfrm_attr_type_t {
 	XFRMA_ETIMER_THRESH,
 	XFRMA_SRCADDR,		/* xfrm_address_t */
 	XFRMA_COADDR,		/* xfrm_address_t */
-	XFRMA_LASTUSED,		/* unsigned i64  */
+	XFRMA_LASTUSED,		/* % i64  */
 	XFRMA_POLICY_TYPE,	/* struct xfrm_userpolicy_type */
 	XFRMA_MIGRATE,
 	XFRMA_ALG_AEAD,		/* struct xfrm_algo_aead */

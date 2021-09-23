@@ -25,10 +25,10 @@
 #include <linux/types.h>
 
 struct media_device_info {
-	char driver[16];
-	char model[32];
-	char serial[40];
-	char bus_info[32];
+	i8 driver[16];
+	i8 model[32];
+	i8 serial[40];
+	i8 bus_info[32];
 	__u32 media_version;
 	__u32 hw_revision;
 	__u32 driver_version;
@@ -148,7 +148,7 @@ struct media_device_info {
 
 struct media_entity_desc {
 	__u32 id;
-	char name[32];
+	i8 name[32];
 	__u32 type;
 	__u32 revision;
 	__u32 flags;
@@ -279,7 +279,7 @@ struct media_links_enum {
 
 struct media_v2_entity {
 	__u32 id;
-	char name[64];
+	i8 name[64];
 	__u32 function;		/* Main function of the entity */
 	__u32 flags;
 	__u32 reserved[5];

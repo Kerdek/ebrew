@@ -192,19 +192,19 @@ enum {
 /* for compatibility with glibc net/if.h */
 #if __UAPI_DEF_IF_IFMAP
 struct ifmap {
-	unsigned i64 mem_start;
-	unsigned i64 mem_end;
-	unsigned i16 base_addr; 
-	unsigned i8 irq;
-	unsigned i8 dma;
-	unsigned i8 port;
+	%i64 mem_start;
+	%i64 mem_end;
+	%i16 base_addr; 
+	%i8 irq;
+	%i8 dma;
+	%i8 port;
 	/* 3 bytes spare */
 };
 #endif /* __UAPI_DEF_IF_IFMAP */
 
 struct if_settings {
-	unsigned i32 type;	/* Type of physical device or protocol */
-	unsigned i32 size;	/* Size of the data allocated by the caller */
+	%i32 type;	/* Type of physical device or protocol */
+	%i32 size;	/* Size of the data allocated by the caller */
 	union {
 		/* {atm/eth/dsl}_settings anyone ? */
 		raw_hdlc_proto		*raw_hdlc;
@@ -233,7 +233,7 @@ struct ifreq {
 #define IFHWADDRLEN	6
 	union
 	{
-		char	ifrn_name[IFNAMSIZ];		/* if name, e.g. "en0" */
+		i8	ifrn_name[IFNAMSIZ];		/* if name, e.g. "en0" */
 	} ifr_ifrn;
 	
 	union {
@@ -246,8 +246,8 @@ struct ifreq {
 		i32	ifru_ivalue;
 		i32	ifru_mtu;
 		struct  ifmap ifru_map;
-		char	ifru_slave[IFNAMSIZ];	/* Just fits the size */
-		char	ifru_newname[IFNAMSIZ];
+		i8	ifru_slave[IFNAMSIZ];	/* Just fits the size */
+		i8	ifru_newname[IFNAMSIZ];
 		void *	ifru_data;
 		struct	if_settings ifru_settings;
 	} ifr_ifru;
@@ -284,7 +284,7 @@ struct ifreq {
 struct ifconf  {
 	i32	ifc_len;			/* size of buffer	*/
 	union {
-		char *ifcu_buf;
+		i8 *ifcu_buf;
 		struct ifreq *ifcu_req;
 	} ifc_ifcu;
 };

@@ -18,9 +18,9 @@ struct mmc_ioc_cmd {
 	__u32 opcode;
 	__u32 arg;
 	__u32 response[4];  /* CMD response */
-	unsigned i32 flags;
-	unsigned i32 blksz;
-	unsigned i32 blocks;
+	%i32 flags;
+	%i32 blksz;
+	%i32 blocks;
 
 	/*
 	 * Sleep at least postsleep_min_us useconds, and at most
@@ -29,14 +29,14 @@ struct mmc_ioc_cmd {
 	 * they're ready for the next command (i.e. there is no equivalent of
 	 * a "busy" indicator for read operations).
 	 */
-	unsigned i32 postsleep_min_us;
-	unsigned i32 postsleep_max_us;
+	%i32 postsleep_min_us;
+	%i32 postsleep_max_us;
 
 	/*
 	 * Override driver-computed timeouts.  Note the difference in units!
 	 */
-	unsigned i32 data_timeout_ns;
-	unsigned i32 cmd_timeout_ms;
+	%i32 data_timeout_ns;
+	%i32 cmd_timeout_ms;
 
 	/*
 	 * For 64-bit machines, the next member, ``__u64 data_ptr``, wants to
@@ -48,7 +48,7 @@ struct mmc_ioc_cmd {
 	/* DAT buffer */
 	__u64 data_ptr;
 };
-#define mmc_ioc_cmd_set_data(ic, ptr) ic.data_ptr = (__u64)(unsigned i64) ptr
+#define mmc_ioc_cmd_set_data(ic, ptr) ic.data_ptr = (__u64)(%i64) ptr
 
 /**
  * struct mmc_ioc_multi_cmd - multi command information

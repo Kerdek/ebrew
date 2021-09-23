@@ -3,7 +3,7 @@
 #define __ASM_GENERIC_UCONTEXT_H
 
 struct ucontext {
-	unsigned i64	  uc_flags;
+	%i64	  uc_flags;
 	struct ucontext  *uc_link;
 	stack_t		  uc_stack;
 	struct sigcontext uc_mcontext;

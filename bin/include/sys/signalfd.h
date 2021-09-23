@@ -26,28 +26,28 @@
 
 struct signalfd_siginfo
 {
-  unsigned i32 ssi_signo;
+  %i32 ssi_signo;
   i32 ssi_errno;
   i32 ssi_code;
-  unsigned i32 ssi_pid;
-  unsigned i32 ssi_uid;
+  %i32 ssi_pid;
+  %i32 ssi_uid;
   i32 ssi_fd;
-  unsigned i32 ssi_tid;
-  unsigned i32 ssi_band;
-  unsigned i32 ssi_overrun;
-  unsigned i32 ssi_trapno;
+  %i32 ssi_tid;
+  %i32 ssi_band;
+  %i32 ssi_overrun;
+  %i32 ssi_trapno;
   i32 ssi_status;
   i32 ssi_int;
-  unsigned i64 ssi_ptr;
-  unsigned i64 ssi_utime;
-  unsigned i64 ssi_stime;
-  unsigned i64 ssi_addr;
-  unsigned i16 ssi_addr_lsb;
-  unsigned i16 __pad2;
+  %i64 ssi_ptr;
+  %i64 ssi_utime;
+  %i64 ssi_stime;
+  %i64 ssi_addr;
+  %i16 ssi_addr_lsb;
+  %i16 __pad2;
   i32 ssi_syscall;
-  unsigned i64 ssi_call_addr;
-  unsigned i32 ssi_arch;
-  unsigned i8 __pad[28];
+  %i64 ssi_call_addr;
+  %i32 ssi_arch;
+  %i8 __pad[28];
 };
 
 __BEGIN_DECLS

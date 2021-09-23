@@ -15,10 +15,10 @@
 
 typedef struct atreq {
 	__s32 atr_len;
-	unsigned i8 atr[64];
+	%i8 atr[64];
 	__s32 power_act;
-	unsigned i8 bIFSD;
-	unsigned i8 bIFSC;
+	%i8 bIFSD;
+	%i8 bIFSC;
 } atreq_t;
 
 
@@ -26,23 +26,23 @@ typedef struct atreq {
  * member sizes. This leads to CONFIG_COMPAT breakage, since 32bit userspace
  * will lay out the structure members differently than the 64bit kernel.
  *
- * I've changed "ptsreq.protocol" from "unsigned i64" to "__u32".
+ * I've changed "ptsreq.protocol" from "%i64" to "__u32".
  * On 32bit this will make no difference.  With 64bit kernels, it will make
  * 32bit apps work, too.
  */
 
 typedef struct ptsreq {
 	__u32 protocol; /*T=0: 2^0, T=1:  2^1*/
- 	unsigned i8 flags;
- 	unsigned i8 pts1;
- 	unsigned i8 pts2;
-	unsigned i8 pts3;
+ 	%i8 flags;
+ 	%i8 pts1;
+ 	%i8 pts2;
+	%i8 pts3;
 } ptsreq_t;
 
 #define	CM_IOC_MAGIC		'c'
 #define	CM_IOC_MAXNR	        255
 
-#define	CM_IOCGSTATUS		_IOR (CM_IOC_MAGIC, 0, unsigned i8 *)
+#define	CM_IOCGSTATUS		_IOR (CM_IOC_MAGIC, 0, %i8 *)
 #define	CM_IOCGATR		_IOWR(CM_IOC_MAGIC, 1, atreq_t *)
 #define	CM_IOCSPTS		_IOW (CM_IOC_MAGIC, 2, ptsreq_t *)
 #define	CM_IOCSRDR		_IO  (CM_IOC_MAGIC, 3)

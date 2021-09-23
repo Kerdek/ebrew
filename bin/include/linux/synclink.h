@@ -147,25 +147,25 @@ typedef struct _MGSL_PARAMS
 {
 	/* Common */
 
-	unsigned i64	mode;		/* Asynchronous or HDLC */
-	unsigned i8	loopback;	/* internal loopback mode */
+	%i64	mode;		/* Asynchronous or HDLC */
+	%i8	loopback;	/* internal loopback mode */
 
 	/* HDLC Only */
 
-	unsigned i16	flags;
-	unsigned i8	encoding;	/* NRZ, NRZI, etc. */
-	unsigned i64	clock_speed;	/* external clock speed in bits per second */
-	unsigned i8	addr_filter;	/* receive HDLC address filter, 0xFF = disable */
-	unsigned i16	crc_type;	/* None, CRC16-CCITT, or CRC32-CCITT */
-	unsigned i8	preamble_length;
-	unsigned i8	preamble;
+	%i16	flags;
+	%i8	encoding;	/* NRZ, NRZI, etc. */
+	%i64	clock_speed;	/* external clock speed in bits per second */
+	%i8	addr_filter;	/* receive HDLC address filter, 0xFF = disable */
+	%i16	crc_type;	/* None, CRC16-CCITT, or CRC32-CCITT */
+	%i8	preamble_length;
+	%i8	preamble;
 
 	/* Async Only */
 
-	unsigned i64	data_rate;	/* bits per second */
-	unsigned i8	data_bits;	/* 7 or 8 data bits */
-	unsigned i8	stop_bits;	/* 1 or 2 stop bits */
-	unsigned i8	parity;		/* none, even, or odd */
+	%i64	data_rate;	/* bits per second */
+	%i8	data_bits;	/* 7 or 8 data bits */
+	%i8	stop_bits;	/* 1 or 2 stop bits */
+	%i8	parity;		/* none, even, or odd */
 
 } MGSL_PARAMS, *PMGSL_PARAMS;
 

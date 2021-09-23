@@ -76,13 +76,13 @@ typedef union epoll_data
 {
   void *ptr;
   i32 fd;
-  unsigned i32 u32;
-  unsigned i64 u64;
+  %i32 u32;
+  %i64 u64;
 } epoll_data_t;
 
 struct epoll_event
 {
-  unsigned i32 events;	/* Epoll events */
+  %i32 events;	/* Epoll events */
   epoll_data_t data;	/* User data variable */
 } __EPOLL_PACKED;
 

@@ -300,7 +300,7 @@ struct sctp_authinfo {
 };
 
 /*
- *  sinfo_flags: 16 bits (unsigned integer)
+ *  sinfo_flags: 16 bits (% integer)
  *
  *   This field may contain any of the following flags and is composed of
  *   a bitwise OR of these values.
@@ -465,7 +465,7 @@ struct sctp_send_failed_event {
 };
 
 /*
- *   ssf_flags: 16 bits (unsigned integer)
+ *   ssf_flags: 16 bits (% integer)
  *
  *   The flag value will take one of the following values
  *
@@ -890,19 +890,19 @@ struct sctp_authkeyid {
  */
 struct sctp_sack_info {
 	sctp_assoc_t	sack_assoc_id;
-	unsigned i32	sack_delay;
-	unsigned i32	sack_freq;
+	%i32	sack_delay;
+	%i32	sack_freq;
 };
 
 struct sctp_assoc_value {
     sctp_assoc_t            assoc_id;
-    unsigned i32                assoc_value;
+    %i32                assoc_value;
 };
 
 struct sctp_stream_value {
 	sctp_assoc_t assoc_id;
-	unsigned i16 stream_id;
-	unsigned i16 stream_value;
+	%i16 stream_id;
+	%i16 stream_value;
 };
 
 /*
@@ -973,7 +973,7 @@ struct sctp_status {
 struct sctp_authchunks {
 	sctp_assoc_t	gauth_assoc_id;
 	__u32		gauth_number_of_chunks;
-	unsigned i8		gauth_chunks[];
+	%i8		gauth_chunks[];
 };
 
 /* The broken spelling has been released already in lksctp-tools header,
@@ -1069,7 +1069,7 @@ typedef struct {
 
 typedef struct {
 	sctp_peeloff_arg_t p_arg;
-	unsigned flags;
+	% flags;
 } sctp_peeloff_flags_arg_t;
 
 /*
@@ -1174,21 +1174,21 @@ struct sctp_info {
 
 struct sctp_reset_streams {
 	sctp_assoc_t srs_assoc_id;
-	unsigned i16 srs_flags;
-	unsigned i16 srs_number_streams;	/* 0 == ALL */
-	unsigned i16 srs_stream_list[];	/* list if srs_num_streams is not 0 */
+	%i16 srs_flags;
+	%i16 srs_number_streams;	/* 0 == ALL */
+	%i16 srs_stream_list[];	/* list if srs_num_streams is not 0 */
 };
 
 struct sctp_add_streams {
 	sctp_assoc_t sas_assoc_id;
-	unsigned i16 sas_instrms;
-	unsigned i16 sas_outstrms;
+	%i16 sas_instrms;
+	%i16 sas_outstrms;
 };
 
 struct sctp_event {
 	sctp_assoc_t se_assoc_id;
-	unsigned i16 se_type;
-	unsigned i8 se_on;
+	%i16 se_type;
+	%i8 se_on;
 };
 
 /* SCTP Stream schedulers */

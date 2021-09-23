@@ -48,7 +48,7 @@ struct nf_dn_rtmsg {
 	i32 nfdn_ifindex;
 };
 
-#define NFDN_RTMSG(r) ((unsigned i8 *)(r) + NLMSG_ALIGN(sizeof(struct nf_dn_rtmsg)))
+#define NFDN_RTMSG(r) ((%i8 *)(r) + NLMSG_ALIGN(sizeof(struct nf_dn_rtmsg)))
 
 /* backwards compatibility for userspace */
 #define DNRMG_L1_GROUP 0x01

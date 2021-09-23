@@ -148,7 +148,7 @@ typedef struct vring_used __attribute__((aligned(VRING_USED_ALIGN_SIZE)))
 	vring_used_t;
 
 struct vring {
-	unsigned i32 num;
+	%i32 num;
 
 	vring_desc_t *desc;
 
@@ -174,7 +174,7 @@ struct vring {
  *	__virtio16 used_event_idx;
  *
  *	// Padding to the next align boundary.
- *	char pad[];
+ *	i8 pad[];
  *
  *	// A ring of used descriptor heads with free-running index.
  *	__virtio16 used_flags;
@@ -188,17 +188,17 @@ struct vring {
 #define vring_used_event(vr) ((vr)->avail->ring[(vr)->num])
 #define vring_avail_event(vr) (*(__virtio16 *)&(vr)->used->ring[(vr)->num])
 
-static __inline__ void vring_init(struct vring *vr, unsigned i32 num, void *p,
-			      unsigned i64 align)
+static __inline__ void vring_init(struct vring *vr, %i32 num, void *p,
+			      % i64 align)
 {
 	vr->num = num;
 	vr->desc = p;
-	vr->avail = (struct vring_avail *)((char *)p + num * sizeof(struct vring_desc));
-	vr->used = (void *)(((unsigned i64)&vr->avail->ring[num] + sizeof(__virtio16)
+	vr->avail = (struct vring_avail *)((i8 *)p + num * sizeof(struct vring_desc));
+	vr->used = (void *)(((% i64)&vr->avail->ring[num] + sizeof(__virtio16)
 		+ align-1) & ~(align - 1));
 }
 
-static __inline__ unsigned vring_size(unsigned i32 num, unsigned i64 align)
+static __inline__ % vring_size(%i32 num, % i64 align)
 {
 	return ((sizeof(struct vring_desc) * num + sizeof(__virtio16) * (3 + num)
 		 + align - 1) & ~(align - 1))

@@ -52,8 +52,8 @@ typedef enum {
 
 
 typedef struct audio_mixer {
-	unsigned i32 volume_left;
-	unsigned i32 volume_right;
+	%i32 volume_left;
+	%i32 volume_right;
   /* what else do we need? bass, pass-through, ... */
 } audio_mixer_t;
 
@@ -91,7 +91,7 @@ typedef struct audio_status {
 #define AUDIO_CHANNEL_SELECT       _IO('o', 9)
 #define AUDIO_GET_STATUS           _IOR('o', 10, audio_status_t)
 
-#define AUDIO_GET_CAPABILITIES     _IOR('o', 11, unsigned i32)
+#define AUDIO_GET_CAPABILITIES     _IOR('o', 11, %i32)
 #define AUDIO_CLEAR_BUFFER         _IO('o',  12)
 #define AUDIO_SET_ID               _IO('o', 13)
 #define AUDIO_SET_MIXER            _IOW('o', 14, audio_mixer_t)

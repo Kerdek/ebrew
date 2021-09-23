@@ -91,9 +91,9 @@ struct file_dedupe_range {
 
 /* And dynamically-tunable limits and defaults: */
 struct files_stat_struct {
-	unsigned i64 nr_files;		/* read only */
-	unsigned i64 nr_free_files;	/* read only */
-	unsigned i64 max_files;		/* tunable */
+	%i64 nr_files;		/* read only */
+	%i64 nr_free_files;	/* read only */
+	%i64 max_files;		/* tunable */
 };
 
 struct inodes_stat_t {
@@ -114,7 +114,7 @@ struct fsxattr {
 	__u32		fsx_nextents;	/* nextents field value (get)	*/
 	__u32		fsx_projid;	/* project identifier (get/set) */
 	__u32		fsx_cowextsize;	/* CoW extsize field value (get/set)*/
-	unsigned i8	fsx_pad[8];
+	%i8	fsx_pad[8];
 };
 
 /*
@@ -208,8 +208,8 @@ struct fsxattr {
 #define FS_IOC32_SETVERSION		_IOW('v', 2, i32)
 #define FS_IOC_FSGETXATTR		_IOR('X', 31, struct fsxattr)
 #define FS_IOC_FSSETXATTR		_IOW('X', 32, struct fsxattr)
-#define FS_IOC_GETFSLABEL		_IOR(0x94, 49, char[FSLABEL_MAX])
-#define FS_IOC_SETFSLABEL		_IOW(0x94, 50, char[FSLABEL_MAX])
+#define FS_IOC_GETFSLABEL		_IOR(0x94, 49, i8[FSLABEL_MAX])
+#define FS_IOC_SETFSLABEL		_IOW(0x94, 50, i8[FSLABEL_MAX])
 
 /*
  * Inode flags (FS_IOC_GETFLAGS / FS_IOC_SETFLAGS)

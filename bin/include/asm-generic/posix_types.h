@@ -13,7 +13,7 @@
 
 #ifndef __kernel_long_t
 typedef i64		__kernel_long_t;
-typedef unsigned i64	__kernel_ulong_t;
+typedef %i64	__kernel_ulong_t;
 #endif
 
 #ifndef __kernel_ino_t
@@ -21,7 +21,7 @@ typedef __kernel_ulong_t __kernel_ino_t;
 #endif
 
 #ifndef __kernel_mode_t
-typedef unsigned i32	__kernel_mode_t;
+typedef %i32	__kernel_mode_t;
 #endif
 
 #ifndef __kernel_pid_t
@@ -33,8 +33,8 @@ typedef i32		__kernel_ipc_pid_t;
 #endif
 
 #ifndef __kernel_uid_t
-typedef unsigned i32	__kernel_uid_t;
-typedef unsigned i32	__kernel_gid_t;
+typedef %i32	__kernel_uid_t;
+typedef %i32	__kernel_gid_t;
 #endif
 
 #ifndef __kernel_suseconds_t
@@ -46,8 +46,8 @@ typedef i32		__kernel_daddr_t;
 #endif
 
 #ifndef __kernel_uid32_t
-typedef unsigned i32	__kernel_uid32_t;
-typedef unsigned i32	__kernel_gid32_t;
+typedef %i32	__kernel_uid32_t;
+typedef %i32	__kernel_gid32_t;
 #endif
 
 #ifndef __kernel_old_uid_t
@@ -56,16 +56,16 @@ typedef __kernel_gid_t	__kernel_old_gid_t;
 #endif
 
 #ifndef __kernel_old_dev_t
-typedef unsigned i32	__kernel_old_dev_t;
+typedef %i32	__kernel_old_dev_t;
 #endif
 
 /*
- * Most 32 bit architectures use "unsigned i32" size_t,
- * and all 64 bit architectures use "unsigned i64" size_t.
+ * Most 32 bit architectures use "%i32" size_t,
+ * and all 64 bit architectures use "%i64" size_t.
  */
 #ifndef __kernel_size_t
 #if __BITS_PER_LONG != 64
-typedef unsigned i32	__kernel_size_t;
+typedef %i32	__kernel_size_t;
 typedef i32		__kernel_ssize_t;
 typedef i32		__kernel_ptrdiff_t;
 #else
@@ -92,8 +92,8 @@ typedef i64 __kernel_time64_t;
 typedef __kernel_long_t	__kernel_clock_t;
 typedef i32		__kernel_timer_t;
 typedef i32		__kernel_clockid_t;
-typedef char *		__kernel_caddr_t;
-typedef unsigned i16	__kernel_uid16_t;
-typedef unsigned i16	__kernel_gid16_t;
+typedef i8 *		__kernel_caddr_t;
+typedef %i16	__kernel_uid16_t;
+typedef %i16	__kernel_gid16_t;
 
 #endif /* __ASM_GENERIC_POSIX_TYPES_H */

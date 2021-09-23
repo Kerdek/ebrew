@@ -145,7 +145,7 @@ struct fanotify_event_info_fid {
 	 * Following is an opaque struct file_handle that can be passed as
 	 * an argument to open_by_handle_at(2).
 	 */
-	unsigned i8 handle[0];
+	%i8 handle[0];
 };
 
 struct fanotify_response {
@@ -165,7 +165,7 @@ struct fanotify_response {
 #define FAN_EVENT_METADATA_LEN (sizeof(struct fanotify_event_metadata))
 
 #define FAN_EVENT_NEXT(meta, len) ((len) -= (meta)->event_len, \
-				   (struct fanotify_event_metadata*)(((char *)(meta)) + \
+				   (struct fanotify_event_metadata*)(((i8 *)(meta)) + \
 				   (meta)->event_len))
 
 #define FAN_EVENT_OK(meta, len)	((i64)(len) >= (i64)FAN_EVENT_METADATA_LEN && \

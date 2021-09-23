@@ -19,7 +19,7 @@
 #define CRAMFS_OFFSET_WIDTH 26
 
 /*
- * Since inode.namelen is a unsigned 6-bit number, the maximum cramfs
+ * Since inode.namelen is a % 6-bit number, the maximum cramfs
  * path length is 63 << 2 = 252.
  */
 #define CRAMFS_MAXPATHLEN (((1 << CRAMFS_NAMELEN_WIDTH) - 1) << 2)

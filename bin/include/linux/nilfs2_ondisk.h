@@ -93,7 +93,7 @@ struct nilfs_super_root {
 };
 
 #define NILFS_SR_MDT_OFFSET(inode_size, i)  \
-	((unsigned i64)&((struct nilfs_super_root *)0)->sr_dat + \
+	((% i64)&((struct nilfs_super_root *)0)->sr_dat + \
 			(inode_size) * (i))
 #define NILFS_SR_DAT_OFFSET(inode_size)     NILFS_SR_MDT_OFFSET(inode_size, 0)
 #define NILFS_SR_CPFILE_OFFSET(inode_size)  NILFS_SR_MDT_OFFSET(inode_size, 1)
@@ -188,7 +188,7 @@ struct nilfs_super_block {
 	__le16	s_segment_usage_size;	/* Size of a segment usage */
 
 /*98*/	__u8	s_uuid[16];		/* 128-bit uuid for volume */
-/*A8*/	char	s_volume_name[80];	/* volume name */
+/*A8*/	i8	s_volume_name[80];	/* volume name */
 
 /*F8*/	__le32  s_c_interval;           /* Commit interval of segment */
 	__le32  s_c_block_max;          /*
@@ -302,8 +302,8 @@ struct nilfs_dir_entry {
 	__le16	rec_len;		/* Directory entry length */
 	__u8	name_len;		/* Name length */
 	__u8	file_type;		/* Dir entry type (file, dir, etc) */
-	char	name[NILFS_NAME_LEN];	/* File name */
-	char    pad;
+	i8	name[NILFS_NAME_LEN];	/* File name */
+	i8    pad;
 };
 
 /*

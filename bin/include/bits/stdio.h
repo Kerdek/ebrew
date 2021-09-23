@@ -36,7 +36,7 @@
 # if !(__USE_FORTIFY_LEVEL > 0 && defined __fortify_function)
 /* Write formatted output to stdout from argument list ARG.  */
 __STDIO_INLINE i32
-vprintf (const char *__restrict __fmt, __gnuc_va_list __arg)
+vprintf (const i8 *__restrict __fmt, __gnuc_va_list __arg)
 {
   return vfprintf (stdout, __fmt, __arg);
 }
@@ -115,7 +115,7 @@ putchar_unlocked (i32 __c)
 # ifdef	__USE_GNU
 /* Like `getdelim', but reads up to a newline.  */
 __STDIO_INLINE __ssize_t
-getline (char **__lineptr, size_t *__n, FILE *__stream)
+getline (i8 **__lineptr, size_t *__n, FILE *__stream)
 {
   return __getdelim (__lineptr, __n, '\n', __stream);
 }
@@ -148,7 +148,7 @@ __NTH (ferror_unlocked (FILE *__stream))
   (__extension__ ((__builtin_constant_p (size) && __builtin_constant_p (n)    \
 		   && (size_t) (size) * (size_t) (n) <= 8		      \
 		   && (size_t) (size) != 0)				      \
-		  ? ({ char *__ptr = (char *) (ptr);			      \
+		  ? ({ i8 *__ptr = (i8 *) (ptr);			      \
 		       FILE *__stream = (stream);			      \
 		       size_t __cnt;					      \
 		       for (__cnt = (size_t) (size) * (size_t) (n);	      \
@@ -172,7 +172,7 @@ __NTH (ferror_unlocked (FILE *__stream))
   (__extension__ ((__builtin_constant_p (size) && __builtin_constant_p (n)    \
 		   && (size_t) (size) * (size_t) (n) <= 8		      \
 		   && (size_t) (size) != 0)				      \
-		  ? ({ const char *__ptr = (const char *) (ptr);	      \
+		  ? ({ const i8 *__ptr = (const i8 *) (ptr);	      \
 		       FILE *__stream = (stream);			      \
 		       size_t __cnt;					      \
 		       for (__cnt = (size_t) (size) * (size_t) (n);	      \

@@ -72,7 +72,7 @@ enum {
 struct nbd_request {
 	__be32 magic;
 	__be32 type;	/* == READ || == WRITE 	*/
-	char handle[8];
+	i8 handle[8];
 	__be64 from;
 	__be32 len;
 } __attribute__((packed));
@@ -84,6 +84,6 @@ struct nbd_request {
 struct nbd_reply {
 	__be32 magic;
 	__be32 error;		/* 0 = ok, else error	*/
-	char handle[8];		/* handle you got from request	*/
+	i8 handle[8];		/* handle you got from request	*/
 };
 #endif /* LINUX_NBD_H */

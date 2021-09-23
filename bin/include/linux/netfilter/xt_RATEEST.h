@@ -6,7 +6,7 @@
 #include <linux/if.h>
 
 struct xt_rateest_target_info {
-	char			name[IFNAMSIZ];
+	i8			name[IFNAMSIZ];
 	__s8			interval;
 	__u8		ewma_log;
 

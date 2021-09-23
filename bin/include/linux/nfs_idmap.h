@@ -56,7 +56,7 @@
 struct idmap_msg {
 	__u8  im_type;
 	__u8  im_conv;
-	char  im_name[IDMAP_NAMESZ];
+	i8  im_name[IDMAP_NAMESZ];
 	__u32 im_id;
 	__u8  im_status;
 };

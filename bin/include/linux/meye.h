@@ -36,12 +36,12 @@
 /****************************************************************************/
 
 struct meye_params {
-	unsigned i8 subsample;
-	unsigned i8 quality;
-	unsigned i8 sharpness;
-	unsigned i8 agc;
-	unsigned i8 picture;
-	unsigned i8 framerate;
+	%i8 subsample;
+	%i8 quality;
+	%i8 sharpness;
+	%i8 agc;
+	%i8 picture;
+	%i8 framerate;
 };
 
 /* query the extended parameters */

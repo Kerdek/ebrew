@@ -19,13 +19,13 @@ append(tok1@Token tok2@Token)@Token =
   for (; tok1.kind != TK_EOF; tok1 = tok1.s) { (cur.s = copy_token tok1); (cur = cur.s);;
   (cur.s = tok2);
   return head.s;;
-read_include_filename(rest@@Token j@Token is_dquote@bool include_paths @StringArray) @char =
+read_include_filename(rest@@Token j@Token is_dquote@bool include_paths @StringArray) @i8 =
   if (j.kind == TK_STR) {
     (is_dquote@ = true);
     (rest@ = skip_line j.s);
-    return strndup (j.loc + 1) cast unsigned i64 (j.len - 2);;
+    return strndup (j.loc + 1) cast %i64 (j.len - 2);;
   (error_tok j "expected a filename");;
-include_file(j@Token path@char filename_tok@Token)@Token =
+include_file(j@Token path@i8 filename_tok@Token)@Token =
   let tok2 = tokenize_file path;
   if !tok2 (error_tok filename_tok "%s: cannot open file: %s" path strerror errno);
   return append tok2 j;;

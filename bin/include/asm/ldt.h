@@ -19,15 +19,15 @@
  * call is more for 32bit mode therefore.
  */
 struct user_desc {
-	unsigned i32  entry_number;
-	unsigned i32  base_addr;
-	unsigned i32  limit;
-	unsigned i32  seg_32bit:1;
-	unsigned i32  contents:2;
-	unsigned i32  read_exec_only:1;
-	unsigned i32  limit_in_pages:1;
-	unsigned i32  seg_not_present:1;
-	unsigned i32  useable:1;
+	%i32  entry_number;
+	%i32  base_addr;
+	%i32  limit;
+	%i32  seg_32bit:1;
+	%i32  contents:2;
+	%i32  read_exec_only:1;
+	%i32  limit_in_pages:1;
+	%i32  seg_not_present:1;
+	%i32  useable:1;
 #ifdef __x86_64__
 	/*
 	 * Because this bit is not present in 32-bit user code, user
@@ -36,7 +36,7 @@ struct user_desc {
 	 * the kernel must act as though lm == 0, regardless of the
 	 * actual value.
 	 */
-	unsigned i32  lm:1;
+	%i32  lm:1;
 #endif
 };
 

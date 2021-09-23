@@ -468,7 +468,7 @@ struct perf_event_query_bpf {
 #define PERF_EVENT_IOC_RESET			_IO ('$', 3)
 #define PERF_EVENT_IOC_PERIOD			_IOW('$', 4, __u64)
 #define PERF_EVENT_IOC_SET_OUTPUT		_IO ('$', 5)
-#define PERF_EVENT_IOC_SET_FILTER		_IOW('$', 6, char *)
+#define PERF_EVENT_IOC_SET_FILTER		_IOW('$', 6, i8 *)
 #define PERF_EVENT_IOC_ID			_IOR('$', 7, __u64 *)
 #define PERF_EVENT_IOC_SET_BPF			_IOW('$', 8, __u32)
 #define PERF_EVENT_IOC_PAUSE_OUTPUT		_IOW('$', 9, __u32)
@@ -765,7 +765,7 @@ enum perf_event_type {
 	 *	u64				addr;
 	 *	u64				len;
 	 *	u64				pgoff;
-	 *	char				filename[];
+	 *	i8				filename[];
 	 * 	struct sample_id		sample_id;
 	 * };
 	 */
@@ -786,7 +786,7 @@ enum perf_event_type {
 	 *	struct perf_event_header	header;
 	 *
 	 *	u32				pid, tid;
-	 *	char				comm[];
+	 *	i8				comm[];
 	 * 	struct sample_id		sample_id;
 	 * };
 	 */
@@ -874,7 +874,7 @@ enum perf_event_type {
 	 *	#
 	 *
 	 *	{ u32			size;
-	 *	  char                  data[size];}&& PERF_SAMPLE_RAW
+	 *	  i8                  data[size];}&& PERF_SAMPLE_RAW
 	 *
 	 *	{ u64                   nr;
 	 *	  { u64	hw_idx; } && PERF_SAMPLE_BRANCH_HW_INDEX
@@ -885,7 +885,7 @@ enum perf_event_type {
 	 * 	  u64			regs[weight(mask)]; } && PERF_SAMPLE_REGS_USER
 	 *
 	 * 	{ u64			size;
-	 * 	  char			data[size];
+	 * 	  i8			data[size];
 	 * 	  u64			dyn_size; } && PERF_SAMPLE_STACK_USER
 	 *
 	 *	{ u64			weight;   } && PERF_SAMPLE_WEIGHT
@@ -895,7 +895,7 @@ enum perf_event_type {
 	 *	  u64			regs[weight(mask)]; } && PERF_SAMPLE_REGS_INTR
 	 *	{ u64			phys_addr;} && PERF_SAMPLE_PHYS_ADDR
 	 *	{ u64			size;
-	 *	  char			data[size]; } && PERF_SAMPLE_AUX
+	 *	  i8			data[size]; } && PERF_SAMPLE_AUX
 	 * };
 	 */
 	PERF_RECORD_SAMPLE			= 9,
@@ -916,7 +916,7 @@ enum perf_event_type {
 	 *	u64				ino;
 	 *	u64				ino_generation;
 	 *	u32				prot, flags;
-	 *	char				filename[];
+	 *	i8				filename[];
 	 * 	struct sample_id		sample_id;
 	 * };
 	 */
@@ -1007,7 +1007,7 @@ enum perf_event_type {
 	 *	u32				len;
 	 *	u16				ksym_type;
 	 *	u16				flags;
-	 *	char				name[];
+	 *	i8				name[];
 	 *	struct sample_id		sample_id;
 	 * };
 	 */
@@ -1036,7 +1036,7 @@ enum perf_event_type {
 	 * struct {
 	 *	struct perf_event_header	header;
 	 *	u64				id;
-	 *	char				path[];
+	 *	i8				path[];
 	 *	struct sample_id		sample_id;
 	 * };
 	 */

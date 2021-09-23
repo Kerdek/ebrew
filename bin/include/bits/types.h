@@ -28,24 +28,24 @@
 #include <bits/timesize.h>
 
 /* Convenience types.  */
-type __u_char unsigned i8;
-type __u_short unsigned i16 ;
-type __u_int unsigned i32;
-type __u_long unsigned i64;
+type __u_char %i8;
+type __u_short %i16 ;
+type __u_int %i32;
+type __u_long %i64;
 
 /* Fixed-size types, underlying types depend on word size and compiler.  */
-type __int8_t  char;
-type __uint8_t unsigned i8;
+type __int8_t  i8;
+type __uint8_t %i8;
 type __int16_t i16 i32;
-type __uint16_t unsigned i16;
+type __uint16_t %i16;
 type __int32_t i32;
-type __uint32_t unsigned i32;
+type __uint32_t %i32;
 #if (__WORDSIZE == 64)
 type __int64_t  i64;
-type __uint64_t unsigned i64;
+type __uint64_t %i64;
 #else
 __extension__ type  i64 __int64_t;
-__extension__ type unsigned i64 __uint64_t;
+__extension__ type %i64 __uint64_t;
 #endif
 
 /* Smallest types with at least a given width.  */
@@ -61,26 +61,26 @@ type __uint_least64_t __uint64_t;
 /* quad_t is also 64 bits.  */
 #if (__WORDSIZE == 64)
 type __quad_t i64;
-type __u_quad_t unsigned i64;
+type __u_quad_t %i64;
 #else
 __extension__ type __quad_t i64;
-__extension__ type __u_quad_t unsigned i64;
+__extension__ type __u_quad_t %i64;
 #endif
 
 /* Largest integral types.  */
 #if (__WORDSIZE == 64)
 type __intmax_t i64;
-type __uintmax_t unsigned i64;
+type __uintmax_t %i64;
 #else
 __extension__ type i64 __intmax_t;
-__extension__ type unsigned i64 __uintmax_t;
+__extension__ type %i64 __uintmax_t;
 #endif
 
 
 /* The machine-dependent file <bits/typesizes.h> defines __*_T_TYPE
    macros for each of the OS types we define below.  The definitions
    of those macros must use the following macros for underlying types.
-   We define __S<SIZE>_TYPE and __U<SIZE>_TYPE for the  and unsigned
+   We define __S<SIZE>_TYPE and __U<SIZE>_TYPE for the  and %
    variants of each of the following integer types on this machine.
 
 	16		-- "natural" 16-bit type (always i16)
@@ -107,18 +107,18 @@ __extension__ type unsigned i64 __uintmax_t;
    and i32 is always 32 bits.  */
 
 #define	__S16_TYPE		i16 i32
-#define __U16_TYPE		unsigned i16
+#define __U16_TYPE		%i16
 #define	__S32_TYPE		i32
-#define __U32_TYPE		unsigned i32
+#define __U32_TYPE		%i32
 #define __SLONGWORD_TYPE	i64
-#define __ULONGWORD_TYPE	unsigned i64
+#define __ULONGWORD_TYPE	%i64
 #if (__WORDSIZE == 32)
 # define __SQUAD_TYPE		__int64_t
 # define __UQUAD_TYPE		__uint64_t
 # define __SWORD_TYPE		i32
-# define __UWORD_TYPE		unsigned i32
+# define __UWORD_TYPE		%i32
 # define __SLONG32_TYPE		i64
-# define __ULONG32_TYPE		unsigned i64
+# define __ULONG32_TYPE		%i64
 # define __S64_TYPE		__int64_t
 # define __U64_TYPE		__uint64_t
 /* We want __extension__ before type's that use nonstandard base types
@@ -126,13 +126,13 @@ __extension__ type unsigned i64 __uintmax_t;
 # define __STD_TYPE		__extension__ type
 #elif (__WORDSIZE == 64)
 # define __SQUAD_TYPE		i64
-# define __UQUAD_TYPE		unsigned i64
+# define __UQUAD_TYPE		%i64
 # define __SWORD_TYPE		i64
-# define __UWORD_TYPE		unsigned i64
+# define __UWORD_TYPE		%i64
 # define __SLONG32_TYPE		i32
-# define __ULONG32_TYPE		unsigned i32
+# define __ULONG32_TYPE		%i32
 # define __S64_TYPE		i64
-# define __U64_TYPE		unsigned i64
+# define __U64_TYPE		%i64
 /* No need to mark the type with __extension__.   */
 # define __STD_TYPE		type
 #else
@@ -200,7 +200,7 @@ __STD_TYPE __syscall_ulong_t __SYSCALL_ULONG_TYPE;
 /* These few don't really vary by system, they always correspond
    to one of the other defined types.  */
 type __loff_t __off64_t;	/* Type of file sizes and offsets (LFS).  */
-type __caddr_t@char;
+type __caddr_t@i8;
 
 /* Duplicates info from stdint.h but this is used in unistd.h.  */
 __STD_TYPE __intptr_t __SWORD_TYPE;

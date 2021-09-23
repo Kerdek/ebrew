@@ -182,7 +182,7 @@ struct i2400m_bootrom_header {
 	__le32 target_addr;
 	__le32 data_size;
 	__le32 block_checksum;
-	char payload[0];
+	i8 payload[0];
 } __attribute__ ((packed));
 
 

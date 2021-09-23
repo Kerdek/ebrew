@@ -36,7 +36,7 @@
 
 struct sockaddr_nl {
 	__kernel_sa_family_t	nl_family;	/* AF_NETLINK	*/
-	unsigned i16	nl_pad;		/* zero		*/
+	%i16	nl_pad;		/* zero		*/
 	__u32		nl_pid;		/* port ID	*/
        	__u32		nl_groups;	/* multicast groups mask */
 };
@@ -91,9 +91,9 @@ struct nlmsghdr {
 #define NLMSG_HDRLEN	 ((i32) NLMSG_ALIGN(sizeof(struct nlmsghdr)))
 #define NLMSG_LENGTH(len) ((len) + NLMSG_HDRLEN)
 #define NLMSG_SPACE(len) NLMSG_ALIGN(NLMSG_LENGTH(len))
-#define NLMSG_DATA(nlh)  ((void*)(((char*)nlh) + NLMSG_LENGTH(0)))
+#define NLMSG_DATA(nlh)  ((void*)(((i8*)nlh) + NLMSG_LENGTH(0)))
 #define NLMSG_NEXT(nlh,len)	 ((len) -= NLMSG_ALIGN((nlh)->nlmsg_len), \
-				  (struct nlmsghdr*)(((char*)(nlh)) + NLMSG_ALIGN((nlh)->nlmsg_len)))
+				  (struct nlmsghdr*)(((i8*)(nlh)) + NLMSG_ALIGN((nlh)->nlmsg_len)))
 #define NLMSG_OK(nlh,len) ((len) >= (i32)sizeof(struct nlmsghdr) && \
 			   (nlh)->nlmsg_len >= sizeof(struct nlmsghdr) && \
 			   (nlh)->nlmsg_len <= (len))
@@ -162,15 +162,15 @@ struct nl_pktinfo {
 };
 
 struct nl_mmap_req {
-	unsigned i32	nm_block_size;
-	unsigned i32	nm_block_nr;
-	unsigned i32	nm_frame_size;
-	unsigned i32	nm_frame_nr;
+	%i32	nm_block_size;
+	%i32	nm_block_nr;
+	%i32	nm_frame_size;
+	%i32	nm_frame_nr;
 };
 
 struct nl_mmap_hdr {
-	unsigned i32	nm_status;
-	unsigned i32	nm_len;
+	%i32	nm_status;
+	%i32	nm_len;
 	__u32		nm_group;
 	/* credentials */
 	__u32		nm_pid;
@@ -257,10 +257,10 @@ struct nla_bitfield32 {
  * enum netlink_attribute_type - type of an attribute
  * @NL_ATTR_TYPE_INVALID: unused
  * @NL_ATTR_TYPE_FLAG: flag attribute (present/not present)
- * @NL_ATTR_TYPE_U8: 8-bit unsigned attribute
- * @NL_ATTR_TYPE_U16: 16-bit unsigned attribute
- * @NL_ATTR_TYPE_U32: 32-bit unsigned attribute
- * @NL_ATTR_TYPE_U64: 64-bit unsigned attribute
+ * @NL_ATTR_TYPE_U8: 8-bit % attribute
+ * @NL_ATTR_TYPE_U16: 16-bit % attribute
+ * @NL_ATTR_TYPE_U32: 32-bit % attribute
+ * @NL_ATTR_TYPE_U64: 64-bit % attribute
  * @NL_ATTR_TYPE_S8: 8-bit  attribute
  * @NL_ATTR_TYPE_S16: 16-bit  attribute
  * @NL_ATTR_TYPE_S32: 32-bit  attribute
@@ -313,9 +313,9 @@ enum netlink_attribute_type {
  *	integers (S64)
  * @NL_POLICY_TYPE_ATTR_MAX_VALUE_S: maximum value for 
  *	integers (S64)
- * @NL_POLICY_TYPE_ATTR_MIN_VALUE_U: minimum value for unsigned
+ * @NL_POLICY_TYPE_ATTR_MIN_VALUE_U: minimum value for %
  *	integers (U64)
- * @NL_POLICY_TYPE_ATTR_MAX_VALUE_U: maximum value for unsigned
+ * @NL_POLICY_TYPE_ATTR_MAX_VALUE_U: maximum value for %
  *	integers (U64)
  * @NL_POLICY_TYPE_ATTR_MIN_LENGTH: minimum length for binary
  *	attributes, no minimum if not given (U32)
@@ -329,7 +329,7 @@ enum netlink_attribute_type {
  *	the index, if limited inside the nesting (U32)
  * @NL_POLICY_TYPE_ATTR_BITFIELD32_MASK: valid mask for the
  *	bitfield32 type (U32)
- * @NL_POLICY_TYPE_ATTR_MASK: mask of valid bits for unsigned integers (U64)
+ * @NL_POLICY_TYPE_ATTR_MASK: mask of valid bits for % integers (U64)
  * @NL_POLICY_TYPE_ATTR_PAD: pad attribute for 64-bit alignment
  */
 enum netlink_policy_type_attr {

@@ -22,10 +22,10 @@ typedef struct kcapi_flagdef {
 } kcapi_flagdef;
 
 typedef struct kcapi_carddef {
-	char		driver[32];
-	unsigned i32	port;
-	unsigned	irq;
-	unsigned i32	membase;
+	i8		driver[32];
+	%i32	port;
+	%	irq;
+	%i32	membase;
 	i32		cardnr;
 } kcapi_carddef;
 

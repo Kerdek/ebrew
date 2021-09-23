@@ -48,13 +48,13 @@ __BEGIN_DECLS
 
 /* Return information about the filesystem on which FILE resides.  */
 #ifndef __USE_FILE_OFFSET64
-extern i32 statvfs (const char *__restrict __file,
+extern i32 statvfs (const i8 *__restrict __file,
 		    struct statvfs *__restrict __buf)
      __THROW __nonnull ((1, 2));
 #else
 # ifdef __REDIRECT_NTH
 extern i32 __REDIRECT_NTH (statvfs,
-			   (const char *__restrict __file,
+			   (const i8 *__restrict __file,
 			    struct statvfs *__restrict __buf), statvfs64)
      __nonnull ((1, 2));
 # else
@@ -62,7 +62,7 @@ extern i32 __REDIRECT_NTH (statvfs,
 # endif
 #endif
 #ifdef __USE_LARGEFILE64
-extern i32 statvfs64 (const char *__restrict __file,
+extern i32 statvfs64 (const i8 *__restrict __file,
 		      struct statvfs64 *__restrict __buf)
      __THROW __nonnull ((1, 2));
 #endif

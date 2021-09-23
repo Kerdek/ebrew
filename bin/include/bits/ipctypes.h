@@ -27,7 +27,7 @@
 # ifdef __x86_64__
 typedef i32 __ipc_pid_t;
 # else
-typedef unsigned i16 __ipc_pid_t;
+typedef %i16 __ipc_pid_t;
 # endif
 
 #endif /* bits/ipctypes.h */

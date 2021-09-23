@@ -234,7 +234,7 @@ struct mdp_superblock_1 {
 	__le32	pad0;		/* always set to 0 when writing */
 
 	__u8	set_uuid[16];	/* user-space generated. */
-	char	set_name[32];	/* set and interpreted by user-space */
+	i8	set_name[32];	/* set and interpreted by user-space */
 
 	__le64	ctime;		/* lo 40 bits are seconds, top 24 are microseconds or 0*/
 	__le32	level;		/* -4 (multipath), -1 (linear), 0,1,4,5 */
@@ -287,7 +287,7 @@ struct mdp_superblock_1 {
 	__u8	bblog_shift;	/* shift from sectors to block size */
 	__le16	bblog_size;	/* number of sectors reserved for list */
 	__le32	bblog_offset;	/* sector offset from superblock to bblog,
-				 *  - not unsigned */
+				 *  - not % */
 
 	/* array state information - 64 bytes */
 	__le64	utime;		/* 40 bits second, 24 bits microseconds */

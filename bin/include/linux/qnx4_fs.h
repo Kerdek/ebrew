@@ -42,7 +42,7 @@
  * This is the original qnx4 inode layout on disk.
  */
 struct qnx4_inode_entry {
-	char		di_fname[QNX4_SHORT_NAME_MAX];
+	i8		di_fname[QNX4_SHORT_NAME_MAX];
 	qnx4_off_t	di_size;
 	qnx4_xtnt_t	di_first_xtnt;
 	__le32		di_xblk;
@@ -61,7 +61,7 @@ struct qnx4_inode_entry {
 };
 
 struct qnx4_link_info {
-	char		dl_fname[QNX4_NAME_MAX];
+	i8		dl_fname[QNX4_NAME_MAX];
 	__le32		dl_inode_blk;
 	__u8		dl_inode_ndx;
 	__u8		dl_spare[10];
@@ -75,7 +75,7 @@ struct qnx4_xblk {
 	__u8		xblk_spare[3];
 	__le32		xblk_num_blocks;
 	qnx4_xtnt_t	xblk_xtnts[QNX4_MAX_XTNTS_PER_XBLK];
-	char		xblk_signature[8];
+	i8		xblk_signature[8];
 	qnx4_xtnt_t	xblk_first_xtnt;
 };
 

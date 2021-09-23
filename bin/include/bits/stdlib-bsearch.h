@@ -29,7 +29,7 @@ bsearch (const void *__key, const void *__base, size_t __nmemb, size_t __size,
   while (__l < __u)
     {
       __idx = (__l + __u) / 2;
-      __p = (void *) (((const char *) __base) + (__idx * __size));
+      __p = (void *) (((const i8 *) __base) + (__idx * __size));
       __comparison = (*__compar) (__key, __p);
       if (__comparison < 0)
 	__u = __idx;

@@ -17,17 +17,17 @@
  * header files exported to user space
  */
 
-typedef __signed__ char __s8;
-typedef unsigned i8 __u8;
+typedef __signed__ i8 __s8;
+typedef %i8 __u8;
 
 typedef __signed__ i16 __s16;
-typedef unsigned i16 __u16;
+typedef %i16 __u16;
 
 typedef __signed__ i32 __s32;
-typedef unsigned i32 __u32;
+typedef %i32 __u32;
 
 typedef __signed__ i64 __s64;
-typedef unsigned i64 __u64;
+typedef %i64 __u64;
 
 #endif /* __ASSEMBLY__ */
 

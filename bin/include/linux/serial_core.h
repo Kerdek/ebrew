@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
 /*
- *  linux/drivers/char/serial_core.h
+ *  linux/drivers/i8/serial_core.h
  *
  *  Copyright (C) 2000 Deep Blue Solutions Ltd.
  *

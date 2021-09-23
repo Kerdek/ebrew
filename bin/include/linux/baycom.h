@@ -14,8 +14,8 @@
  */
 
 struct baycom_debug_data {
-	unsigned i64 debug1;
-	unsigned i64 debug2;
+	%i64 debug1;
+	%i64 debug2;
 	i64 debug3;
 };
 

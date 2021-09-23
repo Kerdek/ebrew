@@ -8,7 +8,7 @@
 
 struct sockaddr_un {
 	__kernel_sa_family_t sun_family; /* AF_UNIX */
-	char sun_path[UNIX_PATH_MAX];	/* pathname */
+	i8 sun_path[UNIX_PATH_MAX];	/* pathname */
 };
 
 #define SIOCUNIXFILE (SIOCPROTOPRIVATE + 0) /* open a socket file with O_PATH */

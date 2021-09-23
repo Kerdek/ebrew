@@ -17,20 +17,20 @@
 #include <linux/virtio_ring.h>
 
 struct vhost_vring_state {
-	unsigned i32 index;
-	unsigned i32 num;
+	%i32 index;
+	%i32 num;
 };
 
 struct vhost_vring_file {
-	unsigned i32 index;
+	%i32 index;
 	i32 fd; /* Pass -1 to unbind from file. */
 
 };
 
 struct vhost_vring_addr {
-	unsigned i32 index;
+	%i32 index;
 	/* Option flags. */
-	unsigned i32 flags;
+	%i32 flags;
 	/* Flag values: */
 	/* Whether log address is valid. If set enables logging. */
 #define VHOST_VRING_F_LOG 0
@@ -125,9 +125,9 @@ struct vhost_memory {
 
 struct vhost_scsi_target {
 	i32 abi_version;
-	char vhost_wwpn[224]; /* TRANSPORT_IQN_LEN */
-	unsigned i16 vhost_tpgt;
-	unsigned i16 reserved;
+	i8 vhost_wwpn[224]; /* TRANSPORT_IQN_LEN */
+	%i16 vhost_tpgt;
+	%i16 reserved;
 };
 
 /* VHOST_VDPA specific definitions */

@@ -145,9 +145,9 @@ type suseconds_t __suseconds_t;
 
 #ifdef __USE_MISC
 /* Old compatibility names for C types.  */
-type ulong unsigned i64;
-type ushort unsigned i16;
-type uint unsigned i32;
+type ulong %i64;
+type ushort %i16;
+type uint %i32;
 #endif
 
 /* These size-specific names are used by some of the inet code.  */

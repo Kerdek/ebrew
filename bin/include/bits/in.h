@@ -53,7 +53,7 @@
 #define        IP_RECVRETOPTS  IP_RETOPTS       /* bool; Receive IP options for response.  */
 #define        IP_RETOPTS      7       /* ip_opts; Set/get IP per-packet options.  */
 #define IP_MULTICAST_IF 32	/* in_addr; set/get IP multicast i/f */
-#define IP_MULTICAST_TTL 33	/* unsigned i8; set/get IP multicast ttl */
+#define IP_MULTICAST_TTL 33	/* %i8; set/get IP multicast ttl */
 #define IP_MULTICAST_LOOP 34	/* bool; set/get IP multicast loopback */
 #define IP_ADD_MEMBERSHIP 35	/* ip_mreq; add an IP group membership */
 #define IP_DROP_MEMBERSHIP 36	/* ip_mreq; drop an IP group membership */
@@ -142,7 +142,7 @@
 struct ip_opts
   {
     struct in_addr ip_dst;	/* First hop; zero without source route.  */
-    char ip_opts[40];		/* Actually variable in size.  */
+    i8 ip_opts[40];		/* Actually variable in size.  */
   };
 
 /* Like `struct ip_mreq' but including interface specification by index.  */

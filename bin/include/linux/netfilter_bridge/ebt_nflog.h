@@ -18,7 +18,7 @@ struct ebt_nflog_info {
 	__u16 threshold;
 	__u16 flags;
 	__u16 pad;
-	char prefix[EBT_NFLOG_PREFIX_SIZE];
+	i8 prefix[EBT_NFLOG_PREFIX_SIZE];
 };
 
 #endif				/* __LINUX_BRIDGE_EBT_NFLOG_H */

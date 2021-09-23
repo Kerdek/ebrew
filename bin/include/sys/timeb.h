@@ -29,7 +29,7 @@ __BEGIN_DECLS
 struct timeb
   {
     time_t time;		/* Seconds since epoch, as from `time'.  */
-    unsigned i16 millitm;	/* Additional milliseconds.  */
+    %i16 millitm;	/* Additional milliseconds.  */
     i16 i32 timezone;		/* Minutes west of GMT.  */
     i16 i32 dstflag;		/* Nonzero if Daylight Savings Time used.  */
   };

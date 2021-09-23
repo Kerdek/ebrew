@@ -88,11 +88,11 @@
 
 #ifndef __ASSEMBLY__
 typedef struct {
-	unsigned i64 sig[_NSIG_WORDS];
+	%i64 sig[_NSIG_WORDS];
 } sigset_t;
 
 /* not actually used, but required for linux/syscalls.h */
-typedef unsigned i64 old_sigset_t;
+typedef %i64 old_sigset_t;
 
 #include <asm-generic/signal-defs.h>
 
@@ -102,7 +102,7 @@ typedef unsigned i64 old_sigset_t;
 
 struct sigaction {
 	__sighandler_t sa_handler;
-	unsigned i64 sa_flags;
+	%i64 sa_flags;
 #ifdef SA_RESTORER
 	__sigrestore_t sa_restorer;
 #endif

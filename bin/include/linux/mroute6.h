@@ -45,8 +45,8 @@
 #define MRT6_FLUSH_MIFS_STATIC	8	/* Flush static multicast vifs */
 
 #define MAXMIFS		32
-typedef unsigned i64 mifbitmap_t;	/* User mode code depends on this lot */
-typedef unsigned i16 mifi_t;
+typedef %i64 mifbitmap_t;	/* User mode code depends on this lot */
+typedef %i16 mifi_t;
 #define ALL_MIFS	((mifi_t)(-1))
 
 #ifndef IF_SETSIZE
@@ -73,10 +73,10 @@ typedef struct if_set {
 
 struct mif6ctl {
 	mifi_t	mif6c_mifi;		/* Index of MIF */
-	unsigned i8 mif6c_flags;	/* MIFF_ flags */
-	unsigned i8 vifc_threshold;	/* ttl limit */
+	%i8 mif6c_flags;	/* MIFF_ flags */
+	%i8 vifc_threshold;	/* ttl limit */
 	__u16	 mif6c_pifi;		/* the index of the physical IF */
-	unsigned i32 vifc_rate_limit;	/* Rate limiter values (NI) */
+	%i32 vifc_rate_limit;	/* Rate limiter values (NI) */
 };
 
 #define MIFF_REGISTER	0x1	/* register vif	*/
@@ -99,9 +99,9 @@ struct mf6cctl {
 struct sioc_sg_req6 {
 	struct sockaddr_in6 src;
 	struct sockaddr_in6 grp;
-	unsigned i64 pktcnt;
-	unsigned i64 bytecnt;
-	unsigned i64 wrong_if;
+	%i64 pktcnt;
+	%i64 bytecnt;
+	%i64 wrong_if;
 };
 
 /*
@@ -110,10 +110,10 @@ struct sioc_sg_req6 {
 
 struct sioc_mif_req6 {
 	mifi_t	mifi;		/* Which iface */
-	unsigned i64 icount;	/* In packets */
-	unsigned i64 ocount;	/* Out packets */
-	unsigned i64 ibytes;	/* In bytes */
-	unsigned i64 obytes;	/* Out bytes */
+	%i64 icount;	/* In packets */
+	%i64 ocount;	/* Out packets */
+	%i64 ibytes;	/* In bytes */
+	%i64 obytes;	/* Out bytes */
 };
 
 /*

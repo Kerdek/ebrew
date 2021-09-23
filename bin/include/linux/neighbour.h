@@ -160,7 +160,7 @@ struct ndt_config {
 
 enum {
 	NDTA_UNSPEC,
-	NDTA_NAME,			/* char *, unchangeable */
+	NDTA_NAME,			/* i8 *, unchangeable */
 	NDTA_THRESH1,			/* u32 */
 	NDTA_THRESH2,			/* u32 */
 	NDTA_THRESH3,			/* u32 */

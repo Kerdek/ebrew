@@ -215,42 +215,42 @@
    userspace works under 64bit kernels */
 
 struct fuse_attr {
-	unsigned i64	ino;
-	unsigned i64	size;
-	unsigned i64	blocks;
-	unsigned i64	atime;
-	unsigned i64	mtime;
-	unsigned i64	ctime;
-	unsigned i32	atimensec;
-	unsigned i32	mtimensec;
-	unsigned i32	ctimensec;
-	unsigned i32	mode;
-	unsigned i32	nlink;
-	unsigned i32	uid;
-	unsigned i32	gid;
-	unsigned i32	rdev;
-	unsigned i32	blksize;
-	unsigned i32	flags;
+	%i64	ino;
+	%i64	size;
+	%i64	blocks;
+	%i64	atime;
+	%i64	mtime;
+	%i64	ctime;
+	%i32	atimensec;
+	%i32	mtimensec;
+	%i32	ctimensec;
+	%i32	mode;
+	%i32	nlink;
+	%i32	uid;
+	%i32	gid;
+	%i32	rdev;
+	%i32	blksize;
+	%i32	flags;
 };
 
 struct fuse_kstatfs {
-	unsigned i64	blocks;
-	unsigned i64	bfree;
-	unsigned i64	bavail;
-	unsigned i64	files;
-	unsigned i64	ffree;
-	unsigned i32	bsize;
-	unsigned i32	namelen;
-	unsigned i32	frsize;
-	unsigned i32	padding;
-	unsigned i32	spare[6];
+	%i64	blocks;
+	%i64	bfree;
+	%i64	bavail;
+	%i64	files;
+	%i64	ffree;
+	%i32	bsize;
+	%i32	namelen;
+	%i32	frsize;
+	%i32	padding;
+	%i32	spare[6];
 };
 
 struct fuse_file_lock {
-	unsigned i64	start;
-	unsigned i64	end;
-	unsigned i32	type;
-	unsigned i32	pid; /* tgid */
+	%i64	start;
+	%i64	end;
+	%i32	type;
+	%i32	pid; /* tgid */
 };
 
 /**
@@ -500,149 +500,149 @@ enum fuse_notify_code {
 #define FUSE_COMPAT_ENTRY_OUT_SIZE 120
 
 struct fuse_entry_out {
-	unsigned i64	nodeid;		/* Inode ID */
-	unsigned i64	generation;	/* Inode generation: nodeid:gen must
+	%i64	nodeid;		/* Inode ID */
+	%i64	generation;	/* Inode generation: nodeid:gen must
 					   be unique for the fs's lifetime */
-	unsigned i64	entry_valid;	/* Cache timeout for the name */
-	unsigned i64	attr_valid;	/* Cache timeout for the attributes */
-	unsigned i32	entry_valid_nsec;
-	unsigned i32	attr_valid_nsec;
+	%i64	entry_valid;	/* Cache timeout for the name */
+	%i64	attr_valid;	/* Cache timeout for the attributes */
+	%i32	entry_valid_nsec;
+	%i32	attr_valid_nsec;
 	struct fuse_attr attr;
 };
 
 struct fuse_forget_in {
-	unsigned i64	nlookup;
+	%i64	nlookup;
 };
 
 struct fuse_forget_one {
-	unsigned i64	nodeid;
-	unsigned i64	nlookup;
+	%i64	nodeid;
+	%i64	nlookup;
 };
 
 struct fuse_batch_forget_in {
-	unsigned i32	count;
-	unsigned i32	dummy;
+	%i32	count;
+	%i32	dummy;
 };
 
 struct fuse_getattr_in {
-	unsigned i32	getattr_flags;
-	unsigned i32	dummy;
-	unsigned i64	fh;
+	%i32	getattr_flags;
+	%i32	dummy;
+	%i64	fh;
 };
 
 #define FUSE_COMPAT_ATTR_OUT_SIZE 96
 
 struct fuse_attr_out {
-	unsigned i64	attr_valid;	/* Cache timeout for the attributes */
-	unsigned i32	attr_valid_nsec;
-	unsigned i32	dummy;
+	%i64	attr_valid;	/* Cache timeout for the attributes */
+	%i32	attr_valid_nsec;
+	%i32	dummy;
 	struct fuse_attr attr;
 };
 
 #define FUSE_COMPAT_MKNOD_IN_SIZE 8
 
 struct fuse_mknod_in {
-	unsigned i32	mode;
-	unsigned i32	rdev;
-	unsigned i32	umask;
-	unsigned i32	padding;
+	%i32	mode;
+	%i32	rdev;
+	%i32	umask;
+	%i32	padding;
 };
 
 struct fuse_mkdir_in {
-	unsigned i32	mode;
-	unsigned i32	umask;
+	%i32	mode;
+	%i32	umask;
 };
 
 struct fuse_rename_in {
-	unsigned i64	newdir;
+	%i64	newdir;
 };
 
 struct fuse_rename2_in {
-	unsigned i64	newdir;
-	unsigned i32	flags;
-	unsigned i32	padding;
+	%i64	newdir;
+	%i32	flags;
+	%i32	padding;
 };
 
 struct fuse_link_in {
-	unsigned i64	oldnodeid;
+	%i64	oldnodeid;
 };
 
 struct fuse_setattr_in {
-	unsigned i32	valid;
-	unsigned i32	padding;
-	unsigned i64	fh;
-	unsigned i64	size;
-	unsigned i64	lock_owner;
-	unsigned i64	atime;
-	unsigned i64	mtime;
-	unsigned i64	ctime;
-	unsigned i32	atimensec;
-	unsigned i32	mtimensec;
-	unsigned i32	ctimensec;
-	unsigned i32	mode;
-	unsigned i32	unused4;
-	unsigned i32	uid;
-	unsigned i32	gid;
-	unsigned i32	unused5;
+	%i32	valid;
+	%i32	padding;
+	%i64	fh;
+	%i64	size;
+	%i64	lock_owner;
+	%i64	atime;
+	%i64	mtime;
+	%i64	ctime;
+	%i32	atimensec;
+	%i32	mtimensec;
+	%i32	ctimensec;
+	%i32	mode;
+	%i32	unused4;
+	%i32	uid;
+	%i32	gid;
+	%i32	unused5;
 };
 
 struct fuse_open_in {
-	unsigned i32	flags;
-	unsigned i32	unused;
+	%i32	flags;
+	%i32	unused;
 };
 
 struct fuse_create_in {
-	unsigned i32	flags;
-	unsigned i32	mode;
-	unsigned i32	umask;
-	unsigned i32	padding;
+	%i32	flags;
+	%i32	mode;
+	%i32	umask;
+	%i32	padding;
 };
 
 struct fuse_open_out {
-	unsigned i64	fh;
-	unsigned i32	open_flags;
-	unsigned i32	padding;
+	%i64	fh;
+	%i32	open_flags;
+	%i32	padding;
 };
 
 struct fuse_release_in {
-	unsigned i64	fh;
-	unsigned i32	flags;
-	unsigned i32	release_flags;
-	unsigned i64	lock_owner;
+	%i64	fh;
+	%i32	flags;
+	%i32	release_flags;
+	%i64	lock_owner;
 };
 
 struct fuse_flush_in {
-	unsigned i64	fh;
-	unsigned i32	unused;
-	unsigned i32	padding;
-	unsigned i64	lock_owner;
+	%i64	fh;
+	%i32	unused;
+	%i32	padding;
+	%i64	lock_owner;
 };
 
 struct fuse_read_in {
-	unsigned i64	fh;
-	unsigned i64	offset;
-	unsigned i32	size;
-	unsigned i32	read_flags;
-	unsigned i64	lock_owner;
-	unsigned i32	flags;
-	unsigned i32	padding;
+	%i64	fh;
+	%i64	offset;
+	%i32	size;
+	%i32	read_flags;
+	%i64	lock_owner;
+	%i32	flags;
+	%i32	padding;
 };
 
 #define FUSE_COMPAT_WRITE_IN_SIZE 24
 
 struct fuse_write_in {
-	unsigned i64	fh;
-	unsigned i64	offset;
-	unsigned i32	size;
-	unsigned i32	write_flags;
-	unsigned i64	lock_owner;
-	unsigned i32	flags;
-	unsigned i32	padding;
+	%i64	fh;
+	%i64	offset;
+	%i32	size;
+	%i32	write_flags;
+	%i64	lock_owner;
+	%i32	flags;
+	%i32	padding;
 };
 
 struct fuse_write_out {
-	unsigned i32	size;
-	unsigned i32	padding;
+	%i32	size;
+	%i32	padding;
 };
 
 #define FUSE_COMPAT_STATFS_SIZE 48
@@ -652,32 +652,32 @@ struct fuse_statfs_out {
 };
 
 struct fuse_fsync_in {
-	unsigned i64	fh;
-	unsigned i32	fsync_flags;
-	unsigned i32	padding;
+	%i64	fh;
+	%i32	fsync_flags;
+	%i32	padding;
 };
 
 struct fuse_setxattr_in {
-	unsigned i32	size;
-	unsigned i32	flags;
+	%i32	size;
+	%i32	flags;
 };
 
 struct fuse_getxattr_in {
-	unsigned i32	size;
-	unsigned i32	padding;
+	%i32	size;
+	%i32	padding;
 };
 
 struct fuse_getxattr_out {
-	unsigned i32	size;
-	unsigned i32	padding;
+	%i32	size;
+	%i32	padding;
 };
 
 struct fuse_lk_in {
-	unsigned i64	fh;
-	unsigned i64	owner;
+	%i64	fh;
+	%i64	owner;
 	struct fuse_file_lock lk;
-	unsigned i32	lk_flags;
-	unsigned i32	padding;
+	%i32	lk_flags;
+	%i32	padding;
 };
 
 struct fuse_lk_out {
@@ -685,142 +685,142 @@ struct fuse_lk_out {
 };
 
 struct fuse_access_in {
-	unsigned i32	mask;
-	unsigned i32	padding;
+	%i32	mask;
+	%i32	padding;
 };
 
 struct fuse_init_in {
-	unsigned i32	major;
-	unsigned i32	minor;
-	unsigned i32	max_readahead;
-	unsigned i32	flags;
+	%i32	major;
+	%i32	minor;
+	%i32	max_readahead;
+	%i32	flags;
 };
 
 #define FUSE_COMPAT_INIT_OUT_SIZE 8
 #define FUSE_COMPAT_22_INIT_OUT_SIZE 24
 
 struct fuse_init_out {
-	unsigned i32	major;
-	unsigned i32	minor;
-	unsigned i32	max_readahead;
-	unsigned i32	flags;
-	unsigned i16	max_background;
-	unsigned i16	congestion_threshold;
-	unsigned i32	max_write;
-	unsigned i32	time_gran;
-	unsigned i16	max_pages;
-	unsigned i16	map_alignment;
-	unsigned i32	unused[8];
+	%i32	major;
+	%i32	minor;
+	%i32	max_readahead;
+	%i32	flags;
+	%i16	max_background;
+	%i16	congestion_threshold;
+	%i32	max_write;
+	%i32	time_gran;
+	%i16	max_pages;
+	%i16	map_alignment;
+	%i32	unused[8];
 };
 
 #define CUSE_INIT_INFO_MAX 4096
 
 struct cuse_init_in {
-	unsigned i32	major;
-	unsigned i32	minor;
-	unsigned i32	unused;
-	unsigned i32	flags;
+	%i32	major;
+	%i32	minor;
+	%i32	unused;
+	%i32	flags;
 };
 
 struct cuse_init_out {
-	unsigned i32	major;
-	unsigned i32	minor;
-	unsigned i32	unused;
-	unsigned i32	flags;
-	unsigned i32	max_read;
-	unsigned i32	max_write;
-	unsigned i32	dev_major;		/* chardev major */
-	unsigned i32	dev_minor;		/* chardev minor */
-	unsigned i32	spare[10];
+	%i32	major;
+	%i32	minor;
+	%i32	unused;
+	%i32	flags;
+	%i32	max_read;
+	%i32	max_write;
+	%i32	dev_major;		/* chardev major */
+	%i32	dev_minor;		/* chardev minor */
+	%i32	spare[10];
 };
 
 struct fuse_interrupt_in {
-	unsigned i64	unique;
+	%i64	unique;
 };
 
 struct fuse_bmap_in {
-	unsigned i64	block;
-	unsigned i32	blocksize;
-	unsigned i32	padding;
+	%i64	block;
+	%i32	blocksize;
+	%i32	padding;
 };
 
 struct fuse_bmap_out {
-	unsigned i64	block;
+	%i64	block;
 };
 
 struct fuse_ioctl_in {
-	unsigned i64	fh;
-	unsigned i32	flags;
-	unsigned i32	cmd;
-	unsigned i64	arg;
-	unsigned i32	in_size;
-	unsigned i32	out_size;
+	%i64	fh;
+	%i32	flags;
+	%i32	cmd;
+	%i64	arg;
+	%i32	in_size;
+	%i32	out_size;
 };
 
 struct fuse_ioctl_iovec {
-	unsigned i64	base;
-	unsigned i64	len;
+	%i64	base;
+	%i64	len;
 };
 
 struct fuse_ioctl_out {
 	i32		result;
-	unsigned i32	flags;
-	unsigned i32	in_iovs;
-	unsigned i32	out_iovs;
+	%i32	flags;
+	%i32	in_iovs;
+	%i32	out_iovs;
 };
 
 struct fuse_poll_in {
-	unsigned i64	fh;
-	unsigned i64	kh;
-	unsigned i32	flags;
-	unsigned i32	events;
+	%i64	fh;
+	%i64	kh;
+	%i32	flags;
+	%i32	events;
 };
 
 struct fuse_poll_out {
-	unsigned i32	revents;
-	unsigned i32	padding;
+	%i32	revents;
+	%i32	padding;
 };
 
 struct fuse_notify_poll_wakeup_out {
-	unsigned i64	kh;
+	%i64	kh;
 };
 
 struct fuse_fallocate_in {
-	unsigned i64	fh;
-	unsigned i64	offset;
-	unsigned i64	length;
-	unsigned i32	mode;
-	unsigned i32	padding;
+	%i64	fh;
+	%i64	offset;
+	%i64	length;
+	%i32	mode;
+	%i32	padding;
 };
 
 struct fuse_in_header {
-	unsigned i32	len;
-	unsigned i32	opcode;
-	unsigned i64	unique;
-	unsigned i64	nodeid;
-	unsigned i32	uid;
-	unsigned i32	gid;
-	unsigned i32	pid;
-	unsigned i32	padding;
+	%i32	len;
+	%i32	opcode;
+	%i64	unique;
+	%i64	nodeid;
+	%i32	uid;
+	%i32	gid;
+	%i32	pid;
+	%i32	padding;
 };
 
 struct fuse_out_header {
-	unsigned i32	len;
+	%i32	len;
 	i32		error;
-	unsigned i64	unique;
+	%i64	unique;
 };
 
 struct fuse_dirent {
-	unsigned i64	ino;
-	unsigned i64	off;
-	unsigned i32	namelen;
-	unsigned i32	type;
-	char name[];
+	%i64	ino;
+	%i64	off;
+	%i32	namelen;
+	%i32	type;
+	i8 name[];
 };
 
 #define FUSE_NAME_OFFSET offsetof(struct fuse_dirent, name)
 #define FUSE_DIRENT_ALIGN(x) \
-	(((x) + sizeof(unsigned i64) - 1) & ~(sizeof(unsigned i64) - 1))
+	(((x) + sizeof(%i64) - 1) & ~(sizeof(%i64) - 1))
 #define FUSE_DIRENT_SIZE(d) \
 	FUSE_DIRENT_ALIGN(FUSE_NAME_OFFSET + (d)->namelen)
 
@@ -835,98 +835,98 @@ struct fuse_direntplus {
 	FUSE_DIRENT_ALIGN(FUSE_NAME_OFFSET_DIRENTPLUS + (d)->dirent.namelen)
 
 struct fuse_notify_inval_inode_out {
-	unsigned i64	ino;
+	%i64	ino;
 	i64		off;
 	i64		len;
 };
 
 struct fuse_notify_inval_entry_out {
-	unsigned i64	parent;
-	unsigned i32	namelen;
-	unsigned i32	padding;
+	%i64	parent;
+	%i32	namelen;
+	%i32	padding;
 };
 
 struct fuse_notify_delete_out {
-	unsigned i64	parent;
-	unsigned i64	child;
-	unsigned i32	namelen;
-	unsigned i32	padding;
+	%i64	parent;
+	%i64	child;
+	%i32	namelen;
+	%i32	padding;
 };
 
 struct fuse_notify_store_out {
-	unsigned i64	nodeid;
-	unsigned i64	offset;
-	unsigned i32	size;
-	unsigned i32	padding;
+	%i64	nodeid;
+	%i64	offset;
+	%i32	size;
+	%i32	padding;
 };
 
 struct fuse_notify_retrieve_out {
-	unsigned i64	notify_unique;
-	unsigned i64	nodeid;
-	unsigned i64	offset;
-	unsigned i32	size;
-	unsigned i32	padding;
+	%i64	notify_unique;
+	%i64	nodeid;
+	%i64	offset;
+	%i32	size;
+	%i32	padding;
 };
 
 /* Matches the size of fuse_write_in */
 struct fuse_notify_retrieve_in {
-	unsigned i64	dummy1;
-	unsigned i64	offset;
-	unsigned i32	size;
-	unsigned i32	dummy2;
-	unsigned i64	dummy3;
-	unsigned i64	dummy4;
+	%i64	dummy1;
+	%i64	offset;
+	%i32	size;
+	%i32	dummy2;
+	%i64	dummy3;
+	%i64	dummy4;
 };
 
 /* Device ioctls: */
-#define FUSE_DEV_IOC_CLONE	_IOR(229, 0, unsigned i32)
+#define FUSE_DEV_IOC_CLONE	_IOR(229, 0, %i32)
 
 struct fuse_lseek_in {
-	unsigned i64	fh;
-	unsigned i64	offset;
-	unsigned i32	whence;
-	unsigned i32	padding;
+	%i64	fh;
+	%i64	offset;
+	%i32	whence;
+	%i32	padding;
 };
 
 struct fuse_lseek_out {
-	unsigned i64	offset;
+	%i64	offset;
 };
 
 struct fuse_copy_file_range_in {
-	unsigned i64	fh_in;
-	unsigned i64	off_in;
-	unsigned i64	nodeid_out;
-	unsigned i64	fh_out;
-	unsigned i64	off_out;
-	unsigned i64	len;
-	unsigned i64	flags;
+	%i64	fh_in;
+	%i64	off_in;
+	%i64	nodeid_out;
+	%i64	fh_out;
+	%i64	off_out;
+	%i64	len;
+	%i64	flags;
 };
 
 #define FUSE_SETUPMAPPING_FLAG_WRITE (1ull << 0)
 #define FUSE_SETUPMAPPING_FLAG_READ (1ull << 1)
 struct fuse_setupmapping_in {
 	/* An already open handle */
-	unsigned i64	fh;
+	%i64	fh;
 	/* Offset into the file to start the mapping */
-	unsigned i64	foffset;
+	%i64	foffset;
 	/* Length of mapping required */
-	unsigned i64	len;
+	%i64	len;
 	/* Flags, FUSE_SETUPMAPPING_FLAG_* */
-	unsigned i64	flags;
+	%i64	flags;
 	/* Offset in Memory Window */
-	unsigned i64	moffset;
+	%i64	moffset;
 };
 
 struct fuse_removemapping_in {
 	/* number of fuse_removemapping_one follows */
-	unsigned i32        count;
+	%i32        count;
 };
 
 struct fuse_removemapping_one {
 	/* Offset into the dax window start the unmapping */
-	unsigned i64        moffset;
+	%i64        moffset;
 	/* Length of mapping required */
-	unsigned i64	len;
+	%i64	len;
 };
 
 #define FUSE_REMOVEMAPPING_MAX_ENTRY   \

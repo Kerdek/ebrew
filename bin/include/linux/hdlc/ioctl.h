@@ -38,54 +38,54 @@
 #ifndef __ASSEMBLY__
 
 typedef struct {
-	unsigned i32 clock_rate; /* bits per second */
-	unsigned i32 clock_type; /* internal, external, TX-internal etc. */
-	unsigned i16 loopback;
+	%i32 clock_rate; /* bits per second */
+	%i32 clock_type; /* internal, external, TX-internal etc. */
+	%i16 loopback;
 } sync_serial_settings;          /* V.35, V.24, X.21 */
 
 typedef struct {
-	unsigned i32 clock_rate; /* bits per second */
-	unsigned i32 clock_type; /* internal, external, TX-internal etc. */
-	unsigned i16 loopback;
-	unsigned i32 slot_map;
+	%i32 clock_rate; /* bits per second */
+	%i32 clock_type; /* internal, external, TX-internal etc. */
+	%i16 loopback;
+	%i32 slot_map;
 } te1_settings;                  /* T1, E1 */
 
 typedef struct {
-	unsigned i16 encoding;
-	unsigned i16 parity;
+	%i16 encoding;
+	%i16 parity;
 } raw_hdlc_proto;
 
 typedef struct {
-	unsigned i32 t391;
-	unsigned i32 t392;
-	unsigned i32 n391;
-	unsigned i32 n392;
-	unsigned i32 n393;
-	unsigned i16 lmi;
-	unsigned i16 dce; /* 1 for DCE (network side) operation */
+	%i32 t391;
+	%i32 t392;
+	%i32 n391;
+	%i32 n392;
+	%i32 n393;
+	%i16 lmi;
+	%i16 dce; /* 1 for DCE (network side) operation */
 } fr_proto;
 
 typedef struct {
-	unsigned i32 dlci;
+	%i32 dlci;
 } fr_proto_pvc;          /* for creating/deleting FR PVCs */
 
 typedef struct {
-	unsigned i32 dlci;
-	char master[IFNAMSIZ];	/* Name of master FRAD device */
+	%i32 dlci;
+	i8 master[IFNAMSIZ];	/* Name of master FRAD device */
 }fr_proto_pvc_info;		/* for returning PVC information only */
 
 typedef struct {
-    unsigned i32 interval;
-    unsigned i32 timeout;
+    %i32 interval;
+    %i32 timeout;
 } cisco_proto;
 
 typedef struct {
-	unsigned i16 dce; /* 1 for DCE (network side) operation */
-	unsigned i32 modulo; /* modulo (8 = basic / 128 = extended) */
-	unsigned i32 window; /* frame window size */
-	unsigned i32 t1; /* timeout t1 */
-	unsigned i32 t2; /* timeout t2 */
-	unsigned i32 n2; /* frame retry counter */
+	%i16 dce; /* 1 for DCE (network side) operation */
+	%i32 modulo; /* modulo (8 = basic / 128 = extended) */
+	%i32 window; /* frame window size */
+	%i32 t1; /* timeout t1 */
+	%i32 t2; /* timeout t2 */
+	%i32 n2; /* frame retry counter */
 } x25_hdlc_proto;
 
 /* PPP doesn't need any info now - supply length = 0 to ioctl */

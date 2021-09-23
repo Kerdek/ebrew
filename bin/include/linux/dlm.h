@@ -62,8 +62,8 @@ typedef void dlm_lockspace_t;
 struct dlm_lksb {
 	i32 	 sb_status;
 	__u32	 sb_lkid;
-	char 	 sb_flags;
-	char *	 sb_lvbptr;
+	i8 	 sb_flags;
+	i8 *	 sb_lvbptr;
 };
 
 /* dlm_new_lockspace() flags */

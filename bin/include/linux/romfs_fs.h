@@ -27,7 +27,7 @@ struct romfs_super_block {
 	__be32 word1;
 	__be32 size;
 	__be32 checksum;
-	char name[0];		/* volume name */
+	i8 name[0];		/* volume name */
 };
 
 /* On disk inode */
@@ -37,7 +37,7 @@ struct romfs_inode {
 	__be32 spec;
 	__be32 size;
 	__be32 checksum;
-	char name[0];
+	i8 name[0];
 };
 
 #define ROMFH_TYPE 7

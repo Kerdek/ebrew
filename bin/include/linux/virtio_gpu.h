@@ -254,7 +254,7 @@ struct virtio_gpu_ctx_create {
 	struct virtio_gpu_ctrl_hdr hdr;
 	__le32 nlen;
 	__le32 padding;
-	char debug_name[64];
+	i8 debug_name[64];
 };
 
 /* VIRTIO_GPU_CMD_CTX_DESTROY */

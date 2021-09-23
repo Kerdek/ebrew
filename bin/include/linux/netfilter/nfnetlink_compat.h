@@ -38,24 +38,24 @@ struct nfattr {
 #define NFA_OK(nfa,len)	((len) > 0 && (nfa)->nfa_len >= sizeof(struct nfattr) \
 	&& (nfa)->nfa_len <= (len))
 #define NFA_NEXT(nfa,attrlen)	((attrlen) -= NFA_ALIGN((nfa)->nfa_len), \
-	(struct nfattr *)(((char *)(nfa)) + NFA_ALIGN((nfa)->nfa_len)))
+	(struct nfattr *)(((i8 *)(nfa)) + NFA_ALIGN((nfa)->nfa_len)))
 #define NFA_LENGTH(len)	(NFA_ALIGN(sizeof(struct nfattr)) + (len))
 #define NFA_SPACE(len)	NFA_ALIGN(NFA_LENGTH(len))
-#define NFA_DATA(nfa)   ((void *)(((char *)(nfa)) + NFA_LENGTH(0)))
+#define NFA_DATA(nfa)   ((void *)(((i8 *)(nfa)) + NFA_LENGTH(0)))
 #define NFA_PAYLOAD(nfa) ((i32)((nfa)->nfa_len) - NFA_LENGTH(0))
 #define NFA_NEST(skb, type) \
 ({	struct nfattr *__start = (struct nfattr *)skb_tail_pointer(skb); \
 	NFA_PUT(skb, (NFNL_NFA_NEST | type), 0, NULL); \
 	__start;  })
 #define NFA_NEST_END(skb, start) \
-({      (start)->nfa_len = skb_tail_pointer(skb) - (unsigned i8 *)(start); \
+({      (start)->nfa_len = skb_tail_pointer(skb) - (%i8 *)(start); \
         (skb)->len; })
 #define NFA_NEST_CANCEL(skb, start) \
 ({      if (start) \
-                skb_trim(skb, (unsigned i8 *) (start) - (skb)->data); \
+                skb_trim(skb, (%i8 *) (start) - (skb)->data); \
         -1; })
 
-#define NFM_NFA(n)      ((struct nfattr *)(((char *)(n)) \
+#define NFM_NFA(n)      ((struct nfattr *)(((i8 *)(n)) \
         + NLMSG_ALIGN(sizeof(struct nfgenmsg))))
 #define NFM_PAYLOAD(n)  NLMSG_PAYLOAD(n, sizeof(struct nfgenmsg))
 

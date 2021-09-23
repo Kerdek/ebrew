@@ -18,7 +18,7 @@
 #define LED_MAX_NAME_SIZE	64
 
 struct uleds_user_dev {
-	char name[LED_MAX_NAME_SIZE];
+	i8 name[LED_MAX_NAME_SIZE];
 	i32 max_brightness;
 };
 

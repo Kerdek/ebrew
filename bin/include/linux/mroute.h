@@ -42,8 +42,8 @@
 #define MRT_FLUSH_VIFS_STATIC	8	/* Flush static multicast vifs */
 
 #define MAXVIFS		32
-typedef unsigned i64 vifbitmap_t;	/* User mode code depends on this lot */
-typedef unsigned i16 vifi_t;
+typedef %i64 vifbitmap_t;	/* User mode code depends on this lot */
+typedef %i16 vifi_t;
 #define ALL_VIFS	((vifi_t)(-1))
 
 /* Same idea as select */
@@ -60,9 +60,9 @@ typedef unsigned i16 vifi_t;
  */
 struct vifctl {
 	vifi_t	vifc_vifi;		/* Index of VIF */
-	unsigned i8 vifc_flags;	/* VIFF_ flags */
-	unsigned i8 vifc_threshold;	/* ttl limit */
-	unsigned i32 vifc_rate_limit;	/* Rate limiter values (NI) */
+	%i8 vifc_flags;	/* VIFF_ flags */
+	%i8 vifc_threshold;	/* ttl limit */
+	%i32 vifc_rate_limit;	/* Rate limiter values (NI) */
 	union {
 		struct in_addr vifc_lcl_addr;     /* Local interface address */
 		i32            vifc_lcl_ifindex;  /* Local interface index   */
@@ -81,10 +81,10 @@ struct mfcctl {
 	struct in_addr mfcc_origin;		/* Origin of mcast	*/
 	struct in_addr mfcc_mcastgrp;		/* Group in question	*/
 	vifi_t	mfcc_parent;			/* Where it arrived	*/
-	unsigned i8 mfcc_ttls[MAXVIFS];	/* Where it is going	*/
-	unsigned i32 mfcc_pkt_cnt;		/* pkt count for src-grp */
-	unsigned i32 mfcc_byte_cnt;
-	unsigned i32 mfcc_wrong_if;
+	%i8 mfcc_ttls[MAXVIFS];	/* Where it is going	*/
+	%i32 mfcc_pkt_cnt;		/* pkt count for src-grp */
+	%i32 mfcc_byte_cnt;
+	%i32 mfcc_wrong_if;
 	i32	     mfcc_expire;
 };
 
@@ -92,18 +92,18 @@ struct mfcctl {
 struct sioc_sg_req {
 	struct in_addr src;
 	struct in_addr grp;
-	unsigned i64 pktcnt;
-	unsigned i64 bytecnt;
-	unsigned i64 wrong_if;
+	%i64 pktcnt;
+	%i64 bytecnt;
+	%i64 wrong_if;
 };
 
 /* To get vif packet counts */
 struct sioc_vif_req {
 	vifi_t	vifi;		/* Which iface */
-	unsigned i64 icount;	/* In packets */
-	unsigned i64 ocount;	/* Out packets */
-	unsigned i64 ibytes;	/* In bytes */
-	unsigned i64 obytes;	/* Out bytes */
+	%i64 icount;	/* In packets */
+	%i64 ocount;	/* Out packets */
+	%i64 ibytes;	/* In bytes */
+	%i64 obytes;	/* Out bytes */
 };
 
 /* This is the format the mroute daemon expects to see IGMP control
@@ -111,10 +111,10 @@ struct sioc_vif_req {
  */
 struct igmpmsg {
 	__u32 unused1,unused2;
-	unsigned i8 im_msgtype;		/* What is this */
-	unsigned i8 im_mbz;			/* Must be zero */
-	unsigned i8 im_vif;			/* Low 8 bits of Interface */
-	unsigned i8 im_vif_hi;		/* High 8 bits of Interface */
+	%i8 im_msgtype;		/* What is this */
+	%i8 im_mbz;			/* Must be zero */
+	%i8 im_vif;			/* Low 8 bits of Interface */
+	%i8 im_vif_hi;		/* High 8 bits of Interface */
 	struct in_addr im_src,im_dst;
 };
 

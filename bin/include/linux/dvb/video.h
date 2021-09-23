@@ -127,8 +127,8 @@ struct video_event {
 	i64 timestamp;
 	union {
 		video_size_t size;
-		unsigned i32 frame_rate;	/* in frames per 1000sec */
-		unsigned i8 vsync_field;	/* unknown/odd/even/progressive */
+		%i32 frame_rate;	/* in frames per 1000sec */
+		%i8 vsync_field;	/* unknown/odd/even/progressive */
 	} u;
 };
 
@@ -143,7 +143,7 @@ struct video_status {
 
 
 struct video_still_picture {
-	char *iFrame;        /* pointer to a single iframe in memory */
+	i8 *iFrame;        /* pointer to a single iframe in memory */
 	__s32 size;
 };
 
@@ -190,7 +190,7 @@ typedef __u16 video_attributes_t;
 #define VIDEO_STILLPICTURE         _IOW('o', 30, struct video_still_picture)
 #define VIDEO_FAST_FORWARD         _IO('o', 31)
 #define VIDEO_SLOWMOTION           _IO('o', 32)
-#define VIDEO_GET_CAPABILITIES     _IOR('o', 33, unsigned i32)
+#define VIDEO_GET_CAPABILITIES     _IOR('o', 33, %i32)
 #define VIDEO_CLEAR_BUFFER         _IO('o',  34)
 #define VIDEO_SET_STREAMTYPE       _IO('o', 36)
 #define VIDEO_SET_FORMAT           _IO('o', 37)

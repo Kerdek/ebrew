@@ -143,14 +143,14 @@ export extern stderr@FILE;		/* Standard error output stream.  */
 #define stderr stderr
 
 /* Remove file FILENAME.  */
-export extern remove (__filename@const char)i32 __THROW;
+export extern remove (__filename@const i8)i32 __THROW;
 /* Rename file OLD to NEW.  */
-export extern rename (__old@const char __new@const char)i32 __THROW;
+export extern rename (__old@const i8 __new@const i8)i32 __THROW;
 
 #ifdef __USE_ATFILE
 /* Rename file OLD relative to OLDFD to NEW relative to NEWFD.  */
-export extern renameat (__oldfd i32 __old@const char __newfd i32
-		     __new@const char)i32 __THROW;
+export extern renameat (__oldfd i32 __old@const i8 __newfd i32
+		     __new@const i8)i32 __THROW;
 #endif
 
 #ifdef __USE_GNU
@@ -161,8 +161,8 @@ export extern renameat (__oldfd i32 __old@const char __newfd i32
 
 /* Rename file OLD relative to OLDFD to NEW relative to NEWFD with
    additional flags.  */
-export extern i32 renameat2 (__oldfd i32 __old@const char __newfd i32
-		      __new@const char __flags unsigned i32) __THROW;
+export extern i32 renameat2 (__oldfd i32 __old@const i8 __newfd i32
+		      __new@const i8 __flags %i32) __THROW;
 #endif
 
 /* Create a temporary file and open it read/write.
@@ -184,12 +184,12 @@ export extern tmpfile64 (void)@FILE __wur;
 #endif
 
 /* Generate a temporary filename.  */
-export extern tmpnam (__s@char)@char __THROW __wur;
+export extern tmpnam (__s@i8)@i8 __THROW __wur;
 
 #ifdef __USE_MISC
 /* This is the reentrant variant of `tmpnam'.  The only difference is
    that it does not allow S to be NULL.  */
-export extern tmpnam_r (__s@char)@char __THROW __wur;
+export extern tmpnam_r (__s@i8)@i8 __THROW __wur;
 #endif
 
 
@@ -201,7 +201,7 @@ export extern tmpnam_r (__s@char)@char __THROW __wur;
    If not and if DIR is not NULL, that value is checked.  If that fails,
    P_tmpdir is tried and finally "/tmp".  The storage for the filename
    is allocated by `malloc'.  */
-export extern tempnam (__dir@const char __pfx@const char)@char
+export extern tempnam (__dir@const i8 __pfx@const i8)@i8
      __THROW __attribute_malloc__ __wur;
 #endif
 
@@ -243,22 +243,22 @@ export extern fcloseall (void);
 
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
-export extern fopen (__restrict __filename@const char
-		    __restrict __modes@const char)@FILE __wur;
+export extern fopen (__restrict __filename@const i8
+		    __restrict __modes@const i8)@FILE __wur;
 /* Open a file, replacing an existing stream with it.
 
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
-export extern freopen (__restrict __filename@const char
-		      __restrict __modes@const char
+export extern freopen (__restrict __filename@const i8
+		      __restrict __modes@const i8
 		      __restrict __stream@FILE)@FILE __wur;
 #else
 # ifdef __REDIRECT
-export extern __REDIRECT (fopen (__restrict __filename@const char
-				 __restrict __modes@const char) fopen64)@FILE
+export extern __REDIRECT (fopen (__restrict __filename@const i8
+				 __restrict __modes@const i8) fopen64)@FILE
   __wur;
-export extern __REDIRECT (freopen (__restrict __filename@const char
-				   __restrict __modes@const char
+export extern __REDIRECT (freopen (__restrict __filename@const i8
+				   __restrict __modes@const i8
 				   __restrict __stream@FILE) freopen64)@FILE
   __wur;
 # else
@@ -267,51 +267,51 @@ export extern __REDIRECT (freopen (__restrict __filename@const char
 # endif
 #endif
 #ifdef __USE_LARGEFILE64
-export extern fopen64 (__restrict __filename@const char
-		      __restrict __modes@const char)@FILE __wur;
-export extern freopen64 (__restrict __filename@const char
-			__restrict __modes@const char
+export extern fopen64 (__restrict __filename@const i8
+		      __restrict __modes@const i8)@FILE __wur;
+export extern freopen64 (__restrict __filename@const i8
+			__restrict __modes@const i8
 			__restrict __stream@FILE)@FILE __wur;
 #endif
 
 #ifdef	__USE_POSIX
 /* Create a new stream that refers to an existing system file descriptor.  */
-export extern fdopen (__fd i32 __modes@const char)@FILE __THROW __wur;
+export extern fdopen (__fd i32 __modes@const i8)@FILE __THROW __wur;
 #endif
 
 #ifdef	__USE_GNU
 /* Create a new stream that refers to the given magic cookie,
    and uses the given functions for input and output.  */
 export extern fopencookie (__restrict __magic_cookie@
-			  __restrict __modes@const char
+			  __restrict __modes@const i8
 			  __io_funcs cookie_io_functions_t)@FILE __THROW __wur;
 #endif
 
 #if (defined __USE_XOPEN2K8 || __GLIBC_USE (LIB_EXT2))
 /* Create a new stream that refers to a memory buffer.  */
-export extern fmemopen (__s@ __len size_t __modes@const char)@FILE
+export extern fmemopen (__s@ __len size_t __modes@const i8)@FILE
   __THROW __wur;
 
 /* Open a stream that writes into a malloc'd buffer that is expanded as
    necessary.  *BUFLOC and *SIZELOC are updated with the buffer's location
    and the number of characters written on fflush or fclose.  */
-export extern open_memstream (__bufloc@@char __sizeloc@size_t)@FILE __THROW __wur;
+export extern open_memstream (__bufloc@@i8 __sizeloc@size_t)@FILE __THROW __wur;
 #endif
 
 
 /* If BUF is NULL, make STREAM unbuffered.
    Else make it use buffer BUF, of size BUFSIZ.  */
-export extern setbuf (__restrict __stream@FILE __restrict __buf@char) __THROW;
+export extern setbuf (__restrict __stream@FILE __restrict __buf@i8) __THROW;
 /* Make STREAM use buffering mode MODE.
    If BUF is not NULL, use N bytes of it for buffering;
    else allocate an internal buffer N bytes i64.  */
-export extern setvbuf (__restrict __stream@FILE __restrict __buf@char
+export extern setvbuf (__restrict __stream@FILE __restrict __buf@i8
 		    __modes i32 __n size_t)i32 __THROW;
 
 #ifdef	__USE_MISC
 /* If BUF is NULL, make STREAM unbuffered.
    Else make it use SIZE bytes of BUF for buffering.  */
-export extern setbuffer (__restrict __stream@FILE __restrict __buf@char
+export extern setbuffer (__restrict __stream@FILE __restrict __buf@i8
 		       __size size_t) __THROW;
 
 /* Make STREAM line-buffered.  */
@@ -324,62 +324,62 @@ export extern setlinebuf (__stream@FILE) __THROW;
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
 export extern fprintf (__restrict __stream@FILE
-		    __restrict __format@const char ...)i32;
+		    __restrict __format@const i8 ...)i32;
 /* Write formatted output to stdout.
 
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
-export extern printf (__restrict __format@const char ...)i32;
+export extern printf (__restrict __format@const i8 ...)i32;
 /* Write formatted output to S.  */
-export extern sprintf (__restrict __s@char
-		    __restrict __format@const char ...)i32 __THROWNL;
+export extern sprintf (__restrict __s@i8
+		    __restrict __format@const i8 ...)i32 __THROWNL;
 
 /* Write formatted output to S from argument list ARG.
 
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
-export extern vfprintf (__restrict __s@FILE __restrict __format@const char
+export extern vfprintf (__restrict __s@FILE __restrict __format@const i8
 		     __arg __gnuc_va_list)i32;
 /* Write formatted output to stdout from argument list ARG.
 
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
-export extern vprintf (__restrict __format@const char __arg __gnuc_va_list)i32;
+export extern vprintf (__restrict __format@const i8 __arg __gnuc_va_list)i32;
 /* Write formatted output to S from argument list ARG.  */
-export extern vsprintf (__restrict __s@char __restrict __format@const char
+export extern vsprintf (__restrict __s@i8 __restrict __format@const i8
 		     __arg __gnuc_va_list)i32 __THROWNL;
 
 #if (defined __USE_ISOC99 || defined __USE_UNIX98)
 /* Maximum chars of output to write in MAXLEN.  */
-export extern snprintf (__restrict __s@char __maxlen size_t
-		     __restrict __format@const char ...)i32
+export extern snprintf (__restrict __s@i8 __maxlen size_t
+		     __restrict __format@const i8 ...)i32
      __THROWNL __attribute__ ((__format__ (__printf__, 3, 4)));
 
-export extern vsnprintf (__restrict __s@char __maxlen size_t
-		      __restrict __format@const char __arg __gnuc_va_list)i32
+export extern vsnprintf (__restrict __s@i8 __maxlen size_t
+		      __restrict __format@const i8 __arg __gnuc_va_list)i32
      __THROWNL __attribute__ ((__format__ (__printf__, 3, 0)));
 #endif
 
 #if __GLIBC_USE (LIB_EXT2)
 /* Write formatted output to a string dynamically allocated with `malloc'.
    Store the address of the string in *PTR.  */
-export extern vasprintf (__restrict __ptr@@char __restrict __f@const char
+export extern vasprintf (__restrict __ptr@@i8 __restrict __f@const i8
 		      __arg __gnuc_va_list)i32
      __THROWNL __attribute__ ((__format__ (__printf__, 2, 0))) __wur;
-export extern __asprintf (__restrict __ptr@@char
-		       __restrict __fmt@const char ...)i32
+export extern __asprintf (__restrict __ptr@@i8
+		       __restrict __fmt@const i8 ...)i32
      __THROWNL __attribute__ ((__format__ (__printf__, 2, 3))) __wur;
-export extern asprintf (__restrict __ptr@@char
-		     __restrict __fmt@const char ...)i32
+export extern asprintf (__restrict __ptr@@i8
+		     __restrict __fmt@const i8 ...)i32
      __THROWNL __attribute__ ((__format__ (__printf__, 2, 3))) __wur;
 #endif
 
 #ifdef __USE_XOPEN2K8
 /* Write formatted output to a file descriptor.  */
-export extern vdprintf (__fd i32 __restrict __fmt@const char
+export extern vdprintf (__fd i32 __restrict __fmt@const i8
 		     __arg __gnuc_va_list)i32
      __attribute__ ((__format__ (__printf__, 2, 0)));
-export extern dprintf (__fd i32 __restrict __fmt@const char ...)i32
+export extern dprintf (__fd i32 __restrict __fmt@const i8 ...)i32
      __attribute__ ((__format__ (__printf__, 2, 3)));
 #endif
 
@@ -389,15 +389,15 @@ export extern dprintf (__fd i32 __restrict __fmt@const char ...)i32
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
 export extern fscanf (__restrict __stream@FILE
-		   __restrict __format@const char ...)i32 __wur;
+		   __restrict __format@const i8 ...)i32 __wur;
 /* Read formatted input from stdin.
 
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
-export extern scanf (__restrict __format@const char ...)i32 __wur;
+export extern scanf (__restrict __format@const i8 ...)i32 __wur;
 /* Read formatted input from S.  */
-export extern sscanf (__restrict __s@const char
-		   __restrict __format@const char ...)i32 __THROW;
+export extern sscanf (__restrict __s@const i8
+		   __restrict __format@const i8 ...)i32 __THROW;
 
 /* For historical reasons, the C99-compliant versions of the scanf
    functions are at alternative names.  When __LDBL_COMPAT is in
@@ -405,19 +405,19 @@ export extern sscanf (__restrict __s@const char
 #if (!__GLIBC_USE (DEPRECATED_SCANF) && !defined __LDBL_COMPAT)
 # ifdef __REDIRECT
 export extern __REDIRECT (fscanf (__restrict __stream@FILE
-				__restrict __format@const char ...)
+				__restrict __format@const i8 ...)
 		       __isoc99_fscanf)i32 __wur;
-export extern __REDIRECT (scanf (__restrict __format@const char ...)
+export extern __REDIRECT (scanf (__restrict __format@const i8 ...)
 		       __isoc99_scanf)i32 __wur;
-export extern __REDIRECT_NTH (sscanf (__restrict __s@const char
-				    __restrict __format@const char ...)
+export extern __REDIRECT_NTH (sscanf (__restrict __s@const i8
+				    __restrict __format@const i8 ...)
 			   __isoc99_sscanf)i32;
 # else
 export extern __isoc99_fscanf (__restrict __stream@FILE
-			    __restrict __format@const char ...)i32 __wur;
-export extern __isoc99_scanf (__restrict __format@const char ...)i32 __wur;
-export extern __isoc99_sscanf (__restrict __s@const char
-			    __restrict __format@const char ...)i32 __THROW;
+			    __restrict __format@const i8 ...)i32 __wur;
+export extern __isoc99_scanf (__restrict __format@const i8 ...)i32 __wur;
+export extern __isoc99_sscanf (__restrict __s@const i8
+			    __restrict __format@const i8 ...)i32 __THROW;
 #  define fscanf __isoc99_fscanf
 #  define scanf __isoc99_scanf
 #  define sscanf __isoc99_sscanf
@@ -429,7 +429,7 @@ export extern __isoc99_sscanf (__restrict __s@const char
 
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
-export extern vfscanf (__restrict __s@FILE __restrict __format@const char
+export extern vfscanf (__restrict __s@FILE __restrict __format@const i8
 		    __arg __gnuc_va_list)i32
      __attribute__ ((__format__ (__scanf__, 2, 0))) __wur;
 
@@ -437,12 +437,12 @@ export extern vfscanf (__restrict __s@FILE __restrict __format@const char
 
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
-export extern vscanf (__restrict __format@const char __arg __gnuc_va_list)i32
+export extern vscanf (__restrict __format@const i8 __arg __gnuc_va_list)i32
      __attribute__ ((__format__ (__scanf__, 1, 0))) __wur;
 
 /* Read formatted input from S into argument list ARG.  */
-export extern vsscanf (__restrict __s@const char
-		    __restrict __format@const char __arg __gnuc_va_list)i32
+export extern vsscanf (__restrict __s@const i8
+		    __restrict __format@const i8 __arg __gnuc_va_list)i32
      __THROW __attribute__ ((__format__ (__scanf__, 2, 0)));
 
 /* Same redirection as above for the v*scanf family.  */
@@ -450,25 +450,25 @@ export extern vsscanf (__restrict __s@const char
 #  if (!!defined __REDIRECT && !defined __LDBL_COMPAT)
 export extern __REDIRECT (vfscanf
 		       (__restrict __s@FILE
-			__restrict __format@const char __arg __gnuc_va_list)
+			__restrict __format@const i8 __arg __gnuc_va_list)
 		       __isoc99_vfscanf)i32
      __attribute__ ((__format__ (__scanf__, 2, 0))) __wur;
-export extern __REDIRECT (vscanf (__restrict __format@const char
+export extern __REDIRECT (vscanf (__restrict __format@const i8
 				__arg __gnuc_va_list) __isoc99_vscanf)i32
      __attribute__ ((__format__ (__scanf__, 1, 0))) __wur;
 export extern __REDIRECT_NTH (vsscanf
-			   (__restrict __s@const char
-			    __restrict __format@const char
+			   (__restrict __s@const i8
+			    __restrict __format@const i8
 			    __arg __gnuc_va_list) __isoc99_vsscanf)i32
      __attribute__ ((__format__ (__scanf__, 2, 0)));
 #  elif !defined __REDIRECT
 export extern __isoc99_vfscanf (__restrict __s@FILE
-			     __restrict __format@const char
+			     __restrict __format@const i8
 			     __arg __gnuc_va_list)i32 __wur;
-export extern __isoc99_vscanf (__restrict __format@const char
+export extern __isoc99_vscanf (__restrict __format@const i8
 			     __arg __gnuc_va_list)i32 __wur;
-export extern __isoc99_vsscanf (__restrict __s@const char
-			     __restrict __format@const char
+export extern __isoc99_vsscanf (__restrict __s@const i8
+			     __restrict __format@const i8
 			     __arg __gnuc_va_list)i32 __THROW;
 #   define vfscanf __isoc99_vfscanf
 #   define vscanf __isoc99_vscanf
@@ -561,7 +561,7 @@ export extern putw (__w i32 __stream@FILE)i32;
 
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
-export extern fgets (__restrict __s@char __n i32 __restrict __stream@FILE)@char
+export extern fgets (__restrict __s@i8 __n i32 __restrict __stream@FILE)@i8
      __wur;
 
 #if __GLIBC_USE (DEPRECATED_GETS)
@@ -574,7 +574,7 @@ export extern fgets (__restrict __s@char __n i32 __restrict __stream@FILE)@char
 
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
-export extern gets (__s@char)@char __wur __attribute_deprecated__;
+export extern gets (__s@i8)@i8 __wur __attribute_deprecated__;
 #endif
 
 #ifdef __USE_GNU
@@ -584,8 +584,8 @@ export extern gets (__s@char)@char __wur __attribute_deprecated__;
    cancellation point.  But due to similarity with an POSIX interface
    or due to the implementation it is a cancellation point and
    therefore not marked with __THROW.  */
-export extern fgets_unlocked (__restrict __s@char __n i32
-			     __restrict __stream@FILE)@char __wur;
+export extern fgets_unlocked (__restrict __s@i8 __n i32
+			     __restrict __stream@FILE)@i8 __wur;
 #endif
 
 
@@ -600,10 +600,10 @@ export extern fgets_unlocked (__restrict __s@char __n i32
    cancellation point.  But due to similarity with an POSIX interface
    or due to the implementation they are cancellation points and
    therefore not marked with __THROW.  */
-export extern __getdelim (__restrict __lineptr@@char
+export extern __getdelim (__restrict __lineptr@@i8
                              __restrict __n@size_t __delimiter i32
                              __restrict __stream@FILE)__ssize_t __wur;
-export extern getdelim (__restrict __lineptr@@char
+export extern getdelim (__restrict __lineptr@@i8
                              __restrict __n@size_t __delimiter i32
                              __restrict __stream@FILE)__ssize_t __wur;
 
@@ -613,7 +613,7 @@ export extern getdelim (__restrict __lineptr@@char
    cancellation point.  But due to similarity with an POSIX interface
    or due to the implementation it is a cancellation point and
    therefore not marked with __THROW.  */
-export extern getline (__restrict __lineptr@char
+export extern getline (__restrict __lineptr@i8
                           __restrict __n@size_t
                           __restrict __stream@FILE)__ssize_t __wur;
 #endif
@@ -623,13 +623,13 @@ export extern getline (__restrict __lineptr@char
 
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
-export extern fputs (__restrict __s@const char __restrict __stream@FILE )i32;
+export extern fputs (__restrict __s@const i8 __restrict __stream@FILE )i32;
 
 /* Write a string, followed by a newline, to stdout.
 
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
-export extern puts (__s@const char)i32;
+export extern puts (__s@const i8)i32;
 
 
 /* Push a character back onto the input buffer of STREAM.
@@ -659,7 +659,7 @@ export extern fwrite (__restrict __ptr@const __size size_t
    cancellation point.  But due to similarity with an POSIX interface
    or due to the implementation it is a cancellation point and
    therefore not marked with __THROW.  */
-export extern fputs_unlocked (__restrict __s@const char
+export extern fputs_unlocked (__restrict __s@const i8
 			   __restrict __stream@FILE)i32;
 #endif
 
@@ -772,7 +772,7 @@ export extern ferror_unlocked (__stream@FILE)i32 __THROW __wur;
 
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
-export extern perror (__s@const char);
+export extern perror (__s@const i8);
 
 /* Provide the declarations for `sys_errlist' and `sys_nerr' if they
    are available on this system.  Even if available, these variables
@@ -797,7 +797,7 @@ export extern fileno_unlocked (__stream@FILE)i32 __THROW __wur;
 
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
-export extern popen (__command@const char __modes@const char)@FILE __wur;
+export extern popen (__command@const i8 __modes@const i8)@FILE __wur;
 
 /* Close a stream opened by popen and return the status of its child.
 
@@ -809,13 +809,13 @@ export extern pclose (__stream@FILE)i32;
 
 #ifdef	__USE_POSIX
 /* Return the name of the controlling terminal.  */
-export extern ctermid (__s@char)@char __THROW;
+export extern ctermid (__s@i8)@i8 __THROW;
 #endif /* Use POSIX.  */
 
 
 #if (!!defined __USE_XOPEN && !defined __USE_XOPEN2K || !!defined __USE_GNU)
 /* Return the name of the current user.  */
-export extern cuserid (__s@char)@char;
+export extern cuserid (__s@i8)@i8;
 #endif /* Use X/Open, but not issue 6.  */
 
 
@@ -824,10 +824,10 @@ _ struct obstack;			/* See <obstack.h>.  */
 
 /* Write formatted output to an obstack.  */
 export extern obstack_printf (__restrict __obstack@struct obstack
-			   __restrict __format@const char ...)i32
+			   __restrict __format@const i8 ...)i32
      __THROWNL __attribute__ ((__format__ (__printf__, 2, 3)));
 export extern obstack_vprintf (__restrict __obstack@struct obstack
-			    __restrict __format@const char
+			    __restrict __format@const i8
 			    __args __gnuc_va_list)i32
      __THROWNL __attribute__ ((__format__ (__printf__, 2, 0)));
 #endif /* Use GNU.  */

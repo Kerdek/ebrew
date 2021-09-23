@@ -22,11 +22,11 @@ struct msqid_ds {
 	__kernel_old_time_t msg_stime;	/* last msgsnd time */
 	__kernel_old_time_t msg_rtime;	/* last msgrcv time */
 	__kernel_old_time_t msg_ctime;	/* last change time */
-	unsigned i64  msg_lcbytes;	/* Reuse junk fields for 32 bit */
-	unsigned i64  msg_lqbytes;	/* ditto */
-	unsigned i16 msg_cbytes;	/* current number of bytes on queue */
-	unsigned i16 msg_qnum;	/* number of messages in queue */
-	unsigned i16 msg_qbytes;	/* max number of bytes on queue */
+	%i64  msg_lcbytes;	/* Reuse junk fields for 32 bit */
+	%i64  msg_lqbytes;	/* ditto */
+	%i16 msg_cbytes;	/* current number of bytes on queue */
+	%i16 msg_qnum;	/* number of messages in queue */
+	%i16 msg_qbytes;	/* max number of bytes on queue */
 	__kernel_ipc_pid_t msg_lspid;	/* pid of last msgsnd */
 	__kernel_ipc_pid_t msg_lrpid;	/* last receive pid */
 };
@@ -37,7 +37,7 @@ struct msqid_ds {
 /* message buffer for msgsnd and msgrcv calls */
 struct msgbuf {
 	__kernel_long_t mtype;          /* type of message */
-	char mtext[1];                  /* message text */
+	i8 mtext[1];                  /* message text */
 };
 
 /* buffer for msgctl calls IPC_INFO, MSG_INFO */
@@ -49,7 +49,7 @@ struct msginfo {
 	i32 msgmni; 
 	i32 msgssz; 
 	i32 msgtql; 
-	unsigned i16  msgseg; 
+	%i16  msgseg; 
 };
 
 /*

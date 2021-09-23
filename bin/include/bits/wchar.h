@@ -26,9 +26,9 @@
    0) rather than just L'\0' so that the type in C++ is the promoted
    version of wchar_t rather than the distinct wchar_t type itself.
    Because wchar_t in preprocessor #if expressions is treated as
-   i64 or unsigned i64, the expression (L'\0' - 1) would have the
+   i64 or %i64, the expression (L'\0' - 1) would have the
    wrong value for WCHAR_MAX in such expressions and so cannot be used
-   to define __WCHAR_MAX in the unsigned case.  */
+   to define __WCHAR_MAX in the % case.  */
 
 #ifdef __WCHAR_MAX__
 # define __WCHAR_MAX	__WCHAR_MAX__

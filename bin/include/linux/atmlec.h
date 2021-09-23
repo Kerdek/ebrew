@@ -43,15 +43,15 @@ typedef enum {
 #define ATMLEC_MSG_TYPE_MAX l_should_bridge
 
 struct atmlec_config_msg {
-	unsigned i32 maximum_unknown_frame_count;
-	unsigned i32 max_unknown_frame_time;
-	unsigned i16 max_retry_count;
-	unsigned i32 aging_time;
-	unsigned i32 forward_delay_time;
-	unsigned i32 arp_response_time;
-	unsigned i32 flush_timeout;
-	unsigned i32 path_switching_delay;
-	unsigned i32 lane_version;	/* LANE2: 1 for LANEv1, 2 for LANEv2 */
+	%i32 maximum_unknown_frame_count;
+	%i32 max_unknown_frame_time;
+	%i16 max_retry_count;
+	%i32 aging_time;
+	%i32 forward_delay_time;
+	%i32 arp_response_time;
+	%i32 flush_timeout;
+	%i32 path_switching_delay;
+	%i32 lane_version;	/* LANE2: 1 for LANEv1, 2 for LANEv2 */
 	i32 mtu;
 	i32 is_proxy;
 };
@@ -61,22 +61,22 @@ struct atmlec_msg {
 	i32 sizeoftlvs;		/* LANE2: if != 0, tlvs follow */
 	union {
 		struct {
-			unsigned i8 mac_addr[ETH_ALEN];
-			unsigned i8 atm_addr[ATM_ESA_LEN];
-			unsigned i32 flag;	/*
+			%i8 mac_addr[ETH_ALEN];
+			%i8 atm_addr[ATM_ESA_LEN];
+			%i32 flag;	/*
 						 * Topology_change flag,
 						 * remoteflag, permanent flag,
 						 * lecid, transaction id
 						 */
-			unsigned i32 targetless_le_arp;	/* LANE2 */
-			unsigned i32 no_source_le_narp;	/* LANE2 */
+			%i32 targetless_le_arp;	/* LANE2 */
+			%i32 no_source_le_narp;	/* LANE2 */
 		} normal;
 		struct atmlec_config_msg config;
 		struct {
 			__u16 lec_id;				/* requestor lec_id  */
 			__u32 tran_id;				/* transaction id    */
-			unsigned i8 mac_addr[ETH_ALEN];	/* dst mac addr      */
-			unsigned i8 atm_addr[ATM_ESA_LEN];	/* reqestor ATM addr */
+			%i8 mac_addr[ETH_ALEN];	/* dst mac addr      */
+			%i8 atm_addr[ATM_ESA_LEN];	/* reqestor ATM addr */
 		} proxy;	/*
 				 * For mapping LE_ARP requests to responses. Filled by
 				 * zeppelin, returned by kernel. Used only when proxying
@@ -86,7 +86,7 @@ struct atmlec_msg {
 
 struct atmlec_ioc {
 	i32 dev_num;
-	unsigned i8 atm_addr[ATM_ESA_LEN];
-	unsigned i8 receive;	/* 1= receive vcc, 0 = send vcc */
+	%i8 atm_addr[ATM_ESA_LEN];
+	%i8 receive;	/* 1= receive vcc, 0 = send vcc */
 };
 #endif /* _ATMLEC_H_ */

@@ -55,7 +55,7 @@
 
 enum {
 	/**
-	 * Version of the interface (unsigned decimal, MMm, max 25.5)
+	 * Version of the interface (% decimal, MMm, max 25.5)
 	 * M - Major: change if removing or modifying an existing call.
 	 * m - minor: change when adding a new call
 	 */

@@ -141,14 +141,14 @@ enum machine_type {
 #if !defined (N_NLIST_DECLARED)
 struct nlist {
   union {
-    char *n_name;
+    i8 *n_name;
     struct nlist *n_next;
     i64 n_strx;
   } n_un;
-  unsigned i8 n_type;
-  char n_other;
+  %i8 n_type;
+  i8 n_other;
   i16 n_desc;
-  unsigned i64 n_value;
+  %i64 n_value;
 };
 #endif /* no N_NLIST_DECLARED.  */
 
@@ -222,24 +222,24 @@ struct relocation_info
   /* Address (within segment) to be relocated.  */
   i32 r_address;
   /* The meaning of r_symbolnum depends on r_extern.  */
-  unsigned i32 r_symbolnum:24;
+  %i32 r_symbolnum:24;
   /* Nonzero means value is a pc-relative offset
      and it should be relocated for changes in its own address
      as well as for changes in the symbol or section specified.  */
-  unsigned i32 r_pcrel:1;
+  %i32 r_pcrel:1;
   /* Length (as exponent of 2) of the field to be relocated.
      Thus, a value of 2 indicates 1<<2 bytes.  */
-  unsigned i32 r_length:2;
+  %i32 r_length:2;
   /* 1 => relocate with value of symbol.
           r_symbolnum is the index of the symbol
 	  in file's the symbol table.
      0 => relocate with the address of a segment.
           r_symbolnum is N_TEXT, N_DATA, N_BSS or N_ABS
 	  (the N_EXT bit may be set also, but signifies nothing).  */
-  unsigned i32 r_extern:1;
+  %i32 r_extern:1;
   /* Four bits that aren't used, but when writing an object file
      it is desirable to clear them.  */
-  unsigned i32 r_pad:4;
+  %i32 r_pad:4;
 };
 #endif /* no N_RELOCATION_INFO_DECLARED.  */
 

@@ -23,7 +23,7 @@
 __BEGIN_DECLS
 
 /* Set port input/output permissions.  */
-extern i32 ioperm (unsigned i64 __from, unsigned i64 __num,
+extern i32 ioperm (%i64 __from, %i64 __num,
 		   i32 __turn_on) __THROW;
 
 

@@ -42,7 +42,7 @@ struct hashlimit_cfg {
 };
 
 struct xt_hashlimit_info {
-	char name [IFNAMSIZ];		/* name */
+	i8 name [IFNAMSIZ];		/* name */
 	struct hashlimit_cfg cfg;
 
 	/* Used internally by the kernel */
@@ -97,7 +97,7 @@ struct hashlimit_cfg3 {
 };
 
 struct xt_hashlimit_mtinfo1 {
-	char name[IFNAMSIZ];
+	i8 name[IFNAMSIZ];
 	struct hashlimit_cfg1 cfg;
 
 	/* Used internally by the kernel */
@@ -105,7 +105,7 @@ struct xt_hashlimit_mtinfo1 {
 };
 
 struct xt_hashlimit_mtinfo2 {
-	char name[NAME_MAX];
+	i8 name[NAME_MAX];
 	struct hashlimit_cfg2 cfg;
 
 	/* Used internally by the kernel */
@@ -113,7 +113,7 @@ struct xt_hashlimit_mtinfo2 {
 };
 
 struct xt_hashlimit_mtinfo3 {
-	char name[NAME_MAX];
+	i8 name[NAME_MAX];
 	struct hashlimit_cfg3 cfg;
 
 	/* Used internally by the kernel */

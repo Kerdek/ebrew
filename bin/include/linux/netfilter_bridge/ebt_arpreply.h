@@ -5,7 +5,7 @@
 #include <linux/if_ether.h>
 
 struct ebt_arpreply_info {
-	unsigned i8 mac[ETH_ALEN];
+	%i8 mac[ETH_ALEN];
 	i32 target;
 };
 #define EBT_ARPREPLY_TARGET "arpreply"

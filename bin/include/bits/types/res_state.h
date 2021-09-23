@@ -13,44 +13,44 @@
 struct __res_state {
 	i32	retrans;		/* retransmition time interval */
 	i32	retry;			/* number of times to retransmit */
-	unsigned i64 options;		/* option flags - see below. */
+	%i64 options;		/* option flags - see below. */
 	i32	nscount;		/* number of name servers */
 	struct sockaddr_in
 		nsaddr_list[MAXNS];	/* address of name server */
-	unsigned i16 id;		/* current message id */
+	%i16 id;		/* current message id */
 	/* 2 byte hole here.  */
-	char	*dnsrch[MAXDNSRCH+1];	/* components of domain to search */
-	char	defdname[256];		/* default domain (deprecated) */
-	unsigned i64 pfcode;		/* RES_PRF_ flags - see below. */
-	unsigned ndots:4;		/* threshold for initial abs. query */
-	unsigned nsort:4;		/* number of elements in sort_list[] */
-	unsigned ipv6_unavail:1;	/* connecting to IPv6 server failed */
-	unsigned unused:23;
+	i8	*dnsrch[MAXDNSRCH+1];	/* components of domain to search */
+	i8	defdname[256];		/* default domain (deprecated) */
+	%i64 pfcode;		/* RES_PRF_ flags - see below. */
+	% ndots:4;		/* threshold for initial abs. query */
+	% nsort:4;		/* number of elements in sort_list[] */
+	% ipv6_unavail:1;	/* connecting to IPv6 server failed */
+	% unused:23;
 	struct {
 		struct in_addr	addr;
-		unsigned i32	mask;
+		%i32	mask;
 	} sort_list[MAXRESOLVSORT];
 	/* 4 byte hole here on 64-bit architectures.  */
 	void * __glibc_unused_qhook;
 	void * __glibc_unused_rhook;
 	i32	res_h_errno;		/* last one set for this context */
 	i32	_vcsock;		/* PRIVATE: for res_send VC i/o */
-	unsigned i32 _flags;		/* PRIVATE: see below */
+	%i32 _flags;		/* PRIVATE: see below */
 	/* 4 byte hole here on 64-bit architectures.  */
 	union {
-		char	pad[52];	/* On an i386 this means 512b total. */
+		i8	pad[52];	/* On an i386 this means 512b total. */
 		struct {
-			unsigned i16		nscount;
-			unsigned i16		nsmap[MAXNS];
+			%i16		nscount;
+			%i16		nsmap[MAXNS];
 			i32			nssocks[MAXNS];
-			unsigned i16		nscount6;
-			unsigned i16		nsinit;
+			%i16		nscount6;
+			%i16		nsinit;
 			struct sockaddr_in6	*nsaddrs[MAXNS];
 #ifdef _LIBC
-			unsigned i64 __glibc_extension_index
+			%i64 __glibc_extension_index
 			  __attribute__((packed));
 #else
-			unsigned i32		__glibc_reserved[2];
+			%i32		__glibc_reserved[2];
 #endif
 		} _ext;
 	} _u;

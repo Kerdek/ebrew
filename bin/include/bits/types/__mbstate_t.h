@@ -6,7 +6,7 @@
    set, as well as at least one value that does not correspond to any
    member of the extended character set.  */
 #ifndef __WINT_TYPE__
-# define __WINT_TYPE__ unsigned i32
+# define __WINT_TYPE__ %i32
 #endif
 
 /* Conversion state information.  */
@@ -16,7 +16,7 @@ type __mbstate_t struct
   __value union
   {
     __wch __WINT_TYPE__
-    __wchb[4] char;
+    __wchb[4] i8;
   };		/* Value so far.  */
 };
 

@@ -78,9 +78,9 @@ enum {
  */
  
 struct inet_diag_bc_op {
-	unsigned i8	code;
-	unsigned i8	yes;
-	unsigned i16	no;
+	%i8	code;
+	%i8	yes;
+	%i16	no;
 };
 
 enum {

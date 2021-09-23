@@ -25,12 +25,12 @@
 __BEGIN_DECLS
 
 /* Create and initialize fanotify group.  */
-extern i32 fanotify_init (unsigned i32 __flags, unsigned i32 __event_f_flags)
+extern i32 fanotify_init (%i32 __flags, %i32 __event_f_flags)
   __THROW;
 
 /* Add, remove, or modify an fanotify mark on a filesystem object.  */
-extern i32 fanotify_mark (i32 __fanotify_fd, unsigned i32 __flags,
-			  unsigned i64 __mask, i32 __dfd, const char *__pathname)
+extern i32 fanotify_mark (i32 __fanotify_fd, %i32 __flags,
+			  %i64 __mask, i32 __dfd, const i8 *__pathname)
      __THROW;
 
 __END_DECLS

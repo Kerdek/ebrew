@@ -57,7 +57,7 @@ struct ca_slot_info {
 #define CA_DESCR         8
 #define CA_SC          128
 
-	unsigned i32 flags;
+	%i32 flags;
 #define CA_CI_MODULE_PRESENT 1
 #define CA_CI_MODULE_READY   2
 };
@@ -78,8 +78,8 @@ struct ca_slot_info {
  *	- %CA_DSS - Distributed Sample Scrambling (DSS) hardware.
  */
 struct ca_descr_info {
-	unsigned i32 num;
-	unsigned i32 type;
+	%i32 num;
+	%i32 type;
 #define CA_ECD           1
 #define CA_NDS           2
 #define CA_DSS           4
@@ -96,10 +96,10 @@ struct ca_descr_info {
  *		&struct ca_descr_info (e. g. %CA_ECD, %CA_NDS, etc).
  */
 struct ca_caps {
-	unsigned i32 slot_num;
-	unsigned i32 slot_type;
-	unsigned i32 descr_num;
-	unsigned i32 descr_type;
+	%i32 slot_num;
+	%i32 slot_type;
+	%i32 descr_num;
+	%i32 descr_type;
 };
 
 /**
@@ -113,10 +113,10 @@ struct ca_caps {
  * This struct carries a message to be send/received from a CI CA module.
  */
 struct ca_msg {
-	unsigned i32 index;
-	unsigned i32 type;
-	unsigned i32 length;
-	unsigned i8 msg[256];
+	%i32 index;
+	%i32 type;
+	%i32 length;
+	%i8 msg[256];
 };
 
 /**
@@ -127,9 +127,9 @@ struct ca_msg {
  * @cw: CA Descrambler control words
  */
 struct ca_descr {
-	unsigned i32 index;
-	unsigned i32 parity;
-	unsigned i8 cw[8];
+	%i32 index;
+	%i32 parity;
+	%i8 cw[8];
 };
 
 #define CA_RESET          _IO('o', 128)

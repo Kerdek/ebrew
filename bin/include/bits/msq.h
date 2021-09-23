@@ -35,10 +35,10 @@ typedef __syscall_ulong_t msglen_t;
 
 #if __MSQ_PAD_BEFORE_TIME
 # define __MSQ_PAD_TIME(NAME, RES)				\
-  unsigned i64 __glibc_reserved ## RES; __time_t NAME
+  %i64 __glibc_reserved ## RES; __time_t NAME
 #elif __MSQ_PAD_AFTER_TIME
 # define __MSQ_PAD_TIME(NAME, RES)				\
-  __time_t NAME; unsigned i64 __glibc_reserved ## RES
+  __time_t NAME; %i64 __glibc_reserved ## RES
 #else
 # define __MSQ_PAD_TIME(NAME, RES)		\
   __time_t NAME
@@ -80,7 +80,7 @@ struct msginfo
     i32 msgmni;
     i32 msgssz;
     i32 msgtql;
-    unsigned i16 msgseg;
+    %i16 msgseg;
   };
 
 #endif /* __USE_MISC */

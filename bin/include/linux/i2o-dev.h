@@ -47,57 +47,57 @@
 #define I2OPASSTHRU32		_IOR(I2O_MAGIC_NUMBER,12,struct i2o_cmd_passthru32)
 
 struct i2o_cmd_passthru32 {
-	unsigned i32 iop;	/* IOP unit number */
+	%i32 iop;	/* IOP unit number */
 	__u32 msg;		/* message */
 };
 
 struct i2o_cmd_passthru {
-	unsigned i32 iop;	/* IOP unit number */
+	%i32 iop;	/* IOP unit number */
 	void *msg;	/* message */
 };
 
 struct i2o_cmd_hrtlct {
-	unsigned i32 iop;	/* IOP unit number */
+	%i32 iop;	/* IOP unit number */
 	void *resbuf;	/* Buffer for result */
-	unsigned i32 *reslen;	/* Buffer length in bytes */
+	%i32 *reslen;	/* Buffer length in bytes */
 };
 
 struct i2o_cmd_psetget {
-	unsigned i32 iop;	/* IOP unit number */
-	unsigned i32 tid;	/* Target device TID */
+	%i32 iop;	/* IOP unit number */
+	%i32 tid;	/* Target device TID */
 	void *opbuf;	/* Operation List buffer */
-	unsigned i32 oplen;	/* Operation List buffer length in bytes */
+	%i32 oplen;	/* Operation List buffer length in bytes */
 	void *resbuf;	/* Result List buffer */
-	unsigned i32 *reslen;	/* Result List buffer length in bytes */
+	%i32 *reslen;	/* Result List buffer length in bytes */
 };
 
 struct i2o_sw_xfer {
-	unsigned i32 iop;	/* IOP unit number */
-	unsigned i8 flags;	/* Flags field */
-	unsigned i8 sw_type;	/* Software type */
-	unsigned i32 sw_id;	/* Software ID */
+	%i32 iop;	/* IOP unit number */
+	%i8 flags;	/* Flags field */
+	%i8 sw_type;	/* Software type */
+	%i32 sw_id;	/* Software ID */
 	void *buf;	/* Pointer to software buffer */
-	unsigned i32 *swlen;	/* Length of software data */
-	unsigned i32 *maxfrag;	/* Maximum fragment count */
-	unsigned i32 *curfrag;	/* Current fragment count */
+	%i32 *swlen;	/* Length of software data */
+	%i32 *maxfrag;	/* Maximum fragment count */
+	%i32 *curfrag;	/* Current fragment count */
 };
 
 struct i2o_html {
-	unsigned i32 iop;	/* IOP unit number */
-	unsigned i32 tid;	/* Target device ID */
-	unsigned i32 page;	/* HTML page */
+	%i32 iop;	/* IOP unit number */
+	%i32 tid;	/* Target device ID */
+	%i32 page;	/* HTML page */
 	void *resbuf;	/* Buffer for reply HTML page */
-	unsigned i32 *reslen;	/* Length in bytes of reply buffer */
+	%i32 *reslen;	/* Length in bytes of reply buffer */
 	void *qbuf;	/* Pointer to HTTP query string */
-	unsigned i32 qlen;	/* Length in bytes of query string buffer */
+	%i32 qlen;	/* Length in bytes of query string buffer */
 };
 
 #define I2O_EVT_Q_LEN 32
 
 struct i2o_evt_id {
-	unsigned i32 iop;
-	unsigned i32 tid;
-	unsigned i32 evt_mask;
+	%i32 iop;
+	%i32 tid;
+	%i32 evt_mask;
 };
 
 /* Event data size = frame size - message header + evt indicator */
@@ -105,8 +105,8 @@ struct i2o_evt_id {
 
 struct i2o_evt_info {
 	struct i2o_evt_id id;
-	unsigned i8 evt_data[I2O_EVT_DATA_SIZE];
-	unsigned i32 data_size;
+	%i8 evt_data[I2O_EVT_DATA_SIZE];
+	%i32 data_size;
 };
 
 struct i2o_evt_get {
@@ -116,7 +116,7 @@ struct i2o_evt_get {
 };
 
 typedef struct i2o_sg_io_hdr {
-	unsigned i32 flags;	/* see I2O_DPT_SG_IO_FLAGS */
+	%i32 flags;	/* see I2O_DPT_SG_IO_FLAGS */
 } i2o_sg_io_hdr_t;
 
 /**************************************************************************
@@ -240,7 +240,7 @@ typedef struct _i2o_status_block {
 	__u32 max_inbound_frames;
 	__u32 cur_inbound_frames;
 	__u32 max_outbound_frames;
-	char product_id[24];
+	i8 product_id[24];
 	__u32 expected_lct_size;
 	__u32 iop_capabilities;
 	__u32 desired_mem_size;

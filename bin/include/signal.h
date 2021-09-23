@@ -131,10 +131,10 @@ export extern gsignal (__sig i32)i32 __THROW;
 
 #ifdef __USE_XOPEN2K8
 /* Print a message describing the meaning of the given signal number.  */
-export extern psignal (__sig i32 __s@const char);
+export extern psignal (__sig i32 __s@const i8);
 
 /* Print a message describing the meaning of the given signal information.  */
-export extern psiginfo (__pinfo@const siginfo_t __s@const char);
+export extern psiginfo (__pinfo@const siginfo_t __s@const i8);
 #endif /* POSIX 2008.  */
 
 
@@ -283,8 +283,8 @@ export extern sigqueue (__pid __pid_t __sig i32 __val const union sigval)i32
 
 /* Names of the signals.  This variable exists only for compatibility.
    Use `strsignal' instead (see <string.h>).  */
-export extern _sys_siglist const[_NSIG]const char;
-export extern sys_siglist const[_NSIG]const char;
+export extern _sys_siglist const[_NSIG]const i8;
+export extern sys_siglist const[_NSIG]const i8;
 
 
 /* Get machine-dependent `struct sigcontext' and signal subcodes.  */

@@ -12,7 +12,7 @@
  * Geometry
  */
 struct floppy_struct {
-	unsigned i32	size,		/* nr of sectors total */
+	%i32	size,		/* nr of sectors total */
 			sect,		/* sectors per track */
 			head,		/* nr of heads */
 			track,		/* nr of tracks */
@@ -27,7 +27,7 @@ struct floppy_struct {
 #define FD_MKSECTBASE(s) (((s) ^ 1) << 2)
 #define FD_SECTBASE(floppy) ((((floppy)->stretch & FD_SECTBASEMASK) >> 2) ^ 1)
 
-	unsigned i8	gap,		/* gap1 size */
+	%i8	gap,		/* gap1 size */
 
 			rate,		/* data rate. |= 0x40 for perpendicular */
 #define FD_2M 0x4
@@ -39,7 +39,7 @@ struct floppy_struct {
 
 			spec1,		/* stepping rate, head unload time */
 			fmt_gap;	/* gap2 size */
-	const char	* name; /* used only for predefined formats */
+	const i8	* name; /* used only for predefined formats */
 };
 
 
@@ -71,7 +71,7 @@ struct floppy_struct {
 #define FD_FILL_BYTE 0xF6 /* format fill byte. */
 
 struct format_descr {
-	unsigned i32 device,head,track;
+	%i32 device,head,track;
 };
 
 #define FDFMTBEG _IO(2,0x47)
@@ -86,7 +86,7 @@ struct format_descr {
  * Error thresholds
  */
 struct floppy_max_errors {
-	unsigned i32
+	%i32
 	  abort,      /* number of errors to be reached before aborting */
 	  read_track, /* maximal number of errors permitted to read an
 		       * entire track at once */
@@ -116,7 +116,7 @@ struct floppy_max_errors {
  * structure */
 
 
-typedef char floppy_drive_name[16];
+typedef i8 floppy_drive_name[16];
 #define FDGETDRVTYP _IOR(2, 0x0f, floppy_drive_name)
 /* get drive type: 5 1/4 or 3 1/2 */
 
@@ -125,33 +125,33 @@ typedef char floppy_drive_name[16];
  * Drive parameters (user modifiable)
  */
 struct floppy_drive_params {
-	 char cmos;		/* CMOS type */
+	 i8 cmos;		/* CMOS type */
 	
 	/* Spec2 is (HLD<<1 | ND), where HLD is head load time (1=2ms, 2=4 ms 
 	 * etc) and ND is set means no DMA. Hardcoded to 6 (HLD=6ms, use DMA).
 	 */
-	unsigned i64 max_dtr;		/* Step rate, usec */
-	unsigned i64 hlt;     		/* Head load/settle time, msec */
-	unsigned i64 hut;     		/* Head unload time (remnant of 
+	%i64 max_dtr;		/* Step rate, usec */
+	%i64 hlt;     		/* Head load/settle time, msec */
+	%i64 hut;     		/* Head unload time (remnant of 
 					 * 8" drives) */
-	unsigned i64 srt;     		/* Step rate, usec */
+	%i64 srt;     		/* Step rate, usec */
 
-	unsigned i64 spinup;		/* time needed for spinup (expressed
+	%i64 spinup;		/* time needed for spinup (expressed
 					 * in jiffies) */
-	unsigned i64 spindown;		/* timeout needed for spindown */
-	unsigned i8 spindown_offset;	/* decides in which position the disk
+	%i64 spindown;		/* timeout needed for spindown */
+	%i8 spindown_offset;	/* decides in which position the disk
 					 * will stop */
-	unsigned i8 select_delay;	/* delay to wait after select */
-	unsigned i8 rps;		/* rotations per second */
-	unsigned i8 tracks;		/* maximum number of tracks */
-	unsigned i64 timeout;		/* timeout for interrupt requests */
+	%i8 select_delay;	/* delay to wait after select */
+	%i8 rps;		/* rotations per second */
+	%i8 tracks;		/* maximum number of tracks */
+	%i64 timeout;		/* timeout for interrupt requests */
 	
-	unsigned i8 interleave_sect;	/* if there are more sectors, use 
+	%i8 interleave_sect;	/* if there are more sectors, use 
 					 * interleave */
 	
 	struct floppy_max_errors max_errors;
 	
-	char flags;			/* various flags, including ftd_msg */
+	i8 flags;			/* various flags, including ftd_msg */
 /*
  * Announce successful media type detection and media information loss after
  * disk changes.
@@ -165,7 +165,7 @@ struct floppy_drive_params {
 #define FD_INVERTED_DCL 0x80 /* must be 0x80, because of hardware 
 				considerations */
 
-	char read_track;		/* use readtrack during probing? */
+	i8 read_track;		/* use readtrack during probing? */
 
 /*
  * Auto-detection. Each drive type has eight formats which are
@@ -202,7 +202,7 @@ enum {
  * Current drive state (not directly modifiable by user, readonly)
  */
 struct floppy_drive_struct {
-	unsigned i64 flags;
+	%i64 flags;
 /* values for these flags */
 #define FD_NEED_TWADDLE (1 << FD_NEED_TWADDLE_BIT)
 #define FD_VERIFY (1 << FD_VERIFY_BIT)
@@ -210,9 +210,9 @@ struct floppy_drive_struct {
 #define FD_DISK_CHANGED (1 << FD_DISK_CHANGED_BIT)
 #define FD_DISK_WRITABLE (1 << FD_DISK_WRITABLE_BIT)
 
-	unsigned i64 spinup_date;
-	unsigned i64 select_date;
-	unsigned i64 first_read_date;
+	%i64 spinup_date;
+	%i64 select_date;
+	%i64 first_read_date;
 	i16 probed_format;
 	i16 track; /* current track */
 	i16 maxblock; /* id of highest block read */
@@ -229,10 +229,10 @@ struct floppy_drive_struct {
 	/* Prevent "aliased" accesses. */
 	i32 fd_ref;
 	i32 fd_device;
-	unsigned i64 last_checked; /* when was the drive last checked for a disk 
+	%i64 last_checked; /* when was the drive last checked for a disk 
 			   * change? */
 	
-	char *dmabuf;
+	i8 *dmabuf;
 	i32 bufblocks;
 };
 
@@ -259,15 +259,15 @@ struct floppy_fdc_state {
 	i32 spec1;		/* spec1 value last used */
 	i32 spec2;		/* spec2 value last used */
 	i32 dtr;
-	unsigned i8 version;	/* FDC version code */
-	unsigned i8 dor;
-	unsigned i64 address;	/* io address */
-	unsigned i32 rawcmd:2;
-	unsigned i32 reset:1;
-	unsigned i32 need_configure:1;
-	unsigned i32 perp_mode:2;
-	unsigned i32 has_fifo:1;
-	unsigned i32 driver_version;	/* version code for floppy driver */
+	%i8 version;	/* FDC version code */
+	%i8 dor;
+	%i64 address;	/* io address */
+	%i32 rawcmd:2;
+	%i32 reset:1;
+	%i32 need_configure:1;
+	%i32 perp_mode:2;
+	%i32 has_fifo:1;
+	%i32 driver_version;	/* version code for floppy driver */
 #define FD_DRIVER_VERSION 0x100
 /* user programs using the floppy API should use floppy_fdc_state to
  * get the version number of the floppy driver that they are running
@@ -276,7 +276,7 @@ struct floppy_fdc_state {
  * to bigger structures
  */
 
-	unsigned i8 track[4];
+	%i8 track[4];
 	/* Position of the heads of the 4 units attached to this FDC,
 	 * as stored on the FDC. In the future, the position as stored
 	 * on the FDC might not agree with the actual physical
@@ -302,16 +302,16 @@ struct floppy_write_errors {
 	 * to the user process are not counted.
 	 */
 
-	unsigned i32 write_errors;  /* number of physical write errors 
+	%i32 write_errors;  /* number of physical write errors 
 				     * encountered */
 	
 	/* position of first and last write errors */
-	unsigned i64 first_error_sector;
+	%i64 first_error_sector;
 	i32           first_error_generation;
-	unsigned i64 last_error_sector;
+	%i64 last_error_sector;
 	i32           last_error_generation;
 	
-	unsigned i32 badness; /* highest retry count for a read or write 
+	%i32 badness; /* highest retry count for a read or write 
 			       * operation */
 };
 
@@ -328,7 +328,7 @@ struct floppy_write_errors {
 #define FDHAVEBATCHEDRAWCMD
 
 struct floppy_raw_cmd {
-	unsigned i32 flags;
+	%i32 flags;
 #define FD_RAW_READ 1
 #define FD_RAW_WRITE 2
 #define FD_RAW_NO_MOTOR 4
@@ -352,14 +352,14 @@ struct floppy_raw_cmd {
 #define FD_RAW_HARDFAILURE 0x20000 /* fdc had to be reset, or timed out */
 
 	void *data;
-	char *kernel_data; /* location of data buffer in the kernel */
+	i8 *kernel_data; /* location of data buffer in the kernel */
 	struct floppy_raw_cmd *next; /* used for chaining of raw cmd's 
 				      * within the kernel */
 	i64 length; /* in: length of dma transfer. out: remaining bytes */
 	i64 phys_length; /* physical length, if different from dma length */
 	i32 buffer_length; /* length of allocated buffer */
 
-	unsigned i8 rate;
+	%i8 rate;
 
 #define FD_RAW_CMD_SIZE 16
 #define FD_RAW_REPLY_SIZE 16
@@ -370,14 +370,14 @@ struct floppy_raw_cmd {
 	 * which takes 17 command bytes.
 	 */
 
-	unsigned i8 cmd_count;
+	%i8 cmd_count;
 	union {
 		struct {
-			unsigned i8 cmd[FD_RAW_CMD_SIZE];
-			unsigned i8 reply_count;
-			unsigned i8 reply[FD_RAW_REPLY_SIZE];
+			%i8 cmd[FD_RAW_CMD_SIZE];
+			%i8 reply_count;
+			%i8 reply[FD_RAW_REPLY_SIZE];
 		};
-		unsigned i8 fullcmd[FD_RAW_CMD_FULLSIZE];
+		%i8 fullcmd[FD_RAW_CMD_FULLSIZE];
 	};
 	i32 track;
 	i32 resultcode;

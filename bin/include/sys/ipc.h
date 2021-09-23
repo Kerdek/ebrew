@@ -47,7 +47,7 @@ typedef __key_t key_t;
 __BEGIN_DECLS
 
 /* Generates key for System V style IPC.  */
-extern key_t ftok (const char *__pathname, i32 __proj_id) __THROW;
+extern key_t ftok (const i8 *__pathname, i32 __proj_id) __THROW;
 
 __END_DECLS
 

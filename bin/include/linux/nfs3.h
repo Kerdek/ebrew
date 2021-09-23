@@ -64,8 +64,8 @@ enum nfs3_ftype {
 };
 
 struct nfs3_fh {
-	unsigned i16 size;
-	unsigned i8  data[NFS3_FHSIZE];
+	%i16 size;
+	%i8  data[NFS3_FHSIZE];
 };
 
 #define NFS3_VERSION		3

@@ -34,8 +34,8 @@
 #define ARPT_DEV_ADDR_LEN_MAX 16
 
 struct arpt_devaddr_info {
-	char addr[ARPT_DEV_ADDR_LEN_MAX];
-	char mask[ARPT_DEV_ADDR_LEN_MAX];
+	i8 addr[ARPT_DEV_ADDR_LEN_MAX];
+	i8 mask[ARPT_DEV_ADDR_LEN_MAX];
 };
 
 /* Yes, Virginia, you have to zero the padding. */
@@ -61,8 +61,8 @@ struct arpt_arp {
 	 * so there is no use in offering a way to do filtering on it.
 	 */
 
-	char iniface[IFNAMSIZ], outiface[IFNAMSIZ];
-	unsigned i8 iniface_mask[IFNAMSIZ], outiface_mask[IFNAMSIZ];
+	i8 iniface[IFNAMSIZ], outiface[IFNAMSIZ];
+	%i8 iniface_mask[IFNAMSIZ], outiface_mask[IFNAMSIZ];
 
 	/* Flags word */
 	__u8 flags;
@@ -101,13 +101,13 @@ struct arpt_entry
 	__u16 next_offset;
 
 	/* Back pointer */
-	unsigned i32 comefrom;
+	%i32 comefrom;
 
 	/* Packet and byte counters. */
 	struct xt_counters counters;
 
 	/* The matches (if any), then the target. */
-	unsigned i8 elems[0];
+	%i8 elems[0];
 };
 
 /*
@@ -132,49 +132,49 @@ struct arpt_entry
 /* The argument to ARPT_SO_GET_INFO */
 struct arpt_getinfo {
 	/* Which table: caller fills this in. */
-	char name[XT_TABLE_MAXNAMELEN];
+	i8 name[XT_TABLE_MAXNAMELEN];
 
 	/* Kernel fills these in. */
 	/* Which hook entry points are valid: bitmask */
-	unsigned i32 valid_hooks;
+	%i32 valid_hooks;
 
 	/* Hook entry points: one per netfilter hook. */
-	unsigned i32 hook_entry[NF_ARP_NUMHOOKS];
+	%i32 hook_entry[NF_ARP_NUMHOOKS];
 
 	/* Underflow points. */
-	unsigned i32 underflow[NF_ARP_NUMHOOKS];
+	%i32 underflow[NF_ARP_NUMHOOKS];
 
 	/* Number of entries */
-	unsigned i32 num_entries;
+	%i32 num_entries;
 
 	/* Size of entries. */
-	unsigned i32 size;
+	%i32 size;
 };
 
 /* The argument to ARPT_SO_SET_REPLACE. */
 struct arpt_replace {
 	/* Which table. */
-	char name[XT_TABLE_MAXNAMELEN];
+	i8 name[XT_TABLE_MAXNAMELEN];
 
 	/* Which hook entry points are valid: bitmask.  You can't
            change this. */
-	unsigned i32 valid_hooks;
+	%i32 valid_hooks;
 
 	/* Number of entries */
-	unsigned i32 num_entries;
+	%i32 num_entries;
 
 	/* Total size of new entries */
-	unsigned i32 size;
+	%i32 size;
 
 	/* Hook entry points. */
-	unsigned i32 hook_entry[NF_ARP_NUMHOOKS];
+	%i32 hook_entry[NF_ARP_NUMHOOKS];
 
 	/* Underflow points. */
-	unsigned i32 underflow[NF_ARP_NUMHOOKS];
+	%i32 underflow[NF_ARP_NUMHOOKS];
 
 	/* Information about old entries: */
 	/* Number of counters (must be equal to current number of entries). */
-	unsigned i32 num_counters;
+	%i32 num_counters;
 	/* The old entries' counters. */
 	struct xt_counters *counters;
 
@@ -185,10 +185,10 @@ struct arpt_replace {
 /* The argument to ARPT_SO_GET_ENTRIES. */
 struct arpt_get_entries {
 	/* Which table: user fills this in. */
-	char name[XT_TABLE_MAXNAMELEN];
+	i8 name[XT_TABLE_MAXNAMELEN];
 
 	/* User fills this in: total entry size. */
-	unsigned i32 size;
+	%i32 size;
 
 	/* The entries. */
 	struct arpt_entry entrytable[0];
@@ -197,7 +197,7 @@ struct arpt_get_entries {
 /* Helper functions */
 static __inline__ struct xt_entry_target *arpt_get_target(struct arpt_entry *e)
 {
-	return (struct xt_entry_target *)((char *)e + e->target_offset);
+	return (struct xt_entry_target *)((i8 *)e + e->target_offset);
 }
 
 /*

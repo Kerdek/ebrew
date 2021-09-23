@@ -144,7 +144,7 @@ enum fe_type {
  *    #. The frequencies are specified in kHz for Satellite systems.
  */
 struct dvb_frontend_info {
-	char       name[128];
+	i8       name[128];
 	enum fe_type type;	/* DEPRECATED. Use DTV_ENUM_DELSYS instead */
 	__u32      frequency_min;
 	__u32      frequency_max;
@@ -768,7 +768,7 @@ enum fecap_scale_params {
  *	used for dB measures. The unit is 0.001 dB.
  *
  * @uvalue:
- *	unsigned integer value of the measure, used when @scale is
+ *	% integer value of the measure, used when @scale is
  *	either %FE_SCALE_RELATIVE or %FE_SCALE_COUNTER.
  *
  * For most delivery systems, this will return a single value for each
@@ -833,10 +833,10 @@ struct dtv_fe_stats {
  * @cmd:		Digital TV command.
  * @reserved:		Not used.
  * @u:			Union with the values for the command.
- * @u.data:		A unsigned 32 bits integer with command value.
+ * @u.data:		A % 32 bits integer with command value.
  * @u.buffer:		Struct to store bigger properties.
  *			Currently unused.
- * @u.buffer.data:	an unsigned 32-bits array.
+ * @u.buffer.data:	an % 32-bits array.
  * @u.buffer.len:	number of elements of the buffer.
  * @u.buffer.reserved1:	Reserved.
  * @u.buffer.reserved2:	Reserved.
@@ -902,10 +902,10 @@ struct dtv_properties {
 #define FE_READ_SNR		   _IOR('o', 72, __u16)
 #define FE_READ_UNCORRECTED_BLOCKS _IOR('o', 73, __u32)
 
-#define FE_SET_FRONTEND_TUNE_MODE  _IO('o', 81) /* unsigned i32 */
+#define FE_SET_FRONTEND_TUNE_MODE  _IO('o', 81) /* %i32 */
 #define FE_GET_EVENT		   _IOR('o', 78, struct dvb_frontend_event)
 
-#define FE_DISHNETWORK_SEND_LEGACY_CMD _IO('o', 80) /* unsigned i32 */
+#define FE_DISHNETWORK_SEND_LEGACY_CMD _IO('o', 80) /* %i32 */
 
 #define FE_SET_PROPERTY		   _IOW('o', 82, struct dtv_properties)
 #define FE_GET_PROPERTY		   _IOR('o', 83, struct dtv_properties)

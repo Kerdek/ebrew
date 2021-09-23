@@ -31,8 +31,8 @@
 struct raw_config_request
 {
   i32 raw_minor;
-  unsigned i64 block_major;
-  unsigned i64 block_minor;
+  %i64 block_major;
+  %i64 block_minor;
 };
 
 #endif /* sys/raw.h */

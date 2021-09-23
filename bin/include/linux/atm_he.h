@@ -14,8 +14,8 @@
 #define HE_REGTYPE_MBOX	4
 
 struct he_ioctl_reg {
-	unsigned addr, val;
-	char type;
+	% addr, val;
+	i8 type;
 };
 
 #endif /* LINUX_ATM_HE_H */

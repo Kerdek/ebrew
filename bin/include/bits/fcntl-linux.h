@@ -356,10 +356,10 @@ struct f_owner_ex
 /* File handle structure.  */
 struct file_handle
 {
-  unsigned i32 handle_bytes;
+  %i32 handle_bytes;
   i32 handle_type;
   /* File identifier.  */
-  unsigned i8 f_handle[0];
+  %i8 f_handle[0];
 };
 
 /* Maximum handle size (for now).  */
@@ -403,7 +403,7 @@ extern __ssize_t readahead (i32 __fd, __off64_t __offset, size_t __count)
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
 extern i32 sync_file_range (i32 __fd, __off64_t __offset, __off64_t __count,
-			    unsigned i32 __flags);
+			    %i32 __flags);
 
 
 /* Splice address range into a pipe.
@@ -411,7 +411,7 @@ extern i32 sync_file_range (i32 __fd, __off64_t __offset, __off64_t __count,
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
 extern __ssize_t vmsplice (i32 __fdout, const struct iovec *__iov,
-			   size_t __count, unsigned i32 __flags);
+			   size_t __count, %i32 __flags);
 
 /* Splice two files together.
 
@@ -419,14 +419,14 @@ extern __ssize_t vmsplice (i32 __fdout, const struct iovec *__iov,
    marked with __THROW.  */
 extern __ssize_t splice (i32 __fdin, __off64_t *__offin, i32 __fdout,
 			 __off64_t *__offout, size_t __len,
-			 unsigned i32 __flags);
+			 %i32 __flags);
 
 /* In-kernel implementation of tee for pipe buffers.
 
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
 extern __ssize_t tee (i32 __fdin, i32 __fdout, size_t __len,
-		      unsigned i32 __flags);
+		      %i32 __flags);
 
 /* Reserve storage for the data of the file associated with FD.
 
@@ -450,7 +450,7 @@ extern i32 fallocate64 (i32 __fd, i32 __mode, __off64_t __offset,
 
 
 /* Map file name to file handle.  */
-extern i32 name_to_handle_at (i32 __dfd, const char *__name,
+extern i32 name_to_handle_at (i32 __dfd, const i8 *__name,
 			      struct file_handle *__handle, i32 *__mnt_id,
 			      i32 __flags) __THROW;
 

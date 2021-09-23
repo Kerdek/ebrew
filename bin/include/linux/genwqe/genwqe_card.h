@@ -358,7 +358,7 @@ struct genwqe_bitstream {
 #define DDCB_FIXUPS			12  /* maximum number of fixups */
 
 struct genwqe_debug_data {
-	char driver_version[64];
+	i8 driver_version[64];
 	__u64 slu_unitcfg;
 	__u64 app_unitcfg;
 

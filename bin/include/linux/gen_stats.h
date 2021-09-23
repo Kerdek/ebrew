@@ -70,8 +70,8 @@ struct gnet_stats_queue {
  * @ewma_log: the log of measurement window weight
  */
 struct gnet_estimator {
-	 char	interval;
-	unsigned i8	ewma_log;
+	 i8	interval;
+	%i8	ewma_log;
 };
 
 

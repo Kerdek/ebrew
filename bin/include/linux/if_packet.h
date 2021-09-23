@@ -6,19 +6,19 @@
 #include <linux/types.h>
 
 struct sockaddr_pkt {
-	unsigned i16 spkt_family;
-	unsigned i8 spkt_device[14];
+	%i16 spkt_family;
+	%i8 spkt_device[14];
 	__be16 spkt_protocol;
 };
 
 struct sockaddr_ll {
-	unsigned i16	sll_family;
+	%i16	sll_family;
 	__be16		sll_protocol;
 	i32		sll_ifindex;
-	unsigned i16	sll_hatype;
-	unsigned i8	sll_pkttype;
-	unsigned i8	sll_halen;
-	unsigned i8	sll_addr[8];
+	%i16	sll_hatype;
+	%i8	sll_pkttype;
+	%i8	sll_halen;
+	%i8	sll_addr[8];
 };
 
 /* Packet types */
@@ -73,14 +73,14 @@ struct sockaddr_ll {
 #define PACKET_FANOUT_FLAG_DEFRAG	0x8000
 
 struct tpacket_stats {
-	unsigned i32	tp_packets;
-	unsigned i32	tp_drops;
+	%i32	tp_packets;
+	%i32	tp_drops;
 };
 
 struct tpacket_stats_v3 {
-	unsigned i32	tp_packets;
-	unsigned i32	tp_drops;
-	unsigned i32	tp_freeze_q_cnt;
+	%i32	tp_packets;
+	%i32	tp_drops;
+	%i32	tp_freeze_q_cnt;
 };
 
 struct tpacket_rollover_stats {
@@ -130,13 +130,13 @@ struct tpacket_auxdata {
 #define TP_FT_REQ_FILL_RXHASH	0x1
 
 struct tpacket_hdr {
-	unsigned i64	tp_status;
-	unsigned i32	tp_len;
-	unsigned i32	tp_snaplen;
-	unsigned i16	tp_mac;
-	unsigned i16	tp_net;
-	unsigned i32	tp_sec;
-	unsigned i32	tp_usec;
+	%i64	tp_status;
+	%i32	tp_len;
+	%i32	tp_snaplen;
+	%i16	tp_mac;
+	%i16	tp_net;
+	%i32	tp_sec;
+	%i32	tp_usec;
 };
 
 #define TPACKET_ALIGNMENT	16
@@ -180,10 +180,10 @@ struct tpacket3_hdr {
 };
 
 struct tpacket_bd_ts {
-	unsigned i32 ts_sec;
+	%i32 ts_sec;
 	union {
-		unsigned i32 ts_usec;
-		unsigned i32 ts_nsec;
+		%i32 ts_usec;
+		%i32 ts_nsec;
 	};
 };
 
@@ -269,20 +269,20 @@ enum tpacket_versions {
  */
 
 struct tpacket_req {
-	unsigned i32	tp_block_size;	/* Minimal size of contiguous block */
-	unsigned i32	tp_block_nr;	/* Number of blocks */
-	unsigned i32	tp_frame_size;	/* Size of frame */
-	unsigned i32	tp_frame_nr;	/* Total number of frames */
+	%i32	tp_block_size;	/* Minimal size of contiguous block */
+	%i32	tp_block_nr;	/* Number of blocks */
+	%i32	tp_frame_size;	/* Size of frame */
+	%i32	tp_frame_nr;	/* Total number of frames */
 };
 
 struct tpacket_req3 {
-	unsigned i32	tp_block_size;	/* Minimal size of contiguous block */
-	unsigned i32	tp_block_nr;	/* Number of blocks */
-	unsigned i32	tp_frame_size;	/* Size of frame */
-	unsigned i32	tp_frame_nr;	/* Total number of frames */
-	unsigned i32	tp_retire_blk_tov; /* timeout in msecs */
-	unsigned i32	tp_sizeof_priv; /* offset to private data area */
-	unsigned i32	tp_feature_req_word;
+	%i32	tp_block_size;	/* Minimal size of contiguous block */
+	%i32	tp_block_nr;	/* Number of blocks */
+	%i32	tp_frame_size;	/* Size of frame */
+	%i32	tp_frame_nr;	/* Total number of frames */
+	%i32	tp_retire_blk_tov; /* timeout in msecs */
+	%i32	tp_sizeof_priv; /* offset to private data area */
+	%i32	tp_feature_req_word;
 };
 
 union tpacket_req_u {
@@ -292,9 +292,9 @@ union tpacket_req_u {
 
 struct packet_mreq {
 	i32		mr_ifindex;
-	unsigned i16	mr_type;
-	unsigned i16	mr_alen;
-	unsigned i8	mr_address[8];
+	%i16	mr_type;
+	%i16	mr_alen;
+	%i8	mr_address[8];
 };
 
 struct fanout_args {

@@ -30,7 +30,7 @@ struct xt_recent_mtinfo {
 	__u32 hit_count;
 	__u8 check_set;
 	__u8 invert;
-	char name[XT_RECENT_NAME_LEN];
+	i8 name[XT_RECENT_NAME_LEN];
 	__u8 side;
 };
 
@@ -39,7 +39,7 @@ struct xt_recent_mtinfo_v1 {
 	__u32 hit_count;
 	__u8 check_set;
 	__u8 invert;
-	char name[XT_RECENT_NAME_LEN];
+	i8 name[XT_RECENT_NAME_LEN];
 	__u8 side;
 	union nf_inet_addr mask;
 };

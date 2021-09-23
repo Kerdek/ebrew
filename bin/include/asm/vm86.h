@@ -77,28 +77,28 @@ struct vm86_regs {
 	i64 __null_gs;
 	i64 orig_eax;
 	i64 eip;
-	unsigned i16 cs, __csh;
+	%i16 cs, __csh;
 	i64 eflags;
 	i64 esp;
-	unsigned i16 ss, __ssh;
+	%i16 ss, __ssh;
 /*
  * these are specific to v86 mode:
  */
-	unsigned i16 es, __esh;
-	unsigned i16 ds, __dsh;
-	unsigned i16 fs, __fsh;
-	unsigned i16 gs, __gsh;
+	%i16 es, __esh;
+	%i16 ds, __dsh;
+	%i16 fs, __fsh;
+	%i16 gs, __gsh;
 };
 
 struct revectored_struct {
-	unsigned i64 __map[8];			/* 256 bits */
+	%i64 __map[8];			/* 256 bits */
 };
 
 struct vm86_struct {
 	struct vm86_regs regs;
-	unsigned i64 flags;
-	unsigned i64 screen_bitmap;
-	unsigned i64 cpu_type;
+	%i64 flags;
+	%i64 screen_bitmap;
+	%i64 cpu_type;
 	struct revectored_struct int_revectored;
 	struct revectored_struct int21_revectored;
 };
@@ -109,18 +109,18 @@ struct vm86_struct {
 #define VM86_SCREEN_BITMAP	0x0001
 
 struct vm86plus_info_struct {
-	unsigned i64 force_return_for_pic:1;
-	unsigned i64 vm86dbg_active:1;       /* for debugger */
-	unsigned i64 vm86dbg_TFpendig:1;     /* for debugger */
-	unsigned i64 unused:28;
-	unsigned i64 is_vm86pus:1;	      /* for vm86 internal use */
-	unsigned i8 vm86dbg_intxxtab[32];   /* for debugger */
+	%i64 force_return_for_pic:1;
+	%i64 vm86dbg_active:1;       /* for debugger */
+	%i64 vm86dbg_TFpendig:1;     /* for debugger */
+	%i64 unused:28;
+	%i64 is_vm86pus:1;	      /* for vm86 internal use */
+	%i8 vm86dbg_intxxtab[32];   /* for debugger */
 };
 struct vm86plus_struct {
 	struct vm86_regs regs;
-	unsigned i64 flags;
-	unsigned i64 screen_bitmap;
-	unsigned i64 cpu_type;
+	%i64 flags;
+	%i64 screen_bitmap;
+	%i64 cpu_type;
 	struct revectored_struct int_revectored;
 	struct revectored_struct int21_revectored;
 	struct vm86plus_info_struct vm86plus;

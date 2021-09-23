@@ -181,10 +181,10 @@ struct edd_info {
 } __attribute__ ((packed));
 
 struct edd {
-	unsigned i32 mbr_signature[EDD_MBR_SIG_MAX];
+	%i32 mbr_signature[EDD_MBR_SIG_MAX];
 	struct edd_info edd_info[EDDMAXNR];
-	unsigned i8 mbr_signature_nr;
-	unsigned i8 edd_info_nr;
+	%i8 mbr_signature_nr;
+	%i8 edd_info_nr;
 };
 
 #endif				/*!__ASSEMBLY__ */

@@ -38,7 +38,7 @@ __BEGIN_DECLS
 /* Perform the I/O control operation specified by REQUEST on FD.
    One argument may follow; its presence and type depend on REQUEST.
    Return value depends on REQUEST.  Usually -1 indicates error.  */
-extern i32 ioctl (i32 __fd, unsigned i64 __request, ...) __THROW;
+extern i32 ioctl (i32 __fd, %i64 __request, ...) __THROW;
 
 __END_DECLS
 

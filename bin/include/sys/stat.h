@@ -202,7 +202,7 @@ __BEGIN_DECLS
 
 #ifndef __USE_FILE_OFFSET64
 /* Get file attributes for FILE and put them in BUF.  */
-export extern stat (__restrict __file@const char
+export extern stat (__restrict __file@const i8
 		 __restrict __buf@struct stat)i32 __THROW __nonnull ((1, 2));
 
 /* Get file attributes for the file, device, pipe, or socket
@@ -210,7 +210,7 @@ export extern stat (__restrict __file@const char
 export extern fstat (__fd i32 __buf@struct stat)i32 __THROW __nonnull ((2));
 #else
 # ifdef __REDIRECT_NTH
-export extern __REDIRECT_NTH (stat (__restrict __file@const char
+export extern __REDIRECT_NTH (stat (__restrict __file@const i8
 				  __restrict __buf@struct stat) stat64)i32
      __nonnull ((1, 2));
 export extern __REDIRECT_NTH (fstat (__fd i32 __buf@struct stat) fstat64)i32
@@ -221,7 +221,7 @@ export extern __REDIRECT_NTH (fstat (__fd i32 __buf@struct stat) fstat64)i32
 # endif
 #endif
 #ifdef __USE_LARGEFILE64
-export extern stat64 (const char *__restrict __file
+export extern stat64 (const i8 *__restrict __file
 		   struct stat64 *__restrict __buf)i32 __THROW __nonnull ((1, 2));
 export extern fstat64 ( __fd i32 __buf@struct stat64)i32 __THROW __nonnull ((2));
 #endif
@@ -231,12 +231,12 @@ export extern fstat64 ( __fd i32 __buf@struct stat64)i32 __THROW __nonnull ((2))
    Relative path names are interpreted relative to FD unless FD is
    AT_FDCWD.  */
 # ifndef __USE_FILE_OFFSET64
-export extern fstatat ( __fd i32 __restrict __file@const char
+export extern fstatat ( __fd i32 __restrict __file@const i8
 		    __restrict __buf@struct stat __flag i32)i32
      __THROW __nonnull ((2, 3));
 # else
 #  ifdef __REDIRECT_NTH
-export extern i32 __REDIRECT_NTH (fstatat ( __fd i32 const char *__restrict __file
+export extern i32 __REDIRECT_NTH (fstatat ( __fd i32 const i8 *__restrict __file
 				     struct stat *__restrict __buf __flag i32)
 			   fstatat64) __nonnull ((2, 3));
 #  else
@@ -245,7 +245,7 @@ export extern i32 __REDIRECT_NTH (fstatat ( __fd i32 const char *__restrict __fi
 # endif
 
 # ifdef __USE_LARGEFILE64
-export extern fstatat64 ( __fd i32 const char *__restrict __file
+export extern fstatat64 ( __fd i32 const i8 *__restrict __file
 		      struct stat64 *__restrict __buf __flag i32)i32
      __THROW __nonnull ((2, 3));
 # endif
@@ -255,12 +255,12 @@ export extern fstatat64 ( __fd i32 const char *__restrict __file
 # ifndef __USE_FILE_OFFSET64
 /* Get file attributes about FILE and put them in BUF.
    If FILE is a symbolic link, do not follow it.  */
-export extern lstat (__restrict __file@const char
+export extern lstat (__restrict __file@const i8
 		  __restrict __buf@struct stat)i32 __THROW __nonnull ((1, 2));
 # else
 #  ifdef __REDIRECT_NTH
 export extern i32 __REDIRECT_NTH (lstat
-			   (const char *__restrict __file
+			   (const i8 *__restrict __file
 			    struct stat *__restrict __buf) lstat64)
      __nonnull ((1, 2));
 #  else
@@ -268,7 +268,7 @@ export extern i32 __REDIRECT_NTH (lstat
 #  endif
 # endif
 # ifdef __USE_LARGEFILE64
-export extern lstat64 (const char *__restrict __file
+export extern lstat64 (const i8 *__restrict __file
 		    struct stat64 *__restrict __buf)i32
      __THROW __nonnull ((1, 2));
 # endif
@@ -276,14 +276,14 @@ export extern lstat64 (const char *__restrict __file
 
 /* Set file access permissions for FILE to MODE.
    If FILE is a symbolic link, this affects its target instead.  */
-export extern chmod ( __file@const char __mode __mode_t)i32
+export extern chmod ( __file@const i8 __mode __mode_t)i32
      __THROW __nonnull ((1));
 
 #ifdef __USE_MISC
 /* Set file access permissions for FILE to MODE.
    If FILE is a symbolic link, this affects the link itself
    rather than its target.  */
-export extern lchmod (__file@const char __mode __mode_t)i32
+export extern lchmod (__file@const i8 __mode __mode_t)i32
      __THROW __nonnull ((1));
 #endif
 
@@ -295,7 +295,7 @@ export extern fchmod (__fd i32 __mode __mode_t)i32 __THROW;
 #ifdef __USE_ATFILE
 /* Set file access permissions of FILE relative to
    the directory FD is open on.  */
-export extern fchmodat (__fd i32 __file@const char __mode __mode_t
+export extern fchmodat (__fd i32 __file@const i8 __mode __mode_t
 		     __flag i32)i32
      __THROW __nonnull ((2)) __wur;
 #endif /* Use ATFILE.  */
@@ -313,14 +313,14 @@ export extern getumask (void)__mode_t __THROW;
 #endif
 
 /* Create a new directory named PATH, with permission bits MODE.  */
-export extern mkdir ( __path@const char __mode __mode_t)i32
+export extern mkdir ( __path@const i8 __mode __mode_t)i32
      __THROW __nonnull ((1));
 
 #ifdef __USE_ATFILE
 /* Like mkdir, create a new directory with permission bits MODE.  But
    interpret relative PATH names relative to the directory associated
    with FD.  */
-export extern mkdirat ( __fd i32 __path@const char __mode __mode_t)i32
+export extern mkdirat ( __fd i32 __path@const i8 __mode __mode_t)i32
      __THROW __nonnull ((2));
 #endif
 
@@ -328,35 +328,35 @@ export extern mkdirat ( __fd i32 __path@const char __mode __mode_t)i32
    and device number DEV (which can be constructed from major and minor
    device numbers with the `makedev' macro above).  */
 #if (defined __USE_MISC || defined __USE_XOPEN_EXTENDED)
-export extern mknod ( __path@const char __mode __mode_t __dev __dev_t)i32
+export extern mknod ( __path@const i8 __mode __mode_t __dev __dev_t)i32
      __THROW __nonnull ((1));
 
 # ifdef __USE_ATFILE
 /* Like mknod, create a new device file with permission bits MODE and
    device number DEV.  But interpret relative PATH names relative to
    the directory associated with FD.  */
-export extern mknodat (i32 __fd __path@const char __mode __mode_t
+export extern mknodat (i32 __fd __path@const i8 __mode __mode_t
 		    __dev_t __dev)i32 __THROW __nonnull ((2));
 # endif
 #endif
 
 
 /* Create a new FIFO named PATH, with permission bits MODE.  */
-export extern mkfifo ( __path@const char __mode __mode_t)i32
+export extern mkfifo ( __path@const i8 __mode __mode_t)i32
      __THROW __nonnull ((1));
 
 #ifdef __USE_ATFILE
 /* Like mkfifo, create a new FIFO with permission bits MODE.  But
    interpret relative PATH names relative to the directory associated
    with FD.  */
-export extern mkfifoat ( __fd i32 __path@const char __mode __mode_t)i32
+export extern mkfifoat ( __fd i32 __path@const i8 __mode __mode_t)i32
      __THROW __nonnull ((2));
 #endif
 
 #ifdef __USE_ATFILE
 /* Set file access and modification times relative to directory file
    descriptor.  */
-export extern utimensat (__fd i32 __path@const char
+export extern utimensat (__fd i32 __path@const i8
 		      __times[2]const struct timespec __flags i32)i32
      __THROW __nonnull ((2));
 #endif
@@ -392,19 +392,19 @@ export extern futimens ( __fd i32 __times[2]const struct timespec)i32 __THROW;
 #ifndef __USE_FILE_OFFSET64
 export extern __fxstat ( __ver i32 __fildes i32 __stat_buf@struct stat)i32
      __THROW __nonnull ((3));
-export extern __xstat ( __ver i32 __filename@const char __stat_buf@struct stat)i32 __THROW __nonnull ((2, 3));
-export extern __lxstat ( __ver i32 __filename@const char __stat_buf@struct stat)i32 __THROW __nonnull ((2, 3));
-export extern __fxstatat ( __ver i32 __fildes i32 __filename@const char __stat_buf@struct stat __flag i32)i32
+export extern __xstat ( __ver i32 __filename@const i8 __stat_buf@struct stat)i32 __THROW __nonnull ((2, 3));
+export extern __lxstat ( __ver i32 __filename@const i8 __stat_buf@struct stat)i32 __THROW __nonnull ((2, 3));
+export extern __fxstatat ( __ver i32 __fildes i32 __filename@const i8 __stat_buf@struct stat __flag i32)i32
      __THROW __nonnull ((3, 4));
 #else
 # ifdef __REDIRECT_NTH
 export extern i32 __REDIRECT_NTH (__fxstat ( __ver i32 __fildes i32 __stat_buf@struct stat) __fxstat64)
      __nonnull ((3));
-export extern i32 __REDIRECT_NTH (__xstat ( __ver i32 __filename@const char __stat_buf@struct stat) __xstat64)
+export extern i32 __REDIRECT_NTH (__xstat ( __ver i32 __filename@const i8 __stat_buf@struct stat) __xstat64)
      __nonnull ((2, 3));
-export extern i32 __REDIRECT_NTH (__lxstat ( __ver i32 __filename@const char __stat_buf@struct stat) __lxstat64)
+export extern i32 __REDIRECT_NTH (__lxstat ( __ver i32 __filename@const i8 __stat_buf@struct stat) __lxstat64)
      __nonnull ((2, 3));
-export extern i32 __REDIRECT_NTH (__fxstatat ( __ver i32 __fildes i32 __filename@const char __stat_buf@struct stat __flag i32)
+export extern i32 __REDIRECT_NTH (__fxstatat ( __ver i32 __fildes i32 __filename@const i8 __stat_buf@struct stat __flag i32)
 			   __fxstatat64) __nonnull ((3, 4));
 
 # else
@@ -417,14 +417,14 @@ export extern i32 __REDIRECT_NTH (__fxstatat ( __ver i32 __fildes i32 __filename
 #ifdef __USE_LARGEFILE64
 export extern __fxstat64 ( __ver i32 __fildes i32 __stat_buf@struct stat64)i32
      __THROW __nonnull ((3));
-export extern __xstat64 ( __ver i32 __filename@const char __stat_buf@struct stat64)i32 __THROW __nonnull ((2, 3));
-export extern __lxstat64 ( __ver i32 __filename@const char __stat_buf@struct stat64)i32 __THROW __nonnull ((2, 3));
-export extern __fxstatat64 ( __ver i32 __fildes i32 __filename@const char __stat_buf@struct stat64 __flag i32)i32
+export extern __xstat64 ( __ver i32 __filename@const i8 __stat_buf@struct stat64)i32 __THROW __nonnull ((2, 3));
+export extern __lxstat64 ( __ver i32 __filename@const i8 __stat_buf@struct stat64)i32 __THROW __nonnull ((2, 3));
+export extern __fxstatat64 ( __ver i32 __fildes i32 __filename@const i8 __stat_buf@struct stat64 __flag i32)i32
      __THROW __nonnull ((3, 4));
 #endif
-export extern __xmknod ( __ver i32 __path@const char __mode __mode_t __dev@__dev_t)i32 __THROW __nonnull ((2, 4));
+export extern __xmknod ( __ver i32 __path@const i8 __mode __mode_t __dev@__dev_t)i32 __THROW __nonnull ((2, 4));
 
-export extern __xmknodat ( __ver i32 __fd i32 __path@const char __mode __mode_t __dev@__dev_t)i32
+export extern __xmknodat ( __ver i32 __fd i32 __path@const i8 __mode __mode_t __dev@__dev_t)i32
      __THROW __nonnull ((3, 5));
 
 #ifdef __USE_GNU
@@ -435,14 +435,14 @@ export extern __xmknodat ( __ver i32 __fd i32 __path@const char __mode __mode_t 
 /* Inlined versions of the real stat and mknod functions.  */
 
 __extern_inline i32
-__NTH (stat ( __path@const char __statbuf@struct stat))
+__NTH (stat ( __path@const i8 __statbuf@struct stat))
 {
   return __xstat (_STAT_VER, __path, __statbuf);
 }
 
 # if (defined __USE_MISC || defined __USE_XOPEN_EXTENDED)
 __extern_inline i32
-__NTH (lstat ( __path@const char __statbuf@struct stat))
+__NTH (lstat ( __path@const i8 __statbuf@struct stat))
 {
   return __lxstat (_STAT_VER, __path, __statbuf);
 }
@@ -456,7 +456,7 @@ __NTH (fstat ( __fd i32 __statbuf@struct stat))
 
 # ifdef __USE_ATFILE
 __extern_inline i32
-__NTH (fstatat ( __fd i32 __filename@const char __statbuf@struct stat __flag i32))
+__NTH (fstatat ( __fd i32 __filename@const i8 __statbuf@struct stat __flag i32))
 {
   return __fxstatat (_STAT_VER, __fd, __filename, __statbuf, __flag);
 }
@@ -464,7 +464,7 @@ __NTH (fstatat ( __fd i32 __filename@const char __statbuf@struct stat __flag i32
 
 # ifdef __USE_MISC
 __extern_inline i32
-__NTH (mknod ( __path@const char __mode __mode_t __dev_t __dev))
+__NTH (mknod ( __path@const i8 __mode __mode_t __dev_t __dev))
 {
   return __xmknod (_MKNOD_VER, __path, __mode, &__dev);
 }
@@ -472,7 +472,7 @@ __NTH (mknod ( __path@const char __mode __mode_t __dev_t __dev))
 
 # ifdef __USE_ATFILE
 __extern_inline i32
-__NTH (mknodat ( __fd i32 __path@const char __mode __mode_t
+__NTH (mknodat ( __fd i32 __path@const i8 __mode __mode_t
 		__dev __dev_t))
 {
   return __xmknodat (_MKNOD_VER, __fd, __path, __mode, &__dev);
@@ -483,14 +483,14 @@ __NTH (mknodat ( __fd i32 __path@const char __mode __mode_t
   && (! defined __USE_FILE_OFFSET64 \
       || (defined __REDIRECT_NTH && defined __OPTIMIZE__)))
 __extern_inline i32
-__NTH (stat64 ( __path@const char __statbuf@struct stat64))
+__NTH (stat64 ( __path@const i8 __statbuf@struct stat64))
 {
   return __xstat64 (_STAT_VER, __path, __statbuf);
 }
 
 #  if (defined __USE_MISC || defined __USE_XOPEN_EXTENDED)
 __extern_inline i32
-__NTH (lstat64 ( __path@const char __statbuf@struct stat64))
+__NTH (lstat64 ( __path@const i8 __statbuf@struct stat64))
 {
   return __lxstat64 (_STAT_VER, __path, __statbuf);
 }
@@ -504,7 +504,7 @@ __NTH (fstat64 ( __fd i32 __statbuf@struct stat64))
 
 #  ifdef __USE_ATFILE
 __extern_inline i32
-__NTH (fstatat64 ( __fd i32 __filename@const char __statbuf@struct stat64 __flag i32))
+__NTH (fstatat64 ( __fd i32 __filename@const i8 __statbuf@struct stat64 __flag i32))
 {
   return __fxstatat64 (_STAT_VER, __fd, __filename, __statbuf, __flag);
 }

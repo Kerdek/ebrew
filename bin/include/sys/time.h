@@ -133,12 +133,12 @@ extern i32 setitimer (__itimer_which_t __which,
 /* Change the access time of FILE to TVP[0] and the modification time of
    FILE to TVP[1].  If TVP is a null pointer, use the current time instead.
    Returns 0 on success, -1 on errors.  */
-extern i32 utimes (const char *__file, const struct timeval __tvp[2])
+extern i32 utimes (const i8 *__file, const struct timeval __tvp[2])
      __THROW __nonnull ((1));
 
 #ifdef __USE_MISC
 /* Same as `utimes', but does not follow symbolic links.  */
-extern i32 lutimes (const char *__file, const struct timeval __tvp[2])
+extern i32 lutimes (const i8 *__file, const struct timeval __tvp[2])
      __THROW __nonnull ((1));
 
 /* Same as `utimes', but takes an open file descriptor instead of a name.  */
@@ -149,7 +149,7 @@ extern i32 futimes (i32 __fd, const struct timeval __tvp[2]) __THROW;
 /* Change the access time of FILE relative to FD to TVP[0] and the
    modification time of FILE to TVP[1].  If TVP is a null pointer, use
    the current time instead.  Returns 0 on success, -1 on errors.  */
-extern i32 futimesat (i32 __fd, const char *__file,
+extern i32 futimesat (i32 __fd, const i8 *__file,
 		      const struct timeval __tvp[2]) __THROW;
 #endif
 

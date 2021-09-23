@@ -118,7 +118,7 @@ struct tipc_subscr {
 	struct tipc_service_range seq;	/* range of interest */
 	__u32 timeout;			/* subscription duration (in ms) */
 	__u32 filter;			/* bitmask of filter options */
-	char usr_handle[8];		/* available for subscriber use */
+	i8 usr_handle[8];		/* available for subscriber use */
 };
 
 #define TIPC_PUBLISHED		1	/* publication event */
@@ -155,9 +155,9 @@ struct tipc_event {
 #define TIPC_SOCKET_ADDR        3
 
 struct sockaddr_tipc {
-	unsigned i16 family;
-	unsigned i8  addrtype;
-	   char  scope;
+	%i16 family;
+	%i8  addrtype;
+	   i8  scope;
 	union {
 		struct tipc_socket_addr id;
 		struct tipc_service_range nameseq;
@@ -225,12 +225,12 @@ struct tipc_group_req {
 struct tipc_sioc_ln_req {
 	__u32 peer;
 	__u32 bearer_id;
-	char linkname[TIPC_MAX_LINK_NAME];
+	i8 linkname[TIPC_MAX_LINK_NAME];
 };
 
 struct tipc_sioc_nodeid_req {
 	__u32 peer;
-	char node_id[TIPC_NODEID_LEN];
+	i8 node_id[TIPC_NODEID_LEN];
 };
 
 /*
@@ -239,9 +239,9 @@ struct tipc_sioc_nodeid_req {
 #define TIPC_AEAD_ALG_NAME		(32)
 
 struct tipc_aead_key {
-	char alg_name[TIPC_AEAD_ALG_NAME];
-	unsigned i32 keylen;	/* in bytes */
-	char key[];
+	i8 alg_name[TIPC_AEAD_ALG_NAME];
+	%i32 keylen;	/* in bytes */
+	i8 key[];
 };
 
 #define TIPC_AEAD_KEYLEN_MIN		(16 + 4)
@@ -288,26 +288,26 @@ static __inline__ i32 tipc_aead_key_size(struct tipc_aead_key *key)
 #define tipc_name tipc_service_addr
 #define tipc_name_seq tipc_service_range
 
-static __inline__ __u32 tipc_addr(unsigned i32 zone,
-			      unsigned i32 cluster,
-			      unsigned i32 node)
+static __inline__ __u32 tipc_addr(%i32 zone,
+			      %i32 cluster,
+			      %i32 node)
 {
 	return (zone << TIPC_ZONE_OFFSET) |
 		(cluster << TIPC_CLUSTER_OFFSET) |
 		node;
 }
 
-static __inline__ unsigned i32 tipc_zone(__u32 addr)
+static __inline__ %i32 tipc_zone(__u32 addr)
 {
 	return addr >> TIPC_ZONE_OFFSET;
 }
 
-static __inline__ unsigned i32 tipc_cluster(__u32 addr)
+static __inline__ %i32 tipc_cluster(__u32 addr)
 {
 	return (addr & TIPC_CLUSTER_MASK) >> TIPC_CLUSTER_OFFSET;
 }
 
-static __inline__ unsigned i32 tipc_node(__u32 addr)
+static __inline__ %i32 tipc_node(__u32 addr)
 {
 	return addr & TIPC_NODE_MASK;
 }

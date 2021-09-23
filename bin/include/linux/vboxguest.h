@@ -193,7 +193,7 @@ struct vbg_ioctl_log {
 			 * is not zero terminated then the length is determined
 			 * from the input size.
 			 */
-			char msg[1];
+			i8 msg[1];
 		} in;
 	} u;
 };

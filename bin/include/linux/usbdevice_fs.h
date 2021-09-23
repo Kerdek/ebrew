@@ -48,32 +48,32 @@ struct usbdevfs_ctrltransfer {
 };
 
 struct usbdevfs_bulktransfer {
-	unsigned i32 ep;
-	unsigned i32 len;
-	unsigned i32 timeout; /* in milliseconds */
+	%i32 ep;
+	%i32 len;
+	%i32 timeout; /* in milliseconds */
 	void *data;
 };
 
 struct usbdevfs_setinterface {
-	unsigned i32 interface;
-	unsigned i32 altsetting;
+	%i32 interface;
+	%i32 altsetting;
 };
 
 struct usbdevfs_disconnectsignal {
-	unsigned i32 signr;
+	%i32 signr;
 	void *context;
 };
 
 #define USBDEVFS_MAXDRIVERNAME 255
 
 struct usbdevfs_getdriver {
-	unsigned i32 interface;
-	char driver[USBDEVFS_MAXDRIVERNAME + 1];
+	%i32 interface;
+	i8 driver[USBDEVFS_MAXDRIVERNAME + 1];
 };
 
 struct usbdevfs_connectinfo {
-	unsigned i32 devnum;
-	unsigned i8 slow;
+	%i32 devnum;
+	%i8 slow;
 };
 
 struct usbdevfs_conninfo_ex {
@@ -109,26 +109,26 @@ struct usbdevfs_conninfo_ex {
 #define USBDEVFS_URB_TYPE_BULK		   3
 
 struct usbdevfs_iso_packet_desc {
-	unsigned i32 length;
-	unsigned i32 actual_length;
-	unsigned i32 status;
+	%i32 length;
+	%i32 actual_length;
+	%i32 status;
 };
 
 struct usbdevfs_urb {
-	unsigned i8 type;
-	unsigned i8 endpoint;
+	%i8 type;
+	%i8 endpoint;
 	i32 status;
-	unsigned i32 flags;
+	%i32 flags;
 	void *buffer;
 	i32 buffer_length;
 	i32 actual_length;
 	i32 start_frame;
 	union {
 		i32 number_of_packets;	/* Only used for isoc urbs */
-		unsigned i32 stream_id;	/* Only used with bulk streams */
+		%i32 stream_id;	/* Only used with bulk streams */
 	};
 	i32 error_count;
-	unsigned i32 signr;	/* signal to be sent on completion,
+	%i32 signr;	/* signal to be sent on completion,
 				  or 0 if none should be sent. */
 	void *usercontext;
 	struct usbdevfs_iso_packet_desc iso_frame_desc[0];
@@ -145,8 +145,8 @@ struct usbdevfs_ioctl {
 /* You can do most things with hubs just through control messages,
  * except find out what device connects to what port. */
 struct usbdevfs_hub_portinfo {
-	char nports;		/* number of downstream ports in this hub */
-	char port [127];	/* e.g. port 3 connects to device 27 */
+	i8 nports;		/* number of downstream ports in this hub */
+	i8 port [127];	/* e.g. port 3 connects to device 27 */
 };
 
 /* System and bus capability flags */
@@ -168,15 +168,15 @@ struct usbdevfs_hub_portinfo {
 #define USBDEVFS_DISCONNECT_CLAIM_EXCEPT_DRIVER	0x02
 
 struct usbdevfs_disconnect_claim {
-	unsigned i32 interface;
-	unsigned i32 flags;
-	char driver[USBDEVFS_MAXDRIVERNAME + 1];
+	%i32 interface;
+	%i32 flags;
+	i8 driver[USBDEVFS_MAXDRIVERNAME + 1];
 };
 
 struct usbdevfs_streams {
-	unsigned i32 num_streams; /* Not used by USBDEVFS_FREE_STREAMS */
-	unsigned i32 num_eps;
-	unsigned i8 eps[0];
+	%i32 num_streams; /* Not used by USBDEVFS_FREE_STREAMS */
+	%i32 num_eps;
+	%i8 eps[0];
 };
 
 /*
@@ -188,9 +188,9 @@ struct usbdevfs_streams {
 #define USBDEVFS_CONTROL32           _IOWR('U', 0, struct usbdevfs_ctrltransfer32)
 #define USBDEVFS_BULK              _IOWR('U', 2, struct usbdevfs_bulktransfer)
 #define USBDEVFS_BULK32              _IOWR('U', 2, struct usbdevfs_bulktransfer32)
-#define USBDEVFS_RESETEP           _IOR('U', 3, unsigned i32)
+#define USBDEVFS_RESETEP           _IOR('U', 3, %i32)
 #define USBDEVFS_SETINTERFACE      _IOR('U', 4, struct usbdevfs_setinterface)
-#define USBDEVFS_SETCONFIGURATION  _IOR('U', 5, unsigned i32)
+#define USBDEVFS_SETCONFIGURATION  _IOR('U', 5, %i32)
 #define USBDEVFS_GETDRIVER         _IOW('U', 8, struct usbdevfs_getdriver)
 #define USBDEVFS_SUBMITURB         _IOR('U', 10, struct usbdevfs_urb)
 #define USBDEVFS_SUBMITURB32       _IOR('U', 10, struct usbdevfs_urb32)
@@ -201,18 +201,18 @@ struct usbdevfs_streams {
 #define USBDEVFS_REAPURBNDELAY32   _IOW('U', 13, __u32)
 #define USBDEVFS_DISCSIGNAL        _IOR('U', 14, struct usbdevfs_disconnectsignal)
 #define USBDEVFS_DISCSIGNAL32      _IOR('U', 14, struct usbdevfs_disconnectsignal32)
-#define USBDEVFS_CLAIMINTERFACE    _IOR('U', 15, unsigned i32)
-#define USBDEVFS_RELEASEINTERFACE  _IOR('U', 16, unsigned i32)
+#define USBDEVFS_CLAIMINTERFACE    _IOR('U', 15, %i32)
+#define USBDEVFS_RELEASEINTERFACE  _IOR('U', 16, %i32)
 #define USBDEVFS_CONNECTINFO       _IOW('U', 17, struct usbdevfs_connectinfo)
 #define USBDEVFS_IOCTL             _IOWR('U', 18, struct usbdevfs_ioctl)
 #define USBDEVFS_IOCTL32           _IOWR('U', 18, struct usbdevfs_ioctl32)
 #define USBDEVFS_HUB_PORTINFO      _IOR('U', 19, struct usbdevfs_hub_portinfo)
 #define USBDEVFS_RESET             _IO('U', 20)
-#define USBDEVFS_CLEAR_HALT        _IOR('U', 21, unsigned i32)
+#define USBDEVFS_CLEAR_HALT        _IOR('U', 21, %i32)
 #define USBDEVFS_DISCONNECT        _IO('U', 22)
 #define USBDEVFS_CONNECT           _IO('U', 23)
-#define USBDEVFS_CLAIM_PORT        _IOR('U', 24, unsigned i32)
-#define USBDEVFS_RELEASE_PORT      _IOR('U', 25, unsigned i32)
+#define USBDEVFS_CLAIM_PORT        _IOR('U', 24, %i32)
+#define USBDEVFS_RELEASE_PORT      _IOR('U', 25, %i32)
 #define USBDEVFS_GET_CAPABILITIES  _IOR('U', 26, __u32)
 #define USBDEVFS_DISCONNECT_CLAIM  _IOR('U', 27, struct usbdevfs_disconnect_claim)
 #define USBDEVFS_ALLOC_STREAMS     _IOR('U', 28, struct usbdevfs_streams)

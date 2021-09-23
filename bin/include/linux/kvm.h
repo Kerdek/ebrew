@@ -130,7 +130,7 @@ struct kvm_irqchip {
 	__u32 chip_id;
 	__u32 pad;
         union {
-		char dummy[512];  /* reserving space */
+		i8 dummy[512];  /* reserving space */
 #ifdef __KVM_HAVE_PIT
 		struct kvm_pic_state pic;
 #endif
@@ -427,10 +427,10 @@ struct kvm_run {
 			__u64 data; /* kernel <-> user */
 		} msr;
 		/* Fix the size of the union. */
-		char padding[256];
+		i8 padding[256];
 	};
 
-	/* 2048 is the size of the char array used to bound/pad the size
+	/* 2048 is the size of the i8 array used to bound/pad the size
 	 * of the union that holds sync regs.
 	 */
 	#define SYNC_REGS_SIZE_BYTES 2048
@@ -445,7 +445,7 @@ struct kvm_run {
 	__u64 kvm_dirty_regs;
 	union {
 		struct kvm_sync_regs regs;
-		char padding[SYNC_REGS_SIZE_BYTES];
+		i8 padding[SYNC_REGS_SIZE_BYTES];
 	} s;
 };
 
@@ -684,7 +684,7 @@ struct kvm_s390_irq {
 		struct kvm_s390_prefix_info prefix;
 		struct kvm_s390_stop_info stop;
 		struct kvm_s390_mchk_info mchk;
-		char reserved[64];
+		i8 reserved[64];
 	} u;
 };
 
@@ -1317,7 +1317,7 @@ struct kvm_s390_ucas_mapping {
 };
 #define KVM_S390_UCAS_MAP        _IOW(KVMIO, 0x50, struct kvm_s390_ucas_mapping)
 #define KVM_S390_UCAS_UNMAP      _IOW(KVMIO, 0x51, struct kvm_s390_ucas_mapping)
-#define KVM_S390_VCPU_FAULT	 _IOW(KVMIO, 0x52, unsigned i64)
+#define KVM_S390_VCPU_FAULT	 _IOW(KVMIO, 0x52, %i64)
 
 /* Device model IOC */
 #define KVM_CREATE_IRQCHIP        _IO(KVMIO,   0x60)
@@ -1433,7 +1433,7 @@ struct kvm_s390_ucas_mapping {
 /* store status for s390 */
 #define KVM_S390_STORE_STATUS_NOADDR    (-1ul)
 #define KVM_S390_STORE_STATUS_PREFIXED  (-2ul)
-#define KVM_S390_STORE_STATUS	  _IOW(KVMIO,  0x95, unsigned i64)
+#define KVM_S390_STORE_STATUS	  _IOW(KVMIO,  0x95, %i64)
 /* initial ipl psw for s390 */
 #define KVM_S390_SET_INITIAL_PSW  _IOW(KVMIO,  0x96, struct kvm_s390_psw)
 /* initial reset for s390 */
@@ -1491,7 +1491,7 @@ struct kvm_s390_ucas_mapping {
 #define KVM_S390_GET_CMMA_BITS      _IOWR(KVMIO, 0xb8, struct kvm_s390_cmma_log)
 #define KVM_S390_SET_CMMA_BITS      _IOW(KVMIO, 0xb9, struct kvm_s390_cmma_log)
 /* Memory Encryption Commands */
-#define KVM_MEMORY_ENCRYPT_OP      _IOWR(KVMIO, 0xba, unsigned i64)
+#define KVM_MEMORY_ENCRYPT_OP      _IOWR(KVMIO, 0xba, %i64)
 
 struct kvm_enc_region {
 	__u64 addr;

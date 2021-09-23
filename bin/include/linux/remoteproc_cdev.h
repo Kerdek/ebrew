@@ -15,7 +15,7 @@
 
 /*
  * The RPROC_SET_SHUTDOWN_ON_RELEASE ioctl allows to enable/disable the shutdown of a remote
- * processor automatically when the controlling userpsace closes the char device interface.
+ * processor automatically when the controlling userpsace closes the i8 device interface.
  *
  * input parameter: integer
  *   0		: disable automatic shutdown
@@ -25,7 +25,7 @@
 
 /*
  * The RPROC_GET_SHUTDOWN_ON_RELEASE ioctl gets information about whether the automatic shutdown of
- * a remote processor is enabled or disabled when the controlling userspace closes the char device
+ * a remote processor is enabled or disabled when the controlling userspace closes the i8 device
  * interface.
  *
  * output parameter: integer

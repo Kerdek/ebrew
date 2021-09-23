@@ -118,7 +118,7 @@ struct arpreq {
 	struct sockaddr	arp_ha;		/* hardware address		 */
 	i32		arp_flags;	/* flags			 */
 	struct sockaddr arp_netmask;    /* netmask (only for proxy arps) */
-	char		arp_dev[IFNAMSIZ];
+	i8		arp_dev[IFNAMSIZ];
 };
 
 struct arpreq_old {
@@ -144,18 +144,18 @@ struct arpreq_old {
 struct arphdr {
 	__be16		ar_hrd;		/* format of hardware address	*/
 	__be16		ar_pro;		/* format of protocol address	*/
-	unsigned i8	ar_hln;		/* length of hardware address	*/
-	unsigned i8	ar_pln;		/* length of protocol address	*/
+	%i8	ar_hln;		/* length of hardware address	*/
+	%i8	ar_pln;		/* length of protocol address	*/
 	__be16		ar_op;		/* ARP opcode (command)		*/
 
 #if 0
 	 /*
 	  *	 Ethernet looks like this : This bit is variable sized however...
 	  */
-	unsigned i8		ar_sha[ETH_ALEN];	/* sender hardware address	*/
-	unsigned i8		ar_sip[4];		/* sender IP address		*/
-	unsigned i8		ar_tha[ETH_ALEN];	/* target hardware address	*/
-	unsigned i8		ar_tip[4];		/* target IP address		*/
+	%i8		ar_sha[ETH_ALEN];	/* sender hardware address	*/
+	%i8		ar_sip[4];		/* sender IP address		*/
+	%i8		ar_tha[ETH_ALEN];	/* target hardware address	*/
+	%i8		ar_tip[4];		/* target IP address		*/
 #endif
 
 };

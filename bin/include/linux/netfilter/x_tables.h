@@ -14,7 +14,7 @@ struct xt_entry_match {
 			__u16 match_size;
 
 			/* Used by userspace */
-			char name[XT_EXTENSION_MAXNAMELEN];
+			i8 name[XT_EXTENSION_MAXNAMELEN];
 			__u8 revision;
 		} user;
 		struct {
@@ -28,7 +28,7 @@ struct xt_entry_match {
 		__u16 match_size;
 	} u;
 
-	unsigned i8 data[0];
+	%i8 data[0];
 };
 
 struct xt_entry_target {
@@ -37,7 +37,7 @@ struct xt_entry_target {
 			__u16 target_size;
 
 			/* Used by userspace */
-			char name[XT_EXTENSION_MAXNAMELEN];
+			i8 name[XT_EXTENSION_MAXNAMELEN];
 			__u8 revision;
 		} user;
 		struct {
@@ -51,7 +51,7 @@ struct xt_entry_target {
 		__u16 target_size;
 	} u;
 
-	unsigned i8 data[0];
+	%i8 data[0];
 };
 
 #define XT_TARGET_INIT(__name, __size)					       \
@@ -69,13 +69,13 @@ struct xt_standard_target {
 
 struct xt_error_target {
 	struct xt_entry_target target;
-	char errorname[XT_FUNCTION_MAXNAMELEN];
+	i8 errorname[XT_FUNCTION_MAXNAMELEN];
 };
 
 /* The argument to IPT_SO_GET_REVISION_*.  Returns highest revision
  * kernel supports, if >= revision. */
 struct xt_get_revision {
-	char name[XT_EXTENSION_MAXNAMELEN];
+	i8 name[XT_EXTENSION_MAXNAMELEN];
 	__u8 revision;
 };
 
@@ -114,9 +114,9 @@ struct xt_counters {
 /* The argument to IPT_SO_ADD_COUNTERS. */
 struct xt_counters_info {
 	/* Which table. */
-	char name[XT_TABLE_MAXNAMELEN];
+	i8 name[XT_TABLE_MAXNAMELEN];
 
-	unsigned i32 num_counters;
+	%i32 num_counters;
 
 	/* The counters (actually `number' of these). */
 	struct xt_counters counters[0];
@@ -127,7 +127,7 @@ struct xt_counters_info {
 /* fn returns 0 to continue iteration */
 #define XT_MATCH_ITERATE(type, e, fn, args...)			\
 ({								\
-	unsigned i32 __i;					\
+	%i32 __i;					\
 	i32 __ret = 0;						\
 	struct xt_entry_match *__m;				\
 								\
@@ -146,7 +146,7 @@ struct xt_counters_info {
 /* fn returns 0 to continue iteration */
 #define XT_ENTRY_ITERATE_CONTINUE(type, entries, size, n, fn, args...) \
 ({								\
-	unsigned i32 __i, __n;					\
+	%i32 __i, __n;					\
 	i32 __ret = 0;						\
 	type *__entry;						\
 								\
@@ -171,15 +171,15 @@ struct xt_counters_info {
 /* pos is normally a struct ipt_entry/ip6t_entry/etc. */
 #define xt_entry_foreach(pos, ehead, esize) \
 	for ((pos) = (typeof(pos))(ehead); \
-	     (pos) < (typeof(pos))((char *)(ehead) + (esize)); \
-	     (pos) = (typeof(pos))((char *)(pos) + (pos)->next_offset))
+	     (pos) < (typeof(pos))((i8 *)(ehead) + (esize)); \
+	     (pos) = (typeof(pos))((i8 *)(pos) + (pos)->next_offset))
 
 /* can only be xt_entry_match, so no use of typeof here */
 #define xt_ematch_foreach(pos, entry) \
 	for ((pos) = (struct xt_entry_match *)entry->elems; \
-	     (pos) < (struct xt_entry_match *)((char *)(entry) + \
+	     (pos) < (struct xt_entry_match *)((i8 *)(entry) + \
 	             (entry)->target_offset); \
-	     (pos) = (struct xt_entry_match *)((char *)(pos) + \
+	     (pos) = (struct xt_entry_match *)((i8 *)(pos) + \
 	             (pos)->u.match_size))
 
 

@@ -8,11 +8,11 @@
  * assume GCC is being used.
  */
 
-typedef unsigned i16 __kernel_old_uid_t;
-typedef unsigned i16 __kernel_old_gid_t;
+typedef %i16 __kernel_old_uid_t;
+typedef %i16 __kernel_old_gid_t;
 #define __kernel_old_uid_t __kernel_old_uid_t
 
-typedef unsigned i64	__kernel_old_dev_t;
+typedef %i64	__kernel_old_dev_t;
 #define __kernel_old_dev_t __kernel_old_dev_t
 
 #include <asm-generic/posix_types.h>

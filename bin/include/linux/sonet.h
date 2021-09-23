@@ -40,7 +40,7 @@ struct sonet_stats {
 #define SONET_GETFRAMING _IOR('a',ATMIOC_PHYTYP+6,i32)
 					/* get framing mode */
 #define SONET_GETFRSENSE _IOR('a',ATMIOC_PHYTYP+7, \
-  unsigned i8[SONET_FRSENSE_SIZE])	/* get framing sense information */
+  %i8[SONET_FRSENSE_SIZE])	/* get framing sense information */
 
 #define SONET_INS_SBIP	  1		/* section BIP */
 #define SONET_INS_LBIP	  2		/* line BIP */

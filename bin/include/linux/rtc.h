@@ -38,8 +38,8 @@ struct rtc_time {
  * alarm API.
  */
 struct rtc_wkalrm {
-	unsigned i8 enabled;	/* 0 = alarm disabled, 1 = alarm enabled */
-	unsigned i8 pending;  /* 0 = alarm not pending, 1 = alarm pending */
+	%i8 enabled;	/* 0 = alarm disabled, 1 = alarm enabled */
+	%i8 pending;  /* 0 = alarm not pending, 1 = alarm pending */
 	struct rtc_time time;	/* time the alarm is set to */
 };
 
@@ -84,10 +84,10 @@ struct rtc_pll_info {
 #define RTC_ALM_READ	_IOR('p', 0x08, struct rtc_time) /* Read alarm time */
 #define RTC_RD_TIME	_IOR('p', 0x09, struct rtc_time) /* Read RTC time   */
 #define RTC_SET_TIME	_IOW('p', 0x0a, struct rtc_time) /* Set RTC time    */
-#define RTC_IRQP_READ	_IOR('p', 0x0b, unsigned i64)	 /* Read IRQ rate   */
-#define RTC_IRQP_SET	_IOW('p', 0x0c, unsigned i64)	 /* Set IRQ rate    */
-#define RTC_EPOCH_READ	_IOR('p', 0x0d, unsigned i64)	 /* Read epoch      */
-#define RTC_EPOCH_SET	_IOW('p', 0x0e, unsigned i64)	 /* Set epoch       */
+#define RTC_IRQP_READ	_IOR('p', 0x0b, %i64)	 /* Read IRQ rate   */
+#define RTC_IRQP_SET	_IOW('p', 0x0c, %i64)	 /* Set IRQ rate    */
+#define RTC_EPOCH_READ	_IOR('p', 0x0d, %i64)	 /* Read epoch      */
+#define RTC_EPOCH_SET	_IOW('p', 0x0e, %i64)	 /* Set epoch       */
 
 #define RTC_WKALM_SET	_IOW('p', 0x0f, struct rtc_wkalrm)/* Set wakeup alarm*/
 #define RTC_WKALM_RD	_IOR('p', 0x10, struct rtc_wkalrm)/* Get wakeup alarm*/
@@ -101,7 +101,7 @@ struct rtc_pll_info {
 #define RTC_VL_ACCURACY_LOW	_BITUL(3) /* Voltage is low, RTC accuracy is reduced */
 #define RTC_VL_BACKUP_SWITCH	_BITUL(4) /* Backup switchover happened */
 
-#define RTC_VL_READ	_IOR('p', 0x13, unsigned i32)	/* Voltage low detection */
+#define RTC_VL_READ	_IOR('p', 0x13, %i32)	/* Voltage low detection */
 #define RTC_VL_CLR	_IO('p', 0x14)		/* Clear voltage low information */
 
 /* interrupt flags */

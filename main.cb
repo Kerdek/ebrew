@@ -8,21 +8,21 @@ type
     FILE_AR
     FILE_DSO;;
 usage(status i32) = (cast void fprintf stderr "chibicc [options] <file>\n") ;: exit status;;
-open_file(path@ char) @FILE = return
+open_file(path@ i8) @FILE = return
   (!path || ! strcmp cast @ path "-") ? stdout :
   fopen path "w" is out
   (out || ((error "cannot open output file: %s: %s" path strerror errno) ;: cast @FILE 0));;
-endswith(p@ char q@ char) bool = return
+endswith(p@ i8 q@ i8) bool = return
   strlen p is len1
   strlen q is len2
   ((len1 >= len2) && ! strcmp ((p + len1) - len2 as @) q);;
-replace_extn(tmpl@ char extn@ char) @char = return
+replace_extn(tmpl@ i8 extn@ i8) @i8 = return
   basename strdup tmpl is filename
   strrchr filename '.' is dot
-  (!!dot && (dot@ = '\0' as char) as void) ;:
+  (!!dot && (dot@ = '\0' as i8) as void) ;:
   (format "%s%s" filename extn);;
 wait_subprocess(status @i32) = while (wait status > 0);;
-run_subprocess(argv@@char) =
+run_subprocess(argv@@i8) =
   (!fork &&
     ( (execvp argv[0] argv as) ;:
       cast void (fprintf stderr "exec failed: %s: %s\n" argv[0] strerror errno) ;:
@@ -30,7 +30,7 @@ run_subprocess(argv@@char) =
   0 is status
   wait_subprocess &status ;:
   (!!status && exit 1);;
-must_tokenize_file(path @char) @Token = return tokenize_file path || ((error "%s: %s" path strerror errno) ;: 0 as @Token);;
+must_tokenize_file(path @i8) @Token = return tokenize_file path || ((error "%s: %s" path strerror errno) ;: 0 as @Token);;
 append_tokens(tok1@ Token tok2@ Token)@ Token =
   if (!tok1 || tok1.kind == TK_EOF) return tok2;
   let t = tok1;
@@ -48,7 +48,7 @@ print_tokens(j @Token) = return
   as void )
 ;: (cast void printf "\n");;
 
-cc1(input @char output @char include_paths @StringArray) =
+cc1(input @i8 output @i8 include_paths @StringArray) =
   must_tokenize_file input is j
   (j = preprocess j include_paths) ;:
   print_tokens j ;:
@@ -56,24 +56,24 @@ cc1(input @char output @char include_paths @StringArray) =
   open_file output is out
   codegen obj out ;:
   fclose out;;
-assemble(input@ char output@ char) =
-  let cmd[]@ char = {"as" "-c" input "-o" output cast @char 0;;
-  run_subprocess cast @@char cmd;;
-find_file( pattern@ char)@ char =
-  cast @char 0 is path
+assemble(input@ i8 output@ i8) =
+  let cmd[]@ i8 = {"as" "-c" input "-o" output cast @i8 0;;
+  run_subprocess cast @@i8 cmd;;
+find_file( pattern@ i8)@ i8 =
+  cast @i8 0 is path
   new glob_t {; is buf
-  cast void glob pattern 0 cast @(c @char k i32) i32 0 &buf ;:
+  cast void glob pattern 0 cast @(c @i8 k i32) i32 0 &buf ;:
   (buf.gl_pathc > 0 && (path = strdup buf.gl_pathv[buf.gl_pathc - 1ul]) as void) ;:
   globfree &buf ;:
   path;;
 type stat_type struct stat;;
-export file_exists(path@ char) bool = return ! stat path &new stat_type {;;;
-find_libpath(void) @char = return
+export file_exists(path@ i8) bool = return ! stat path &new stat_type {;;;
+find_libpath(void) @i8 = return
   file_exists "/usr/lib/x86_64-linux-gnu/crti.o" ? "/usr/lib/x86_64-linux-gnu" :
   file_exists "/usr/lib64/crti.o" ? "/usr/lib64" :
-  (error "library path is not found") ;: cast @char 0;;
-find_gcc_libpath(void)@ char =
-  let paths[]@ char = {
+  (error "library path is not found") ;: cast @i8 0;;
+find_gcc_libpath(void)@ i8 =
+  let paths[]@ i8 = {
     "/usr/lib/gcc/x86_64-linux-gnu/*/crtbegin.o"
     "/usr/lib/gcc/x86_64-pc-linux-gnu/*/crtbegin.o" // For Gentoo
     "/usr/lib/gcc/x86_64-redhat-linux/*/crtbegin.o";; // For Fedora;;
@@ -81,7 +81,7 @@ find_gcc_libpath(void)@ char =
     let path = find_file paths[i];
     if path return dirname path;;
   (error "gcc library path is not found");;
-run_linker(inputs @StringArray flags @StringArray output@ char opt_shared bool opt_static bool) =
+run_linker(inputs @StringArray flags @StringArray output@ i8 opt_shared bool opt_static bool) =
   let a = &new StringArray {;;
   strarray_push a "ld";
   strarray_push a "-o";
@@ -126,21 +126,21 @@ run_linker(inputs @StringArray flags @StringArray output@ char opt_shared bool o
   if opt_shared strarray_push a (format "%s/crtendS.o" gcc_libpath);
   else strarray_push a (format "%s/crtend.o" gcc_libpath);
   strarray_push a (format "%s/crtn.o" libpath);
-  strarray_push a cast @char 0;
+  strarray_push a cast @i8 0;
   run_subprocess a.data;;
-get_file_type(filename@ char) FileType = return
+get_file_type(filename@ i8) FileType = return
   endswith filename ".a"  ? FILE_AR  :
   endswith filename ".so" ? FILE_DSO :
   endswith filename ".o"  ? FILE_OBJ :
   endswith filename ".cb" ? FILE_CB  :
   (error "<command line>: unknown file extension: %s" filename) ;: cast FileType 0;;
-export main(argc i32 argv@@char) i32 =
+export main(argc i32 argv@@i8) i32 =
   let p = 4;
   let 
     opt_c         = false
     opt_static    = false
     opt_shared    = false
-    opt_o         = cast @char 0
+    opt_o         = cast @i8 0
     ccset         = &new StringArray {;
     ldset         = &new StringArray {;
     ldflags       = &new StringArray {;

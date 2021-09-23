@@ -33,8 +33,8 @@ struct ipc_perm
   __uid_t cuid;					/* Creator's user ID.  */
   __gid_t cgid;					/* Creator's group ID.  */
   __mode_t mode;				/* Read/write permission.  */
-  unsigned i16 __seq;			/* Sequence number.  */
-  unsigned i16 __pad2;
+  %i16 __seq;			/* Sequence number.  */
+  %i16 __pad2;
   __syscall_ulong_t __glibc_reserved1;
   __syscall_ulong_t __glibc_reserved2;
 };

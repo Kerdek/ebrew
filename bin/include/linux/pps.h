@@ -42,7 +42,7 @@
 
 /* 32-bit vs. 64-bit compatibility.
  *
- * 0n i386, the alignment of a unsigned i64 is only 4 bytes, while on most other
+ * 0n i386, the alignment of a %i64 is only 4 bytes, while on most other
  * architectures it's 8 bytes. On i386, there will be no padding between the
  * two consecutive 'struct pps_ktime' members of struct pps_kinfo and struct
  * pps_kparams. But on most platforms there will be padding to ensure correct

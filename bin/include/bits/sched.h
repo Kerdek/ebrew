@@ -89,7 +89,7 @@ extern i32 unshare (i32 __flags) __THROW;
 extern i32 sched_getcpu (void) __THROW;
 
 /* Get currently used CPU and NUMA node.  */
-extern i32 getcpu (unsigned i32 *, unsigned i32 *) __THROW;
+extern i32 getcpu (%i32 *, %i32 *) __THROW;
 
 /* Switch process to namespace of type NSTYPE indicated by FD.  */
 extern i32 setns (i32 __fd, i32 __nstype) __THROW;

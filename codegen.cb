@@ -8,16 +8,16 @@ type
 
 output_file@FILE
 depth i32
-argreg8 []@char = {"%dil" "%sil" "%dl"  "%cl"  "%r8b" "%r9b";
-argreg16[]@char = {"%di"  "%si"  "%dx"  "%cx"  "%r8w" "%r9w";
-argreg32[]@char = {"%edi" "%esi" "%edx" "%ecx" "%r8d" "%r9d";
-argreg64[]@char = {"%rdi" "%rsi" "%rdx" "%rcx" "%r8"  "%r9" ;
+argreg8 []@i8 = {"%dil" "%sil" "%dl"  "%cl"  "%r8b" "%r9b";
+argreg16[]@i8 = {"%di"  "%si"  "%dx"  "%cx"  "%r8w" "%r9w";
+argreg32[]@i8 = {"%edi" "%esi" "%edx" "%ecx" "%r8d" "%r9d";
+argreg64[]@i8 = {"%rdi" "%rsi" "%rdx" "%rcx" "%r8"  "%r9" ;
 current_fn@Obj;
 
 gen_expr(e @Node);
 gen_stmt(e @Node);
 
-println(fmt @char ...) =
+println(fmt @i8 ...) =
   let ap = new va_list {;;
   (ap = (cast @__va_elem __va_area__)@);
   vfprintf output_file fmt &ap;
@@ -27,21 +27,21 @@ i counti i32 = 1;
 count(void     ) i32 = return counti :; (counti += 1);;
 
 push (void     )     = return (println "  push %%rax") ;: (depth += 1);;
-pop  (arg @char)     = return (println "  pop %s" arg) ;: (depth -= 1);;
+pop  (arg @i8)     = return (println "  pop %s" arg) ;: (depth -= 1);;
 
 pushf(void     )     = return (println "  sub $8, %%rsp"             ) ;: (println "  movsd %%xmm0, (%%rsp)") ;: (depth += 1);;
 popf (reg   i32)     = return (println "  movsd (%%rsp), %%xmm%d" reg) ;: (println "  add $8, %%rsp"        ) ;: (depth -= 1);;
 
 export align_to(n i32 alignment i32) i32 = return (n + alignment - 1) / alignment * alignment;;
 
-reg_dx(sz i32) @char = return (sz == 1) ? "%dl"  :
+reg_dx(sz i32) @i8 = return (sz == 1) ? "%dl"  :
                               (sz == 2) ? "%dx"  :
                               (sz == 4) ? "%edx" :
-                              (sz == 8) ? "%rdx" : cast @char 0 ;;
-reg_ax(sz i32) @char = return (sz == 1) ? "%al"  :
+                              (sz == 8) ? "%rdx" : cast @i8 0 ;;
+reg_ax(sz i32) @i8 = return (sz == 1) ? "%al"  :
                               (sz == 2) ? "%ax"  :
                               (sz == 4) ? "%eax" :
-                              (sz == 8) ? "%rax" : cast @char 0 ;;
+                              (sz == 8) ? "%rax" : cast @i8 0 ;;
 
 gen_addr(e @Node) = return
   ( e.kind    == ND_VAR     ) ?
@@ -69,7 +69,7 @@ load(t @Type) = return cast void(
     (t.kind == TY_FLOAT64 ) ? (println "  movsd (%%rax), %%xmm0"      ) :
     (t.kind == TY_FLOAT80) ? (println "  fldt (%%rax)"               ) :
     ((t.kind == TY_UNSIGNED) ? "movz" : "movs") is insn
-    ((t.kind == TY_UNSIGNED) ? t.base : t ) is u
+    ((t.kind == TY_UNSIGNED) ? t.a : t ) is u
     ( (u.size == 1         ) ? (println "  %sbl (%%rax), %%eax"   insn ) :
       (u.size == 2         ) ? (println "  %swl (%%rax), %%eax"   insn ) :
       (u.size == 4         ) ? (println "  movsxd (%%rax), %%rax"      ) :
@@ -104,71 +104,71 @@ getTypeId(t @Type)TypeID = return
   (t.kind == TY_FLOAT64 )  ? F64 :
   (t.kind == TY_FLOAT80)  ? F80 :
   (t.kind == TY_UNSIGNED) ?
-    (t.base.kind == TY_INT08   ) ? U8  :
-    (t.base.kind == TY_INT16  ) ? U16 :
-    (t.base.kind == TY_INT32    ) ? U32 :
+    (t.a.kind == TY_INT08   ) ? U8  :
+    (t.a.kind == TY_INT16  ) ? U16 :
+    (t.a.kind == TY_INT32    ) ? U32 :
                                   U64 :
   (t.kind == TY_INT08   ) ? I8  :
   (t.kind == TY_INT16  ) ? I16 :
   (t.kind == TY_INT32    ) ? I32 :
                            I64 ;;
 
-i32i8 []char = "movsbl %al, %eax"                                   ;
-i32u8 []char = "movzbl %al, %eax"                                   ;
-i32i16[]char = "movswl %ax, %eax"                                   ;
-i32u16[]char = "movzwl %ax, %eax"                                   ;
-i32f32[]char = "cvtsi2ssl %eax, %xmm0"                              ;
-i32i64[]char = "movsxd %eax, %rax"                                  ;
-i32f64[]char = "cvtsi2sdl %eax, %xmm0"                              ;
-i32f80[]char = "mov %eax, -4(%rsp); fildl -4(%rsp)"                 ;
+i32i8 []i8 = "movsbl %al, %eax"                                   ;
+i32u8 []i8 = "movzbl %al, %eax"                                   ;
+i32i16[]i8 = "movswl %ax, %eax"                                   ;
+i32u16[]i8 = "movzwl %ax, %eax"                                   ;
+i32f32[]i8 = "cvtsi2ssl %eax, %xmm0"                              ;
+i32i64[]i8 = "movsxd %eax, %rax"                                  ;
+i32f64[]i8 = "cvtsi2sdl %eax, %xmm0"                              ;
+i32f80[]i8 = "mov %eax, -4(%rsp); fildl -4(%rsp)"                 ;
               
-u32f32[]char = "mov %eax, %eax; cvtsi2ssq %rax, %xmm0"              ;
-u32i64[]char = "mov %eax, %eax"                                     ;
-u32f64[]char = "mov %eax, %eax; cvtsi2sdq %rax, %xmm0"              ;
-u32f80[]char = "mov %eax, %eax; mov %rax, -8(%rsp); fildll -8(%rsp)";
+u32f32[]i8 = "mov %eax, %eax; cvtsi2ssq %rax, %xmm0"              ;
+u32i64[]i8 = "mov %eax, %eax"                                     ;
+u32f64[]i8 = "mov %eax, %eax; cvtsi2sdq %rax, %xmm0"              ;
+u32f80[]i8 = "mov %eax, %eax; mov %rax, -8(%rsp); fildll -8(%rsp)";
 
-i64f32[]char = "cvtsi2ssq %rax, %xmm0";
-i64f64[]char = "cvtsi2sdq %rax, %xmm0";
-i64f80[]char = "movq %rax, -8(%rsp); fildll -8(%rsp)";
+i64f32[]i8 = "cvtsi2ssq %rax, %xmm0";
+i64f64[]i8 = "cvtsi2sdq %rax, %xmm0";
+i64f80[]i8 = "movq %rax, -8(%rsp); fildll -8(%rsp)";
 
-u64f32[]char = "cvtsi2ssq %rax, %xmm0";
-u64f64[]char = "test %rax,%rax; js 1f; pxor %xmm0,%xmm0; cvtsi2sd %rax,%xmm0; jmp 2f; 1: mov %rax,%rdi; and $1,%eax; pxor %xmm0,%xmm0; shr %rdi; or %rax,%rdi; cvtsi2sd %rdi,%xmm0; addsd %xmm0,%xmm0; 2:";
-u64f80[]char = "mov %rax, -8(%rsp); fildq -8(%rsp); test %rax, %rax; jns 1f; mov $1602224128, %eax; mov %eax, -4(%rsp); fadds -4(%rsp); 1:";
+u64f32[]i8 = "cvtsi2ssq %rax, %xmm0";
+u64f64[]i8 = "test %rax,%rax; js 1f; pxor %xmm0,%xmm0; cvtsi2sd %rax,%xmm0; jmp 2f; 1: mov %rax,%rdi; and $1,%eax; pxor %xmm0,%xmm0; shr %rdi; or %rax,%rdi; cvtsi2sd %rdi,%xmm0; addsd %xmm0,%xmm0; 2:";
+u64f80[]i8 = "mov %rax, -8(%rsp); fildq -8(%rsp); test %rax, %rax; jns 1f; mov $1602224128, %eax; mov %eax, -4(%rsp); fadds -4(%rsp); 1:";
 
-f32i8 []char = "cvttss2sil %xmm0, %eax; movsbl %al, %eax";
-f32u8 []char = "cvttss2sil %xmm0, %eax; movzbl %al, %eax";
-f32i16[]char = "cvttss2sil %xmm0, %eax; movswl %ax, %eax";
-f32u16[]char = "cvttss2sil %xmm0, %eax; movzwl %ax, %eax";
-f32i32[]char = "cvttss2sil %xmm0, %eax"                  ;
-f32u32[]char = "cvttss2siq %xmm0, %rax"                  ;
-f32i64[]char = "cvttss2siq %xmm0, %rax"                  ;
-f32u64[]char = "cvttss2siq %xmm0, %rax"                  ;
-f32f64[]char = "cvtss2sd %xmm0, %xmm0"                   ;
-f32f80[]char = "movss %xmm0, -4(%rsp); flds -4(%rsp)"    ;
+f32i8 []i8 = "cvttss2sil %xmm0, %eax; movsbl %al, %eax";
+f32u8 []i8 = "cvttss2sil %xmm0, %eax; movzbl %al, %eax";
+f32i16[]i8 = "cvttss2sil %xmm0, %eax; movswl %ax, %eax";
+f32u16[]i8 = "cvttss2sil %xmm0, %eax; movzwl %ax, %eax";
+f32i32[]i8 = "cvttss2sil %xmm0, %eax"                  ;
+f32u32[]i8 = "cvttss2siq %xmm0, %rax"                  ;
+f32i64[]i8 = "cvttss2siq %xmm0, %rax"                  ;
+f32u64[]i8 = "cvttss2siq %xmm0, %rax"                  ;
+f32f64[]i8 = "cvtss2sd %xmm0, %xmm0"                   ;
+f32f80[]i8 = "movss %xmm0, -4(%rsp); flds -4(%rsp)"    ;
 
-f64i8 []char = "cvttsd2sil %xmm0, %eax; movsbl %al, %eax";
-f64u8 []char = "cvttsd2sil %xmm0, %eax; movzbl %al, %eax";
-f64i16[]char = "cvttsd2sil %xmm0, %eax; movswl %ax, %eax";
-f64u16[]char = "cvttsd2sil %xmm0, %eax; movzwl %ax, %eax";
-f64i32[]char = "cvttsd2sil %xmm0, %eax"                  ;
-f64u32[]char = "cvttsd2siq %xmm0, %rax"                  ;
-f64i64[]char = "cvttsd2siq %xmm0, %rax"                  ;
-f64u64[]char = "cvttsd2siq %xmm0, %rax"                  ;
-f64f32[]char = "cvtsd2ss %xmm0, %xmm0"                   ;
-f64f80[]char = "movsd %xmm0, -8(%rsp); fldl -8(%rsp)"    ;
+f64i8 []i8 = "cvttsd2sil %xmm0, %eax; movsbl %al, %eax";
+f64u8 []i8 = "cvttsd2sil %xmm0, %eax; movzbl %al, %eax";
+f64i16[]i8 = "cvttsd2sil %xmm0, %eax; movswl %ax, %eax";
+f64u16[]i8 = "cvttsd2sil %xmm0, %eax; movzwl %ax, %eax";
+f64i32[]i8 = "cvttsd2sil %xmm0, %eax"                  ;
+f64u32[]i8 = "cvttsd2siq %xmm0, %rax"                  ;
+f64i64[]i8 = "cvttsd2siq %xmm0, %rax"                  ;
+f64u64[]i8 = "cvttsd2siq %xmm0, %rax"                  ;
+f64f32[]i8 = "cvtsd2ss %xmm0, %xmm0"                   ;
+f64f80[]i8 = "movsd %xmm0, -8(%rsp); fldl -8(%rsp)"    ;
 
-f80i8 []char = "fnstcw -10(%rsp); movzwl -10(%rsp), %eax; or $12, %ah; mov %ax, -12(%rsp); fldcw -12(%rsp); fistps -24(%rsp); fldcw -10(%rsp); movsbl -24(%rsp), %eax"
-f80u8 []char = "fnstcw -10(%rsp); movzwl -10(%rsp), %eax; or $12, %ah; mov %ax, -12(%rsp); fldcw -12(%rsp); fistps -24(%rsp); fldcw -10(%rsp); movzbl -24(%rsp), %eax"
-f80i16[]char = "fnstcw -10(%rsp); movzwl -10(%rsp), %eax; or $12, %ah; mov %ax, -12(%rsp); fldcw -12(%rsp); fistps -24(%rsp); fldcw -10(%rsp); movzbl -24(%rsp), %eax"
-f80u16[]char = "fnstcw -10(%rsp); movzwl -10(%rsp), %eax; or $12, %ah; mov %ax, -12(%rsp); fldcw -12(%rsp); fistpl -24(%rsp); fldcw -10(%rsp); movswl -24(%rsp), %eax"
-f80i32[]char = "fnstcw -10(%rsp); movzwl -10(%rsp), %eax; or $12, %ah; mov %ax, -12(%rsp); fldcw -12(%rsp); fistpl -24(%rsp); fldcw -10(%rsp); mov -24(%rsp), %eax"
-f80u32[]char = "fnstcw -10(%rsp); movzwl -10(%rsp), %eax; or $12, %ah; mov %ax, -12(%rsp); fldcw -12(%rsp); fistpl -24(%rsp); fldcw -10(%rsp); mov -24(%rsp), %eax"
-f80i64[]char = "fnstcw -10(%rsp); movzwl -10(%rsp), %eax; or $12, %ah; mov %ax, -12(%rsp); fldcw -12(%rsp); fistpq -24(%rsp); fldcw -10(%rsp); mov -24(%rsp), %rax"
-f80u64[]char = "fnstcw -10(%rsp); movzwl -10(%rsp), %eax; or $12, %ah; mov %ax, -12(%rsp); fldcw -12(%rsp); fistpq -24(%rsp); fldcw -10(%rsp); mov -24(%rsp), %rax"
-f80f32[]char = "fstps -8(%rsp); movss -8(%rsp), %xmm0"
-f80f64[]char = "fstpl -8(%rsp); movsd -8(%rsp), %xmm0";
+f80i8 []i8 = "fnstcw -10(%rsp); movzwl -10(%rsp), %eax; or $12, %ah; mov %ax, -12(%rsp); fldcw -12(%rsp); fistps -24(%rsp); fldcw -10(%rsp); movsbl -24(%rsp), %eax"
+f80u8 []i8 = "fnstcw -10(%rsp); movzwl -10(%rsp), %eax; or $12, %ah; mov %ax, -12(%rsp); fldcw -12(%rsp); fistps -24(%rsp); fldcw -10(%rsp); movzbl -24(%rsp), %eax"
+f80i16[]i8 = "fnstcw -10(%rsp); movzwl -10(%rsp), %eax; or $12, %ah; mov %ax, -12(%rsp); fldcw -12(%rsp); fistps -24(%rsp); fldcw -10(%rsp); movzbl -24(%rsp), %eax"
+f80u16[]i8 = "fnstcw -10(%rsp); movzwl -10(%rsp), %eax; or $12, %ah; mov %ax, -12(%rsp); fldcw -12(%rsp); fistpl -24(%rsp); fldcw -10(%rsp); movswl -24(%rsp), %eax"
+f80i32[]i8 = "fnstcw -10(%rsp); movzwl -10(%rsp), %eax; or $12, %ah; mov %ax, -12(%rsp); fldcw -12(%rsp); fistpl -24(%rsp); fldcw -10(%rsp); mov -24(%rsp), %eax"
+f80u32[]i8 = "fnstcw -10(%rsp); movzwl -10(%rsp), %eax; or $12, %ah; mov %ax, -12(%rsp); fldcw -12(%rsp); fistpl -24(%rsp); fldcw -10(%rsp); mov -24(%rsp), %eax"
+f80i64[]i8 = "fnstcw -10(%rsp); movzwl -10(%rsp), %eax; or $12, %ah; mov %ax, -12(%rsp); fldcw -12(%rsp); fistpq -24(%rsp); fldcw -10(%rsp); mov -24(%rsp), %rax"
+f80u64[]i8 = "fnstcw -10(%rsp); movzwl -10(%rsp), %eax; or $12, %ah; mov %ax, -12(%rsp); fldcw -12(%rsp); fistpq -24(%rsp); fldcw -10(%rsp); mov -24(%rsp), %rax"
+f80f32[]i8 = "fstps -8(%rsp); movss -8(%rsp), %xmm0"
+f80f64[]i8 = "fstpl -8(%rsp); movsd -8(%rsp), %xmm0";
 
-cast_table[][11]@char = {
+cast_table[][11]@i8 = {
   // i8   i16     i32     i64     u8     u16     u32     u64     f32     f64     f80
   { 0     0      0      i32i64 i32u8 i32u16 0      i32i64 i32f32 i32f64 i32f80 ; // i8
   { i32i8 0      0      i32i64 i32u8 i32u16 0      i32i64 i32f32 i32f64 i32f80 ; // i16
@@ -197,7 +197,7 @@ has_flonum(t@Type lo i32 hi i32 offset i32) bool =
     for (let mem@Member = t.members; mem; mem = mem.s) if !has_flonum cast @Type mem.t lo hi (offset + mem.offset) return false;
     return true;;
   if (t.kind == TY_ARRAY) {
-    for (let i i32 = 0; i < t.array_len; i += 1) if !has_flonum t.base lo hi (offset + t.base.size * i) return false;
+    for (let i i32 = 0; i < t.array_len; i += 1) if !has_flonum t.a lo hi (offset + t.a.size * i) return false;
     return true;;
   return offset < lo || hi <= offset || t.kind == TY_FLOAT32 || t.kind == TY_FLOAT64;;
 has_flonum1(t@Type)bool = return has_flonum t 0 8 0;;
@@ -349,7 +349,7 @@ copy_ret_buffer(var@Obj) =
 ;
 
 copy_struct_reg(void) =
-  let t = current_fn.t.return_ty gp = 0 fp = 0;
+  let t = current_fn.t.a gp = 0 fp = 0;
 
   (println "  mov %%rax, %%rdi");
 
@@ -383,7 +383,7 @@ copy_struct_reg(void) =
 ;
 
 copy_struct_mem(void) =
-  let t = current_fn.t.return_ty var = current_fn.params;
+  let t = current_fn.t.a var = current_fn.params;
 
   (println "  mov %d(%%rbp), %%rdi" var.offset);
 
@@ -404,19 +404,19 @@ gen_expr(e @Node) =
   case ND_NUM: {
     switch  e.t.kind {
     case TY_FLOAT32: {
-      let u union { f32 f32; u32 unsigned i32; } = { cast f32 e.fval ;
+      let u union { f32 f32; u32 %i32; } = { cast f32 e.fval ;
       (println "  mov $%u, %%eax  # f32 %Lf" u.u32 e.fval);
       (println "  movq %%rax, %%xmm0");
       return;
     ;
     case TY_FLOAT64: {
-      let u union { f64 f64 u64 unsigned i64; } = { cast f64 e.fval ;
+      let u union { f64 f64 u64 % i64; } = { cast f64 e.fval ;
       (println "  mov $%lu, %%rax  # f64 %Lf" u.u64 e.fval);
       (println "  movq %%rax, %%xmm0");
       return;
     ;
     case TY_FLOAT80: {
-      let u union { f80 f80; u64[2]unsigned i64; };
+      let u union { f80 f80; u64[2]% i64; };
       memset cast @ &u 0 sizeof typeof u;
       (u.f80 = e.fval);
       (println "  mov $%lu, %%rax  # f80 %Lf" u.u64[0] e.fval);
@@ -615,7 +615,7 @@ gen_expr(e @Node) =
     (depth -= stack_args);
 
     // It looks like the most significant 48 or 56 bits in RAX may
-    // contain garbage if a function return type is i16 or bool/char,
+    // contain garbage if a function return type is i16 or bool/i8,
     // respectively. We clear the upper bits here.
     switch  e.t.kind {
     case TY_BOOL:
@@ -747,9 +747,9 @@ gen_expr(e @Node) =
   gen_expr e.a ;
   pop "%rdi";
 
-  let ax = cast @char 0 di = cast @char 0 dx = cast @char 0;
+  let ax = cast @i8 0 di = cast @i8 0 dx = cast @i8 0;
 
-  if (e.a.t.kind == TY_INT64 || !!e.a.t.base) {
+  if (e.a.t.kind == TY_INT64 || !!e.a.t.a) {
     (ax = "%rax");
     (di = "%rdi");
     (dx = "%rdx");
@@ -762,14 +762,14 @@ gen_expr(e @Node) =
   switch  e.kind {
   case ND_ADD:
     return
-    ((e.a.t.kind == TY_PTR || e.a.t.kind == TY_ARRAY) && (println "  imul $%d, %s" e.a.t.base.size di) as void) ;:
-    ((e.a.s.t.kind == TY_PTR || e.a.s.t.kind == TY_ARRAY) && (println "  imul $%d, %s" e.a.s.t.base.size ax) as void) ;:
+    ((e.a.t.kind == TY_PTR || e.a.t.kind == TY_ARRAY) && (println "  imul $%d, %s" e.a.t.a.size di) as void) ;:
+    ((e.a.s.t.kind == TY_PTR || e.a.s.t.kind == TY_ARRAY) && (println "  imul $%d, %s" e.a.s.t.a.size ax) as void) ;:
     (println "  add %s, %s" di ax);
   case ND_SUB:
     return
-    ((e.a.t.kind == TY_PTR || e.a.t.kind == TY_ARRAY) && !(e.a.s.t.kind == TY_PTR || e.a.s.t.kind == TY_ARRAY) && (println "  imul $%d, %s" e.a.t.base.size di) as void) ;:
+    ((e.a.t.kind == TY_PTR || e.a.t.kind == TY_ARRAY) && !(e.a.s.t.kind == TY_PTR || e.a.s.t.kind == TY_ARRAY) && (println "  imul $%d, %s" e.a.t.a.size di) as void) ;:
     (println "  sub %s, %s" di ax) ;:
-    ((e.a.s.t.kind == TY_PTR || e.a.s.t.kind == TY_ARRAY) && (println "  mov $%d,%s" e.a.s.t.base.size di) ;: (println "  mov $0, %s" dx) ;: (println "  div %s" di) as void);
+    ((e.a.s.t.kind == TY_PTR || e.a.s.t.kind == TY_ARRAY) && (println "  mov $%d,%s" e.a.s.t.a.size di) ;: (println "  mov $0, %s" dx) ;: (println "  div %s" di) as void);
   case ND_MUL:
     (println "  imul %s, %s" di ax);
     return;

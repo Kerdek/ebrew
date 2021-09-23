@@ -60,7 +60,7 @@ struct virtio_input_config {
 	__u8    size;
 	__u8    reserved[5];
 	union {
-		char string[128];
+		i8 string[128];
 		__u8 bitmap[128];
 		struct virtio_input_absinfo abs;
 		struct virtio_input_devids ids;

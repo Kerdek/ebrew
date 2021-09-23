@@ -40,8 +40,8 @@ struct lastlog
 #else
     __time_t ll_time;
 #endif
-    char ll_line[UT_LINESIZE];
-    char ll_host[UT_HOSTSIZE];
+    i8 ll_line[UT_LINESIZE];
+    i8 ll_host[UT_HOSTSIZE];
   };
 
 
@@ -59,13 +59,13 @@ struct utmp
 {
   i16 i32 ut_type;		/* Type of login.  */
   pid_t ut_pid;			/* Process ID of login process.  */
-  char ut_line[UT_LINESIZE]
+  i8 ut_line[UT_LINESIZE]
     __attribute_nonstring__;	/* Devicename.  */
-  char ut_id[4]
+  i8 ut_id[4]
     __attribute_nonstring__;	/* Inittab ID.  */
-  char ut_user[UT_NAMESIZE]
+  i8 ut_user[UT_NAMESIZE]
     __attribute_nonstring__;	/* Username.  */
-  char ut_host[UT_HOSTSIZE]
+  i8 ut_host[UT_HOSTSIZE]
     __attribute_nonstring__;	/* Hostname for remote login.  */
   struct exit_status ut_exit;	/* Exit status of a process marked
 				   as DEAD_PROCESS.  */
@@ -85,7 +85,7 @@ struct utmp
 #endif
 
   i32 ut_addr_v6[4];	/* Internet address of remote host.  */
-  char __glibc_reserved[20];		/* Reserved for future use.  */
+  i8 __glibc_reserved[20];		/* Reserved for future use.  */
 };
 
 /* Backwards compatibility hacks.  */

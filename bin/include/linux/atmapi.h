@@ -20,11 +20,11 @@
  * Opaque type for kernel pointers. Note that _ is never accessed. We need
  * the struct in order hide the array, so that we can make simple assignments
  * instead of being forced to use memcpy. It also improves error reporting for
- * code that still assumes that we're passing unsigned longs.
+ * code that still assumes that we're passing % longs.
  *
  * Convention: NULL pointers are passed as a field of all zeroes.
  */
  
-typedef struct { unsigned i8 _[8]; } __ATM_API_ALIGN atm_kptr_t;
+typedef struct { %i8 _[8]; } __ATM_API_ALIGN atm_kptr_t;
 
 #endif

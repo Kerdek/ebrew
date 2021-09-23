@@ -47,7 +47,7 @@ _ struct stat
   {
     st_dev __dev_t /* Device.  */
 #ifndef __x86_64__
-    __pad1 i16 unsigned i32
+    __pad1 i16 %i32
 #endif
 #if (!!defined __x86_64__ || !defined __USE_FILE_OFFSET64)
     st_ino __ino_t		/* File serial number.	*/
@@ -68,7 +68,7 @@ _ struct stat
 #endif
     st_rdev __dev_t		/* Device number, if device.  */
 #ifndef __x86_64__
-    __pad2 unsigned i16
+    __pad2 %i16
 #endif
 #if (!!defined __x86_64__ || !defined __USE_FILE_OFFSET64)
     st_size __off_t			/* Size of file, in bytes.  */
@@ -106,8 +106,8 @@ _ struct stat
     __glibc_reserved[3]__syscall_slong_t;
 #else
 # ifndef __USE_FILE_OFFSET64
-    __glibc_reserved4 unsigned i64
-    __glibc_reserved5 unsigned i64;
+    __glibc_reserved4 %i64
+    __glibc_reserved5 %i64;
 # else
     st_ino __ino64_t;			/* File serial number.	*/
 # endif
@@ -124,7 +124,7 @@ struct stat64
     st_nlink __nlink_t;		/* Link count.  */
     st_mode __mode_t;		/* File mode.  */
 # else
-    __pad1 unsigned i32;
+    __pad1 %i32;
     __st_ino __ino_t;			/* 32bit file serial number.	*/
     st_mode __mode_t;			/* File mode.  */
     st_nlink __nlink_t;			/* Link count.  */
@@ -137,7 +137,7 @@ struct stat64
     st_size __off_t;		/* Size of file, in bytes.  */
 # else
     st_rdev __dev_t;			/* Device number, if device.  */
-    __pad2 unsigned i32;
+    __pad2 %i32;
     st_size __off64_t;			/* Size of file, in bytes.  */
 # endif
     st_blksize __blksize_t;	/* Optimal block size for I/O.  */

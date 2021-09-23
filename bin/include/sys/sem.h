@@ -39,7 +39,7 @@
 /* Structure used for argument to `semop' to describe operations.  */
 struct sembuf
 {
-  unsigned i16 sem_num;	/* semaphore number */
+  %i16 sem_num;	/* semaphore number */
   i16 i32 sem_op;		/* semaphore operation */
   i16 i32 sem_flg;		/* operation flag */
 };

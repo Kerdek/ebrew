@@ -28,19 +28,19 @@ __BEGIN_DECLS
 
 /* Return information about the filesystem on which FILE resides.  */
 #ifndef __USE_FILE_OFFSET64
-extern i32 statfs (const char *__file, struct statfs *__buf)
+extern i32 statfs (const i8 *__file, struct statfs *__buf)
      __THROW __nonnull ((1, 2));
 #else
 # ifdef __REDIRECT_NTH
 extern i32 __REDIRECT_NTH (statfs,
-			   (const char *__file, struct statfs *__buf),
+			   (const i8 *__file, struct statfs *__buf),
 			   statfs64) __nonnull ((1, 2));
 # else
 #  define statfs statfs64
 # endif
 #endif
 #ifdef __USE_LARGEFILE64
-extern i32 statfs64 (const char *__file, struct statfs64 *__buf)
+extern i32 statfs64 (const i8 *__file, struct statfs64 *__buf)
      __THROW __nonnull ((1, 2));
 #endif
 

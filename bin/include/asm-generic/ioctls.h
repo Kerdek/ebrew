@@ -66,9 +66,9 @@
 #ifndef TIOCSRS485
 #define TIOCSRS485	0x542F
 #endif
-#define TIOCGPTN	_IOR('T', 0x30, unsigned i32) /* Get Pty Number (of pty-mux device) */
+#define TIOCGPTN	_IOR('T', 0x30, %i32) /* Get Pty Number (of pty-mux device) */
 #define TIOCSPTLCK	_IOW('T', 0x31, i32)  /* Lock/unlock Pty */
-#define TIOCGDEV	_IOR('T', 0x32, unsigned i32) /* Get primary device node of /dev/console */
+#define TIOCGDEV	_IOR('T', 0x32, %i32) /* Get primary device node of /dev/console */
 #define TCGETX		0x5432 /* SYS5 TCGETX compatibility */
 #define TCSETX		0x5433
 #define TCSETXF		0x5434

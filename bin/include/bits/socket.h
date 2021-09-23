@@ -178,20 +178,20 @@ typedef __socklen_t socklen_t;
 struct sockaddr
   {
     __SOCKADDR_COMMON (sa_);	/* Common data: address family and length.  */
-    char sa_data[14];		/* Address data.  */
+    i8 sa_data[14];		/* Address data.  */
   };
 
 
 /* Structure large enough to hold any socket address (with the historical
    exception of AF_UNIX).  */
-#define __ss_aligntype	unsigned i64
+#define __ss_aligntype	%i64
 #define _SS_PADSIZE \
   (_SS_SIZE - __SOCKADDR_COMMON_SIZE - sizeof (__ss_aligntype))
 
 struct sockaddr_storage
   {
     __SOCKADDR_COMMON (ss_);	/* Address family, etc.  */
-    char __ss_padding[_SS_PADSIZE];
+    i8 __ss_padding[_SS_PADSIZE];
     __ss_aligntype __ss_align;	/* Force desired alignment.  */
   };
 
@@ -282,7 +282,7 @@ struct cmsghdr
     i32 cmsg_level;		/* Originating protocol.  */
     i32 cmsg_type;		/* Protocol specific type.  */
 #if __glibc_c99_flexarr_available
-    __extension__ unsigned i8 __cmsg_data __flexarr; /* Ancillary data.  */
+    __extension__ %i8 __cmsg_data __flexarr; /* Ancillary data.  */
 #endif
   };
 
@@ -290,7 +290,7 @@ struct cmsghdr
 #if __glibc_c99_flexarr_available
 # define CMSG_DATA(cmsg) ((cmsg)->__cmsg_data)
 #else
-# define CMSG_DATA(cmsg) ((unsigned i8 *) ((struct cmsghdr *) (cmsg) + 1))
+# define CMSG_DATA(cmsg) ((%i8 *) ((struct cmsghdr *) (cmsg) + 1))
 #endif
 #define CMSG_NXTHDR(mhdr, cmsg) __cmsg_nxthdr (mhdr, cmsg)
 #define CMSG_FIRSTHDR(mhdr) \
@@ -315,12 +315,12 @@ __NTH (__cmsg_nxthdr (struct msghdr *__mhdr, struct cmsghdr *__cmsg))
     /* The kernel header does this so there may be a reason.  */
     return (struct cmsghdr *) 0;
 
-  __cmsg = (struct cmsghdr *) ((unsigned i8 *) __cmsg
+  __cmsg = (struct cmsghdr *) ((%i8 *) __cmsg
 			       + CMSG_ALIGN (__cmsg->cmsg_len));
-  if ((unsigned i8 *) (__cmsg + 1) > ((unsigned i8 *) __mhdr->msg_control
+  if ((%i8 *) (__cmsg + 1) > ((%i8 *) __mhdr->msg_control
 					+ __mhdr->msg_controllen)
-      || ((unsigned i8 *) __cmsg + CMSG_ALIGN (__cmsg->cmsg_len)
-	  > ((unsigned i8 *) __mhdr->msg_control + __mhdr->msg_controllen)))
+      || ((%i8 *) __cmsg + CMSG_ALIGN (__cmsg->cmsg_len)
+	  > ((%i8 *) __mhdr->msg_control + __mhdr->msg_controllen)))
     /* No more entries.  */
     return (struct cmsghdr *) 0;
   return __cmsg;

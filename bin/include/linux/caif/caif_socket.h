@@ -146,7 +146,7 @@ struct sockaddr_caif {
 			__u8  type;		/* type: enum caif_at_type */
 		} at;				/* CAIFPROTO_AT */
 		struct {
-			char	  service[16];
+			i8	  service[16];
 		} util;				/* CAIFPROTO_UTIL */
 		union {
 			__u32 connection_id;
@@ -154,7 +154,7 @@ struct sockaddr_caif {
 		} dgm;				/* CAIFPROTO_DATAGRAM(_LOOP)*/
 		struct {
 			__u32 connection_id;
-			char	  volume[16];
+			i8	  volume[16];
 		} rfm;				/* CAIFPROTO_RFM */
 		struct {
 			__u8  type;		/* type:enum caif_debug_type */

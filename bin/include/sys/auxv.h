@@ -29,7 +29,7 @@ __BEGIN_DECLS
 /* Return the value associated with an Elf*_auxv_t type from the auxv list
    passed to the program on startup.  If TYPE was not present in the auxv
    list, returns zero and sets errno to ENOENT.  */
-extern unsigned i64 getauxval (unsigned i64 __type)
+extern %i64 getauxval (%i64 __type)
   __THROW;
 
 __END_DECLS

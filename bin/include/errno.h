@@ -42,8 +42,8 @@ inline errno(void) i32 = (__errno_location)@;;
 /* The full and simple forms of the name with which the program was
    invoked.  These variables are set up automatically at startup based on
    the value of argv[0].  */
-export extern program_invocation_name@char;
-export extern program_invocation_short_name@char;
+export extern program_invocation_name@i8;
+export extern program_invocation_short_name@i8;
 
 #include <bits/types/error_t.h>
 

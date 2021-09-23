@@ -22,10 +22,10 @@
 _ struct __pthread_mutex_s
 {
   __lock i32
-  __count unsigned i32
+  __count %i32
   __owner i32
 #ifdef __x86_64__
-  __nusers unsigned i32
+  __nusers %i32
 #endif
   /* KIND must stay at this position in the structure to maintain
      binary compatibility with static initializers.  */
@@ -36,7 +36,7 @@ _ struct __pthread_mutex_s
   __list __pthread_list_t;
 # define __PTHREAD_MUTEX_HAVE_PREV      1
 #else
-  __nusers unsigned i32
+  __nusers %i32
   __extension__ union
   {
     __elision_data struct

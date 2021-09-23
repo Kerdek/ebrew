@@ -27,10 +27,10 @@ struct ebt_arp_info
 	__be32 smsk;
 	__be32 daddr;
 	__be32 dmsk;
-	unsigned i8 smaddr[ETH_ALEN];
-	unsigned i8 smmsk[ETH_ALEN];
-	unsigned i8 dmaddr[ETH_ALEN];
-	unsigned i8 dmmsk[ETH_ALEN];
+	%i8 smaddr[ETH_ALEN];
+	%i8 smmsk[ETH_ALEN];
+	%i8 dmaddr[ETH_ALEN];
+	%i8 dmmsk[ETH_ALEN];
 	__u8  bitmask;
 	__u8  invflags;
 };

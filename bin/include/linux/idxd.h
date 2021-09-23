@@ -80,87 +80,87 @@ enum dsa_completion_status {
 #define DSA_COMP_STATUS_WRITE		0x80
 
 struct dsa_hw_desc {
-	unsigned i32	pasid:20;
-	unsigned i32	rsvd:11;
-	unsigned i32	priv:1;
-	unsigned i32	flags:24;
-	unsigned i32	opcode:8;
-	unsigned i64	completion_addr;
+	%i32	pasid:20;
+	%i32	rsvd:11;
+	%i32	priv:1;
+	%i32	flags:24;
+	%i32	opcode:8;
+	%i64	completion_addr;
 	union {
-		unsigned i64	src_addr;
-		unsigned i64	rdback_addr;
-		unsigned i64	pattern;
-		unsigned i64	desc_list_addr;
+		%i64	src_addr;
+		%i64	rdback_addr;
+		%i64	pattern;
+		%i64	desc_list_addr;
 	};
 	union {
-		unsigned i64	dst_addr;
-		unsigned i64	rdback_addr2;
-		unsigned i64	src2_addr;
-		unsigned i64	comp_pattern;
+		%i64	dst_addr;
+		%i64	rdback_addr2;
+		%i64	src2_addr;
+		%i64	comp_pattern;
 	};
 	union {
-		unsigned i32	xfer_size;
-		unsigned i32	desc_count;
+		%i32	xfer_size;
+		%i32	desc_count;
 	};
-	unsigned i16	int_handle;
-	unsigned i16	rsvd1;
+	%i16	int_handle;
+	%i16	rsvd1;
 	union {
-		unsigned i8		expected_res;
+		%i8		expected_res;
 		/* create delta record */
 		struct {
-			unsigned i64	delta_addr;
-			unsigned i32	max_delta_size;
-			unsigned i32 	delt_rsvd;
-			unsigned i8 	expected_res_mask;
+			%i64	delta_addr;
+			%i32	max_delta_size;
+			%i32 	delt_rsvd;
+			%i8 	expected_res_mask;
 		};
-		unsigned i32	delta_rec_size;
-		unsigned i64	dest2;
+		%i32	delta_rec_size;
+		%i64	dest2;
 		/* CRC */
 		struct {
-			unsigned i32	crc_seed;
-			unsigned i32	crc_rsvd;
-			unsigned i64	seed_addr;
+			%i32	crc_seed;
+			%i32	crc_rsvd;
+			%i64	seed_addr;
 		};
 		/* DIF check or strip */
 		struct {
-			unsigned i8		src_dif_flags;
-			unsigned i8		dif_chk_res;
-			unsigned i8		dif_chk_flags;
-			unsigned i8		dif_chk_res2[5];
-			unsigned i32	chk_ref_tag_seed;
-			unsigned i16	chk_app_tag_mask;
-			unsigned i16	chk_app_tag_seed;
+			%i8		src_dif_flags;
+			%i8		dif_chk_res;
+			%i8		dif_chk_flags;
+			%i8		dif_chk_res2[5];
+			%i32	chk_ref_tag_seed;
+			%i16	chk_app_tag_mask;
+			%i16	chk_app_tag_seed;
 		};
 		/* DIF insert */
 		struct {
-			unsigned i8		dif_ins_res;
-			unsigned i8		dest_dif_flag;
-			unsigned i8		dif_ins_flags;
-			unsigned i8		dif_ins_res2[13];
-			unsigned i32	ins_ref_tag_seed;
-			unsigned i16	ins_app_tag_mask;
-			unsigned i16	ins_app_tag_seed;
+			%i8		dif_ins_res;
+			%i8		dest_dif_flag;
+			%i8		dif_ins_flags;
+			%i8		dif_ins_res2[13];
+			%i32	ins_ref_tag_seed;
+			%i16	ins_app_tag_mask;
+			%i16	ins_app_tag_seed;
 		};
 		/* DIF update */
 		struct {
-			unsigned i8		src_upd_flags;
-			unsigned i8		upd_dest_flags;
-			unsigned i8		dif_upd_flags;
-			unsigned i8		dif_upd_res[5];
-			unsigned i32	src_ref_tag_seed;
-			unsigned i16	src_app_tag_mask;
-			unsigned i16	src_app_tag_seed;
-			unsigned i32	dest_ref_tag_seed;
-			unsigned i16	dest_app_tag_mask;
-			unsigned i16	dest_app_tag_seed;
+			%i8		src_upd_flags;
+			%i8		upd_dest_flags;
+			%i8		dif_upd_flags;
+			%i8		dif_upd_res[5];
+			%i32	src_ref_tag_seed;
+			%i16	src_app_tag_mask;
+			%i16	src_app_tag_seed;
+			%i32	dest_ref_tag_seed;
+			%i16	dest_app_tag_mask;
+			%i16	dest_app_tag_seed;
 		};
 
-		unsigned i8		op_specific[24];
+		%i8		op_specific[24];
 	};
 } __attribute__((packed));
 
 struct dsa_raw_desc {
-	unsigned i64	field[8];
+	%i64	field[8];
 } __attribute__((packed));
 
 /*
@@ -168,55 +168,55 @@ struct dsa_raw_desc {
  * __volatile__ and prevent the compiler from optimize the read.
  */
 struct dsa_completion_record {
-	__volatile__ unsigned i8	status;
+	__volatile__ %i8	status;
 	union {
-		unsigned i8		result;
-		unsigned i8		dif_status;
+		%i8		result;
+		%i8		dif_status;
 	};
-	unsigned i16		rsvd;
-	unsigned i32		bytes_completed;
-	unsigned i64		fault_addr;
+	%i16		rsvd;
+	%i32		bytes_completed;
+	%i64		fault_addr;
 	union {
 		/* common record */
 		struct {
-			unsigned i32	invalid_flags:24;
-			unsigned i32	rsvd2:8;
+			%i32	invalid_flags:24;
+			%i32	rsvd2:8;
 		};
 
-		unsigned i32	delta_rec_size;
-		unsigned i32	crc_val;
+		%i32	delta_rec_size;
+		%i32	crc_val;
 
 		/* DIF check & strip */
 		struct {
-			unsigned i32	dif_chk_ref_tag;
-			unsigned i16	dif_chk_app_tag_mask;
-			unsigned i16	dif_chk_app_tag;
+			%i32	dif_chk_ref_tag;
+			%i16	dif_chk_app_tag_mask;
+			%i16	dif_chk_app_tag;
 		};
 
 		/* DIF insert */
 		struct {
-			unsigned i64	dif_ins_res;
-			unsigned i32	dif_ins_ref_tag;
-			unsigned i16	dif_ins_app_tag_mask;
-			unsigned i16	dif_ins_app_tag;
+			%i64	dif_ins_res;
+			%i32	dif_ins_ref_tag;
+			%i16	dif_ins_app_tag_mask;
+			%i16	dif_ins_app_tag;
 		};
 
 		/* DIF update */
 		struct {
-			unsigned i32	dif_upd_src_ref_tag;
-			unsigned i16	dif_upd_src_app_tag_mask;
-			unsigned i16	dif_upd_src_app_tag;
-			unsigned i32	dif_upd_dest_ref_tag;
-			unsigned i16	dif_upd_dest_app_tag_mask;
-			unsigned i16	dif_upd_dest_app_tag;
+			%i32	dif_upd_src_ref_tag;
+			%i16	dif_upd_src_app_tag_mask;
+			%i16	dif_upd_src_app_tag;
+			%i32	dif_upd_dest_ref_tag;
+			%i16	dif_upd_dest_app_tag_mask;
+			%i16	dif_upd_dest_app_tag;
 		};
 
-		unsigned i8		op_specific[16];
+		%i8		op_specific[16];
 	};
 } __attribute__((packed));
 
 struct dsa_raw_completion_record {
-	unsigned i64	field[4];
+	%i64	field[4];
 } __attribute__((packed));
 
 #endif

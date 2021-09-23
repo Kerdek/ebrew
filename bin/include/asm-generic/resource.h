@@ -49,7 +49,7 @@
 #define RLIM_NLIMITS		16
 
 /*
- * SuS says limits have to be unsigned.
+ * SuS says limits have to be %.
  * Which makes a ton more sense anyway.
  *
  * Some architectures override this (for compatibility reasons):

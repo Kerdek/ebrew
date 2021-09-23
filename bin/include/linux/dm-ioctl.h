@@ -140,10 +140,10 @@ struct dm_ioctl {
 
 	__u64 dev;		/* in/out */
 
-	char name[DM_NAME_LEN];	/* device name */
-	char uuid[DM_UUID_LEN];	/* unique identifier for
+	i8 name[DM_NAME_LEN];	/* device name */
+	i8 uuid[DM_UUID_LEN];	/* unique identifier for
 				 * the block device */
-	char data[7];		/* padding or data */
+	i8 data[7];		/* padding or data */
 };
 
 /*
@@ -167,7 +167,7 @@ struct dm_target_spec {
 	 */
 	__u32 next;
 
-	char target_type[DM_MAX_TYPE_NAME];
+	i8 target_type[DM_MAX_TYPE_NAME];
 
 	/*
 	 * Parameter string starts immediately after this object.
@@ -192,7 +192,7 @@ struct dm_name_list {
 	__u64 dev;
 	__u32 next;		/* offset to the next record from
 				   the _start_ of this */
-	char name[0];
+	i8 name[0];
 };
 
 /*
@@ -202,7 +202,7 @@ struct dm_target_versions {
         __u32 next;
         __u32 version[3];
 
-        char name[0];
+        i8 name[0];
 };
 
 /*
@@ -211,7 +211,7 @@ struct dm_target_versions {
 struct dm_target_msg {
 	__u64 sector;	/* Device sector */
 
-	char message[0];
+	i8 message[0];
 };
 
 /*

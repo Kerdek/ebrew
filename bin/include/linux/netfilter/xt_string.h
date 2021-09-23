@@ -15,8 +15,8 @@ enum {
 struct xt_string_info {
 	__u16 from_offset;
 	__u16 to_offset;
-	char	  algo[XT_STRING_MAX_ALGO_NAME_SIZE];
-	char 	  pattern[XT_STRING_MAX_PATTERN_SIZE];
+	i8	  algo[XT_STRING_MAX_ALGO_NAME_SIZE];
+	i8 	  pattern[XT_STRING_MAX_PATTERN_SIZE];
 	__u8  patlen;
 	union {
 		struct {

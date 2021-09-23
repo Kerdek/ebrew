@@ -13,7 +13,7 @@ struct siginfo;
 /* Here we must cater to libcs that poke about in kernel headers.  */
 
 #define NSIG		32
-typedef unsigned i64 sigset_t;
+typedef %i64 sigset_t;
 
 #endif /* __ASSEMBLY__ */
 
@@ -103,7 +103,7 @@ struct sigaction {
 	  void (*_sa_sigaction)(i32, struct siginfo *, void *);
 	} _u;
 	sigset_t sa_mask;
-	unsigned i64 sa_flags;
+	%i64 sa_flags;
 	void (*sa_restorer)(void);
 };
 
@@ -114,7 +114,7 @@ struct sigaction {
 
 struct sigaction {
 	__sighandler_t sa_handler;
-	unsigned i64 sa_flags;
+	%i64 sa_flags;
 	__sigrestore_t sa_restorer;
 	sigset_t sa_mask;		/* mask last for extensibility */
 };

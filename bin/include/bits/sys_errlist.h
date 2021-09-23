@@ -24,9 +24,9 @@
 
 #ifdef  __USE_MISC
 extern i32 sys_nerr;
-extern const char *const sys_errlist[];
+extern const i8 *const sys_errlist[];
 #endif
 #ifdef  __USE_GNU
 extern i32 _sys_nerr;
-extern const char *const _sys_errlist[];
+extern const i8 *const _sys_errlist[];
 #endif

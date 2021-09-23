@@ -6,7 +6,7 @@
 
 #define NAT_ARP_BIT  (0x00000010)
 struct ebt_nat_info {
-	unsigned i8 mac[ETH_ALEN];
+	%i8 mac[ETH_ALEN];
 	/* EBT_ACCEPT, EBT_DROP, EBT_CONTINUE or EBT_RETURN */
 	i32 target;
 };

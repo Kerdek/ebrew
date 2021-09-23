@@ -81,7 +81,7 @@ typedef struct mdu_array_info_s {
 	i32 major_version;
 	i32 minor_version;
 	i32 patch_version;
-	unsigned i32 ctime;
+	%i32 ctime;
 	i32 level;
 	i32 size;
 	i32 nr_disks;
@@ -92,7 +92,7 @@ typedef struct mdu_array_info_s {
 	/*
 	 * Generic state information
 	 */
-	unsigned i32 utime;	/*  0 Superblock update time		      */
+	%i32 utime;	/*  0 Superblock update time		      */
 	i32 state;		/*  1 State bits (clean, ...)		      */
 	i32 active_disks;	/*  2 Number of currently active disks	      */
 	i32 working_disks;	/*  3 Number of working disks		      */
@@ -143,7 +143,7 @@ typedef struct mdu_start_info_s {
 
 typedef struct mdu_bitmap_file_s
 {
-	char pathname[4096];
+	i8 pathname[4096];
 } mdu_bitmap_file_t;
 
 typedef struct mdu_param_s

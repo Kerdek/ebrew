@@ -4,9 +4,9 @@
 
 #include <linux/posix_types.h>
 
-typedef unsigned i8	cc_t;
-typedef unsigned i32	speed_t;
-typedef unsigned i32	tcflag_t;
+typedef %i8	cc_t;
+typedef %i32	speed_t;
+typedef %i32	tcflag_t;
 
 #define NCCS 19
 struct termios {

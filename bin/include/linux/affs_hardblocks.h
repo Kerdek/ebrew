@@ -36,12 +36,12 @@ struct RigidDiskBlock {
 	__u32	rdb_AutoParkSeconds;
 	__u32	rdb_HighRDSKBlock;
 	__u32	rdb_Reserved4;
-	char	rdb_DiskVendor[8];
-	char	rdb_DiskProduct[16];
-	char	rdb_DiskRevision[4];
-	char	rdb_ControllerVendor[8];
-	char	rdb_ControllerProduct[16];
-	char	rdb_ControllerRevision[4];
+	i8	rdb_DiskVendor[8];
+	i8	rdb_DiskProduct[16];
+	i8	rdb_DiskRevision[4];
+	i8	rdb_ControllerVendor[8];
+	i8	rdb_ControllerProduct[16];
+	i8	rdb_ControllerRevision[4];
 	__u32	rdb_Reserved5[10];
 };
 

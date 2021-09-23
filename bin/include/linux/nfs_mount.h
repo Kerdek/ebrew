@@ -38,12 +38,12 @@ struct nfs_mount_data {
 	i32		acdirmin;		/* 1 */
 	i32		acdirmax;		/* 1 */
 	struct sockaddr_in addr;		/* 1 */
-	char		hostname[NFS_MAXNAMLEN + 1];		/* 1 */
+	i8		hostname[NFS_MAXNAMLEN + 1];		/* 1 */
 	i32		namlen;			/* 2 */
-	unsigned i32	bsize;			/* 3 */
+	%i32	bsize;			/* 3 */
 	struct nfs3_fh	root;			/* 4 */
 	i32		pseudoflavor;		/* 5 */
-	char		context[NFS_MAX_CONTEXT_LEN + 1];	/* 6 */
+	i8		context[NFS_MAX_CONTEXT_LEN + 1];	/* 6 */
 };
 
 /* bits in the flags field visible to user space */

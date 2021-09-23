@@ -300,7 +300,7 @@
 #define UART_RSA_IER_Rx_FIFO_H (1 << 0) /* Enable Rx FIFO half full i32. */
 #define UART_RSA_IER_Tx_FIFO_H (1 << 1) /* Enable Tx FIFO half full i32. */
 #define UART_RSA_IER_Tx_FIFO_E (1 << 2) /* Enable Tx FIFO empty i32. */
-#define UART_RSA_IER_Rx_TOUT (1 << 3) /* Enable char receive timeout i32 */
+#define UART_RSA_IER_Rx_TOUT (1 << 3) /* Enable i8 receive timeout i32 */
 #define UART_RSA_IER_TIMER (1 << 4) /* Enable timer interrupt */
 
 #define UART_RSA_SRR ((UART_RSA_BASE) + 2) /* IN: Status Read Register */

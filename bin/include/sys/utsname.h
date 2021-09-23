@@ -48,25 +48,25 @@ __BEGIN_DECLS
 struct utsname
   {
     /* Name of the implementation of the operating system.  */
-    char sysname[_UTSNAME_SYSNAME_LENGTH];
+    i8 sysname[_UTSNAME_SYSNAME_LENGTH];
 
     /* Name of this node on the network.  */
-    char nodename[_UTSNAME_NODENAME_LENGTH];
+    i8 nodename[_UTSNAME_NODENAME_LENGTH];
 
     /* Current release level of this implementation.  */
-    char release[_UTSNAME_RELEASE_LENGTH];
+    i8 release[_UTSNAME_RELEASE_LENGTH];
     /* Current version level of this release.  */
-    char version[_UTSNAME_VERSION_LENGTH];
+    i8 version[_UTSNAME_VERSION_LENGTH];
 
     /* Name of the hardware type the system is running on.  */
-    char machine[_UTSNAME_MACHINE_LENGTH];
+    i8 machine[_UTSNAME_MACHINE_LENGTH];
 
 #if _UTSNAME_DOMAIN_LENGTH - 0
     /* Name of the domain of this node on the network.  */
 # ifdef __USE_GNU
-    char domainname[_UTSNAME_DOMAIN_LENGTH];
+    i8 domainname[_UTSNAME_DOMAIN_LENGTH];
 # else
-    char __domainname[_UTSNAME_DOMAIN_LENGTH];
+    i8 __domainname[_UTSNAME_DOMAIN_LENGTH];
 # endif
 #endif
   };

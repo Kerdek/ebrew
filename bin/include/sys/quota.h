@@ -127,7 +127,7 @@ struct dqinfo
 
 __BEGIN_DECLS
 
-extern i32 quotactl (i32 __cmd, const char *__special, i32 __id,
+extern i32 quotactl (i32 __cmd, const i8 *__special, i32 __id,
 		     __caddr_t __addr) __THROW;
 
 __END_DECLS

@@ -17,7 +17,7 @@ struct reiserfs_xattr_header {
 };
 
 struct reiserfs_security_handle {
-	const char *name;
+	const i8 *name;
 	void *value;
 	size_t length;
 };

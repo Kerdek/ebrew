@@ -23,8 +23,8 @@
  *		byte 1 		- Synthesizer device number (0-N)
  *		byte 2 		- Command (see below)
  *		byte 3 		- Voice number (0-31)
- *		bytes 4 and 5	- parameter P1 (unsigned i16)
- *		bytes 6 and 7	- parameter P2 (unsigned i16)
+ *		bytes 4 and 5	- parameter P1 (%i16)
+ *		bytes 6 and 7	- parameter P2 (%i16)
  *
  *	Commands:
  *		Each command affects one voice defined in byte 3.
@@ -77,8 +77,8 @@
 					{_SEQ_NEEDBUF(8); _seqbuf[_seqbufptr] = SEQ_PRIVATE;\
 					_seqbuf[_seqbufptr+1] = (chn); _seqbuf[_seqbufptr+2] = cmd;\
 					_seqbuf[_seqbufptr+3] = voice;\
-					*(unsigned i16*)&_seqbuf[_seqbufptr+4] = p1;\
-					*(unsigned i16*)&_seqbuf[_seqbufptr+6] = p2;\
+					*(%i16*)&_seqbuf[_seqbufptr+4] = p1;\
+					*(%i16*)&_seqbuf[_seqbufptr+6] = p2;\
 					_SEQ_ADVBUF(8);}
 
 #define GUS_NUMVOICES(chn, p1)			_GUS_CMD(chn, 0, _GUS_NUMVOICES, (p1), 0)

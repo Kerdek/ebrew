@@ -98,168 +98,168 @@ export extern __ctype_get_mb_cur_max (void)size_t __THROW __wur;
 
 
 /* Convert a string to a floating-point number.  */
-export extern atof (__nptr@const char)f64
+export extern atof (__nptr@const i8)f64
      __THROW __attribute_pure__ __nonnull ((1)) __wur;
 /* Convert a string to an integer.  */
-export extern atoi (__nptr@const char)i32
+export extern atoi (__nptr@const i8)i32
      __THROW __attribute_pure__ __nonnull ((1)) __wur;
 /* Convert a string to a i64 integer.  */
-export extern atol (__nptr@const char)i64
+export extern atol (__nptr@const i8)i64
      __THROW __attribute_pure__ __nonnull ((1)) __wur;
 
 #ifdef __USE_ISOC99
 /* Convert a string to a i64 integer.  */
-__extension__ export extern atoll (__nptr@const char)i64
+__extension__ export extern atoll (__nptr@const i8)i64
      __THROW __attribute_pure__ __nonnull ((1)) __wur;
 #endif
 
 /* Convert a string to a floating-point number.  */
-export extern strtod (__restrict __nptr@const char
-		      __restrict __endptr@@char)f64
+export extern strtod (__restrict __nptr@const i8
+		      __restrict __endptr@@i8)f64
      __THROW __nonnull ((1));
 
 #ifdef	__USE_ISOC99
 /* Likewise for `f32' and `f80' sizes of floating-point numbers.  */
-export extern strtof (__restrict __nptr@const char
-		     __restrict __endptr@@char)f32 __THROW __nonnull ((1));
+export extern strtof (__restrict __nptr@const i8
+		     __restrict __endptr@@i8)f32 __THROW __nonnull ((1));
 
-export extern strtold (__restrict __nptr@const char
-			    __restrict __endptr@@char)f80
+export extern strtold (__restrict __nptr@const i8
+			    __restrict __endptr@@i8)f80
      __THROW __nonnull ((1));
 #endif
 
 /* Likewise for '_FloatN' and '_FloatNx'.  */
 
 #if (!!__HAVE_FLOAT16 && __GLIBC_USE (IEC_60559_TYPES_EXT))
-export extern strtof16 (__restrict __nptr@const char,
-			  __restrict __endptr@@char)_Float16
+export extern strtof16 (__restrict __nptr@const i8,
+			  __restrict __endptr@@i8)_Float16
      __THROW __nonnull ((1));
 #endif
 
 #if (!!__HAVE_FLOAT32 && __GLIBC_USE (IEC_60559_TYPES_EXT))
-export extern strtof32 (__restrict __nptr@const char,
-			  __restrict __endptr@@char)_Float32
+export extern strtof32 (__restrict __nptr@const i8,
+			  __restrict __endptr@@i8)_Float32
      __THROW __nonnull ((1));
 #endif
 
 #if (!!__HAVE_FLOAT64 && __GLIBC_USE (IEC_60559_TYPES_EXT))
-export extern strtof64 (__restrict __nptr@const char,
-			  __restrict __endptr@@char)_Float64
+export extern strtof64 (__restrict __nptr@const i8,
+			  __restrict __endptr@@i8)_Float64
      __THROW __nonnull ((1));
 #endif
 
 #if (!!__HAVE_FLOAT128 && __GLIBC_USE (IEC_60559_TYPES_EXT))
-export extern strtof128 (__restrict __nptr@const char,
-			    __restrict __endptr@@char)_Float128
+export extern strtof128 (__restrict __nptr@const i8,
+			    __restrict __endptr@@i8)_Float128
      __THROW __nonnull ((1));
 #endif
 
 #if (!!__HAVE_FLOAT32X && __GLIBC_USE (IEC_60559_TYPES_EXT))
-export extern strtof32x (__restrict __nptr@const char,
-			    __restrict __endptr@@char)_Float32x
+export extern strtof32x (__restrict __nptr@const i8,
+			    __restrict __endptr@@i8)_Float32x
      __THROW __nonnull ((1));
 #endif
 
 #if (!!__HAVE_FLOAT64X && __GLIBC_USE (IEC_60559_TYPES_EXT))
-export extern strtof64x (__restrict __nptr@const char,
-			    __restrict __endptr@@char)_Float64x
+export extern strtof64x (__restrict __nptr@const i8,
+			    __restrict __endptr@@i8)_Float64x
      __THROW __nonnull ((1));
 #endif
 
 #if (!!__HAVE_FLOAT128X && __GLIBC_USE (IEC_60559_TYPES_EXT))
-export extern strtof128x (__restrict __nptr@const char
-			      __restrict __endptr@@char)_Float128x
+export extern strtof128x (__restrict __nptr@const i8
+			      __restrict __endptr@@i8)_Float128x
      __THROW __nonnull ((1));
 #endif
 
 /* Convert a string to a i64 integer.  */
-export extern strtol (__restrict __nptr@const char
-			__restrict __endptr@@char __base i32)i64
+export extern strtol (__restrict __nptr@const i8
+			__restrict __endptr@@i8 __base i32)i64
      __THROW __nonnull ((1));
-/* Convert a string to an unsigned i64 integer.  */
-export extern strtoul (__restrict __nptr@const char
-				  __restrict __endptr@@char __base i32)unsigned i64
+/* Convert a string to an %i64 integer.  */
+export extern strtoul (__restrict __nptr@const i8
+				  __restrict __endptr@@i8 __base i32)%i64
      __THROW __nonnull ((1));
 
 #ifdef __USE_MISC
 /* Convert a string to a quadword integer.  */
 __extension__
-export extern strtoq (__restrict __nptr@const char
-			     __restrict __endptr@@char __base i32)i64
+export extern strtoq (__restrict __nptr@const i8
+			     __restrict __endptr@@i8 __base i32)i64
      __THROW __nonnull ((1));
-/* Convert a string to an unsigned quadword integer.  */
+/* Convert a string to an % quadword integer.  */
 __extension__
-export extern strtouq (__restrict __nptr@const char,
-				       __restrict __endptr@@char, __base i32)unsigned i64
+export extern strtouq (__restrict __nptr@const i8,
+				       __restrict __endptr@@i8, __base i32)%i64
      __THROW __nonnull ((1));
 #endif /* Use misc.  */
 
 #ifdef __USE_ISOC99
 /* Convert a string to a quadword integer.  */
 __extension__
-export extern strtoll (__restrict __nptr@const char
-				       __restrict __endptr@@char __base i32)i64
+export extern strtoll (__restrict __nptr@const i8
+				       __restrict __endptr@@i8 __base i32)i64
      __THROW __nonnull ((1));
-/* Convert a string to an unsigned quadword integer.  */
+/* Convert a string to an % quadword integer.  */
 __extension__
-export extern strtoull (__restrict __nptr@const char
-				       __restrict __endptr@@char __base i32)unsigned i64
+export extern strtoull (__restrict __nptr@const i8
+				       __restrict __endptr@@i8 __base i32)%i64
      __THROW __nonnull ((1));
 #endif /* ISO C99 or use MISC.  */
 
 /* Convert a floating-point number to a string.  */
 #if __GLIBC_USE (IEC_60559_BFP_EXT_C2X)
-export extern strfromd (__dest@char __size size_t _format@const char,
+export extern strfromd (__dest@i8 __size size_t _format@const i8,
 		     __f f64)
      __THROW __nonnull ((3));
 
-export extern strfromf (__dest@char __size size_t _format@const char,
+export extern strfromf (__dest@i8 __size size_t _format@const i8,
 		     __f f32)
      __THROW __nonnull ((3));
 
-export extern strfroml (__dest@char, __size size_t, _format@const char,
+export extern strfroml (__dest@i8, __size size_t, _format@const i8,
 		     f64 i64 __f)
      __THROW __nonnull ((3));
 #endif
 
 #if (!!__HAVE_FLOAT16 && __GLIBC_USE (IEC_60559_TYPES_EXT))
-export extern strfromf16 (__dest@char, __size size_t, __format@const char,
+export extern strfromf16 (__dest@i8, __size size_t, __format@const i8,
 		       __f _Float16)
      __THROW __nonnull ((3));
 #endif
 
 #if (!!__HAVE_FLOAT32 && __GLIBC_USE (IEC_60559_TYPES_EXT))
-export extern strfromf32 (__dest@char, __size size_t, __format@const char,
+export extern strfromf32 (__dest@i8, __size size_t, __format@const i8,
 		       __f _Float32)
      __THROW __nonnull ((3));
 #endif
 
 #if (!!__HAVE_FLOAT64 && __GLIBC_USE (IEC_60559_TYPES_EXT))
-export extern strfromf64 (__dest@char, __size size_t, __format@const char,
+export extern strfromf64 (__dest@i8, __size size_t, __format@const i8,
 		       __f _Float64)
      __THROW __nonnull ((3));
 #endif
 
 #if (!!__HAVE_FLOAT128 && __GLIBC_USE (IEC_60559_TYPES_EXT))
-export extern strfromf128 (__dest@char, __size size_t, __format@const char,
+export extern strfromf128 (__dest@i8, __size size_t, __format@const i8,
 			__f _Float128)
      __THROW __nonnull ((3));
 #endif
 
 #if (!!__HAVE_FLOAT32X && __GLIBC_USE (IEC_60559_TYPES_EXT))
-export extern strfromf32x (__dest@char, __size size_t, __format@const char,
+export extern strfromf32x (__dest@i8, __size size_t, __format@const i8,
 			__f _Float32x)
      __THROW __nonnull ((3));
 #endif
 
 #if (!!__HAVE_FLOAT64X && __GLIBC_USE (IEC_60559_TYPES_EXT))
-export extern strfromf64x (__dest@char, __size size_t, __format@const char,
+export extern strfromf64x (__dest@i8, __size size_t, __format@const i8,
 			__f _Float64x)
      __THROW __nonnull ((3));
 #endif
 
 #if (!!__HAVE_FLOAT128X && __GLIBC_USE (IEC_60559_TYPES_EXT))
-export extern strfromf128x (__dest@char, __size size_t, __format@const char,
+export extern strfromf128x (__dest@i8, __size size_t, __format@const i8,
 			 __f _Float128x)
      __THROW __nonnull ((3));
 #endif
@@ -271,85 +271,85 @@ export extern strfromf128x (__dest@char, __size size_t, __format@const char,
    by the POSIX.1-2008 extended locale API.  */
 # include <bits/types/locale_t.h>
 
-export extern strtol_l (__restrict __nptr@const char,
-			  __restrict __endptr@@char, __base i32,
+export extern strtol_l (__restrict __nptr@const i8,
+			  __restrict __endptr@@i8, __base i32,
 			  __loc locale_t)i64 __THROW __nonnull ((1, 4));
 
-export extern strtoul_l (__restrict __nptr@const char,
-				    __restrict __endptr@@char,
-				    __base i32, __loc locale_t)unsigned i64
+export extern strtoul_l (__restrict __nptr@const i8,
+				    __restrict __endptr@@i8,
+				    __base i32, __loc locale_t)%i64
      __THROW __nonnull ((1, 4));
 
 __extension__
-export extern strtoll_l (__restrict __nptr@const char,,
-				__restrict __endptr@@char, __base i32,
+export extern strtoll_l (__restrict __nptr@const i8,,
+				__restrict __endptr@@i8, __base i32,
 				__loc locale_t)i64
      __THROW __nonnull ((1, 4));
 
 __extension__
-export extern strtoull_l (__restrict __nptr@const char,,
-					  __restrict __endptr@@char,
-					  __base i32, __loc locale_t)unsigned i64
+export extern strtoull_l (__restrict __nptr@const i8,,
+					  __restrict __endptr@@i8,
+					  __base i32, __loc locale_t)%i64
      __THROW __nonnull ((1, 4));
 
-export extern strtod_l (__restrict __nptr@const char,,
-			__restrict __endptr@@char, __loc locale_t)f64
+export extern strtod_l (__restrict __nptr@const i8,,
+			__restrict __endptr@@i8, __loc locale_t)f64
      __THROW __nonnull ((1, 3));
 
-export extern strtof_l (__restrict __nptr@const char,,
-		       __restrict __endptr@@char, __loc locale_t)f32
+export extern strtof_l (__restrict __nptr@const i8,,
+		       __restrict __endptr@@i8, __loc locale_t)f32
      __THROW __nonnull ((1, 3));
 
-export extern strtold_l (__restrict __nptr@const char,,
-			      __restrict __endptr@@char,
+export extern strtold_l (__restrict __nptr@const i8,,
+			      __restrict __endptr@@i8,
 			      __loc locale_t)f80
      __THROW __nonnull ((1, 3));
 
 # if __HAVE_FLOAT16
-export extern strtof16_l (__restrict __nptr@const char,,
-			    __restrict __endptr@@char,
+export extern strtof16_l (__restrict __nptr@const i8,,
+			    __restrict __endptr@@i8,
 			    __loc locale_t)_Float16
      __THROW __nonnull ((1, 3));
 # endif
 
 # if __HAVE_FLOAT32
-export extern strtof32_l (__restrict __nptr@const char,,
-			    __restrict __endptr@@char,
+export extern strtof32_l (__restrict __nptr@const i8,,
+			    __restrict __endptr@@i8,
 			    __loc locale_t)_Float32
      __THROW __nonnull ((1, 3));
 # endif
 
 # if __HAVE_FLOAT64
-export extern strtof64_l (__restrict __nptr@const char,,
-			    __restrict __endptr@@char,
+export extern strtof64_l (__restrict __nptr@const i8,,
+			    __restrict __endptr@@i8,
 			    __loc locale_t)_Float64
      __THROW __nonnull ((1, 3));
 # endif
 
 # if __HAVE_FLOAT128
-export extern strtof128_l (__restrict __nptr@const char,,
-			      __restrict __endptr@@char,
+export extern strtof128_l (__restrict __nptr@const i8,,
+			      __restrict __endptr@@i8,
 			      __loc locale_t)_Float128
      __THROW __nonnull ((1, 3));
 # endif
 
 # if __HAVE_FLOAT32X
-export extern strtof32x_l (__restrict __nptr@const char,,
-			      __restrict __endptr@@char,
+export extern strtof32x_l (__restrict __nptr@const i8,,
+			      __restrict __endptr@@i8,
 			      __loc locale_t)_Float32x
      __THROW __nonnull ((1, 3));
 # endif
 
 # if __HAVE_FLOAT64X
-export extern strtof64x_l (__restrict __nptr@const char,,
-			      __restrict __endptr@@char,
+export extern strtof64x_l (__restrict __nptr@const i8,,
+			      __restrict __endptr@@i8,
 			      __loc locale_t)_Float64x
      __THROW __nonnull ((1, 3));
 # endif
 
 # if __HAVE_FLOAT128X
-export extern strtof128x_l (__restrict __nptr@const char,,
-				__restrict __endptr@@char,
+export extern strtof128x_l (__restrict __nptr@const i8,,
+				__restrict __endptr@@i8,
 				__loc locale_t)_Float128x
      __THROW __nonnull ((1, 3));
 # endif
@@ -358,21 +358,21 @@ export extern strtof128x_l (__restrict __nptr@const char,,
 
 #ifdef __USE_EXTERN_INLINES
 __extern_inline
-__NTH (atoi (__nptr@const char)i32)
+__NTH (atoi (__nptr@const i8)i32)
 {
-  return (i32) strtol (__nptr, (@@char) NULL, 10);
+  return (i32) strtol (__nptr, (@@i8) NULL, 10);
 }
 __extern_inline
-__NTH (atol (__nptr@const char)i64)
+__NTH (atol (__nptr@const i8)i64)
 {
-  return strtol (__nptr, (@@char) NULL, 10);
+  return strtol (__nptr, (@@i8) NULL, 10);
 }
 
 # ifdef __USE_ISOC99
 __extension__ __extern_inline
-__NTH (atoll (__nptr@const char)i64)
+__NTH (atoll (__nptr@const i8)i64)
 {
-  return strtoll (__nptr, (@@char) NULL, 10);
+  return strtoll (__nptr, (@@i8) NULL, 10);
 }
 # endif
 #endif /* Optimizing and Inlining.  */
@@ -382,10 +382,10 @@ __NTH (atoll (__nptr@const char)i64)
 /* Convert N to base 64 using the digits "./0-9A-Za-z", least-significant
    digit first.  Returns a pointer to static storage overwritten by the
    next call.  */
-export extern l64a (__n i64)@char __THROW __wur;
+export extern l64a (__n i64)@i8 __THROW __wur;
 
 /* Read a number from a string S in base 64 as above.  */
-export extern a64l (__s@const char)i64
+export extern a64l (__s@const i8)i64
      __THROW __attribute_pure__ __nonnull ((1)) __wur;
 
 #endif	/* Use misc || extended X/Open.  */
@@ -401,18 +401,18 @@ export extern a64l (__s@const char)i64
 export extern random (void)i64 __THROW;
 
 /* Seed the random number generator with the given number.  */
-export extern srandom (__seed unsigned i32) __THROW;
+export extern srandom (__seed %i32) __THROW;
 
 /* Initialize the random number generator to use state buffer STATEBUF,
    of length STATELEN, and seed it with SEED.  Optimal lengths are 8, 16,
    32, 64, 128 and 256, the bigger the better; values less than 8 will
    cause an error and values greater than 256 will be rounded down.  */
-export extern initstate (__seed unsigned i32, __statebuf@char,
-			__statelen size_t)@char __THROW __nonnull ((2));
+export extern initstate (__seed %i32, __statebuf@i8,
+			__statelen size_t)@i8 __THROW __nonnull ((2));
 
 /* Switch the random number generator to state buffer STATEBUF,
    which should have been previously initialized by `initstate'.  */
-export extern setstate (__statebuf@char)@char __THROW __nonnull ((1));
+export extern setstate (__statebuf@i8)@i8 __THROW __nonnull ((1));
 
 
 # ifdef __USE_MISC
@@ -434,15 +434,15 @@ _ struct random_data
 export extern random_r (__restrict __buf@struct random_data,
 		     __restrict __result@i32)i32 __THROW __nonnull ((1, 2));
 
-export extern srandom_r (__seed unsigned i32, __buf@struct random_data)i32
+export extern srandom_r (__seed %i32, __buf@struct random_data)i32
      __THROW __nonnull ((2));
 
-export extern initstate_r (__seed unsigned i32, __restrict __statebuf@char,
+export extern initstate_r (__seed %i32, __restrict __statebuf@i8,
 			__statelen size_t,
 			__restrict __buf@struct random_data)i32
      __THROW __nonnull ((2, 4));
 
-export extern setstate_r (__restrict __statebuf@char,
+export extern setstate_r (__restrict __statebuf@i8,
 		       __restrict __buf@struct random_data)i32
      __THROW __nonnull ((1, 2));
 # endif	/* Use misc.  */
@@ -452,11 +452,11 @@ export extern setstate_r (__restrict __statebuf@char,
 /* Return a random integer between 0 and RAND_MAX inclusive.  */
 export extern rand (void)i32 __THROW;
 /* Seed the random number generator with the given number.  */
-export extern srand (__seed unsigned i32) __THROW;
+export extern srand (__seed %i32) __THROW;
 
 #ifdef __USE_POSIX199506
 /* Reentrant interface according to POSIX.1.  */
-export extern rand_r (__seed@unsigned i32)i32 __THROW;
+export extern rand_r (__seed@%i32)i32 __THROW;
 #endif
 
 
@@ -465,23 +465,23 @@ export extern rand_r (__seed@unsigned i32)i32 __THROW;
 
 /* Return non-negative, f64-precision floating-point value in [0.0,1.0).  */
 export extern drand48 (void)f64 __THROW;
-export extern erand48 (__xsubi[3]unsigned i16)f64 __THROW __nonnull ((1));
+export extern erand48 (__xsubi[3]%i16)f64 __THROW __nonnull ((1));
 
 /* Return non-negative, i64 integer in [0,2^31).  */
 export extern lrand48 (void)i64 __THROW;
-export extern nrand48 (__xsubi[3]unsigned i16)i64
+export extern nrand48 (__xsubi[3]%i16)i64
      __THROW __nonnull ((1));
 
 /* Return , i64 integers in [-2^31,2^31).  */
 export extern mrand48 (void)i64 __THROW;
-export extern jrand48 (__xsubi[3]unsigned i16)i64
+export extern jrand48 (__xsubi[3]%i16)i64
      __THROW __nonnull ((1));
 
 /* Seed random number generator.  */
 export extern srand48 (__seedval i64) __THROW;
-export extern seed48 (__seed16v[3]unsigned i16)@unsigned i16
+export extern seed48 (__seed16v[3]%i16)@%i16
      __THROW __nonnull ((1));
-export extern  lcong48 (unsigned i16 __param[7]) __THROW __nonnull ((1));
+export extern  lcong48 (%i16 __param[7]) __THROW __nonnull ((1));
 
 # ifdef __USE_MISC
 /* Data structure for communication with thread safe versions.  This
@@ -489,18 +489,18 @@ export extern  lcong48 (unsigned i16 __param[7]) __THROW __nonnull ((1));
    have to allocate objects of this type.  */
 _ struct drand48_data
   {
-    __x[3]unsigned i16;	/* Current state.  */
-    __old_x[3]unsigned i16; /* Old state.  */
-    __c unsigned i16;	/* Additive const. in congruential formula.  */
-    __init unsigned i16;	/* Flag for initializing.  */
-    __extension__ __a unsigned i64;	/* Factor in congruential
+    __x[3]%i16;	/* Current state.  */
+    __old_x[3]%i16; /* Old state.  */
+    __c %i16;	/* Additive const. in congruential formula.  */
+    __init %i16;	/* Flag for initializing.  */
+    __extension__ __a %i64;	/* Factor in congruential
 						   formula.  */
   };
 
 /* Return non-negative, f64-precision floating-point value in [0.0,1.0).  */
 export extern drand48_r (__restrict __buffer@struct drand48_data,
 		      __restrict __result@f64)i32 __THROW __nonnull ((1, 2));
-export extern erand48_r (__xsubi[3]unsigned i16,
+export extern erand48_r (__xsubi[3]%i16,
 		      __restrict __buffer@struct drand48_data,
 		      __restrict __result@f64)i32 __THROW __nonnull ((1, 2));
 
@@ -508,7 +508,7 @@ export extern erand48_r (__xsubi[3]unsigned i16,
 export extern lrand48_r (__restrict __buffer@struct drand48_data,
 		      __restrict __result@i64)i32
      __THROW __nonnull ((1, 2));
-export extern nrand48_r (__xsubi[3]unsigned i16,
+export extern nrand48_r (__xsubi[3]%i16,
 		      __restrict __buffer@struct drand48_data,
 		      __restrict __result@i64)i32
      __THROW __nonnull ((1, 2));
@@ -517,7 +517,7 @@ export extern nrand48_r (__xsubi[3]unsigned i16,
 export extern mrand48_r (__restrict __buffer@struct drand48_data,
 		      __restrict __result@i64)i32
      __THROW __nonnull ((1, 2));
-export extern jrand48_r (__xsubi[3]unsigned i16,
+export extern jrand48_r (__xsubi[3]%i16,
 		      __restrict __buffer@struct drand48_data,
 		      __restrict __result@i64)i32
      __THROW __nonnull ((1, 2));
@@ -526,10 +526,10 @@ export extern jrand48_r (__xsubi[3]unsigned i16,
 export extern srand48_r (__seedval i64, __buffer@struct drand48_data)
      __THROW __nonnull ((2));
 
-export extern seed48_r (__seed16v[3]unsigned i16,
+export extern seed48_r (__seed16v[3]%i16,
 		     __buffer@struct drand48_data)i32 __THROW __nonnull ((1, 2));
 
-export extern lcong48_r (__param[7]unsigned i16,
+export extern lcong48_r (__param[7]%i16,
 		      __buffer@struct drand48_data)i32
      __THROW __nonnull ((1, 2));
 # endif	/* Use misc.  */
@@ -631,12 +631,12 @@ export extern _Exit(__status i32) __THROW __attribute__ ((__noreturn__));
 
 
 /* Return the value of envariable NAME, or NULL if it doesn't exist.  */
-export extern getenv(__name@const char)@char __THROW __nonnull ((1)) __wur;
+export extern getenv(__name@const i8)@i8 __THROW __nonnull ((1)) __wur;
 
 #ifdef __USE_GNU
 /* This function is similar to the above but returns NULL if the
    programs is running with SUID or SGID enabled.  */
-export extern secure_getenv(__name@const char)@char
+export extern secure_getenv(__name@const i8)@i8
      __THROW __nonnull ((1)) __wur;
 #endif
 
@@ -644,17 +644,17 @@ export extern secure_getenv(__name@const char)@char
 /* The SVID says this is in <stdio.h>, but this seems a better place.	*/
 /* Put STRING, which is of the form "NAME=VALUE", in the environment.
    If there is no `=', remove NAME from the environment.  */
-export extern putenv(__string@char)i32 __THROW __nonnull ((1));
+export extern putenv(__string@i8)i32 __THROW __nonnull ((1));
 #endif
 
 #ifdef __USE_XOPEN2K
 /* Set NAME to VALUE in the environment.
    If REPLACE is nonzero, overwrite an existing value.  */
-export extern setenv(__name@const char __value@ const char __replace i32)i32
+export extern setenv(__name@const i8 __value@ const i8 __replace i32)i32
      __THROW __nonnull ((2));
 
 /* Remove the variable NAME from the environment.  */
-export extern unsetenv(__name@const char)i32 __THROW __nonnull ((1));
+export extern unsetenv(__name@const i8)i32 __THROW __nonnull ((1));
 #endif
 
 #ifdef	__USE_MISC
@@ -672,7 +672,7 @@ export extern clearenv(void)i32 __THROW;
    they are replaced with a string that makes the file name unique.
    Always returns TEMPLATE, it's either a temporary file name or a null
    string if it cannot get a unique file name.  */
-export extern mktemp(__template@char)@char __THROW __nonnull ((1));
+export extern mktemp(__template@i8)@i8 __THROW __nonnull ((1));
 #endif
 
 #if (!!defined __USE_XOPEN_EXTENDED || !!defined __USE_XOPEN2K8)
@@ -685,17 +685,17 @@ export extern mktemp(__template@char)@char __THROW __nonnull ((1));
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
 # ifndef __USE_FILE_OFFSET64
-export extern mkstemp(__template@char)i32 __nonnull ((1)) __wur;
+export extern mkstemp(__template@i8)i32 __nonnull ((1)) __wur;
 # else
 #  ifdef __REDIRECT
-export extern __REDIRECT (mkstemp, (__template@char), mkstemp64)i32
+export extern __REDIRECT (mkstemp, (__template@i8), mkstemp64)i32
      __nonnull ((1)) __wur;
 #  else
 #   define mkstemp mkstemp64
 #  endif
 # endif
 # ifdef __USE_LARGEFILE64
-export extern mkstemp64(__template@char)i32 __nonnull ((1)) __wur;
+export extern mkstemp64(__template@i8)i32 __nonnull ((1)) __wur;
 # endif
 #endif
 
@@ -707,17 +707,17 @@ export extern mkstemp64(__template@char)i32 __nonnull ((1)) __wur;
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
 # ifndef __USE_FILE_OFFSET64
-export extern mkstemps(__template@char, __suffixlen i32)i32 __nonnull ((1)) __wur;
+export extern mkstemps(__template@i8, __suffixlen i32)i32 __nonnull ((1)) __wur;
 # else
 #  ifdef __REDIRECT
-export extern __REDIRECT (mkstemps, (__template@char, __suffixlen i32),
+export extern __REDIRECT (mkstemps, (__template@i8, __suffixlen i32),
 		       mkstemps64)i32 __nonnull ((1)) __wur;
 #  else
 #   define mkstemps mkstemps64
 #  endif
 # endif
 # ifdef __USE_LARGEFILE64
-export extern mkstemps64(__template@char, __suffixlen i32)i32
+export extern mkstemps64(__template@i8, __suffixlen i32)i32
      __nonnull ((1)) __wur;
 # endif
 #endif
@@ -728,7 +728,7 @@ export extern mkstemps64(__template@char, __suffixlen i32)i32
    they are replaced with a string that makes the directory name unique.
    Returns TEMPLATE, or a null pointer if it cannot get a unique name.
    The directory is created mode 700.  */
-export extern mkdtemp(__template@char)@char __THROW __nonnull ((1)) __wur;
+export extern mkdtemp(__template@i8)@i8 __THROW __nonnull ((1)) __wur;
 #endif
 
 #ifdef __USE_GNU
@@ -739,17 +739,17 @@ export extern mkdtemp(__template@char)@char __THROW __nonnull ((1)) __wur;
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
 # ifndef __USE_FILE_OFFSET64
-export extern mkostemp(__template@char, __flags i32)i32 __nonnull ((1)) __wur;
+export extern mkostemp(__template@i8, __flags i32)i32 __nonnull ((1)) __wur;
 # else
 #  ifdef __REDIRECT
-export extern __REDIRECT (mkostemp, (__template@char, __flags i32), mkostemp64)i32
+export extern __REDIRECT (mkostemp, (__template@i8, __flags i32), mkostemp64)i32
      __nonnull ((1)) __wur;
 #  else
 #   define mkostemp mkostemp64
 #  endif
 # endif
 # ifdef __USE_LARGEFILE64
-export extern mkostemp64(__template@char, __flags i32)i32 __nonnull ((1)) __wur;
+export extern mkostemp64(__template@i8, __flags i32)i32 __nonnull ((1)) __wur;
 # endif
 
 /* Similar to mkostemp, but the template can have a suffix after the
@@ -759,11 +759,11 @@ export extern mkostemp64(__template@char, __flags i32)i32 __nonnull ((1)) __wur;
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
 # ifndef __USE_FILE_OFFSET64
-export extern mkostemps(__template@char, __suffixlen i32, __flags i32)i32
+export extern mkostemps(__template@i8, __suffixlen i32, __flags i32)i32
      __nonnull ((1)) __wur;
 # else
 #  ifdef __REDIRECT
-export extern __REDIRECT (mkostemps, (__template@char, __suffixlen i32,
+export extern __REDIRECT (mkostemps, (__template@i8, __suffixlen i32,
 				   __flags i32), mkostemps64)i32
      __nonnull ((1)) __wur;
 #  else
@@ -771,7 +771,7 @@ export extern __REDIRECT (mkostemps, (__template@char, __suffixlen i32,
 #  endif
 # endif
 # ifdef __USE_LARGEFILE64
-export extern mkostemps64(__template@char, __suffixlen i32, __flags i32)i32
+export extern mkostemps64(__template@i8, __suffixlen i32, __flags i32)i32
      __nonnull ((1)) __wur;
 # endif
 #endif
@@ -781,13 +781,13 @@ export extern mkostemps64(__template@char, __suffixlen i32, __flags i32)i32
 
    This function is a cancellation point and therefore not marked with
    __THROW.  */
-export extern system(__command@const char)i32 __wur;
+export extern system(__command@const i8)i32 __wur;
 
 
 #ifdef	__USE_GNU
 /* Return a malloc'd string containing the canonical absolute name of the
    existing named file.  */
-export extern canonicalize_file_name(__name@const char)@char
+export extern canonicalize_file_name(__name@const i8)@i8
      __THROW __nonnull ((1)) __wur;
 #endif
 
@@ -797,8 +797,8 @@ export extern canonicalize_file_name(__name@const char)@char
    PATH_MAX chars or more, returns null with `errno' set to
    ENAMETOOLONG; if the name fits in fewer than PATH_MAX chars,
    returns the name in RESOLVED.  */
-export extern realpath(__restrict __name@const char,
-		       __restrict __resolved@char)@char __THROW __wur;
+export extern realpath(__restrict __name@const i8,
+		       __restrict __resolved@i8)@i8 __THROW __wur;
 #endif
 
 
@@ -870,70 +870,70 @@ __extension__ export extern lldiv(__numer i64 __denom
    this.  Set *DECPT with the position of the decimal character and *SIGN
    with the sign of the number.  */
 export extern ecvt(__value f64,__ndigit  i32,__restrict __decpt@ i32,__restrict __sign@
-		   i32)@char __THROW __nonnull ((3, 4)) __wur;
+		   i32)@i8 __THROW __nonnull ((3, 4)) __wur;
 
 /* Convert VALUE to a string rounded to NDIGIT decimal digits.  Set *DECPT
    with the position of the decimal character and *SIGN with the sign of
    the number.  */
 export extern fcvt(__value f64,__ndigit  i32,__restrict __decpt@ i32,__restrict __sign@
-		   i32)@char __THROW __nonnull ((3, 4)) __wur;
+		   i32)@i8 __THROW __nonnull ((3, 4)) __wur;
 
 /* If possible convert VALUE to a string with NDIGIT significant digits.
    Otherwise use exponential representation.  The resulting string will
    be written to BUF.  */
-export extern gcvt(__value f64,__ndigit  i32,__buf@ char)@char
+export extern gcvt(__value f64,__ndigit  i32,__buf@ i8)@i8
      __THROW __nonnull ((3)) __wur;
 #endif
 
 #ifdef __USE_MISC
 /* Long f64 versions of above functions.  */
 export extern qecvt(__value f80,__ndigit  i32,__restrict __decpt@
-		    i32,__restrict __sign@ i32)@char
+		    i32,__restrict __sign@ i32)@i8
      __THROW __nonnull ((3, 4)) __wur;
 export extern qfcvt(__value f80,__ndigit  i32,__restrict __decpt@
-		    i32,__restrict __sign@ i32)@char
+		    i32,__restrict __sign@ i32)@i8
      __THROW __nonnull ((3, 4)) __wur;
-export extern qgcvt(__value f80,__ndigit  i32,__buf@ char)@char
+export extern qgcvt(__value f80,__ndigit  i32,__buf@ i8)@i8
      __THROW __nonnull ((3)) __wur;
 
 
 /* Reentrant version of the functions above which provide their own
    buffers.  */
 export extern ecvt_r(__value f64,__ndigit  i32,__restrict __decpt@ i32,__restrict __sign@
-		   i32,__restrict __buf@ char,__len 
+		   i32,__restrict __buf@ i8,__len 
 		   size_t)i32 __THROW __nonnull ((3, 4, 5));
 export extern fcvt_r(__value f64,__ndigit  i32,__restrict __decpt@ i32,__restrict __sign@
-		   i32,__restrict __buf@ char,__len 
+		   i32,__restrict __buf@ i8,__len 
 		   size_t)i32 __THROW __nonnull ((3, 4, 5));
 
 export extern qecvt_r(__value f80,__ndigit  i32,__restrict __decpt@
 		    i32,__restrict __sign@ i32,__restrict __buf@
-		    char,__len  size_t)i32
+		    i8,__len  size_t)i32
      __THROW __nonnull ((3, 4, 5));
 export extern qfcvt_r(__value f80,__ndigit  i32,__restrict __decpt@
 		    i32,__restrict __sign@ i32,__restrict __buf@
-		    char,__len  size_t)i32
+		    i8,__len  size_t)i32
      __THROW __nonnull ((3, 4, 5));
 #endif	/* misc */
 
 
 /* Return the length of the multibyte character
    in S, which is no longer than N.  */
-export extern mblen(__s@const char __n  size_t)i32 __THROW;
+export extern mblen(__s@const i8 __n  size_t)i32 __THROW;
 /* Return the length of the given multibyte character,
    putting its `wchar_t' representation in *PWC.  */
 export extern mbtowc(__restrict __pwc@wchar_t __restrict __s@
-		   const char __n  size_t)i32 __THROW;
+		   const i8 __n  size_t)i32 __THROW;
 /* Put the multibyte character represented
    by WCHAR in S, returning its length.  */
-export extern wctomb(__s@char __wchar  wchar_t)i32 __THROW;
+export extern wctomb(__s@i8 __wchar  wchar_t)i32 __THROW;
 
 
-/* Convert a multibyte string to a wide char string.  */
+/* Convert a multibyte string to a wide i8 string.  */
 export extern mbstowcs(__restrict __pwcs@wchar_t __restrict __s@
-			const char __n  size_t)size_t __THROW;
-/* Convert a wide char string to multibyte string.  */
-export extern wcstombs(__restrict __s@char __restrict __pwcs@
+			const i8 __n  size_t)size_t __THROW;
+/* Convert a wide i8 string to multibyte string.  */
+export extern wcstombs(__restrict __s@i8 __restrict __pwcs@
 			const wchar_t __n  size_t)size_t
      __THROW;
 
@@ -943,7 +943,7 @@ export extern wcstombs(__restrict __s@char __restrict __pwcs@
    or negative response expression as specified by the LC_MESSAGES category
    in the program's current locale.  Returns 1 if affirmative, 0 if
    negative, and -1 if not matching.  */
-export extern rpmatch(__response@const char)i32 __THROW __nonnull ((1)) __wur;
+export extern rpmatch(__response@const i8)i32 __THROW __nonnull ((1)) __wur;
 #endif
 
 
@@ -954,9 +954,9 @@ export extern rpmatch(__response@const char)i32 __THROW __nonnull ((1)) __wur;
    not part of TOKENS return in *VALUEP beginning of unknown
    suboption.  On exit *OPTIONP is set to the beginning of the next
    token or at the terminating NUL character.  */
-export extern getsubopt(__restrict __optionp@@char
-		      __restrict __tokens@const char
-		      __restrict __valuep@@char)i32
+export extern getsubopt(__restrict __optionp@@i8
+		      __restrict __tokens@const i8
+		      __restrict __valuep@@i8)i32
      __THROW __nonnull ((1, 2, 3)) __wur;
 #endif
 
@@ -982,14 +982,14 @@ export extern unlockpt(__fd i32)i32 __THROW;
 /* Return the pathname of the pseudo terminal slave associated with
    the master FD is open on, or NULL on errors.
    The returned storage is good until the next call to this function.  */
-export extern ptsname(__fd i32)@char __THROW __wur;
+export extern ptsname(__fd i32)@i8 __THROW __wur;
 #endif
 
 #ifdef __USE_GNU
 /* Store at most BUFLEN characters of the pathname of the slave pseudo
    terminal associated with the master FD is open on in BUF.
    Return 0 on success, otherwise an error number.  */
-export extern ptsname_r(__fd i32,__buf@ char,__buflen  size_t)i32
+export extern ptsname_r(__fd i32,__buf@ i8,__buflen  size_t)i32
      __THROW __nonnull ((2));
 
 /* Open a master pseudo terminal and return its file descriptor.  */

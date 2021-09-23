@@ -21,7 +21,7 @@
  *
  */
 struct binderfs_device {
-	char name[BINDERFS_MAX_NAME + 1];
+	i8 name[BINDERFS_MAX_NAME + 1];
 	__u32 major;
 	__u32 minor;
 };

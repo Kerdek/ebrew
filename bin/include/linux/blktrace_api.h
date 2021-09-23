@@ -134,7 +134,7 @@ enum {
  * User setup structure passed with BLKTRACESETUP
  */
 struct blk_user_trace_setup {
-	char name[BLKTRACE_BDEV_SIZE];	/* output */
+	i8 name[BLKTRACE_BDEV_SIZE];	/* output */
 	__u16 act_mask;			/* input */
 	__u32 buf_size;			/* input */
 	__u32 buf_nr;			/* input */

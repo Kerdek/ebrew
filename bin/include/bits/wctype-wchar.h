@@ -35,7 +35,7 @@
 
 /* Scalar type that can hold values which represent locale-specific
    character classifications.  */
-typedef unsigned i64 wctype_t;
+typedef %i64 wctype_t;
 
 # ifndef _ISwbit
 /* The characteristics are stored always in network byte order (big
@@ -152,7 +152,7 @@ extern i32 iswblank (wint_t __wc) __THROW;
 
 /* Construct value that describes a class of wide characters identified
    by the string argument PROPERTY.  */
-extern wctype_t wctype (const char *__property) __THROW;
+extern wctype_t wctype (const i8 *__property) __THROW;
 
 /* Determine whether the wide-character WC has the property described by
    DESC.  */

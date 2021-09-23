@@ -44,10 +44,10 @@
 
 /* state bits */
 #define SC_XMIT_BUSY	0x10000000	/* (used by isdn_ppp?) */
-#define SC_RCV_ODDP	0x08000000	/* have rcvd char with odd parity */
-#define SC_RCV_EVNP	0x04000000	/* have rcvd char with even parity */
-#define SC_RCV_B7_1	0x02000000	/* have rcvd char with bit 7 = 1 */
-#define SC_RCV_B7_0	0x01000000	/* have rcvd char with bit 7 = 0 */
+#define SC_RCV_ODDP	0x08000000	/* have rcvd i8 with odd parity */
+#define SC_RCV_EVNP	0x04000000	/* have rcvd i8 with even parity */
+#define SC_RCV_B7_1	0x02000000	/* have rcvd i8 with bit 7 = 1 */
+#define SC_RCV_B7_0	0x01000000	/* have rcvd i8 with bit 7 = 0 */
 #define SC_DC_FERROR	0x00800000	/* fatal decomp error detected */
 #define SC_DC_ERROR	0x00400000	/* non-fatal decomp error detected */
 

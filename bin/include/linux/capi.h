@@ -75,7 +75,7 @@ typedef struct capi_profile {
 #define CAPI_GET_PROFILE	_IOWR('C',0x09,struct capi_profile)
 
 typedef struct capi_manufacturer_cmd {
-	unsigned i64 cmd;
+	%i64 cmd;
 	void *data;
 } capi_manufacturer_cmd;
 
@@ -121,12 +121,12 @@ typedef union capi_ioctl_struct {
 
 #define CAPIFLAG_HIGHJACKING	0x0001
 
-#define CAPI_GET_FLAGS		_IOR('C',0x23, unsigned)
-#define CAPI_SET_FLAGS		_IOR('C',0x24, unsigned)
-#define CAPI_CLR_FLAGS		_IOR('C',0x25, unsigned)
+#define CAPI_GET_FLAGS		_IOR('C',0x23, %)
+#define CAPI_SET_FLAGS		_IOR('C',0x24, %)
+#define CAPI_CLR_FLAGS		_IOR('C',0x25, %)
 
-#define CAPI_NCCI_OPENCOUNT	_IOR('C',0x26, unsigned)
+#define CAPI_NCCI_OPENCOUNT	_IOR('C',0x26, %)
 
-#define CAPI_NCCI_GETUNIT	_IOR('C',0x27, unsigned)
+#define CAPI_NCCI_GETUNIT	_IOR('C',0x27, %)
 
 #endif				/* __LINUX_CAPI_H__ */

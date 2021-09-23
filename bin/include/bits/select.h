@@ -47,7 +47,7 @@
    the array isn't too big.  */
 # define __FD_ZERO(set)  \
   do {									      \
-    unsigned i32 __i;							      \
+    %i32 __i;							      \
     fd_set *__arr = (set);						      \
     for (__i = 0; __i < sizeof (fd_set) / sizeof (__fd_mask); ++__i)	      \
       __FDS_BITS (__arr)[__i] = 0;					      \

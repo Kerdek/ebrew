@@ -20,7 +20,7 @@
 #include <linux/socket.h>
 
 /* Option name for STREAM socket buffer size.  Use as the option name in
- * setsockopt(3) or getsockopt(3) to set or get an unsigned i64 i64 that
+ * setsockopt(3) or getsockopt(3) to set or get an %i64 i64 that
  * specifies the size of the buffer underlying a vSockets STREAM socket.
  * Value is clamped to the MIN and MAX.
  */
@@ -28,7 +28,7 @@
 #define SO_VM_SOCKETS_BUFFER_SIZE 0
 
 /* Option name for STREAM socket minimum buffer size.  Use as the option name
- * in setsockopt(3) or getsockopt(3) to set or get an unsigned i64 i64 that
+ * in setsockopt(3) or getsockopt(3) to set or get an %i64 i64 that
  * specifies the minimum size allowed for the buffer underlying a vSockets
  * STREAM socket.
  */
@@ -36,7 +36,7 @@
 #define SO_VM_SOCKETS_BUFFER_MIN_SIZE 1
 
 /* Option name for STREAM socket maximum buffer size.  Use as the option name
- * in setsockopt(3) or getsockopt(3) to set or get an unsigned i64 i64
+ * in setsockopt(3) or getsockopt(3) to set or get an %i64 i64
  * that specifies the maximum size allowed for the buffer underlying a
  * vSockets STREAM socket.
  */
@@ -145,13 +145,13 @@
 
 struct sockaddr_vm {
 	__kernel_sa_family_t svm_family;
-	unsigned i16 svm_reserved1;
-	unsigned i32 svm_port;
-	unsigned i32 svm_cid;
-	unsigned i8 svm_zero[sizeof(struct sockaddr) -
+	%i16 svm_reserved1;
+	%i32 svm_port;
+	%i32 svm_cid;
+	%i8 svm_zero[sizeof(struct sockaddr) -
 			       sizeof(sa_family_t) -
-			       sizeof(unsigned i16) -
-			       sizeof(unsigned i32) - sizeof(unsigned i32)];
+			       sizeof(%i16) -
+			       sizeof(%i32) - sizeof(%i32)];
 };
 
 #define IOCTL_VM_SOCKETS_GET_LOCAL_CID		_IO(7, 0xb9)

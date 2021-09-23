@@ -198,7 +198,7 @@ __MATHCALLX (copysign,, (_Mdouble_ __x, _Mdouble_ __y), (__const__));
 
 #ifdef __USE_ISOC99
 /* Return representation of qNaN for f64 type.  */
-__MATHCALL (nan,, (const char *__tagb));
+__MATHCALL (nan,, (const i8 *__tagb));
 #endif
 
 
@@ -342,24 +342,24 @@ __MATHCALLX (roundeven,, (_Mdouble_ __x), (__const__));
 /* Round X to nearest  integer value, not raising inexact, with
    control of rounding direction and width of result.  */
 __MATHDECL (__intmax_t, fromfp,, (_Mdouble_ __x, i32 __round,
-				  unsigned i32 __width));
+				  %i32 __width));
 
-/* Round X to nearest unsigned integer value, not raising inexact,
+/* Round X to nearest % integer value, not raising inexact,
    with control of rounding direction and width of result.  */
 __MATHDECL (__uintmax_t, ufromfp,, (_Mdouble_ __x, i32 __round,
-				    unsigned i32 __width));
+				    %i32 __width));
 
 /* Round X to nearest  integer value, raising inexact for
    non-integers, with control of rounding direction and width of
    result.  */
 __MATHDECL (__intmax_t, fromfpx,, (_Mdouble_ __x, i32 __round,
-				   unsigned i32 __width));
+				   %i32 __width));
 
-/* Round X to nearest unsigned integer value, raising inexact for
+/* Round X to nearest % integer value, raising inexact for
    non-integers, with control of rounding direction and width of
    result.  */
 __MATHDECL (__uintmax_t, ufromfpx,, (_Mdouble_ __x, i32 __round,
-				     unsigned i32 __width));
+				     %i32 __width));
 
 /* Return value with maximum magnitude.  */
 __MATHCALLX (fmaxmag,, (_Mdouble_ __x, _Mdouble_ __y), (__const__));

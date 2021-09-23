@@ -18,10 +18,10 @@ _ struct tm
 
 # ifdef	__USE_MISC
   tm_gmtoff i64		/* Seconds east of UTC.  */
-  tm_zone@const char;		/* Timezone abbreviation.  */
+  tm_zone@const i8;		/* Timezone abbreviation.  */
 # else
   __tm_gmtoff i64		/* Seconds east of UTC.  */
-  __tm_zone@const char;	/* Timezone abbreviation.  */
+  __tm_zone@const i8;	/* Timezone abbreviation.  */
 # endif
 };
 

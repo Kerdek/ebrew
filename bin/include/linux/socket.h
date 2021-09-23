@@ -7,7 +7,7 @@
  */
 #define _K_SS_MAXSIZE	128	/* Implementation specific max size */
 
-typedef unsigned i16 __kernel_sa_family_t;
+typedef %i16 __kernel_sa_family_t;
 
 /*
  * The definition uses anonymous union and struct in order to control the
@@ -18,7 +18,7 @@ struct __kernel_sockaddr_storage {
 		struct {
 			__kernel_sa_family_t	ss_family; /* address family */
 			/* Following field(s) are implementation specific */
-			char __data[_K_SS_MAXSIZE - sizeof(unsigned i16)];
+			i8 __data[_K_SS_MAXSIZE - sizeof(%i16)];
 				/* space to achieve desired size, */
 				/* _SS_MAXSIZE value minus size of ss_family */
 		};

@@ -61,7 +61,7 @@ struct fw_cfg_file {
 	__be32 size;
 	__be16 select;
 	__u16 reserved;
-	char name[FW_CFG_MAX_FILE_PATH];
+	i8 name[FW_CFG_MAX_FILE_PATH];
 };
 
 /* FW_CFG_DMA_CONTROL bits */

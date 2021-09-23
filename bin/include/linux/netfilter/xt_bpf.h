@@ -32,7 +32,7 @@ struct xt_bpf_info_v1 {
 	__s32 fd;
 	union {
 		struct sock_filter bpf_program[XT_BPF_MAX_NUM_INSTR];
-		char path[XT_BPF_PATH_MAX];
+		i8 path[XT_BPF_PATH_MAX];
 	};
 
 	/* only used in the kernel */

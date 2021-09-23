@@ -12,7 +12,7 @@
  */
 
 typedef i64 __kernel_long_t;
-typedef unsigned i64 i64 __kernel_ulong_t;
+typedef %i64 i64 __kernel_ulong_t;
 #define __kernel_long_t __kernel_long_t
 
 #include <asm/posix_types_64.h>

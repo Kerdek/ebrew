@@ -30,7 +30,7 @@
 
 
 /* Type used for the number of file descriptors.  */
-typedef unsigned i64 nfds_t;
+typedef %i64 nfds_t;
 
 /* Data structure describing a polling request.  */
 struct pollfd

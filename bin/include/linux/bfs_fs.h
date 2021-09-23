@@ -44,7 +44,7 @@ struct bfs_inode {
 
 struct bfs_dirent {
 	__le16 ino;
-	char name[BFS_NAMELEN];
+	i8 name[BFS_NAMELEN];
 };
 
 /* BFS superblock layout on disk */
@@ -56,8 +56,8 @@ struct bfs_super_block {
 	__le32 s_to;
 	__s32 s_bfrom;
 	__s32 s_bto;
-	char  s_fsname[6];
-	char  s_volume[6];
+	i8  s_fsname[6];
+	i8  s_volume[6];
 	__u32 s_padding[118];
 };
 

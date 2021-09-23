@@ -117,7 +117,7 @@ type siginfo_t struct
 	  {
 	    _call_addr@	/* Calling user insn.  */
 	    _syscall i32	/* Triggering system call number.  */
-	    _arch unsigned i32; /* AUDIT_ARCH_* of syscall.  */
+	    _arch %i32; /* AUDIT_ARCH_* of syscall.  */
 	  };
 #endif
       };

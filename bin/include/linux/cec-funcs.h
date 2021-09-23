@@ -743,9 +743,9 @@ static __inline__ void cec_ops_set_ext_timer(const struct cec_msg *msg,
 }
 
 static __inline__ void cec_msg_set_timer_program_title(struct cec_msg *msg,
-						   const char *prog_title)
+						   const i8 *prog_title)
 {
-	unsigned i32 len = strlen(prog_title);
+	%i32 len = strlen(prog_title);
 
 	if (len > 14)
 		len = 14;
@@ -755,9 +755,9 @@ static __inline__ void cec_msg_set_timer_program_title(struct cec_msg *msg,
 }
 
 static __inline__ void cec_ops_set_timer_program_title(const struct cec_msg *msg,
-						   char *prog_title)
+						   i8 *prog_title)
 {
-	unsigned i32 len = msg->len > 2 ? msg->len - 2 : 0;
+	%i32 len = msg->len > 2 ? msg->len - 2 : 0;
 
 	if (len > 14)
 		len = 14;
@@ -814,7 +814,7 @@ static __inline__ void cec_msg_give_physical_addr(struct cec_msg *msg,
 }
 
 static __inline__ void cec_msg_set_menu_language(struct cec_msg *msg,
-					     const char *language)
+					     const i8 *language)
 {
 	msg->len = 5;
 	msg->msg[0] |= 0xf; /* broadcast */
@@ -823,7 +823,7 @@ static __inline__ void cec_msg_set_menu_language(struct cec_msg *msg,
 }
 
 static __inline__ void cec_ops_set_menu_language(const struct cec_msg *msg,
-					     char *language)
+					     i8 *language)
 {
 	memcpy(language, msg->msg + 2, 3);
 	language[3] = '\0';
@@ -1192,9 +1192,9 @@ static __inline__ void cec_msg_vendor_remote_button_up(struct cec_msg *msg)
 /* OSD Display Feature */
 static __inline__ void cec_msg_set_osd_string(struct cec_msg *msg,
 					  __u8 disp_ctl,
-					  const char *osd)
+					  const i8 *osd)
 {
-	unsigned i32 len = strlen(osd);
+	%i32 len = strlen(osd);
 
 	if (len > 13)
 		len = 13;
@@ -1206,9 +1206,9 @@ static __inline__ void cec_msg_set_osd_string(struct cec_msg *msg,
 
 static __inline__ void cec_ops_set_osd_string(const struct cec_msg *msg,
 					  __u8 *disp_ctl,
-					  char *osd)
+					  i8 *osd)
 {
-	unsigned i32 len = msg->len > 3 ? msg->len - 3 : 0;
+	%i32 len = msg->len > 3 ? msg->len - 3 : 0;
 
 	*disp_ctl = msg->msg[2];
 	if (len > 13)
@@ -1219,9 +1219,9 @@ static __inline__ void cec_ops_set_osd_string(const struct cec_msg *msg,
 
 
 /* Device OSD Transfer Feature */
-static __inline__ void cec_msg_set_osd_name(struct cec_msg *msg, const char *name)
+static __inline__ void cec_msg_set_osd_name(struct cec_msg *msg, const i8 *name)
 {
-	unsigned i32 len = strlen(name);
+	%i32 len = strlen(name);
 
 	if (len > 14)
 		len = 14;
@@ -1231,9 +1231,9 @@ static __inline__ void cec_msg_set_osd_name(struct cec_msg *msg, const char *nam
 }
 
 static __inline__ void cec_ops_set_osd_name(const struct cec_msg *msg,
-					char *name)
+					i8 *name)
 {
-	unsigned i32 len = msg->len > 2 ? msg->len - 2 : 0;
+	%i32 len = msg->len > 2 ? msg->len - 2 : 0;
 
 	if (len > 14)
 		len = 14;
@@ -1506,7 +1506,7 @@ static __inline__ void cec_msg_report_short_audio_descriptor(struct cec_msg *msg
 					__u8 num_descriptors,
 					const __u32 *descriptors)
 {
-	unsigned i32 i;
+	%i32 i;
 
 	if (num_descriptors > 4)
 		num_descriptors = 4;
@@ -1523,7 +1523,7 @@ static __inline__ void cec_ops_report_short_audio_descriptor(const struct cec_ms
 							 __u8 *num_descriptors,
 							 __u32 *descriptors)
 {
-	unsigned i32 i;
+	%i32 i;
 
 	*num_descriptors = (msg->len - 2) / 3;
 	if (*num_descriptors > 4)
@@ -1540,7 +1540,7 @@ static __inline__ void cec_msg_request_short_audio_descriptor(struct cec_msg *ms
 					const __u8 *audio_format_id,
 					const __u8 *audio_format_code)
 {
-	unsigned i32 i;
+	%i32 i;
 
 	if (num_descriptors > 4)
 		num_descriptors = 4;
@@ -1557,7 +1557,7 @@ static __inline__ void cec_ops_request_short_audio_descriptor(const struct cec_m
 					__u8 *audio_format_id,
 					__u8 *audio_format_code)
 {
-	unsigned i32 i;
+	%i32 i;
 
 	*num_descriptors = msg->len - 2;
 	if (*num_descriptors > 4)

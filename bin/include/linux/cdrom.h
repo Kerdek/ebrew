@@ -231,7 +231,7 @@ struct cdrom_tocentry
 struct cdrom_read      
 {
 	i32	cdread_lba;
-	char 	*cdread_bufaddr;
+	i8 	*cdread_bufaddr;
 	i32	cdread_buflen;
 };
 
@@ -267,8 +267,8 @@ struct cdrom_mcn
 /* This is used by the CDROMPLAYBLK ioctl */
 struct cdrom_blk 
 {
-	unsigned from;
-	unsigned i16 len;
+	% from;
+	%i16 len;
 };
 
 #define CDROM_PACKET_SIZE	12
@@ -281,12 +281,12 @@ struct cdrom_blk
 /* for CDROM_PACKET_COMMAND ioctl */
 struct cdrom_generic_command
 {
-	unsigned i8 		cmd[CDROM_PACKET_SIZE];
-	unsigned i8		*buffer;
-	unsigned i32 		buflen;
+	%i8 		cmd[CDROM_PACKET_SIZE];
+	%i8		*buffer;
+	%i32 		buflen;
 	i32			stat;
 	struct request_sense	*sense;
-	unsigned i8		data_direction;
+	%i8		data_direction;
 	i32			quiet;
 	i32			timeout;
 	union {
@@ -562,7 +562,7 @@ struct dvd_copyright {
 struct dvd_disckey {
 	__u8 type;
 
-	unsigned agid		: 2;
+	% agid		: 2;
 	__u8 value[2048];
 };
 
@@ -619,26 +619,26 @@ typedef __u8 dvd_challenge[10];	/* 80-bit value, MSB is first elem. */
 
 struct dvd_lu_send_agid {
 	__u8 type;
-	unsigned agid		: 2;
+	% agid		: 2;
 };
 
 struct dvd_host_send_challenge {
 	__u8 type;
-	unsigned agid		: 2;
+	% agid		: 2;
 
 	dvd_challenge chal;
 };
 
 struct dvd_send_key {
 	__u8 type;
-	unsigned agid		: 2;
+	% agid		: 2;
 
 	dvd_key key;
 };
 
 struct dvd_lu_send_challenge {
 	__u8 type;
-	unsigned agid		: 2;
+	% agid		: 2;
 
 	dvd_challenge chal;
 };
@@ -655,20 +655,20 @@ struct dvd_lu_send_challenge {
 
 struct dvd_lu_send_title_key {
 	__u8 type;
-	unsigned agid		: 2;
+	% agid		: 2;
 
 	dvd_key title_key;
 	i32 lba;
-	unsigned cpm		: 1;
-	unsigned cp_sec		: 1;
-	unsigned cgms		: 2;
+	% cpm		: 1;
+	% cp_sec		: 1;
+	% cgms		: 2;
 };
 
 struct dvd_lu_send_asf {
 	__u8 type;
-	unsigned agid		: 2;
+	% agid		: 2;
 
-	unsigned asf		: 1;
+	% asf		: 1;
 };
 
 struct dvd_host_send_rpcstate {

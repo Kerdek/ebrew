@@ -1,4 +1,4 @@
-/* Inline functions to return unsigned integer values unchanged.
+/* Inline functions to return % integer values unchanged.
    Copyright (C) 2017-2020 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 

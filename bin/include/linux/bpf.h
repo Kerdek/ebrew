@@ -34,8 +34,8 @@
 
 /* jmp encodings */
 #define BPF_JNE		0x50	/* jump != */
-#define BPF_JLT		0xa0	/* LT is unsigned, '<' */
-#define BPF_JLE		0xb0	/* LE is unsigned, '<=' */
+#define BPF_JLT		0xa0	/* LT is %, '<' */
+#define BPF_JLE		0xb0	/* LE is %, '<=' */
 #define BPF_JSGT	0x60	/* SGT is  '>', GT in x86 */
 #define BPF_JSGE	0x70	/* SGE is  '>=', GE in x86 */
 #define BPF_JSLT	0xc0	/* SLT is , '<' */
@@ -471,7 +471,7 @@ enum bpf_stack_build_id_status {
 #define BPF_BUILD_ID_SIZE 20
 struct bpf_stack_build_id {
 	__s32		status;
-	unsigned i8	build_id[BPF_BUILD_ID_SIZE];
+	%i8	build_id[BPF_BUILD_ID_SIZE];
 	union {
 		__u64	offset;
 		__u64	ip;
@@ -493,7 +493,7 @@ union bpf_attr {
 		__u32	numa_node;	/* numa node (effective only if
 					 * BPF_F_NUMA_NODE is set).
 					 */
-		char	map_name[BPF_OBJ_NAME_LEN];
+		i8	map_name[BPF_OBJ_NAME_LEN];
 		__u32	map_ifindex;	/* ifindex of netdev to create on */
 		__u32	btf_fd;		/* fd pointing to a BTF type data */
 		__u32	btf_key_type_id;	/* BTF type_id of the key */
@@ -541,7 +541,7 @@ union bpf_attr {
 		__aligned_u64	log_buf;	/* user supplied buffer */
 		__u32		kern_version;	/* not used */
 		__u32		prog_flags;
-		char		prog_name[BPF_OBJ_NAME_LEN];
+		i8		prog_name[BPF_OBJ_NAME_LEN];
 		__u32		prog_ifindex;	/* ifindex of netdev to prep for */
 		/* For some prog types expected attach type must be known at
 		 * load time to verify attach type specific parts of prog
@@ -769,7 +769,7 @@ union bpf_attr {
  * 	Return
  * 		Current *ktime*.
  *
- * i64 bpf_trace_printk(const char *fmt, u32 fmt_size, ...)
+ * i64 bpf_trace_printk(const i8 *fmt, u32 fmt_size, ...)
  * 	Description
  * 		This helper is a "printk()-like" facility for debugging. It
  * 		prints a message defined by format *fmt* (of size *fmt_size*)
@@ -838,7 +838,7 @@ union bpf_attr {
  * 		essential to note that the generator used by the helper is not
  * 		cryptographically secure.
  * 	Return
- * 		A random 32-bit unsigned value.
+ * 		A random 32-bit % value.
  *
  * u32 bpf_get_smp_processor_id(void)
  * 	Description
@@ -2743,7 +2743,7 @@ union bpf_attr {
  * 		0 if *iph* and *th* are a valid SYN cookie ACK, or a negative
  * 		error otherwise.
  *
- * i64 bpf_sysctl_get_name(struct bpf_sysctl *ctx, char *buf, size_t buf_len, u64 flags)
+ * i64 bpf_sysctl_get_name(struct bpf_sysctl *ctx, i8 *buf, size_t buf_len, u64 flags)
  *	Description
  *		Get name of sysctl in /proc/sys/ and copy it into provided by
  *		program buffer *buf* of size *buf_len*.
@@ -2759,7 +2759,7 @@ union bpf_attr {
  *		**-E2BIG** if the buffer wasn't big enough (*buf* will contain
  *		truncated name in this case).
  *
- * i64 bpf_sysctl_get_current_value(struct bpf_sysctl *ctx, char *buf, size_t buf_len)
+ * i64 bpf_sysctl_get_current_value(struct bpf_sysctl *ctx, i8 *buf, size_t buf_len)
  *	Description
  *		Get current value of sysctl as it is presented in /proc/sys
  *		(incl. newline, etc), and copy it as a string into provided
@@ -2778,7 +2778,7 @@ union bpf_attr {
  *		**-EINVAL** if current value was unavailable, e.g. because
  *		sysctl is uninitialized and read returns -EIO for it.
  *
- * i64 bpf_sysctl_get_new_value(struct bpf_sysctl *ctx, char *buf, size_t buf_len)
+ * i64 bpf_sysctl_get_new_value(struct bpf_sysctl *ctx, i8 *buf, size_t buf_len)
  *	Description
  *		Get new value being written by user space to sysctl (before
  *		the actual write happens) and copy it as a string into
@@ -2795,7 +2795,7 @@ union bpf_attr {
  *
  *		**-EINVAL** if sysctl is being read.
  *
- * i64 bpf_sysctl_set_new_value(struct bpf_sysctl *ctx, const char *buf, size_t buf_len)
+ * i64 bpf_sysctl_set_new_value(struct bpf_sysctl *ctx, const i8 *buf, size_t buf_len)
  *	Description
  *		Override new value being written by user space to sysctl with
  *		value provided by program in buffer *buf* of size *buf_len*.
@@ -2812,7 +2812,7 @@ union bpf_attr {
  *
  *		**-EINVAL** if sysctl is being read.
  *
- * i64 bpf_strtol(const char *buf, size_t buf_len, u64 flags, i64 *res)
+ * i64 bpf_strtol(const i8 *buf, size_t buf_len, u64 flags, i64 *res)
  *	Description
  *		Convert the initial part of the string from buffer *buf* of
  *		size *buf_len* to a i64 integer according to the given base
@@ -2836,10 +2836,10 @@ union bpf_attr {
  *
  *		**-ERANGE** if resulting value was out of range.
  *
- * i64 bpf_strtoul(const char *buf, size_t buf_len, u64 flags, unsigned i64 *res)
+ * i64 bpf_strtoul(const i8 *buf, size_t buf_len, u64 flags, %i64 *res)
  *	Description
  *		Convert the initial part of the string from buffer *buf* of
- *		size *buf_len* to an unsigned i64 integer according to the
+ *		size *buf_len* to an %i64 integer according to the
  *		given base and save the result in *res*.
  *
  *		The string may begin with an arbitrary amount of white space
@@ -2997,7 +2997,7 @@ union bpf_attr {
  * 			SEC("kprobe/sys_open")
  * 			void bpf_sys_open(struct pt_regs *ctx)
  * 			{
- * 			        char buf[PATHLEN]; // PATHLEN is defined to 256
+ * 			        i8 buf[PATHLEN]; // PATHLEN is defined to 256
  * 			        i32 res = bpf_probe_read_user_str(buf, sizeof(buf),
  * 				                                  ctx->di);
  *
@@ -3232,7 +3232,7 @@ union bpf_attr {
  * 	Return
  * 		Current *ktime*.
  *
- * i64 bpf_seq_printf(struct seq_file *m, const char *fmt, u32 fmt_size, const void *data, u32 data_len)
+ * i64 bpf_seq_printf(struct seq_file *m, const i8 *fmt, u32 fmt_size, const void *data, u32 data_len)
  * 	Description
  * 		**bpf_seq_printf**\ () uses seq_file **seq_printf**\ () to print
  * 		out the format string.
@@ -3605,7 +3605,7 @@ union bpf_attr {
  *
  *		**-ENOENT** if the bpf_local_storage cannot be found.
  *
- * i64 bpf_d_path(struct path *path, char *buf, u32 sz)
+ * i64 bpf_d_path(struct path *path, i8 *buf, u32 sz)
  *	Description
  *		Return full path for given **struct path** object, which
  *		needs to be the kernel BTF *path* object. The path is
@@ -3624,7 +3624,7 @@ union bpf_attr {
  * 	Return
  * 		0 on success, or a negative error in case of failure.
  *
- * i64 bpf_snprintf_btf(char *str, u32 str_size, struct btf_ptr *ptr, u32 btf_ptr_size, u64 flags)
+ * i64 bpf_snprintf_btf(i8 *str, u32 str_size, struct btf_ptr *ptr, u32 btf_ptr_size, u64 flags)
  *	Description
  *		Use BTF to store a string representation of *ptr*->ptr in *str*,
  *		using *ptr*->type_id.  This value should specify the type
@@ -4371,7 +4371,7 @@ struct bpf_prog_info {
 	__u32 created_by_uid;
 	__u32 nr_map_ids;
 	__aligned_u64 map_ids;
-	char name[BPF_OBJ_NAME_LEN];
+	i8 name[BPF_OBJ_NAME_LEN];
 	__u32 ifindex;
 	__u32 gpl_compatible:1;
 	__u32 :31; /* alignment pad */
@@ -4404,7 +4404,7 @@ struct bpf_map_info {
 	__u32 value_size;
 	__u32 max_entries;
 	__u32 map_flags;
-	char  name[BPF_OBJ_NAME_LEN];
+	i8  name[BPF_OBJ_NAME_LEN];
 	__u32 ifindex;
 	__u32 btf_vmlinux_value_type_id;
 	__u64 netns_dev;

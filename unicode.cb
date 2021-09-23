@@ -1,8 +1,8 @@
 #include "chub.hb"
 
-encode_utf8_byte(p @char c unsigned i32 i i64 p i32 s unsigned i32 m unsigned i32) =
-  (p[i] = cast char the unsigned i32 (cast unsigned i32 the char p[i] | c >> s & m));;
-export encode_utf8(p@ char c unsigned i32) i32 = return
+encode_utf8_byte(p @i8 c %i32 i i64 p i32 s %i32 m %i32) =
+  (p[i] = cast i8 the %i32 (cast %i32 the i8 p[i] | c >> s & m));;
+export encode_utf8(p@ i8 c %i32) i32 = return
   &encode_utf8_byte is f
   ((c < 0x00080) ? f@ p c 0l 0x00  0u 0xffu  ;: 1 :
   (c < 0x00800) ? f@ p c 1l 0x80  0u 0x3fu  ;:
@@ -15,8 +15,8 @@ export encode_utf8(p@ char c unsigned i32) i32 = return
                   f@ p c 1l 0x80 12u 0x3fu  ;:
                   f@ p c 0l 0xf0 18u 0xffu  ;: 4) ;;
 
-export decode_utf8(new_pos@@ char p@char) unsigned i32 = return
-  cast unsigned i32 the char p@ is q
+export decode_utf8(new_pos@@ i8 p@i8) %i32 = return
+  cast %i32 the i8 p@ is q
   ((q < 128) ? (new_pos@ = p + 1l) ;: q :
   (q & ( (q >= 0xF0) ? 0x67u :
          (q >= 0xE0) ? 0x4Fu :
@@ -26,28 +26,28 @@ export decode_utf8(new_pos@@ char p@char) unsigned i32 = return
   (len_c & 0x60u) is len
   (len_c & 0x1Fu) is c
   cast void the i64 ( 1l for i (i < len && (i + 1l) :;
-      cast unsigned i32 the char p[i] is q
+      cast %i32 the i8 p[i] is q
       ( ((q & 0b11000000u) != 0b01000000) ?
           (error_at p "invalid UTF-8 sequence") :
         (c = c << 6u | q & 0b00111111u)))) ;:
   c :;
-  (new_pos@ = p + the unsigned i32 len));;
+  (new_pos@ = p + the %i32 len));;
 
-in_range(range@ unsigned i32 c unsigned i32) bool =
+in_range(range@ %i32 c %i32) bool =
   for (let i i64 = 0l; range[i] != -1; i += 2l)
     if (range[i] <= c && c <= range[i + 1l])
       return true;
   return false;;
 
-ii1range []unsigned i32 = {
-  cast unsigned i32 the i32 '_'
-  cast unsigned i32 the i32 '_'
-  cast unsigned i32 the i32 'a'
-  cast unsigned i32 the i32 'z'
-  cast unsigned i32 the i32 'A'
-  cast unsigned i32 the i32 'Z'
-  cast unsigned i32 the i32 '$'
-  cast unsigned i32 the i32 '$'
+ii1range []%i32 = {
+  cast %i32 the i32 '_'
+  cast %i32 the i32 '_'
+  cast %i32 the i32 'a'
+  cast %i32 the i32 'z'
+  cast %i32 the i32 'A'
+  cast %i32 the i32 'Z'
+  cast %i32 the i32 '$'
+  cast %i32 the i32 '$'
   0x000A8u 0x000A8u 0x000AAu 0x000AAu 0x000ADu 0x000ADu 0x000AFu 0x000AFu
   0x000B2u 0x000B5u 0x000B7u 0x000BAu 0x000BCu 0x000BEu 0x000C0u 0x000D6u
   0x000D8u 0x000F6u 0x000F8u 0x000FFu 0x00100u 0x002FFu 0x00370u 0x0167Fu
@@ -61,14 +61,14 @@ ii1range []unsigned i32 = {
   0x60000u 0x6FFFDu 0x70000u 0x7FFFDu 0x80000u 0x8FFFDu 0x90000u 0x9FFFDu
   0xA0000u 0xAFFFDu 0xB0000u 0xBFFFDu 0xC0000u 0xCFFFDu 0xD0000u 0xDFFFDu
   0xE0000u 0xEFFFDu 0xFFFFFFFFu;;
-export is_ident1(c unsigned i32) bool =
-  return c != '@' && in_range cast @unsigned i32 the typeof ii1range ii1range c;;
-ii2range[] unsigned i32 = {
+export is_ident1(c %i32) bool =
+  return c != '@' && in_range cast @%i32 the typeof ii1range ii1range c;;
+ii2range[] %i32 = {
   0x0030u 0x0039u 0x0024u 0x0024u
   0x0300u 0x036Fu 0x1DC0u 0x1DFFu 0x20D0u 0x20FFu 0xFE20u 0xFE2Fu -1u;;
-export is_ident2(c unsigned i32) bool =
-  return c != '@' && (is_ident1 c || in_range cast @unsigned i32 the typeof ii2range ii2range c);;
-cwrange1[] unsigned i32 = {
+export is_ident2(c %i32) bool =
+  return c != '@' && (is_ident1 c || in_range cast @%i32 the typeof ii2range ii2range c);;
+cwrange1[] %i32 = {
   0x00000u 0x0001Fu 0x0007fu 0x000a0u 0x00300u 0x0036Fu 0x00483u 0x00486u
   0x00488u 0x00489u 0x00591u 0x005BDu 0x005BFu 0x005BFu 0x005C1u 0x005C2u
   0x005C4u 0x005C5u 0x005C7u 0x005C7u 0x00600u 0x00603u 0x00610u 0x00615u
@@ -106,16 +106,16 @@ cwrange1[] unsigned i32 = {
   0x1D167u 0x1D169u 0x1D173u 0x1D182u 0x1D185u 0x1D18Bu 0x1D1AAu 0x1D1ADu
   0x1D242u 0x1D244u 0xE0001u 0xE0001u 0xE0020u 0xE007Fu 0xE0100u 0xE01EFu
   0xFFFFFFFFu;
-cwrange2[] unsigned i32 = {
+cwrange2[] %i32 = {
   0x01100u 0x0115Fu 0x02329u 0x02329u 0x0232Au 0x0232Au 0x02E80u 0x0303Eu
   0x03040u 0x0A4CFu 0x0AC00u 0x0D7A3u 0x0F900u 0x0FAFFu 0x0FE10u 0x0FE19u
   0x0FE30u 0x0FE6Fu 0x0FF00u 0x0FF60u 0x0FFE0u 0x0FFE6u 0x1F000u 0x1F644u
   0x20000u 0x2FFFDu 0x30000u 0x3FFFDu
   0xFFFFFFFFu;;
-char_width(c unsigned i32) i32 = return
-  in_range cast @unsigned i32 the typeof cwrange1 cwrange1 c ? 0 :
-  in_range cast @unsigned i32 the typeof cwrange2 cwrange2 c ? 2 :
+char_width(c %i32) i32 = return
+  in_range cast @%i32 the typeof cwrange1 cwrange1 c ? 0 :
+  in_range cast @%i32 the typeof cwrange2 cwrange2 c ? 2 :
                                                            1 ;;
-export display_width(p@ char len i32) i32 = return
+export display_width(p@ i8 len i32) i32 = return
   p is q
   0 for w (p - q < len && w + char_width decode_utf8 &p p);;

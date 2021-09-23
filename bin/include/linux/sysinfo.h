@@ -19,7 +19,7 @@ struct sysinfo {
 	__kernel_ulong_t totalhigh;	/* Total high memory size */
 	__kernel_ulong_t freehigh;	/* Available high memory size */
 	__u32 mem_unit;			/* Memory unit size in bytes */
-	char _f[20-2*sizeof(__kernel_ulong_t)-sizeof(__u32)];	/* Padding: libc5 uses this.. */
+	i8 _f[20-2*sizeof(__kernel_ulong_t)-sizeof(__u32)];	/* Padding: libc5 uses this.. */
 };
 
 #endif /* _LINUX_SYSINFO_H */

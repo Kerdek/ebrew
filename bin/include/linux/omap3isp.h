@@ -58,7 +58,7 @@
 #define VIDIOC_OMAP3ISP_STAT_REQ_TIME32 \
 	_IOWR('V', BASE_VIDIOC_PRIVATE + 6, struct omap3isp_stat_data_time32)
 #define VIDIOC_OMAP3ISP_STAT_EN \
-	_IOWR('V', BASE_VIDIOC_PRIVATE + 7, unsigned i64)
+	_IOWR('V', BASE_VIDIOC_PRIVATE + 7, %i64)
 
 /*
  * Events

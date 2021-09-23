@@ -23,7 +23,7 @@
 __BEGIN_DECLS
 
 /* Return directory part of PATH or "." if none is available.  */
-export extern dirname (__path@char)@char __THROW;
+export extern dirname (__path@i8)@i8 __THROW;
 
 /* Return final component of PATH.
 
@@ -31,7 +31,7 @@ export extern dirname (__path@char)@char __THROW;
    modify its argument.  Therefore we normally use the GNU version (in
    <string.h>) and only if this header is included make the XPG
    version available under the real name.  */
-export extern __xpg_basename (__path@char)@char __THROW;
+export extern __xpg_basename (__path@i8)@i8 __THROW;
 #define basename	__xpg_basename
 
 __END_DECLS

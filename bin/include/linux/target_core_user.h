@@ -124,7 +124,7 @@ struct tcmu_cmd_entry {
 			__u8 __pad1;
 			__u16 __pad2;
 			__u32 read_len;
-			char sense_buffer[TCMU_SENSE_BUFFERSIZE];
+			i8 sense_buffer[TCMU_SENSE_BUFFERSIZE];
 		} rsp;
 	};
 

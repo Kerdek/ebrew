@@ -23,7 +23,7 @@
 	 NF_NAT_RANGE_NETMAP)
 
 struct nf_nat_ipv4_range {
-	unsigned i32			flags;
+	%i32			flags;
 	__be32				min_ip;
 	__be32				max_ip;
 	union nf_conntrack_man_proto	min;
@@ -31,12 +31,12 @@ struct nf_nat_ipv4_range {
 };
 
 struct nf_nat_ipv4_multi_range_compat {
-	unsigned i32			rangesize;
+	%i32			rangesize;
 	struct nf_nat_ipv4_range	range[1];
 };
 
 struct nf_nat_range {
-	unsigned i32			flags;
+	%i32			flags;
 	union nf_inet_addr		min_addr;
 	union nf_inet_addr		max_addr;
 	union nf_conntrack_man_proto	min_proto;
@@ -44,7 +44,7 @@ struct nf_nat_range {
 };
 
 struct nf_nat_range2 {
-	unsigned i32			flags;
+	%i32			flags;
 	union nf_inet_addr		min_addr;
 	union nf_inet_addr		max_addr;
 	union nf_conntrack_man_proto	min_proto;

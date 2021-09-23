@@ -44,14 +44,14 @@ struct dlm_lock_params {
 	void *bastparam;
 	void *bastaddr;
 	struct dlm_lksb *lksb;
-	char lvb[DLM_USER_LVB_LEN];
-	char name[0];
+	i8 lvb[DLM_USER_LVB_LEN];
+	i8 name[0];
 };
 
 struct dlm_lspace_params {
 	__u32 flags;
 	__u32 minor;
-	char name[0];
+	i8 name[0];
 };
 
 struct dlm_purge_params {

@@ -27,9 +27,9 @@ struct ipc64_perm {
 	__kernel_gid32_t	cgid;
 	__kernel_mode_t		mode;
 				/* pad if mode_t is u16: */
-	unsigned i8		__pad1[4 - sizeof(__kernel_mode_t)];
-	unsigned i16		seq;
-	unsigned i16		__pad2;
+	%i8		__pad1[4 - sizeof(__kernel_mode_t)];
+	%i16		seq;
+	%i16		__pad2;
 	__kernel_ulong_t	__unused1;
 	__kernel_ulong_t	__unused2;
 };

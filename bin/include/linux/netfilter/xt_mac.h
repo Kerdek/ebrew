@@ -5,7 +5,7 @@
 #include <linux/if_ether.h>
 
 struct xt_mac_info {
-    unsigned i8 srcaddr[ETH_ALEN];
+    %i8 srcaddr[ETH_ALEN];
     i32 invert;
 };
 #endif /*_XT_MAC_H*/

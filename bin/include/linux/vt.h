@@ -17,8 +17,8 @@
 #define VT_OPENQRY	0x5600	/* find available vt */
 
 struct vt_mode {
-	char mode;		/* vt mode */
-	char waitv;		/* if set, hang on writes if not active */
+	i8 mode;		/* vt mode */
+	i8 waitv;		/* if set, hang on writes if not active */
 	i16 relsig;		/* signal to raise on release req */
 	i16 acqsig;		/* signal to raise on acquisition */
 	i16 frsig;		/* unused (set to 0) */
@@ -30,9 +30,9 @@ struct vt_mode {
 #define		VT_ACKACQ	0x02	/* acknowledge switch */
 
 struct vt_stat {
-	unsigned i16 v_active;	/* active vt */
-	unsigned i16 v_signal;	/* signal to send */
-	unsigned i16 v_state;		/* vt bitmask */
+	%i16 v_active;	/* active vt */
+	%i16 v_signal;	/* signal to send */
+	%i16 v_state;		/* vt bitmask */
 };
 #define VT_GETSTATE	0x5603	/* get global vt state info */
 #define VT_SENDSIG	0x5604	/* signal to send to bitmask of vts */
@@ -44,19 +44,19 @@ struct vt_stat {
 #define VT_DISALLOCATE	0x5608  /* free memory associated to vt */
 
 struct vt_sizes {
-	unsigned i16 v_rows;		/* number of rows */
-	unsigned i16 v_cols;		/* number of columns */
-	unsigned i16 v_scrollsize;	/* number of lines of scrollback */
+	%i16 v_rows;		/* number of rows */
+	%i16 v_cols;		/* number of columns */
+	%i16 v_scrollsize;	/* number of lines of scrollback */
 };
 #define VT_RESIZE	0x5609	/* set kernel's idea of screensize */
 
 struct vt_consize {
-	unsigned i16 v_rows;	/* number of rows */
-	unsigned i16 v_cols;	/* number of columns */
-	unsigned i16 v_vlin;	/* number of pixel rows on screen */
-	unsigned i16 v_clin;	/* number of pixel rows per character */
-	unsigned i16 v_vcol;	/* number of pixel columns on screen */
-	unsigned i16 v_ccol;	/* number of pixel columns per character */
+	%i16 v_rows;	/* number of rows */
+	%i16 v_cols;	/* number of columns */
+	%i16 v_vlin;	/* number of pixel rows on screen */
+	%i16 v_clin;	/* number of pixel rows per character */
+	%i16 v_vcol;	/* number of pixel columns on screen */
+	%i16 v_ccol;	/* number of pixel columns per character */
 };
 #define VT_RESIZEX      0x560A  /* set kernel's idea of screensize + more */
 #define VT_LOCKSWITCH   0x560B  /* disallow vt switching */
@@ -64,21 +64,21 @@ struct vt_consize {
 #define VT_GETHIFONTMASK 0x560D  /* return hi font mask */
 
 struct vt_event {
-	unsigned i32 event;
+	%i32 event;
 #define VT_EVENT_SWITCH		0x0001	/* Console switch */
 #define VT_EVENT_BLANK		0x0002	/* Screen blank */
 #define VT_EVENT_UNBLANK	0x0004	/* Screen unblank */
 #define VT_EVENT_RESIZE		0x0008	/* Resize display */
 #define VT_MAX_EVENT		0x000F
-	unsigned i32 oldev;		/* Old console */
-	unsigned i32 newev;		/* New console (if changing) */
-	unsigned i32 pad[4];		/* Padding for expansion */
+	%i32 oldev;		/* Old console */
+	%i32 newev;		/* New console (if changing) */
+	%i32 pad[4];		/* Padding for expansion */
 };
 
 #define VT_WAITEVENT	0x560E	/* Wait for an event */
 
 struct vt_setactivate {
-	unsigned i32 console;
+	%i32 console;
 	struct vt_mode mode;
 };
 

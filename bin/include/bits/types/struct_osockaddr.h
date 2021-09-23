@@ -5,8 +5,8 @@
    format in the grotty old 4.3 `talk' protocol.  */
 struct osockaddr
 {
-  unsigned i16 sa_family;
-  unsigned i8 sa_data[14];
+  %i16 sa_family;
+  %i8 sa_data[14];
 };
 
 #endif

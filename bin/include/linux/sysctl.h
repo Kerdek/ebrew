@@ -39,7 +39,7 @@ struct __sysctl_args {
 	size_t *oldlenp;
 	void *newval;
 	size_t newlen;
-	unsigned i64 __unused[4];
+	%i64 __unused[4];
 };
 
 /* Define sysctl names first */

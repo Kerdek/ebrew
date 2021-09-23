@@ -1,21 +1,21 @@
 #include "chub.hb"
 
-export strarray_push(arr@ StringArray s@ char)  =
+export strarray_push(arr@ StringArray s@ i8)  =
   if !arr.data {
-    (arr.data = cast @@char calloc 8ul sizeof @char);
+    (arr.data = cast @@i8 calloc 8ul sizeof @i8);
     (arr.capacity = 8);;
 
   if (arr.capacity == arr.len) {
-    (arr.data = cast @@char realloc (cast @ arr.data) (sizeof@ char * cast unsigned i64 arr.capacity * 2ul));
+    (arr.data = cast @@i8 realloc (cast @ arr.data) (sizeof@ i8 * cast %i64 arr.capacity * 2ul));
     (arr.capacity *= 2);
     for (let i i32 = arr.len; i < arr.capacity; (i:;(i+=1)))
-      (arr.data[i] = cast @char 0);;
+      (arr.data[i] = cast @i8 0);;
 
   (arr.data[(arr.len:;(arr.len+=1))] = s);;
 
-export format(fmt@ char ...)@ char =
-  let buf = cast @char 0;
-  let buflen = cast unsigned i64 0;
+export format(fmt@ i8 ...)@ i8 =
+  let buf = cast @i8 0;
+  let buflen = cast %i64 0;
   let b = &buflen;
   let out = open_memstream &buf b;
 
