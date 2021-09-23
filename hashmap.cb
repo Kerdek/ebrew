@@ -2,18 +2,6 @@
 
 #include "chub.hb"
 
-// Initial hash bucket size
-#define INIT_SIZE 16ul
-
-// Rehash if the usage exceeds 70%.
-#define HIGH_WATERMARK 70
-
-// We'll keep the usage below 50% after rehashing.
-#define LOW_WATERMARK 50
-
-// Represents a deleted hash entry
-#define TOMBSTONE cast @char -1
-
 fnv_hash(s@ char len int) unsigned long =
   let hash = 0xcbf29ce484222325;
   for (let i int = 0; i < len; i += 1) {
@@ -24,18 +12,17 @@ fnv_hash(s@ char len int) unsigned long =
 ;
 
 // Make room for new entires in a given hashmap by removing
-// tombstones and possibly extending the bucket size.
+// /* TOMBSTONE */ cast @char -1s and possibly extending the bucket size.
 rehash(map@ HashMap)  =
   // Compute the size of the new hashmap.
   let nkeys = 0;
   for (let i int = 0; i < map.capacity; i += 1)
-    if (!!map.buckets[i].key && map.buckets[i].key != TOMBSTONE)
+    if (!!map.buckets[i].key && map.buckets[i].key != /* TOMBSTONE */ cast @char -1)
       (nkeys += 1);
 
   let cap = map.capacity;
-  while ((nkeys * 100) / cap >= LOW_WATERMARK)
+  while ((nkeys * 100) / cap >= /* Low_WATERMARK */ 50)
     (cap = cap * 2);
-  assert(cap > 0);
 
   // Create a new hashmap and copy all key-values.
   let map2 = new HashMap {;;
@@ -45,12 +32,11 @@ rehash(map@ HashMap)  =
   for (let i int = 0; i < map.capacity; i += 1) {
     let ent = &map.buckets[i];
     let a = &map2;
-    if (!!ent.key && ent.key != TOMBSTONE) hashmap_put2 a ent.key ent.keylen ent.val;;
-  assert(map2.used == nkeys);
+    if (!!ent.key && ent.key != /* TOMBSTONE */ cast @char -1) hashmap_put2 a ent.key ent.keylen ent.val;;
   (map@ = map2);;
 
 match(ent@ HashEntry key@ char keylen int) bool =
-  return !!ent.key && ent.key != TOMBSTONE && ent.keylen == keylen && !memcmp cast @ ent.key cast @ key cast unsigned long keylen;;
+  return !!ent.key && ent.key != /* TOMBSTONE */ cast @char -1 && ent.keylen == keylen && !memcmp cast @ ent.key cast @ key cast unsigned long keylen;;
 get_entry(map@ HashMap key@ char keylen int)@ HashEntry =
   if !map.buckets return cast @HashEntry 0;
   let hash = fnv_hash key keylen;
@@ -58,17 +44,17 @@ get_entry(map@ HashMap key@ char keylen int)@ HashEntry =
     let ent = &map.buckets[(hash + cast unsigned long i) % cast unsigned long map.capacity];
     if match ent key keylen return ent;
     if !ent.key return cast @HashEntry 0;;
-  unreachable;;
+  none;;
 get_or_insert_entry(map@ HashMap key@ char keylen int)@ HashEntry =
   if !map.buckets {
-    (map.buckets = (calloc INIT_SIZE sizeof HashEntry as @HashEntry));
-    (map.capacity = INIT_SIZE as int);;
-  else if ((map.used * 100) / map.capacity >= HIGH_WATERMARK) rehash map;
+    (map.buckets = (calloc /* INIT_SIZE */ 16ul sizeof HashEntry as @HashEntry));
+    (map.capacity = /* INIT_SIZE */ 16ul as int);;
+  else if ((map.used * 100) / map.capacity >= /* HIGH_WATERMARK */ 70) rehash map;
   let hash = fnv_hash key keylen;
   for (let i int = 0; i < map.capacity; i += 1) {
     let ent = &map.buckets[(hash + cast unsigned long i) % cast unsigned long map.capacity];
     if match ent key keylen return ent;
-    if (ent.key == TOMBSTONE) {
+    if (ent.key == /* TOMBSTONE */ cast @char -1) {
       (ent.key = key);
       (ent.keylen = keylen);
       return ent;;
@@ -77,7 +63,7 @@ get_or_insert_entry(map@ HashMap key@ char keylen int)@ HashEntry =
       (ent.keylen = keylen);
       (map.used += 1);
       return ent;;;
-  unreachable;;
+  none;;
 export hashmap_get(map@ HashMap key@ char)@ = { return hashmap_get2 map key cast int strlen key;;;
 export hashmap_get2(map@ HashMap key@ char keylen int)@ =
   let ent = get_entry map key keylen;
@@ -91,4 +77,4 @@ export hashmap_delete(map@HashMap key@ char) =
   hashmap_delete2 map key cast int strlen key;;
 export hashmap_delete2(map@HashMap key@ char keylen int) =
   let ent = get_entry map key keylen;
-  if ent (ent.key = TOMBSTONE);;
+  if ent (ent.key = /* TOMBSTONE */ cast @char -1);;

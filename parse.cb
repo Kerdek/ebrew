@@ -1,17 +1,20 @@
 #include "chub.hb"
 
 type
+
   VarScope struct {
     var      @Obj
     type_def @Type
     enum_ty  @Type
     enum_val  int;
   }
+
   Scope struct {
-    s @same
+    s    @same
     vars  HashMap
     tags  HashMap;
   }
+
   VarAttr struct {
     is_type    bool
     is_static  bool
@@ -21,6 +24,7 @@ type
     is_tls     bool
     alignment  int;
   }
+
   Initializer struct {
     s        @same
     t          @Type
@@ -30,12 +34,14 @@ type
     children   @@same
     g         @Member;
   }
+
   InitDesg struct {
     s     @same
     idx       int
     member   @Member
     var      @Obj;
   }
+
 ;
 
 locals         @Obj
@@ -48,7 +54,6 @@ labels         @Node
 brk_label      @char
 cont_label     @char
 current_switch @Node
-builtin_alloca @Obj
 
 add                (k @@Token) @Node
 compound_stmt      (k @@Token) @Node
@@ -102,7 +107,6 @@ format_types(t @Type u @Type) = return
   format_type t &s1[0] ;:
   format_type u &s2[0] ;:
   none;;
-align_down(n int alignment int) int = return align_to (n - alignment + 1) alignment;;
 enter_scope(void) = let sc =cast @Scope  (calloc 1ul sizeof Scope) ; (sc.s = scope); (scope = sc);;
 leave_scope(void) = (scope = scope.s);;
 push_scope(name@ char) @VarScope = return cast @VarScope calloc 1ul sizeof VarScope is sc hashmap_put &scope.vars name cast @  sc ;: sc;;
@@ -562,7 +566,7 @@ string_initializer(k @@Token e@ Initializer)  =
   case 1: { let str = k.str                ; for (let i int = 0; i < len; i += 1) (e.children[i].expr = new_lit k@ cast @Type 0 ty_int cast long str[i]); (k@ = k.s); return; ;
   case 2: { let str = cast @uint16_t k.str ; for (let i int = 0; i < len; i += 1) (e.children[i].expr = new_lit k@ cast @Type 0 ty_int cast long str[i]); (k@ = k.s); return; ;
   case 4: { let str = cast @uint32_t k.str ; for (let i int = 0; i < len; i += 1) (e.children[i].expr = new_lit k@ cast @Type 0 ty_int cast long str[i]); (k@ = k.s); return; ;;
-  unreachable ;;
+  none ;;
 count_array_init_elements(j @Token t @Type) int =
   let
         k = &j
@@ -1321,7 +1325,7 @@ struct_decl(k @@Token) @Type =
       let sz = (cast @Type g.t ).size;
       if (bits / (sz * 8) != (bits + g.bit_width - 1) / (sz * 8)) {
         (bits = align_to bits (sz * 8));;
-      (g.offset = align_down (bits / 8) sz);
+      (g.offset = align_to ((bits / 8) - sz + 1) sz);
       (g.bit_offset = bits % (sz * 8));
       (bits += g.bit_width);;
     else {
@@ -1450,15 +1454,13 @@ export parse(j @Token) @Obj = return
   (brk_label      = cast @char  0) ;:
   (cont_label     = cast @char  0) ;:
   (current_switch = cast @Node  0) ;:
-  (builtin_alloca = cast @Obj   0) ;:
-  (j = j for j (j.kind != TK_EOF && 
+  (j for j (j.kind != TK_EOF && 
     new VarAttr {; is v
     declspec &j &v ;:
     v.is_type     ? typedecl j          :
     is_function j ? function &j &v ;: j :
-    global_variable j &v)) ;:
-  cast void
+    global_variable j &v) as void) ;:
   ( globals for v
-    ( !!v && v.s :; (v.is_root && mark_live v as void) ) ) ;:
+    ( !!v && v.s :; (v.is_root && mark_live v as void) ) as void) ;:
   scan_globals ;:
   globals;;

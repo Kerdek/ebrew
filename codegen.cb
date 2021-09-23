@@ -1,8 +1,5 @@
 #include "chub.hb"
 
-#define GP_MAX 6
-#define FP_MAX 8
-
 type
   TypeID enum
     I8 I16 I32 I64
@@ -20,12 +17,10 @@ current_fn@Obj;
 gen_expr(e @Node);
 gen_stmt(e @Node);
 
-__attribute__((format(printf, 1, 2)))
 println(fmt @char ...) =
   let ap = new va_list {;;
-  va_start(ap, fmt);
+  (ap = (cast @__va_elem __va_area__)@);
   vfprintf output_file fmt &ap;
-  va_end(ap)
   (fprintf output_file "\n");;
 
 i counti int = 1;
@@ -276,7 +271,7 @@ push_args(e@Node)int =
         let fp1 = cast int has_flonum1 t;
         let fp2 = cast int has_flonum2 t;
 
-        if (fp + fp1 + fp2 < FP_MAX && gp + cast int !fp1 + cast int !fp2 < GP_MAX) {
+        if (fp + fp1 + fp2 < 8 && gp + cast int !fp1 + cast int !fp2 < 6) {
           (fp = fp + fp1 + fp2);
           (gp = gp + cast int !fp1 + cast int !fp2);
         ; else {
@@ -287,7 +282,7 @@ push_args(e@Node)int =
       break;
     case TY_FLOAT:
     case TY_DOUBLE:
-      if ((fp >= FP_MAX) :; (fp += 1)) {
+      if ((fp >= 8) :; (fp += 1)) {
         (arg.pass_by_stack = true);
         (stack += 1);
       ;
@@ -297,7 +292,7 @@ push_args(e@Node)int =
       (stack += 2);
       break;
     default:
-      if ((gp >= GP_MAX) :; (gp += 1)) {
+      if ((gp >= 6) :; (gp += 1)) {
         (arg.pass_by_stack = true);
         (stack += 1);
       ;
@@ -327,7 +322,6 @@ copy_ret_buffer(var@Obj) =
   let t = var.t gp = 0 fp = 0;
 
   if has_flonum1 t {
-    assert(t.size == 4 || 8 <= t.size);
     if (t.size == 4) (println "  movss %%xmm0, %d(%%rbp)" var.offset);
     else (println "  movsd %%xmm0, %d(%%rbp)" var.offset);
     (fp += 1);
@@ -341,7 +335,6 @@ copy_ret_buffer(var@Obj) =
 
   if (t.size > 8) {
     if has_flonum2 t {
-      assert(t.size == 12 || t.size == 16);
       if (t.size == 12) (println "  movss %%xmm%d, %d(%%rbp)" fp (var.offset + 8));
       else (println "  movsd %%xmm%d, %d(%%rbp)" fp (var.offset + 8));
     ; else {
@@ -361,7 +354,6 @@ copy_struct_reg(void) =
   (println "  mov %%rax, %%rdi");
 
   if has_flonum t 0 8 0 {
-    assert(t.size == 4 || 8 <= t.size);
     if (t.size == 4) (println "  movss (%%rdi), %%xmm0");
     else (println "  movsd (%%rdi), %%xmm0");
     (fp += 1);
@@ -376,7 +368,6 @@ copy_struct_reg(void) =
 
   if (t.size > 8) {
     if has_flonum t 8 16 0 {
-      assert(t.size == 12 || t.size == 16);
       if (t.size == 4) (println "  movss 8(%%rdi), %%xmm%d" fp);
       else (println "  movsd 8(%%rdi), %%xmm%d" fp);
     ; else {
@@ -602,7 +593,7 @@ gen_expr(e @Node) =
         if !(t.size > 16) {
           let fp1 = cast int has_flonum1 t;
           let fp2 = cast int has_flonum2 t;
-          if (fp + fp1 + fp2 < FP_MAX && gp + cast int !fp1 + cast int !fp2 < GP_MAX) {
+          if (fp + fp1 + fp2 < 8 && gp + cast int !fp1 + cast int !fp2 < 6) {
             if fp1 popf (fp :; (fp += 1));
             else pop argreg64[((gp :; (gp+=1)))];
             if (t.size > 8) {
@@ -610,9 +601,9 @@ gen_expr(e @Node) =
               else pop argreg64[((gp :; (gp+=1)))];;;;
         break;
       case TY_FLOAT:
-      case TY_DOUBLE: if (fp < FP_MAX) popf ((fp :; (fp+=1)));
+      case TY_DOUBLE: if (fp < 8) popf ((fp :; (fp+=1)));
       case TY_LDOUBLE: break;
-      default: if (gp < GP_MAX) pop argreg64[((gp :; (gp+=1)))];
+      default: if (gp < 6) pop argreg64[((gp :; (gp+=1)))];
       ;
     ;
 
@@ -962,12 +953,12 @@ assign_one_param_offset(var @Obj top @int gp @int fp @int) =
     case TY_UNION:none;
       let fp1 = cast int has_flonum t 0 8 0;
       let fp2 = cast int has_flonum t 8 16 8;
-      if (!(fp@ + fp1 + fp2 < FP_MAX && gp@ + cast int !fp1 + cast int !fp2 < GP_MAX) && t.size > 16) {
+      if (!(fp@ + fp1 + fp2 < 8 && gp@ + cast int !fp1 + cast int !fp2 < 6) && t.size > 16) {
         (fp@ = fp@ +           fp1 +           fp2);
         (gp@ = gp@ + cast int !fp1 + cast int !fp2);
         return;;
-    case TY_DOUBLE: if ((fp@ :; (fp@ += 1)) < FP_MAX) return;
-    default       : if ((gp@ :; (gp@ += 1)) < GP_MAX) return;
+    case TY_DOUBLE: if ((fp@ :; (fp@ += 1)) < 8) return;
+    default       : if ((gp@ :; (gp@ += 1)) < 6) return;
     case TY_FLOAT:
     case TY_LDOUBLE:none;;
   (top@ = align_to top@ 8);
@@ -1043,7 +1034,7 @@ emit_data(prog @Obj) =
 store_fp(r int offset int sz int) = 
   (sz == 4) ? (println "  movss %%xmm%d, %d(%%rbp)" r offset ):
   (sz == 8) ? (println "  movsd %%xmm%d, %d(%%rbp)" r offset ):
-            unreachable;;
+              none;;
 
 store_gp(r int offset int sz int) =
   switch  sz {

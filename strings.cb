@@ -20,9 +20,8 @@ export format(fmt@ char ...)@ char =
   let out = open_memstream &buf b;
 
   let ap = new va_list {;;
-  va_start(ap, fmt);
+  (ap = (cast @__va_elem __va_area__)@);
   (vfprintf out fmt &ap);
-  va_end(ap)
   fclose out;
   return buf;
 ;

@@ -1,20 +1,4 @@
-#define _POSIX_C_SOURCE 200809L
-#include <assert.h>
-#include <ctype.h>
-#include <errno.h>
-#include <glob.h>
-#include <libgen.h>
-#include <stdarg.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <strings.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <time.h>
-#include <unistd.h>
+#include "shite.hb"
 
 maxl(a long b long) long = (a > b) ? a : b;;
 minl(a long b long) long = (a < b) ? a : b;;
@@ -200,11 +184,11 @@ type
 ;
 export advance(k @@Token) @Token;
 export strarray_push(arr@ StringArray s@ char);
-export format(fmt@ char ...)@ char __attribute__((format(printf 1 2)));
-export error(fmt@ char ...) __attribute__((format(printf, 1, 2)));
-export error_at(loc@ char fmt@ char ...) __attribute__((format(printf, 2, 3)));
-export error_tok(j@ Token fmt@ char ...) __attribute__((format(printf, 2, 3)));
-export warn_tok(j@ Token fmt@ char ...) __attribute__((format(printf, 2, 3)));
+export format(fmt@ char ...)@ char;
+export error(fmt@ char ...);
+export error_at(loc@ char fmt@ char ...);
+export error_tok(j@ Token fmt@ char ...);
+export warn_tok(j@ Token fmt@ char ...);
 export equal(j@ Token op@ char)bool;
 export expect(j@@ Token op@ char);
 export skip(j@ Token op@ char)@ Token;
@@ -215,11 +199,6 @@ export new_file(name@ char file_no int contents@ char)@ File;
 export tokenize_string_literal(j@ Token basety@ Type)@ Token;
 export tokenize(file@ File)@ Token;
 export tokenize_file(filename@ char)@ Token;
-inline unreachable(void) = return (error "internal error at %s:%d" __FILE__ __LINE__);;
-export search_include_paths(filename@ char include_paths @StringArray)@ char;
-export init_macros(void);
-export define_macro(name@ char buf@ char);
-export undef_macro(name@ char);
 export preprocess(j@ Token include_paths @StringArray)@ Token;
 export const_expr(k @@Token) int64_t;
 export parse(j@ Token)@ Obj;
@@ -251,7 +230,7 @@ export func_type        (return_ty @Type           ) @Type;
 export array_of         (base      @Type size  int ) @Type;
 export enum_type        (           void           ) @Type;
 export struct_type      (           void           ) @Type;
-export usual_arith_conv (a      @@Node b @@Node)      ;
+export preprocess(j@ Token include_paths @StringArray)@ Token;
 
 export codegen(prog@ Obj out@ FILE);
 export align_to(n int alignment int)int;

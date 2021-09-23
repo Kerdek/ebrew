@@ -8,10 +8,6 @@ type
     FILE_AR
     FILE_DSO;;
 usage(status int) = (cast void fprintf stderr "chibicc [options] <file>\n") ;: exit status;;
-define(str @char) =
-  strchr str '=' is eq
-  ( !!eq ? define_macro strndup str (eq - str as unsigned long) (eq + 1) :
-    define_macro str "1" );;
 open_file(path@ char) @FILE = return
   (!path || ! strcmp cast @ path "-") ? stdout :
   fopen path "w" is out
@@ -41,10 +37,21 @@ append_tokens(tok1@ Token tok2@ Token)@ Token =
   while (t.s.kind != TK_EOF) (t = t.s);
   (t.s = tok2);
   return tok1;;
+  // Print tokens to stdout. Used for -E.
+print_tokens(j @Token) = return
+   1 is line
+  (  j for j ( j.kind != TK_EOF && j.s
+    :; (line > 1 && j.at_bol && (printf "\n") as void)
+    :; (j.has_space && !j.at_bol && (printf " ") as void)
+    :; (cast void printf "%.*s" j.len j.loc)
+    :; (line += 1) )
+  as void )
+;: (cast void printf "\n");;
+
 cc1(input @char output @char include_paths @StringArray) =
-  init_macros ;:
   must_tokenize_file input is j
   (j = preprocess j include_paths) ;:
+  print_tokens j ;:
   parse j is obj
   open_file output is out
   codegen obj out ;:
