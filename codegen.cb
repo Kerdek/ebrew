@@ -56,6 +56,7 @@ gen_addr(e @Node) = return
   ( e.kind    == ND_FUNCALL||
     e.kind    == ND_COND   ||
     e.kind    == ND_UNTIL  ||
+    e.kind    == ND_LET    ||
     e.kind    == ND_REPEAT  ) ? gen_expr e      :
   ( e.t.kind == TY_STRUCT ||
     e.t.kind == TY_UNION   ) ? gen_expr e      :
@@ -481,6 +482,12 @@ gen_expr(e @Node) =
     gen_expr e.a  ;:
     cmp_zero e.a.t ;:
     (println "  je .L.until.%d" c);
+  case ND_LET: return
+    (println "  lea %d(%%rbp), %%rax" e.var.offset ) ;:
+    (push) ;:
+    gen_expr e.a  ;:
+    store e.a.t ;:
+    gen_expr e.a.s;
   case ND_REPEAT: return
     (count) is c
     (println "  lea %d(%%rbp), %%rax" e.var.offset ) ;:

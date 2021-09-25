@@ -14,7 +14,7 @@ type
     ND_COMMA      ND_MEMBER     ND_ADDR    ND_DEREF      ND_NOT
     ND_BITNOT     ND_LOGAND     ND_LOGOR   ND_RETURN     ND_IF
     ND_FOR        ND_DO         ND_SWITCH  ND_CASE       ND_BLOCK
-    ND_GOTO       ND_LABEL      ND_FUNCALL
+    ND_GOTO       ND_LABEL      ND_FUNCALL ND_LET
     ND_EXPR_STMT  ND_VAR        ND_NUM     ND_CAST
     ND_MEMZERO    ND_ASM        ND_UNTIL
     ND_REPEAT     ND_THE        ND_THEN    ND_CASSIGN
