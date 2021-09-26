@@ -200,7 +200,7 @@ add_line_numbers(j@ Token) = return
     :; ( p@ == '\n'
        && (n += 1) as void)) as void);;
 
-export tokenize(file@ File)@ Token =
+tokenizefr(file@ File)@ Token =
   (current_file = file);
   let
     p = file.contents
@@ -281,7 +281,7 @@ export new_file(name@ i8 file_no i32 contents@ i8)@ File = return
 ;;
 
 tffile_no i32;
-export tokenize_file(path@ i8)@ Token = return
+export tokenize(path @i8) @Token = return
   read_file path is p
   (!p ? cast @Token 0 :
   (! memcmp cast @ p cast @ "\xef\xbb\xbf" 3ul && (p += 3) as void) ;:
@@ -290,4 +290,4 @@ export tokenize_file(path@ i8)@ Token = return
   (input_files[tffile_no] = f) ;:
   (input_files[tffile_no + 1] = cast @File 0) ;:
   (tffile_no += 1) ;:
-  tokenize f);;
+  tokenizefr f);;

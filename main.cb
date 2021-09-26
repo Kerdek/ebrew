@@ -1,131 +1,14 @@
 # "chub.hb"
 
-type
-  FileType enum
-    FILE_NONE
-    FILE_CB
-    FILE_OBJ
-    FILE_AR
-    FILE_DSO;;
-usage(status i32) = (cast void fprintf stderr "chibicc [options] <file>\n") ;: exit status;;
-open_file(path@ i8) @FILE = return
-  (!path || ! strcmp cast @ path "-") ? stdout :
-  fopen path "w" is out
-  (out || ((error "cannot open output file: %s: %s" path strerror errno) ;: cast @FILE 0));;
-endswith(p@ i8 q@ i8) bool = return
-  strlen p is len1
-  strlen q is len2
-  ((len1 >= len2) && ! strcmp ((p + len1) - len2 as @) q);;
-replace_extn(tmpl@ i8 extn@ i8) @i8 = return
-  basename strdup tmpl is filename
-  strrchr filename '.' is dot
-  (!!dot && (dot@ = '\0' as i8) as void) ;:
-  (format "%s%s" filename extn);;
-run_subprocess(a@@i8) =
-  (a for b (!!b@ && (b + 1) :; (printf "%s " b@)) as void);
-  (printf "\n");
-  (!(fork) &&
-    ( (execvp a[0] a as) ;:
-      cast void (fprintf stderr "exec failed: %s: %s\n" a[0] strerror errno) ;:
-      exit 1) as void) ;:
-  0 is status
-  (true for ready (wait &status > 0)) ;:
-  (!!status && exit 1);;
-cc1(input @i8 output @i8 include_paths @StringArray) =
-  tokenize_file input is j
-  (j = preprocess j include_paths) ;:
-  parse j is obj
-  open_file output is out
-  codegen obj out ;:
-  fclose out;;
-assemble(input@ i8 output@ i8) =
-  let cmd[]@ i8 = {"as" "-c" input "-o" output cast @i8 0;;
-  run_subprocess cast @@i8 cmd;;
-type stat_type struct stat;;
-export file_exists(path@ i8) bool = return ! stat path &new stat_type {;;;
-run_linker(inputs @StringArray flags @StringArray output@ i8 opt_shared bool opt_static bool) =
-  let a = &new StringArray {;;
-  strarray_push a "ld";
-  strarray_push a "-o";
-  strarray_push a output;
-  strarray_push a "-m";
-  strarray_push a "elf_x86_64";
-  let libpath = "/usr/lib/x86_64-linux-gnu";
-  let gcc_libpath = "/usr/lib/gcc/x86_64-linux-gnu/10";
-  if opt_shared {
-    strarray_push a (format "%s/crti.o" libpath);
-    strarray_push a (format "%s/crtbeginS.o" gcc_libpath);;
-  else {
-    strarray_push a (format "%s/crt1.o" libpath);
-    strarray_push a (format "%s/crti.o" libpath);
-    strarray_push a (format "%s/crtbegin.o" gcc_libpath);;
-  strarray_push a (format "-L%s" gcc_libpath);
-  strarray_push a (format "-L%s" libpath);
-  if !opt_static {
-    strarray_push a "-dynamic-linker";
-    strarray_push a "/lib64/ld-linux-x86-64.so.2";;
-  for (let i i32= 0; i < flags .len; i+=1) strarray_push a flags .data[i];
-  for (let i i32= 0; i < inputs.len; i+=1) strarray_push a inputs.data[i];
-  if opt_static {
-    strarray_push a "--start-group";
-    strarray_push a "-lgcc";
-    strarray_push a "-lgcc_eh";
-    strarray_push a "-lc";
-    strarray_push a "--end-group";;
-  else {
-    strarray_push a "-lc";
-    strarray_push a "-lgcc";
-    strarray_push a "--as-needed";
-    strarray_push a "-lgcc_s";
-    strarray_push a "--no-as-needed";;
-  if opt_shared strarray_push a (format "%s/crtendS.o" gcc_libpath);
-  else strarray_push a (format "%s/crtend.o" gcc_libpath);
-  strarray_push a (format "%s/crtn.o" libpath);
-  strarray_push a cast @i8 0;
-  run_subprocess a.data;;
-get_file_type(filename@ i8) FileType = return
-  endswith filename ".a"  ? FILE_AR  :
-  endswith filename ".so" ? FILE_DSO :
-  endswith filename ".o"  ? FILE_OBJ :
-  endswith filename ".cb" ? FILE_CB  :
-  (error "unknown file extension: %s" filename) ;: cast FileType 0;;
-export main(argc i32 argv@@i8) i32 =
-  let p = 4;
-  let 
-    opt_c         = false
-    opt_static    = false
-    opt_shared    = false
-    opt_o         = cast @i8 0
-    ccset         = &new StringArray {;
-    ldset         = &new StringArray {;
-    ldflags       = &new StringArray {;
-    include_paths = &new StringArray {;
-    default_include_path = (format "%s/include" dirname strdup argv[0]);
-  strarray_push include_paths default_include_path;
-  for (let i i32 = 1; i < argc; (i+=1) ;:i) {
-    if !  strcmp  cast @ argv[i] "-c"                                          (     opt_c = true          )                                          ;  else
-    if !  strcmp  cast @ argv[i] "-static"                                   { (opt_static = true          );       strarray_push ldflags       "-static";; else
-    if !  strcmp  cast @ argv[i] "-shared"                                   { (opt_shared = true          );       strarray_push ldflags       "-shared";; else
-    if !  strcmp  cast @ argv[i] "-o"                                          (     opt_o = argv[(i+=1) ;:i])                                               ;  else
-    if !  strncmp cast @ argv[i] "-o"      2ul                                 (     opt_o = (argv[i] + 2) )                                            ;  else
-    if !  strcmp  cast @ argv[i] "-I"                                                                      strarray_push include_paths argv[(i+=1) ;:i]       ;  else
-    if !  strncmp cast @ argv[i] "-I"      2ul                               {     let b = (argv[i] + 2)  ;     strarray_push include_paths b          ;; else
-    if (! strcmp  cast @ argv[i] "-Wl,"    ||
-        ! strcmp  cast @ argv[i] "-L") {                          strarray_push ldflags       argv[  i]       ;
-                                                                                                          strarray_push ldflags       argv[(i+=1) ;:i]       ;; else
-    if (! strncmp cast @ argv[i] "-Wl," 4ul || ! strncmp cast @ argv[i] "-L" 2ul)                     strarray_push ldflags       argv[  i]       ;  else
-    if (argv[i][0] == '-') (error "unknown argument: %s" argv[i])                                                                                  ;  else
-    strarray_push ccset argv[i];;
-  if (ccset.len > 1 && !!opt_o && opt_c) (error "cannot specify -o and -c with multiple inputs");
-  for (let i i32 = 0; i < ccset.len; i+=1) {
-    let input = ccset.data[i];
-    let t = get_file_type input;
-    if (t == FILE_OBJ || t == FILE_AR || t == FILE_DSO) strarray_push ldset input; else {
-      let output_o = replace_extn input ".o";
-      let output_a = replace_extn input ".a";
-      cc1 input output_a include_paths;
-      assemble output_a output_o;
-      if !opt_c strarray_push ldset output_o;;;
-  let c = (opt_o || "a.out");
-  if ldset.len run_linker ldset ldflags c opt_shared opt_static;
-  return 0;;
+export main(argc i32 argv@@i8) i32 = return
+   argv[1] is in
+   basename strdup in is filename
+   strrchr filename '.' is dot
+   (!!dot && (dot@ = '\0' as i8) as void)
+;: (format "%s%s" filename ".a") is output
+   fopen output "w" is out
+   (!out && (error "cannot open output file: %s: %s" output strerror errno) as void)
+;: codegen parse preprocess tokenize in out
+;: cast void fclose out
+;: 0
+;;

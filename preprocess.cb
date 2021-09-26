@@ -1,6 +1,6 @@
 #"chub.hb"
 
-export preprocess(j @Token include_paths @StringArray) @Token = return
+export preprocess(j @Token) @Token = return
    new Token {; is head
    &head is cur
    (  j for j
@@ -12,7 +12,7 @@ export preprocess(j @Token include_paths @StringArray) @Token = return
      ;: (cur = cur.s)
      ;: j.s
      :  (j.s.kind != TK_STR && (error_tok j.s "expected a filename") as void)
-     ;: tokenize_file (format"%s/%s" dirname strdup j.file.name strndup (j.s.loc + 1) cast %i64 (j.s.len - 2)) is a
+     ;: tokenize (format"%s/%s" dirname strdup j.file.name strndup (j.s.loc + 1) cast %i64 (j.s.len - 2)) is a
         (!a && (error_tok j.s "%s: cannot open file: %s" j.s strerror errno) as void)
      ;: (a.kind == TK_EOF)
      ?  j.s.s

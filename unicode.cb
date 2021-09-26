@@ -1,6 +1,6 @@
 # "chub.hb"
 
-encode_utf8_byte(p @i8 c %i32 i i64 p i32 s %i32 m %i32) =
+encode_utf8_byte(p @i8 c %i32 i i64 p i32 s %i32 m %i32) = return
   (p[i] = cast i8 the %i32 (cast %i32 the i8 p[i] | c >> s & m));;
 export encode_utf8(p@ i8 c %i32) i32 = return
   &encode_utf8_byte is f
@@ -33,11 +33,15 @@ export decode_utf8(new_pos@@ i8 p@i8) %i32 = return
   c :;
   (new_pos@ = p + the %i32 len));;
 
-in_range(range@ %i32 c %i32) bool =
-  for (let i i64 = 0l; range[i] != -1; i += 2l)
-    if (range[i] <= c && c <= range[i + 1l])
-      return true;
-  return false;;
+in_range(range@ %i32 c %i32) bool = return
+  false is r
+  (  0l for i
+    (  range[i] != -1
+    && (i + 2l)
+    :; (range[i] <= c && c <= range[i + 1l] && (r = true)))
+  as void )
+;: r
+;;
 
 ii1range []%i32 = {
   cast %i32 the i32 '_'
