@@ -63,8 +63,6 @@ type
     filename   @i8
     line_no     i32
     line_delta  i32
-    at_bol      bool
-    has_space   bool
     origin     @same;
   }
 
@@ -184,7 +182,7 @@ export expect(j@@ Token op@ i8);
 export skip(j@ Token op@ i8)@ Token;
 export consume(rest@@ Token j@ Token str@ i8)bool;
 export convert_pp_tokens(j@ Token);
-export get_input_files()@@ File;
+export extern input_files @@File;
 export new_file(name@ i8 file_no i32 contents@ i8)@ File;
 export tokenize(file@ File)@ Token;
 export tokenize_file(filename@ i8)@ Token;

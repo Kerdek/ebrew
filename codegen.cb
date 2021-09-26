@@ -1126,7 +1126,7 @@ emit_text(prog@Obj) =
 
 export codegen(prog@Obj out@FILE) = return
   (output_file = out) ;:
-  (get_input_files) is files
+  (input_files) is files
   (  0 for i 
     (  !!files[i] && (i + 1) :;
     (println "  .file %d \"%s\"" files[i].file_no files[i].name) ) as void) ;:

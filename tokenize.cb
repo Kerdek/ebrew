@@ -1,9 +1,7 @@
 #include "chub.hb"
 
-current_file@ File
-input_files@@ File
-at_bol bool
-has_space bool;
+current_file@ File;
+export input_files@@ File;
 
 export error(fmt@ i8 ...) =
   let ap = new va_list {;;
@@ -63,10 +61,6 @@ new_token(kind typeof TK_IDENT start@ i8 end@ i8)@ Token =
   (j.len            = end - start as i32       );
   (j.file           = current_file             );
   (j.filename       = current_file.display_name);
-  (j.at_bol         = at_bol                   );
-  (j.has_space      = has_space                );
-  (at_bol             = false                    );
-  (has_space          = false                    );
   return j;;
 startswith(p@ i8 q@ i8) bool = return ! strncmp cast @ p q strlen q;;
 read_ident(start@ i8) i32 =
@@ -297,25 +291,18 @@ export tokenize(file@ File)@ Token =
     p = file.contents
     head = new Token {;
     cur = &head;
-  (at_bol = true);
-  (has_space = false);
   while p@ {
     if startswith p "//" {
       (p += 2);
-      while (p@ != '\n') (p:;(p+=1));
-      (has_space = true);;
+      while (p@ != '\n') (p:;(p+=1));;
     else if startswith p "/*" {
       let q = strstr (p + 2) "*/" ;
       if !q (error_at p "unclosed block comment");
-      (p = q + 2);
-      (has_space = true);;
+      (p = q + 2);;
     else if (p@ == '\n') {
-      (p:;(p+=1));
-      (at_bol = true);
-      (has_space = false);;
+      (p:;(p+=1));;
     else if cast bool isspace cast i32 p@ {
-      (p:;(p+=1));
-      (has_space = true);;
+      (p:;(p+=1));;
     else if (isdigit cast i32 p@ || (p@ == '.' && isdigit cast i32 p[1])) {
       let q = (p:;(p+=1));
       while (
@@ -405,9 +392,6 @@ read_file(path@ i8)@ i8 =
   fputc '\0' out;
   fclose out;
   return buf;;
-
-export get_input_files()@@ File =
-  return input_files;;
 
 export new_file(name@ i8 file_no i32 contents@ i8)@ File =
   let file = cast @File calloc 1ul sizeof File;

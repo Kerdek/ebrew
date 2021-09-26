@@ -1,11 +1,5 @@
 #include "chub.hb"
 
-is_hash(j@Token)bool = return j.at_bol && equal j "#";;
-skip_line(j@Token)@Token =
-  if j.at_bol return j;
-  (warn_tok j "extra token");
-  while j.at_bol (j = j.s);
-  return j;;
 copy_token(j@Token)@Token =
   let t = cast @Token calloc 1ul sizeof Token as @Token;
   (t@ = j@);
@@ -19,40 +13,32 @@ append(tok1@Token tok2@Token)@Token =
   for (; tok1.kind != TK_EOF; tok1 = tok1.s) { (cur.s = copy_token tok1); (cur = cur.s);;
   (cur.s = tok2);
   return head.s;;
-read_include_filename(rest@@Token j@Token is_dquote@bool include_paths @StringArray) @i8 =
+read_include_filename(rest@@Token j@Token include_paths @StringArray) @i8 =
   if (j.kind == TK_STR) {
-    (is_dquote@ = true);
-    (rest@ = skip_line j.s);
+    (rest@ = j.s);
     return strndup (j.loc + 1) cast %i64 (j.len - 2);;
   (error_tok j "expected a filename");;
-include_file(j@Token path@i8 filename_tok@Token)@Token =
-  let tok2 = tokenize_file path;
-  if !tok2 (error_tok filename_tok "%s: cannot open file: %s" path strerror errno);
-  return append tok2 j;;
+include_file(a @Token path @i8 filename_tok @Token) @Token = return
+   tokenize_file path is b
+   (!b && (error_tok filename_tok "%s: cannot open file: %s" path strerror errno) as void)
+;: append b a;;
 preprocess2(j@Token include_paths@StringArray)@Token =
   let
     head = new Token {;
     cur = &head;
   while (j.kind != TK_EOF) {
     let start = j;
-    (j = j.s);
-    if !is_hash start {
+    if !equal start "#" {
       (start.line_delta = start.file.line_delta);
       (start.filename = start.file.display_name);
       (cur.s = start);
       (cur = cur.s);
-      (start = start.s);;
-    else if equal j "include" {
-      let is_dquote = false;
-      let c = &is_dquote;
-      let filename = read_include_filename &j j.s c include_paths;
-      if (filename[0] != '/' && is_dquote) {
-        let path = (format"%s/%s" dirname strdup start.file.name filename);
-        if file_exists path (j = include_file j path start.s.s);
-        else {
-          (j = include_file j filename start.s.s);;;
-      else {
-        (j = include_file j filename start.s.s);;;;
+      (start = start.s);
+      (j = j.s);;
+    else if equal j.s "include" {
+      let filename = read_include_filename &j j.s.s include_paths;
+      let path = (format"%s/%s" dirname strdup start.file.name filename);
+      (j = include_file j path start.s.s);;;
   (cur.s = j);
   return head.s;;
 export preprocess(j@Token include_paths@StringArray)@Token =

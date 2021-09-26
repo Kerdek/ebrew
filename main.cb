@@ -41,8 +41,7 @@ append_tokens(tok1@ Token tok2@ Token)@ Token =
 print_tokens(j @Token) = return
    1 is line
   (  j for j ( j.kind != TK_EOF && j.s
-    :; (line > 1 && j.at_bol && (printf "\n") as void)
-    :; (j.has_space && !j.at_bol && (printf " ") as void)
+    :; ((printf " ") as void)
     :; (cast void printf "%.*s" j.len j.loc)
     :; (line += 1) )
   as void )
