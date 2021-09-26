@@ -623,10 +623,10 @@ write_gvar_data(cur@ Relocation init@ Initializer t@ Type buf@ i8 offset i32)@ R
   if (t.kind == TY_UNION) {
     return cur;;
   if !init.expr return cur;
-  if (t.kind == TY_FLOAT32) {
+  if (t.kind == TY_F32) {
     ((buf + offset as @f32)@ = eval_double init.expr as f32);
     return cur;;
-  if (t.kind == TY_FLOAT64) {
+  if (t.kind == TY_F64) {
     ((buf + offset as @f64)@ = eval_double init.expr);
     return cur;;
   let label = (0 as @@i8);
@@ -874,20 +874,20 @@ eval2(e@ Node label @@@i8) i64 = return
   (e.kind == ND_SHL   ) ? (eval e.a << eval e.a.s)         :
   (e.kind == ND_EQ    ) ? (eval e.a == eval e.a.s as i64) :
   (e.kind == ND_NE    ) ? (eval e.a != eval e.a.s as i64) :
-  (e.kind == ND_SHR   ) ? ((e.a.t.kind == TY_UNSIGNED) &&
+  (e.kind == ND_SHR   ) ? ((e.a.t.kind == TY_RING) &&
                            e.t.size == 8        )  ? (cast %i64 eval e.a >> cast %i64 eval e.a.s as i64) :
                                                       (                   eval e.a >>                    eval e.a.s        ) :
-  (e.kind == ND_DIV   ) ?  (e.a.t.kind == TY_UNSIGNED)     ? (cast %i64 eval e.a /  cast %i64 eval e.a.s as i64) :
+  (e.kind == ND_DIV   ) ?  (e.a.t.kind == TY_RING)     ? (cast %i64 eval e.a /  cast %i64 eval e.a.s as i64) :
                                                       (                   eval e.a /                     eval e.a.s        ) :
-  (e.kind == ND_MOD   ) ?  (e.a.t.kind == TY_UNSIGNED)     ? (cast %i64 eval e.a %  cast %i64 eval e.a.s as i64) :
+  (e.kind == ND_MOD   ) ?  (e.a.t.kind == TY_RING)     ? (cast %i64 eval e.a %  cast %i64 eval e.a.s as i64) :
                                                       (                   eval e.a %                     eval e.a.s        ) :
-  (e.kind == ND_LT    ) ?  (e.a.t.kind == TY_UNSIGNED)     ? (cast %i64 eval e.a <  cast %i64 eval e.a.s as i64) :
+  (e.kind == ND_LT    ) ?  (e.a.t.kind == TY_RING)     ? (cast %i64 eval e.a <  cast %i64 eval e.a.s as i64) :
                                                       (                   eval e.a <                     eval e.a.s as i64) :
-  (e.kind == ND_LE    ) ?  (e.a.t.kind == TY_UNSIGNED)     ? (cast %i64 eval e.a <= cast %i64 eval e.a.s as i64) :
+  (e.kind == ND_LE    ) ?  (e.a.t.kind == TY_RING)     ? (cast %i64 eval e.a <= cast %i64 eval e.a.s as i64) :
                                                       (                   eval e.a <=                    eval e.a.s as i64) :
-  (e.kind == ND_GT    ) ?  (e.a.t.kind == TY_UNSIGNED)     ? (cast %i64 eval e.a >  cast %i64 eval e.a.s as i64) :
+  (e.kind == ND_GT    ) ?  (e.a.t.kind == TY_RING)     ? (cast %i64 eval e.a >  cast %i64 eval e.a.s as i64) :
                                                       (                   eval e.a >                     eval e.a.s as i64) :
-  (e.kind == ND_GE    ) ?  (e.a.t.kind == TY_UNSIGNED)     ? (cast %i64 eval e.a >= cast %i64 eval e.a.s as i64) :
+  (e.kind == ND_GE    ) ?  (e.a.t.kind == TY_RING)     ? (cast %i64 eval e.a >= cast %i64 eval e.a.s as i64) :
                                                       (                   eval e.a >=                    eval e.a.s as i64) :
   (e.kind == ND_COND  ) ? !!eval e.a ? eval2 e.a.s label :
                                           eval2 e.a.s.s  label :
@@ -901,9 +901,9 @@ eval2(e@ Node label @@@i8) i64 = return
   (e.kind == ND_CAST  ) ?
     eval2 e.a label is l
     (
-    (e.t.size == 1) ? ((e.t.kind == TY_UNSIGNED) ? cast i64 cast %i8  the i64 l : cast i64 cast  i8  the i64 l) :
-    (e.t.size == 2) ? ((e.t.kind == TY_UNSIGNED) ? cast i64 cast %i16 the i64 l : cast i64 cast i16 the i64 l) :
-    (e.t.size == 4) ? ((e.t.kind == TY_UNSIGNED) ? cast i64 cast %i32 the i64 l : cast i64 cast i32 the i64 l) :
+    (e.t.size == 1) ? ((e.t.kind == TY_RING) ? cast i64 cast %i8  the i64 l : cast i64 cast  i8  the i64 l) :
+    (e.t.size == 2) ? ((e.t.kind == TY_RING) ? cast i64 cast %i16 the i64 l : cast i64 cast i16 the i64 l) :
+    (e.t.size == 4) ? ((e.t.kind == TY_RING) ? cast i64 cast %i32 the i64 l : cast i64 cast i32 the i64 l) :
                                                                             l)                                      :
   (e.kind == ND_ADDR     ) ? eval_rval e.a label :
   (e.kind == ND_MEMBER   ) ?

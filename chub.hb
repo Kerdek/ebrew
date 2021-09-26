@@ -21,12 +21,12 @@ type
   ;
 
   TypeKind enum
-    TY_VOID    TY_BOOL    TY_INT08
-    TY_INT16   TY_INT32     TY_INT64
-    TY_FLOAT32   TY_FLOAT64  TY_FLOAT80
+    TY_VOID    TY_BOOL    TY_I08
+    TY_I16   TY_I32     TY_I64
+    TY_F32   TY_F64  TY_F80
     TY_FUNC    TY_ARRAY   TY_ENUM
     TY_STRUCT  TY_UNION   TY_PTR
-    TY_UNSIGNED
+    TY_RING
   ;
 
   TokenKind enum

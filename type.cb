@@ -1,15 +1,15 @@
 #include "chub.hb"
 
 export 
-  ty_void     @Type = &new Type { TY_VOID     1  1 ;
-  ty_bool     @Type = &new Type { TY_BOOL     1  1 ;
-  ty_i8     @Type = &new Type { TY_INT08     1  1 ;
-  ty_i16    @Type = &new Type { TY_INT16    2  2 ;
-  ty_i32      @Type = &new Type { TY_INT32      4  4 ;
-  ty_i64     @Type = &new Type { TY_INT64     8  8 ;
-  ty_f32    @Type = &new Type { TY_FLOAT32    4  4 ;
-  ty_f64   @Type = &new Type { TY_FLOAT64   8  8 ;
-  ty_f80  @Type = &new Type { TY_FLOAT80 16 16 ;;
+  ty_void @Type = &new Type { TY_VOID  1  1 ;
+  ty_bool @Type = &new Type { TY_BOOL  1  1 ;
+  ty_i8   @Type = &new Type { TY_I08   1  1 ;
+  ty_i16  @Type = &new Type { TY_I16   2  2 ;
+  ty_i32  @Type = &new Type { TY_I32   4  4 ;
+  ty_i64  @Type = &new Type { TY_I64   8  8 ;
+  ty_f32  @Type = &new Type { TY_F32   4  4 ;
+  ty_f64  @Type = &new Type { TY_F64   8  8 ;
+  ty_f80  @Type = &new Type { TY_F80  16 16 ;;
 
 new_type(kind TypeKind size i32 alignment i32) @Type = return
 cast @Type calloc 1ul sizeof Type is t t
@@ -23,17 +23,17 @@ export format_type(t @Type s @i8) = return
 t.kind is c
 ( c == TY_VOID    ) ? strcat s "void"        :
 ( c == TY_BOOL    ) ? strcat s "bool"        :
-( c == TY_FLOAT32 ) ? strcat s "f32"         :
-( c == TY_FLOAT64 ) ? strcat s "f64"         :
-( c == TY_FLOAT80 ) ? strcat s "f80"         :
-( c == TY_INT08   ) ? strcat s "i8"          :
-( c == TY_INT16   ) ? strcat s "i16"         :
-( c == TY_INT32   ) ? strcat s "i32"         :
-( c == TY_INT64   ) ? strcat s "i64"         :
+( c == TY_F32     ) ? strcat s "f32"         :
+( c == TY_F64     ) ? strcat s "f64"         :
+( c == TY_F80     ) ? strcat s "f80"         :
+( c == TY_I08     ) ? strcat s "i8"          :
+( c == TY_I16     ) ? strcat s "i16"         :
+( c == TY_I32     ) ? strcat s "i32"         :
+( c == TY_I64     ) ? strcat s "i64"         :
 ( c == TY_ENUM    ) ? strcat s "enum"        :
 ( c == TY_STRUCT  ) ? strcat s "struct"      :
 ( c == TY_UNION   ) ? strcat s "union"       :
-( c == TY_UNSIGNED) ? strcat s "% "          :; format_type t.a s :
+( c == TY_RING) ? strcat s "% "          :; format_type t.a s :
 ( c == TY_ARRAY   ) ? strcat s "[]"          :; format_type t.a s :
 ( c == TY_PTR     ) ? strcat s "@"           :; format_type t.a s :
 ( c == TY_FUNC    ) ? 
@@ -55,19 +55,19 @@ export type_equal(t @Type u @Type) bool = return
       ( c == u.kind     && (
         c == TY_VOID    ||  
         c == TY_BOOL    ||
-        c == TY_FLOAT32   ||
-        c == TY_FLOAT64  ||
-        c == TY_FLOAT80 || ((
-            c == TY_INT08  ||
-            c == TY_INT16 ||
-            c == TY_INT32   ||
-            c == TY_INT64)  ? true          :
+        c == TY_F32   ||
+        c == TY_F64  ||
+        c == TY_F80 || ((
+            c == TY_I08  ||
+            c == TY_I16 ||
+            c == TY_I32   ||
+            c == TY_I64)  ? true          :
             (c == TY_FUNC)  ? ! type_equal t.a u.a    ? false :
                           is_function_type_equal t.a.s u.a.s  :
             (c == TY_ARRAY) ? ! type_equal t.a u.a              ? false :
                           (t.array_len == u.array_len)                :
             (c == TY_PTR      ||
-             c == TY_UNSIGNED  )   ? type_equal t.a u.a                :
+             c == TY_RING  )   ? type_equal t.a u.a                :
                           false                                             )))));;
 
 export copy_type(t @Type) @Type = return
@@ -80,7 +80,7 @@ export pointer_to(base@ Type)@ Type = return
   (t.a = base) ;:
   t;;
 export ring_of(base @Type) @Type = return
-  new_type TY_UNSIGNED base.size base.alignment is t
+  new_type TY_RING base.size base.alignment is t
   (t.a = base) ;:
   t;;
 export func_type(return_ty@ Type)@ Type = return
