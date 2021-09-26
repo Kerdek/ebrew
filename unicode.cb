@@ -27,9 +27,9 @@ export decode_utf8(new_pos@@ i8 p@i8) %i32 = return
   (len_c & 0x1Fu) is c
   cast void the i64 ( 1l for i (i < len && (i + 1l) :;
       cast %i32 the i8 p[i] is q
-      ( ((q & 0b11000000u) != 0b01000000) ?
+      ( ((q & 0xb0u) != 0x40) ?
           (error_at p "invalid UTF-8 sequence") :
-        (c = c << 6u | q & 0b00111111u)))) ;:
+        (c = c << 6u | q & 0x3fu)))) ;:
   c :;
   (new_pos@ = p + the %i32 len));;
 

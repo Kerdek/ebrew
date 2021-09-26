@@ -1,20 +1,11 @@
-// This is an implementation of the open-addressing hash table.
-
 # "chub.hb"
 
-fnv_hash(s@ i8 len i32) %i64 =
-  let hash = 0xcbf29ce484222325;
-  for (let i i32 = 0; i < len; i += 1) {
-    (hash *= 0x100000001b3ul);
-    (hash ^= cast %i64 cast %i8 s[i]);
-  ;
-  return hash;
-;
+fnv_hash(s@ i8 len i32) %i64 = return
+   0xcbf29ce484222325ul is h h
+:; (0 for i (i < len && (i + 1) :; (h = h * 0x100000001b3ul ^ cast %i64 cast %i8 s[i])) as void)
+;;
 
-// Make room for new entires in a given hashmap by removing
-// /* TOMBSTONE */ cast @i8 -1s and possibly extending the bucket size.
 rehash(map@ HashMap)  =
-  // Compute the size of the new hashmap.
   let nkeys = 0;
   for (let i i32 = 0; i < map.capacity; i += 1)
     if (!!map.buckets[i].key && map.buckets[i].key != /* TOMBSTONE */ cast @i8 -1)
@@ -64,17 +55,10 @@ get_or_insert_entry(map@ HashMap key@ i8 keylen i32)@ HashEntry =
       (map.used += 1);
       return ent;;;
   none;;
-export hashmap_get(map@ HashMap key@ i8)@ = { return hashmap_get2 map key cast i32 strlen key;;;
-export hashmap_get2(map@ HashMap key@ i8 keylen i32)@ =
-  let ent = get_entry map key keylen;
-  return !!ent ? ent.val : cast @ 0;;
-export hashmap_put(map@ HashMap key@ i8 val@) =
-  hashmap_put2 map key cast i32 strlen key val;;
-export hashmap_put2(map@HashMap key@ i8 keylen i32 val@) =
-  let ent = get_or_insert_entry map key keylen;
-  (ent.val = val);;
-export hashmap_delete(map@HashMap key@ i8) =
-  hashmap_delete2 map key cast i32 strlen key;;
-export hashmap_delete2(map@HashMap key@ i8 keylen i32) =
-  let ent = get_entry map key keylen;
-  if ent (ent.key = /* TOMBSTONE */ cast @i8 -1);;
+
+export hashmap_get    (m @HashMap k@ i8                )@ = return   hashmap_get2        m k cast i32 strlen k    ;;
+export hashmap_put    (m @HashMap k@ i8            val@)  = return   hashmap_put2        m k cast i32 strlen k val;;
+export hashmap_delete (m @HashMap k@ i8                )  = return   hashmap_delete2     m k cast i32 strlen k    ;;
+export hashmap_put2   (m @HashMap k@ i8 keylen i32 val@)  = return ((get_or_insert_entry m k keylen).val = val);;
+export hashmap_get2   (m @HashMap k@ i8 keylen i32     )@ = return   get_entry           m k keylen is e !!e ? e.val : cast @ 0;;
+export hashmap_delete2(m @HashMap k@ i8 keylen i32     )  = return   get_entry           m k keylen is e (e && (e.key = cast @i8 -1) as void);;

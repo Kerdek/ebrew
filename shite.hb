@@ -59,15 +59,6 @@ __va_arg_fp(ap@ __va_elem sz i32 alignment i32)@ = return
 (ap.fp_offset >= 112) ? __va_arg_mem ap sz alignment :
 (ap.reg_save_area + the %i32 ap.fp_offset) :;
 (ap.fp_offset += 8u);;
-type __mbstate_t struct
-{
-__count i32
-__value union
-{
-__wch %i32
-__wchb[4] i8;
-};
-};
 type fpos_t struct _G_fpos_t
 {
 __pos i64
@@ -226,157 +217,17 @@ __pad1[7] %i8
 __pad2 %i64
 __flags %i32;
 };
-_ struct __pthread_cond_s
-{
-_ union
-{
-__wseq %i64 i64 intyy
-__wseq32 struct
-{
-__low %i32
-__high %i32;
-};
-}
-_ union
-{
-__g1_start %i64
-__g1_start32 struct
-{
-__low %i32
-__high %i32;
-};
-}
-__g_refs[2]%i32 __g_size[2]%i32
-__g1_orig_sizeunsigned i32
-__wrefunsigned i32
-__g_signals[2]%i32;
-};
 type pthread_t %i64;
-type pthread_mutexattr_t union
-{
-__size[4]i8
-__align i32;
-};
-type pthread_condattr_t union
-{
-__size[4]i8
-__align i32;
-};
 type pthread_key_t %i32;
 type pthread_once_t i32;
-_ union pthread_attr_t
-{
-__size[56]i8
-__align i64;
-};
-type pthread_attr_t union pthread_attr_t
-type pthread_mutex_t union
-{
-__data struct __pthread_mutex_s
-__size[40]i8
-__align i64;
-};
-type pthread_cond_t union
-{
-__data struct __pthread_cond_s
-__size[48]i8
-__align i64;
-};
-type pthread_rwlock_t union
-{
-__data struct __pthread_rwlock_arch_t
-__size[56]i8
-__align i64;
-};
-type pthread_rwlockattr_t union
-{
-__size[8]i8
-__align i64;
-};
 type pthread_spinlock_t volatile i32;
-type pthread_barrier_t union
-{
-__size[32]i8
-__align i64;
-};
-type pthread_barrierattr_t union
-{
-__size[4]i8
-__align i32;
-};
 type sig_atomic_t i32;
 type __sigset_t struct
 {
 __val[(1024ul / (8ul * sizeof %i64))]%i64;
 };
 type sigset_t __sigset_t;
-_ union sigval
-{
-sival_int i32
-sival_ptr@;
-};
-type __sigval_t union sigval;
-type siginfo_t struct
-{
-si_signo i32
-si_errno i32
-si_code i32
-__pad0 i32
-_sifields union
-{
-_pad[((128ul / sizeof i32) - 4ul)]i32
-_kill struct
-{
-si_pid i32
-si_uid %i32;
-}
-_timer struct
-{
-si_tid i32
-si_overrun i32
-si_sigval __sigval_t;
-}
-_rt struct
-{
-si_pid i32
-si_uid %i32
-si_sigval __sigval_t;
-}
-_sigchld struct
-{
-si_pid i32
-si_uid %i32
-si_status i32
-si_utime i64
-si_stime i64;
-}
-_sigfault struct
-{
-si_addr@
-si_addr_lsb i16 i32
-_bounds union
-{
-_addr_bnd struct
-{
-_lower@
-_upper@;
-}
-_pkey %i32;
-};
-}
-_sigpoll struct
-{
-si_band i64
-si_fd i32;
-}
-_sigsys struct
-{
-_call_addr@
-_syscall i32
-_arch %i32;
-};
-};
-};
+
 _ enum
 SI_ASYNCNL = -60
 SI_DETHREAD = -7
@@ -444,22 +295,6 @@ POLL_ERR
 POLL_PRI
 POLL_HUP
 ;;
-type sigevent_t struct sigevent
-{
-sigev_value __sigval_t
-sigev_signo i32
-sigev_notify i32
-_sigev_un union
-{
-_pad[((64ul / sizeof i32 - 4ul))]i32
-_tid i32
-_sigev_thread struct
-{
-_function@(_ __sigval_t)
-_attribute@pthread_attr_t;
-};
-};
-};
 _ enum
 SIGEV_SIGNAL = 0
 SIGEV_NONE
@@ -469,17 +304,6 @@ SIGEV_THREAD_ID = 4
 type __sighandler_t@(_ i32);
 
 
-_ struct sigaction
-{
-__sigaction_handler union
-{
-sa_handler __sighandler_t
-sa_sigaction@(_ i32 _@siginfo_t _@);
-}
-sa_mask __sigset_t
-sa_flags i32
-sa_restorer@();
-};
 
 type stack_t struct
 {

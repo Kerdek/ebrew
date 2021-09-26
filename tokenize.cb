@@ -90,7 +90,7 @@ ikkw[]@ i8 = {
   "let"
   "return"          "if"             "else"           "for"
   "while"           "sizeof"         "same"           "struct"
-  "union"           "void"           "typedef"        "enum"
+  "void"            "typedef"        "enum"
   "export"          "break"          "continue"       "switch"
   "case"            "default"        "extern"         "alignof"
   "do"              "const"          "the"            "typeof"
@@ -143,36 +143,6 @@ read_string_literal(start@ i8 quote@ i8)@ Token =
   (j.t = array_of ty_i8 (len + 1) as @);
   (j.str = buf);
   return j;;
-read_utf16_string_literal(start@ i8 quote@ i8)@ Token =
-  let end = string_literal_end (quote + 1);
-  let buf = cast @%i16 calloc 2ul (end - start as %i64);
-  let len = 0;
-  for (let p @i8 = (quote + 1); p < end;) {
-    if (p@ == '\\') {
-      (buf[(len:;(len+=1))] = read_escaped_char &p (p + 1) as %i16);;
-    else {
-      let c = decode_utf8 &p p;
-      if (c < 0x10000) (buf[(len:;(len+=1))] = c as %i16);
-      else {
-        (c -= 0x10000u);
-        (buf[(len:;(len+=1))] = 0xd800u + ((c >> 10u) & 0x3ffu) as %i16);
-        (buf[(len:;(len+=1))] = 0xdc00u + (c & 0x3ffu) as %i16);;;;
-  let j = new_token TK_STR start (end + 1);
-  (j.t = array_of ring_of ty_i16 (len + 1) as @);
-  (j.str = cast @i8 buf);
-  return j;;
-read_utf32_string_literal(start@ i8 quote@ i8 t@ Type)@ Token =
-  let end = string_literal_end (quote + 1);
-  let buf = cast @%i32 calloc 4ul cast %i64 (end - quote);
-  let len = 0;
-  for (let p @ i8 = (quote + 1); p < end;) {
-    if (p@ == '\\') {
-      (buf[(len:;(len+=1))] = read_escaped_char &p (p + 1) as %i32);;
-    else (buf[(len:;(len+=1))] = decode_utf8 &p p);;
-  let j = new_token TK_STR start (end + 1);
-  (j.t = array_of t (len + 1) as @);
-  (j.str = cast @i8 buf);
-  return j;;
 read_char_literal(start@ i8 quote@ i8 t@ Type)@ Token =
   let p = (quote + 1);
   if (p@ == '\0') (error_at start "unclosed literal i8");
@@ -186,69 +156,38 @@ read_char_literal(start@ i8 quote@ i8 t@ Type)@ Token =
   (j.val = c as i64);
   (j.t = t as @);
   return j;;
-convert_pp_int(j@ Token) bool =
-  let p = j.loc;
-  let base = 10;
-  if (! strncasecmp p "0x" 2ul && isxdigit cast i32 p[2]) {
-    (p += 2);
-    (base = 16);;
-  else if (! strncasecmp p "0b" 2ul && (p[2] == '0' || p[2] == '1')) {
-    (p += 2);
-    (base = 2);;
-  else if !p@ (base = 8);
-  let q = &p;
-  let v = strtoul p q base;
-  let l = false;
-  let u = false;
-  if (startswith p "ull") {
-    (p += 3);
-    (l = true);
-    (u = true);;
-  else if (! strncasecmp p "ul" 2ul) {
-    (p += 2);
-    (l = true);
-    (u = true);;
-  else if (startswith p "ll") {
-    (p += 2);
-    (l = true);;
-  else if (p@ == 'l') {
-    (p:;(p+=1));
-    (l = true);;
-  else if (p@ == 'u') {
-    (p:;(p+=1));
-    (u = true);;
 
-  if (p != j.loc + j.len) return false;
-  return
-  ( (base == 10) ? (l && u)      ? ring_of ty_i64     :
-                 l           ? ty_i64      :
-                 u           ? !!(v >> 32ul)  ? ring_of ty_i64 :
-                                              ring_of ty_i32  :
-                 !!(v >> 31ul) ? ty_i64      :
-                               ty_i32       :
-
-                 (l && u)      ? ring_of ty_i64     :
-                 l           ?  !!(v >> 63ul) ? ring_of ty_i64 :
-                                              ty_i64  :
-                 u           ?  !!(v >> 32ul) ? ring_of ty_i64 :
-                                              ring_of ty_i32  :
-                 !!(v >> 63ul) ? ring_of ty_i64     :
-                 !!(v >> 32ul) ? ty_i64      :
-                 !!(v >> 31ul) ? ring_of ty_i32      :
-                 ty_i32                                )
-  is t
-  (j.kind = TK_NUM   ) ;:
-  (j.val  = v as i64) ;:
-  (j.t   = t as @   ) ;:
-  true;;
-
-convert_pp_number(j@ Token)  =
-  convert_pp_int j;;
+convert_pp_int(j@ Token) bool = return
+  j.loc is p
+  10 is base
+  (  (!strncasecmp p "0x" 2ul && !!isxdigit cast i32 p[2])
+  ?  (p += 2)
+  ;: (base = 16)
+  :  none )
+;: &p is q
+   strtoul p q base is v
+   false is l
+   false is u
+   ( (startswith p "ull") ? (p += 3) ;: (l = true) ;: (u = true):
+     (startswith p "ul" ) ? (p += 2) ;: (l = true) ;: (u = true):
+     (startswith p "ll" ) ? (p += 2) ;: (l = true) :
+     (startswith p "l"  ) ? (p += 1) ;: (l = true) :
+     (startswith p "u"  ) ? (p += 1) ;: (u = true) : none )
+;: (p != j.loc + j.len) ? false :
+   ( (l && u)  ? ring_of ty_i64  :
+      l        ?         ty_i64  :
+           u   ? ring_of ty_i32  :
+                         ty_i32  )
+   is t
+   (j.kind = TK_NUM   ) ;:
+   (j.val  = v as i64 ) ;:
+   (j.t    = t as @   ) ;:
+   true;;
 
 export convert_pp_tokens(j@ Token)  =
   for (let t @ Token= j; t.kind != TK_EOF; t = t.s) {
     if is_keyword t (t.kind = TK_KEYWORD);
-    else if (t.kind == TK_PP_NUM) convert_pp_number t;;;
+    else if (t.kind == TK_PP_NUM) convert_pp_int t;;;
 
 add_line_numbers(j@ Token) = return
   1 is n
@@ -260,13 +199,6 @@ add_line_numbers(j@ Token) = return
        :; (j = j.s) as void)
     :; ( p@ == '\n'
        && (n += 1) as void)) as void);;
-
-export tokenize_string_literal(j@ Token basety@ Type)@ Token =
-  let t = cast @Token 0;
-  if (basety.size == 2) (t = read_utf16_string_literal j.loc j.loc);
-  else (t = read_utf32_string_literal j.loc j.loc basety);
-  (t.s = j.s);
-  return t;;
 
 export tokenize(file@ File)@ Token =
   (current_file = file);
@@ -339,13 +271,14 @@ read_file(path@ i8)@ i8 =
   fclose out;
   return buf;;
 
-export new_file(name@ i8 file_no i32 contents@ i8)@ File =
-  let file = cast @File calloc 1ul sizeof File;
-  (file.name = name);
-  (file.display_name = name);
-  (file.file_no = file_no);
-  (file.contents = contents);
-  return file;;
+export new_file(name@ i8 file_no i32 contents@ i8)@ File = return
+   cast @File calloc 1ul sizeof File is file
+   (file.name = name)
+;: (file.display_name = name)
+;: (file.file_no = file_no)
+;: (file.contents = contents)
+;: file
+;;
 
 tffile_no i32;
 export tokenize_file(path@ i8)@ Token = return

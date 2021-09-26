@@ -29,9 +29,6 @@ count(     ) i32 = return counti :; (counti += 1);;
 push (     )     = return (println "  push %%rax") ;: (depth += 1);;
 pop  (arg @i8)     = return (println "  pop %s" arg) ;: (depth -= 1);;
 
-pushf(     )     = return (println "  sub $8, %%rsp"             ) ;: (println "  movsd %%xmm0, (%%rsp)") ;: (depth += 1);;
-popf (reg   i32)     = return (println "  movsd (%%rsp), %%xmm%d" reg) ;: (println "  add $8, %%rsp"        ) ;: (depth -= 1);;
-
 export align_to(n i32 alignment i32) i32 = return (n + alignment - 1) / alignment * alignment;;
 
 reg_dx(sz i32) @i8 = return (sz == 1) ? "%dl"  :
@@ -55,16 +52,13 @@ gen_addr(e @Node) = return
     e.kind    == ND_DEREF   ) ? gen_expr e.a  :
   ( e.kind    == ND_FUNCALL||
     e.kind    == ND_COND   ||
-    e.kind    == ND_UNTIL  ||
     e.kind    == ND_LET    ||
     e.kind    == ND_REPEAT  ) ? gen_expr e      :
-  ( e.t.kind == TY_STRUCT ||
-    e.t.kind == TY_UNION   ) ? gen_expr e      :
+  ( e.t.kind == TY_STRUCT   ) ? gen_expr e      :
   ( error_tok e.j "not an lvalue" );;
 load(t @Type) = return cast void(
   t.kind == TY_ARRAY  ||
   t.kind == TY_STRUCT ||
-  t.kind == TY_UNION  ||
   t.kind == TY_FUNC   ||
   ( ((t.kind == TY_RING) ? "movz" : "movs") is insn
     ((t.kind == TY_RING) ? t.a : t ) is u
@@ -78,8 +72,7 @@ store_rax_struct_union(t @Type) =
     (println "  mov %%r8b, %d(%%rdi)" i);;;
 store(t@Type) =
   pop "%rdi"      ;:
-  (t.kind == TY_STRUCT ||
-   t.kind == TY_UNION   ) ? store_rax_struct_union t             :
+  (t.kind == TY_STRUCT  ) ? store_rax_struct_union t             :
   (t.size == 1          ) ? (println "  mov %%al, (%%rdi)"      ) :
   (t.size == 2          ) ? (println "  mov %%ax, (%%rdi)"      ) :
   (t.size == 4          ) ? (println "  mov %%eax, (%%rdi)"     ) :
@@ -140,196 +133,99 @@ push_args2(args@Node first_pass bool) =
   gen_expr args ;
   switch  args.t.kind {
   case TY_STRUCT:
-  case TY_UNION:
     push_struct args.t;
     break;
   default:
     (push) ;;;
-
-// Load function call arguments. Arguments are already evaluated and
-// stored to the stack as local variables. What we need to do in this
-// function is to load them to registers or push them to the stack as
-// specified by the x86-64 psABI. Here is what the spec says:
-//
-// - Up to 6 arguments of integral type are passed using RDI, RSI,
-//   RDX, RCX, R8 and R9.
-//
-// - Up to 8 arguments of floating-point type are passed using XMM0 to
-//   XMM7.
-//
-// - If all registers of an appropriate type are already used, push an
-//   argument to the stack in the right-to-left order.
-//
-// - Each argument passed on the stack takes 8 bytes, and the end of
-//   the argument area must be aligned to a 16 byte boundary.
-//
-// - If a function is variadic, set the number of floating-point type
-//   arguments to RAX.
 push_args(e@Node)i32 =
-  let stack = 0 gp = 0 fp = 0;
-
-  // If the return type is a large struct/union, the caller passes
-  // a pointer to a buffer as if it were the first argument.
+  let stack = 0 gp = 0;
   if (!!e.ret_buffer && e.t.size > 16) (gp += 1);
-
-  // Load as many arguments to the registers as possible.
   for (let arg@Node = e.a.s; arg; arg = arg.s) {
     let t = arg.t;
-
     switch  t.kind {
     case TY_STRUCT:
-    case TY_UNION:
       if (t.size > 16) {
         (arg.pass_by_stack = true);
-        (stack += align_to t.size 8 / 8);
-      ; else {
-        let fp1 = 0;
-        let fp2 = 0;
-
-        if (fp + fp1 + fp2 < 8 && gp + cast i32 !fp1 + cast i32 !fp2 < 6) {
-          (fp = fp + fp1 + fp2);
-          (gp = gp + cast i32 !fp1 + cast i32 !fp2);
-        ; else {
+        (stack += align_to t.size 8 / 8);;
+      else {
+        if (gp + 2 < 6) {
+          (gp = gp + 2);;
+        else {
           (arg.pass_by_stack = true);
-          (stack += align_to t.size 8 / 8);
-        ;
-      ;
+          (stack += align_to t.size 8 / 8);;;
       break;
     default:
       if ((gp >= 6) :; (gp += 1)) {
         (arg.pass_by_stack = true);
-        (stack += 1);
-      ;
-    ;
-  ;
-
+        (stack += 1);;;;
   if ((depth + stack) % 2 == 1) {
     (println "  sub $8, %%rsp");
     (depth += 1);
-    (stack += 1);
-  ;
-
+    (stack += 1);;
   push_args2 e.a.s true ;
   push_args2 e.a.s false ;
-
-  // If the return type is a large struct/union, the caller passes
-  // a pointer to a buffer as if it were the first argument.
   if (!!e.ret_buffer && e.t.size > 16) {
     (println "  lea %d(%%rbp), %%rax" e.ret_buffer.offset);
-    (push) ;
-  ;
-
-  return stack;
-;
-
+    (push) ;;
+  return stack;;
 copy_ret_buffer(var@Obj) =
-  let t = var.t gp = 0 fp = 0;
-
-  
+  let t = var.t gp = 0;
   for (let i i32 = 0; i < minl 8l cast i64 t.size; i += 1) {
     (println "  mov %%al, %d(%%rbp)" (var.offset + i));
-    (println "  shr $8, %%rax");
-  ;
+    (println "  shr $8, %%rax");;
   (gp += 1);
-
   if (t.size > 8) {
-    
     let reg1 = (!gp ? "%al" : "%dl");
     let reg2 = (!gp ? "%rax" : "%rdx");
     for (let i i32 = 8; i < minl 16l cast i64 t.size; i += 1) {
       (println "  mov %s, %d(%%rbp)" reg1 (var.offset + i));
-      (println "  shr $8, %s" reg2);
-    ;
-  ;
-;
-
+      (println "  shr $8, %s" reg2);;;;
 copy_struct_reg() =
-  let t = current_fn.t.a gp = 0 fp = 0;
-
+  let t = current_fn.t.a gp = 0;
   (println "  mov %%rax, %%rdi");
-
   (println "  mov $0, %%rax");
   for (let i i32 = (minl 8l cast i64 t.size - 1l as i32); i >= 0; i -= 1) {
     (println "  shl $8, %%rax");
-    (println "  mov %d(%%rdi), %%al" i);
-  ;
+    (println "  mov %d(%%rdi), %%al" i);;
   (gp += 1);
-
   if (t.size > 8) {
     let reg1 = (!gp ? "%al" : "%dl");
     let reg2 = (!gp ? "%rax" : "%rdx");
     (println "  mov $0, %s" reg2);
     for (let i i32 = (minl 16l cast i64 t.size - 1l as i32); i >= 8; i -= 1) {
       (println "  shl $8, %s" reg2);
-      (println "  mov %d(%%rdi), %s" i reg1);
-    ;
-  ;
-;
-
+      (println "  mov %d(%%rdi), %s" i reg1);;;;
 copy_struct_mem() =
   let t = current_fn.t.a var = current_fn.params;
-
   (println "  mov %d(%%rbp), %%rdi" var.offset);
-
   for (let i i32 = 0; i < t.size; i += 1) {
     (println "  mov %d(%%rax), %%dl" i);
-    (println "  mov %%dl, %d(%%rdi)" i);
-  ;
-;
-
+    (println "  mov %%dl, %d(%%rdi)" i);;;
 gen_expr(e @Node) =
   (println "  .loc %d %d" e.j.file.file_no e.j.line_no);
-
   switch  e.kind {
-  case ND_NULL_EXPR:
-    return;
-  case ND_THE:
-    return gen_expr e.a ;
-  case ND_NUM: {
-
-    (println "  mov $%ld, %%rax" e.val);
-    return;
-  ;
-  case ND_NEG:
-    gen_expr e.a ;
-    (println "  neg %%rax");
-    return;
-  case ND_VAR: return
-    gen_addr e  ;:
-    load e.t;
-  case ND_MEMBER: return
-    gen_addr e  ;:
-    load e.t;
-  case ND_DEREF: return
-    gen_expr e.a  ;:
-    load e.t;
-  case ND_ADDR: return
-    gen_addr e.a ;
-  case ND_CASSIGN: return
-    gen_addr e.a.a  ;:
-    (push) ;:
-    gen_expr e.a  ;:
-    store e.a.a.t;
-  case ND_ASSIGN: return
-    gen_addr e.a  ;:
-    (push) ;:
-    gen_expr e.a.s  ;:
-    store e.a.t;
-  case ND_THE:
-    return gen_expr e.a ;
-  case ND_UNTIL: return
-    (count) is c
-    (println ".L.until.%d:" c) ;:
-    gen_expr e.a  ;:
-    cmp_zero e.a.t ;:
-    (println "  je .L.until.%d" c);
-  case ND_LET: return
+  case ND_NULL_EXPR: return;
+  case ND_THE      : return gen_expr e.a    ;
+  case ND_ADDR     : return gen_addr e.a    ;
+  case ND_NUM      : return (println "  mov $%ld, %%rax" e.val);
+  case ND_NEG      : return gen_expr e.a    ;: (println "  neg %%rax");
+  case ND_VAR      : return gen_addr e      ;: load e.t;
+  case ND_MEMBER   : return gen_addr e      ;: load e.t;
+  case ND_DEREF    : return gen_expr e.a    ;: load e.t;
+  case ND_COMMA    : return gen_expr e.a    ;: gen_expr e.a.s ;
+  case ND_CAST     : return gen_expr e.a    ;: gen_cast e.a.t e.t;
+  case ND_CASSIGN  : return gen_addr e.a.a  ;: push ;: gen_expr e.a   ;: store e.a.a.t;
+  case ND_ASSIGN   : return gen_addr e.a    ;: push ;: gen_expr e.a.s ;: store e.a.t  ;
+  case ND_THEN     : return gen_expr e.a    ;: push ;: gen_expr e.a.s ;: pop "%rax";
+  case ND_NOT      : return gen_expr e.a    ;: cmp_zero e.a.t ;: (println "  sete %%al") ;: (println "  movzx %%al, %%rax");
+  case ND_BITNOT   : return gen_expr e.a    ;: (println "  not %%rax");
+  case ND_LET      : return
     (println "  lea %d(%%rbp), %%rax" e.var.offset ) ;:
     (push) ;:
     gen_expr e.a  ;:
     store e.a.t ;:
     gen_expr e.a.s;
-  case ND_REPEAT: return
+  case ND_REPEAT   : return
     (count) is c
     (println "  lea %d(%%rbp), %%rax" e.var.offset ) ;:
     (push) ;:
@@ -343,25 +239,14 @@ gen_expr(e @Node) =
     (println "  jne .L.repeat.%d" c) ;:
     pop "%rax" ;:
     (println "  mov 0(%%rax), %%rax");
-  case ND_COMMA: return
-    gen_expr e.a  ;:
-    gen_expr e.a.s ;
-  case ND_THEN: return
-    gen_expr e.a  ;:
-    (push) ;:
-    gen_expr e.a.s  ;:
-    pop "%rax";
-  case ND_CAST: return
-    gen_expr e.a  ;:
-    gen_cast e.a.t e.t;
   case ND_MEMZERO: return
     (println "  mov $%d, %%rcx" e.var.t.size) ;:
     (println "  lea %d(%%rbp), %%rdi" e.var.offset) ;:
     (println "  mov $0, %%al") ;:
     (println "  rep stosb");
   case ND_COND: return
-    (count) is c
     gen_expr e.a  ;:
+    (count) is c
     cmp_zero e.a.t ;:
     (println "  je .L.else.%d" c) ;:
     gen_expr e.a.s  ;:
@@ -369,112 +254,49 @@ gen_expr(e @Node) =
     (println ".L.else.%d:" c) ;:
     gen_expr e.a.s.s  ;:
     (println ".L.end.%d:" c);
-  case ND_NOT: return
+  case ND_LOGAND: 
+  case ND_LOGOR : return
     gen_expr e.a  ;:
-    cmp_zero e.a.t ;:
-    (println "  sete %%al") ;:
-    (println "  movzx %%al, %%rax");
-  case ND_BITNOT: return
-    gen_expr e.a  ;:
-    (println "  not %%rax");
-  case ND_LOGAND: return
     (count) is c
-    gen_expr e.a  ;:
     cmp_zero e.a.t ;:
-    (println "  je .L.end.%d" c) ;:
-    gen_expr e.a.s  ;:
-    (println ".L.end.%d:" c);
-  case ND_LOGOR: return
-    (count) is c
-    gen_expr e.a     ;:
-    cmp_zero e.a.t          ;:
-    (println "  jne .L.end.%ld" c) ;:
+    (println ((e.kind == ND_LOGAND) ? "  je .L.end.%ld" : "  jne .L.end.%ld")  c) ;:
     gen_expr e.a.s  ;:
     (println ".L.end.%ld:" c);
   case ND_FUNCALL: {
     let stack_args = push_args e ;
     gen_expr e.a ;
-
-    let gp = 0 fp = 0;
-
-    // If the return type is a large struct/union, the caller passes
-    // a pointer to a buffer as if it were the first argument.
+    let gp = 0;
     if (!!e.ret_buffer && e.t.size > 16) pop argreg64[gp :; (gp += 1)];
-
     for (let arg @Node = e.a.s; arg; arg = arg.s) {
       let t = arg.t;
       switch  t.kind {
       case TY_STRUCT:
-      case TY_UNION:
         if !(t.size > 16) {
-          let fp1 = 0;
-          let fp2 = 0;
-          if (fp + fp1 + fp2 < 8 && gp + cast i32 !fp1 + cast i32 !fp2 < 6) {
-            if fp1 popf (fp :; (fp += 1));
-            else pop argreg64[((gp :; (gp+=1)))];
+          if (gp + 2 < 6) {
+            pop argreg64[((gp :; (gp+=1)))];
             if (t.size > 8) {
-              if fp2 popf ((fp :; (fp+=1)));
-              else pop argreg64[((gp :; (gp+=1)))];;;;
+              pop argreg64[((gp :; (gp+=1)))];;;;
         break;
-      default: if (gp < 6) pop argreg64[((gp :; (gp+=1)))];
-      ;
-    ;
-
+      default: if (gp < 6) pop argreg64[((gp :; (gp+=1)))];;;
     (println "  mov %%rax, %%r10");
-    (println "  mov $%d, %%rax" fp);
     (println "  call *%%r10");
     (println "  add $%d, %%rsp" (stack_args * 8));
-
     (depth -= stack_args);
-
-    // It looks like the most significant 48 or 56 bits in RAX may
-    // contain garbage if a function return type is i16 or bool/i8,
-    // respectively. We clear the upper bits here.
-    switch  e.t.kind {
-    case TY_BOOL:
-      (println "  movzx %%al, %%eax");
-      return;
-    case TY_I08:
-      if (e.t.kind == TY_RING)
-        (println "  movzbl %%al, %%eax");
-      else
-        (println "  movsbl %%al, %%eax");
-      return;
-    case TY_I16:
-      if (e.t.kind == TY_RING)
-        (println "  movzwl %%ax, %%eax");
-      else
-        (println "  movswl %%ax, %%eax");
-      return;
-    ;
-
-    // If the return type is a small struct, a value is returned
-    // using up to two registers.
     if (!!e.ret_buffer && e.t.size <= 16) {
       copy_ret_buffer e.ret_buffer;
-      (println "  lea %d(%%rbp), %%rax" e.ret_buffer.offset);
-    ;
-
-    return;
-  ;
-  ;
+      (println "  lea %d(%%rbp), %%rax" e.ret_buffer.offset);;
+    return;;;
 
   gen_expr e.a.s ;
-  ((push)) ;
+  push;
   gen_expr e.a ;
   pop "%rdi";
 
-  let ax = cast @i8 0 di = cast @i8 0 dx = cast @i8 0;
-
-  if (e.a.t.kind == TY_I64 || !!e.a.t.a) {
-    (ax = "%rax");
-    (di = "%rdi");
-    (dx = "%rdx");
-  ; else {
-    (ax = "%eax");
-    (di = "%edi");
-    (dx = "%edx");
-  ;
+  let
+    big = (e.a.t.kind == TY_I64 || !!e.a.t.a)
+    ax = (big ? "%rax" : "%eax")
+    di = (big ? "%rdi" : "%edi")
+    dx = (big ? "%rdx" : "%edx");
 
   switch  e.kind {
   case ND_ADD:
@@ -494,24 +316,16 @@ gen_expr(e @Node) =
   case ND_MOD:
     if (e.t.kind == TY_RING) {
       (println "  mov $0, %s" dx);
-      (println "  div %s" di);
-    ; else {
+      (println "  div %s" di);;
+    else {
       if (e.a.t.size == 8) (println "  cqo");
       else (println "  cdq");
-      (println "  idiv %s" di);
-    ;
-
+      (println "  idiv %s" di);;
     if (e.kind == ND_MOD) (println "  mov %%rdx, %%rax");
     return;
-  case ND_BITAND:
-    (println "  and %s, %s" di ax);
-    return;
-  case ND_BITOR:
-    (println "  or %s, %s" di ax);
-    return;
-  case ND_BITXOR:
-    (println "  xor %s, %s" di ax);
-    return;
+  case ND_BITAND: (println "  and %s, %s" di ax); return;
+  case ND_BITOR : (println "  or  %s, %s" di ax); return;
+  case ND_BITXOR: (println "  xor %s, %s" di ax); return;
   case ND_EQ:
   case ND_NE:
   case ND_LT:
@@ -643,7 +457,6 @@ gen_stmt(e@Node) =
       let t = e.a.t;
       switch  t.kind {
       case TY_STRUCT:
-      case TY_UNION:
         if (t.size <= 16) (copy_struct_reg) ;
         else (copy_struct_mem) ;
         break;
@@ -655,33 +468,26 @@ gen_stmt(e@Node) =
   case ND_EXPR_STMT:
     gen_expr e.a ;
     return;
-  case ND_ASM:
-    (println "  %s" e.asm_str);
-    return;
   ;
 
   (error_tok e.j "invalid statement");
 ;
 
-assign_one_param_offset(var @Obj top @i32 gp @i32 fp @i32) =
+assign_one_param_offset(var @Obj top @i32 gp @i32) =
   let t = var.t;
   switch  t.kind {
-    case TY_STRUCT:
-    case TY_UNION:none;
-      let fp1 = 0;
-      let fp2 = 0;
-      if (!(fp@ + fp1 + fp2 < 8 && gp@ + cast i32 !fp1 + cast i32 !fp2 < 6) && t.size > 16) {
-        (fp@ = fp@ +           fp1 +           fp2);
-        (gp@ = gp@ + cast i32 !fp1 + cast i32 !fp2);
+    case TY_STRUCT:none;
+      if (!(gp@ + 2 < 6) && t.size > 16) {
+        (gp@ = gp@ + 2);
         return;;
     default       : if ((gp@ :; (gp@ += 1)) < 6) return;;
   (top@ = align_to top@ 8);
   (var.offset = top@);
   (top@ += var.t.size);;
 assign_param_offsets(fn @Obj) =
-  let top = 16 gp = 0 fp = 0;
+  let top = 16 gp = 0;
   for (let var @Obj = fn.params; var; var = var.s)
-    assign_one_param_offset var &top &gp &fp;;
+    assign_one_param_offset var &top &gp;;
 
 assign_one_lvar_offset(fn @Obj) =
   if !fn.is_function return;
@@ -745,11 +551,6 @@ emit_data(prog @Obj) =
   ;;
 ;
 
-store_fp(r i32 offset i32 sz i32) = 
-  (sz == 4) ? (println "  movss %%xmm%d, %d(%%rbp)" r offset ):
-  (sz == 8) ? (println "  movsd %%xmm%d, %d(%%rbp)" r offset ):
-              none;;
-
 store_gp(r i32 offset i32 sz i32) =
   switch  sz {
   case 1:
@@ -776,67 +577,40 @@ store_gp(r i32 offset i32 sz i32) =
 emit_text(prog@Obj) =
   for (let fn@Obj = prog; fn; fn = fn.s)
     if (!(!fn.is_function || !fn.is_definition) && fn.is_live) {
-
     if !fn.is_export (println "  .local %s" fn.name);
     else             (println "  .globl %s" fn.name);
-
     (println "  .text");
     (println "  .type %s, @function" fn.name);
     (println "%s:" fn.name);
     (current_fn = fn);
-
-    // Prologue
     (println "  push %%rbp");
     (println "  mov %%rsp, %%rbp");
     (println "  sub $%d, %%rsp" fn.stack_size);
     (println "  mov %%rsp, %d(%%rbp)" fn.alloca_bottom.offset);
-
-    // Save arg registers if function is variadic
     if fn.va_area {
-      let
-        gp = 0
-        fp = 0;
-      for (let var@Obj = fn.params; var; var = var.s) {
-          ((gp :; (gp+=1)));
-      ;
-
+      let gp = 0;
+      for (let var@Obj = fn.params; var; var = var.s) ((gp :; (gp+=1)));
       let off = fn.va_area.offset;
-
-      // va_elem
-      (println "  movl $%d, %d(%%rbp)" (gp * 8) off);          // gp_offset
-      (println "  movl $%d, %d(%%rbp)" (fp * 8 + 48) (off + 4)); // fp_offset
-      (println "  movq %%rbp, %d(%%rbp)" (off + 8));            // overflow_arg_area
+      (println "  movl $%d, %d(%%rbp)" (gp * 8) off);
+      (println "  movq %%rbp, %d(%%rbp)" (off + 8));
       (println "  addq $16, %d(%%rbp)" (off + 8));
-      (println "  movq %%rbp, %d(%%rbp)" (off + 16));           // reg_save_area
+      (println "  movq %%rbp, %d(%%rbp)" (off + 16));
       (println "  addq $%d, %d(%%rbp)" (off + 24) (off + 16));
-
       let b = (off + 24);
-      // __reg_save_area__
       (println "  movq %%rdi, %d(%%rbp)"   b);
       (b += 8); (println "  movq %%rsi, %d(%%rbp)"   b);
       (b += 8); (println "  movq %%rdx, %d(%%rbp)"   b);
       (b += 8); (println "  movq %%rcx, %d(%%rbp)"   b);
       (b += 8); (println "  movq %%r8, %d(%%rbp)"    b);
-      (b += 8); (println "  movq %%r9, %d(%%rbp)"    b);
-      (b += 8); (println "  movsd %%xmm0, %d(%%rbp)" b);
-      (b += 8); (println "  movsd %%xmm1, %d(%%rbp)" b);
-      (b += 8); (println "  movsd %%xmm2, %d(%%rbp)" b);
-      (b += 8); (println "  movsd %%xmm3, %d(%%rbp)" b);
-      (b += 8); (println "  movsd %%xmm4, %d(%%rbp)" b);
-      (b += 8); (println "  movsd %%xmm5, %d(%%rbp)" b);
-      (b += 8); (println "  movsd %%xmm6, %d(%%rbp)" b);
-      (b += 8); (println "  movsd %%xmm7, %d(%%rbp)" b);
-    ;
+      (b += 8); (println "  movq %%r9, %d(%%rbp)"    b);;
 
     (  0 is gp
-       0 is fp
        fn.params for o
       (  !!o
       && o.s
       :;(  o.offset <= 0
         && o.t is t
-          (  t.kind == TY_STRUCT
-          || t.kind == TY_UNION ) ?
+          (  t.kind == TY_STRUCT ) ?
             cast i32 minl cast i64 t.size 8l is b
             ( store_gp (gp :; (gp+=1)) o.offset b )
             ;:(  (t.size   > 8)

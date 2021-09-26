@@ -21,36 +21,19 @@ replace_extn(tmpl@ i8 extn@ i8) @i8 = return
   strrchr filename '.' is dot
   (!!dot && (dot@ = '\0' as i8) as void) ;:
   (format "%s%s" filename extn);;
-wait_subprocess(status @i32) = while (wait status > 0);;
-run_subprocess(argv@@i8) =
+run_subprocess(a@@i8) =
+  (a for b (!!b@ && (b + 1) :; (printf "%s " b@)) as void);
+  (printf "\n");
   (!(fork) &&
-    ( (execvp argv[0] argv as) ;:
-      cast void (fprintf stderr "exec failed: %s: %s\n" argv[0] strerror errno) ;:
+    ( (execvp a[0] a as) ;:
+      cast void (fprintf stderr "exec failed: %s: %s\n" a[0] strerror errno) ;:
       exit 1) as void) ;:
   0 is status
-  wait_subprocess &status ;:
+  (true for ready (wait &status > 0)) ;:
   (!!status && exit 1);;
-must_tokenize_file(path @i8) @Token = return tokenize_file path || ((error "%s: %s" path strerror errno) ;: 0 as @Token);;
-append_tokens(tok1@ Token tok2@ Token)@ Token =
-  if (!tok1 || tok1.kind == TK_EOF) return tok2;
-  let t = tok1;
-  while (t.s.kind != TK_EOF) (t = t.s);
-  (t.s = tok2);
-  return tok1;;
-  // Print tokens to stdout. Used for -E.
-print_tokens(j @Token) = return
-   1 is line
-  (  j for j ( j.kind != TK_EOF && j.s
-    :; ((printf " ") as void)
-    :; (cast void printf "%.*s" j.len j.loc)
-    :; (line += 1) )
-  as void )
-;: (cast void printf "\n");;
-
 cc1(input @i8 output @i8 include_paths @StringArray) =
-  must_tokenize_file input is j
+  tokenize_file input is j
   (j = preprocess j include_paths) ;:
-  //print_tokens j ;:
   parse j is obj
   open_file output is out
   codegen obj out ;:
@@ -58,28 +41,8 @@ cc1(input @i8 output @i8 include_paths @StringArray) =
 assemble(input@ i8 output@ i8) =
   let cmd[]@ i8 = {"as" "-c" input "-o" output cast @i8 0;;
   run_subprocess cast @@i8 cmd;;
-find_file( pattern@ i8)@ i8 =
-  cast @i8 0 is path
-  new glob_t {; is buf
-  cast void glob pattern 0 cast @(c @i8 k i32) i32 0 &buf ;:
-  (buf.gl_pathc > 0 && (path = strdup buf.gl_pathv[buf.gl_pathc - 1ul]) as void) ;:
-  globfree &buf ;:
-  path;;
 type stat_type struct stat;;
 export file_exists(path@ i8) bool = return ! stat path &new stat_type {;;;
-find_libpath() @i8 = return
-  file_exists "/usr/lib/x86_64-linux-gnu/crti.o" ? "/usr/lib/x86_64-linux-gnu" :
-  file_exists "/usr/lib64/crti.o" ? "/usr/lib64" :
-  (error "library path is not found") ;: cast @i8 0;;
-find_gcc_libpath()@ i8 =
-  let paths[]@ i8 = {
-    "/usr/lib/gcc/x86_64-linux-gnu/*/crtbegin.o"
-    "/usr/lib/gcc/x86_64-pc-linux-gnu/*/crtbegin.o" // For Gentoo
-    "/usr/lib/gcc/x86_64-redhat-linux/*/crtbegin.o";; // For Fedora;;
-  for (let i i32 = 0; i < (sizeof typeof paths) / (sizeof typeof paths[0]); i+=1) {
-    let path = find_file paths[i];
-    if path return dirname path;;
-  (error "gcc library path is not found");;
 run_linker(inputs @StringArray flags @StringArray output@ i8 opt_shared bool opt_static bool) =
   let a = &new StringArray {;;
   strarray_push a "ld";
@@ -87,8 +50,8 @@ run_linker(inputs @StringArray flags @StringArray output@ i8 opt_shared bool opt
   strarray_push a output;
   strarray_push a "-m";
   strarray_push a "elf_x86_64";
-  let libpath = (find_libpath);
-  let gcc_libpath = (find_gcc_libpath);
+  let libpath = "/usr/lib/x86_64-linux-gnu";
+  let gcc_libpath = "/usr/lib/gcc/x86_64-linux-gnu/10";
   if opt_shared {
     strarray_push a (format "%s/crti.o" libpath);
     strarray_push a (format "%s/crtbeginS.o" gcc_libpath);;
@@ -97,14 +60,7 @@ run_linker(inputs @StringArray flags @StringArray output@ i8 opt_shared bool opt
     strarray_push a (format "%s/crti.o" libpath);
     strarray_push a (format "%s/crtbegin.o" gcc_libpath);;
   strarray_push a (format "-L%s" gcc_libpath);
-  strarray_push a "-L/usr/lib/x86_64-linux-gnu";
-  strarray_push a "-L/usr/lib64";
-  strarray_push a "-L/lib64";
-  strarray_push a "-L/usr/lib/x86_64-linux-gnu";
-  strarray_push a "-L/usr/lib/x86_64-pc-linux-gnu";
-  strarray_push a "-L/usr/lib/x86_64-redhat-linux";
-  strarray_push a "-L/usr/lib";
-  strarray_push a "-L/lib";
+  strarray_push a (format "-L%s" libpath);
   if !opt_static {
     strarray_push a "-dynamic-linker";
     strarray_push a "/lib64/ld-linux-x86-64.so.2";;
@@ -132,7 +88,7 @@ get_file_type(filename@ i8) FileType = return
   endswith filename ".so" ? FILE_DSO :
   endswith filename ".o"  ? FILE_OBJ :
   endswith filename ".cb" ? FILE_CB  :
-  (error "<command line>: unknown file extension: %s" filename) ;: cast FileType 0;;
+  (error "unknown file extension: %s" filename) ;: cast FileType 0;;
 export main(argc i32 argv@@i8) i32 =
   let p = 4;
   let 
@@ -160,7 +116,6 @@ export main(argc i32 argv@@i8) i32 =
     if (! strncmp cast @ argv[i] "-Wl," 4ul || ! strncmp cast @ argv[i] "-L" 2ul)                     strarray_push ldflags       argv[  i]       ;  else
     if (argv[i][0] == '-') (error "unknown argument: %s" argv[i])                                                                                  ;  else
     strarray_push ccset argv[i];;
-  if (ccset.len == 0) (error "no input files");
   if (ccset.len > 1 && !!opt_o && opt_c) (error "cannot specify -o and -c with multiple inputs");
   for (let i i32 = 0; i < ccset.len; i+=1) {
     let input = ccset.data[i];

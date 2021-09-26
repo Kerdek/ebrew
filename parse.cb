@@ -119,7 +119,7 @@ new_initializer(t @Type is_flexible bool) @Initializer =
     (e.children = (calloc cast %i64 t.array_len  sizeof @Initializer as @@Initializer));
     for (let i i32 = 0; i < t.array_len; i += 1) (e.children[i] = new_initializer t.a false);
     return e;;
-  if (t.kind == TY_STRUCT || t.kind == TY_UNION) {
+  if (t.kind == TY_STRUCT) {
     let len = 0;
     for (let g @Type = t.a; g; g = g.s) (len += 1);
     (e.children = (calloc cast %i64 len  sizeof @Initializer as @@Initializer));
@@ -317,7 +317,6 @@ new_alignof(j @Token t @Type t2 @Type) @Node = return new_ulong j t cast i64 t2.
 new_member_access(j @Token t @Type a @Node) @Node = return
    (a = new_deref_all j t a)
 ;:(  a.t.kind != TY_STRUCT
-  && a.t.kind != TY_UNION
   &&(  format_types a.t ty_void
     ;: error_tok j "(%s . %.*s) must be of the form (@*struct . %.*s)" s1 j.s.len j.s.loc j.s.len j.s.loc ) as void)
 ;: get_struct_member a.t j is g
@@ -330,8 +329,7 @@ new_member_access(j @Token t @Type a @Node) @Node = return
 new_call(j @Token t @Type a @Node) @Node = return
    expect_type j t a.t.a 
 ;: new_unary j a.t.a ND_FUNCALL a is e e
-:;( (  e.t.kind == TY_STRUCT
-    || e.t.kind == TY_UNION )
+:;( (  e.t.kind == TY_STRUCT )
   && (e.ret_buffer = new_lvar "" e.t)
   as void )
 ;;
@@ -383,11 +381,10 @@ type_specifier(k @@Token)@ Type = return
   consume k k@ "i32"       ? ty_i32             :
   consume k k@ "i64"       ? ty_i64             :
   consume k k@ "struct"    ? struct_decl      k :
-  consume k k@ "union"     ? union_decl       k :
   consume k k@ "enum"      ? enum_specifier   k :
   consume k k@ "typeof"    ? typeof_specifier k :
   consume k k@ "same"      ? ( current_type 
-                          || (error_tok k@ "`same` may not be used outside struct/union definition") ) :
+                          || (error_tok k@ "`same` may not be used outside struct definition") ) :
   find_type k@ is t2
   !t2 ? ty_void : cast void advance k ;: t2 ;;
 func_params(k @@Token) @Type =
@@ -552,7 +549,6 @@ initializer2(k @@Token e @Initializer) =
       let a = tertiary k cast @Type 0;
       if (a.t.kind == TY_STRUCT) (e.expr = a);
       else struct_initializer2 k e e.t.a;;;
-  else if (e.t.kind == TY_UNION) union_initializer k e;
   else if equal k@ "{" {
     (k@ = k.s);
     initializer2 k e;
@@ -616,8 +612,6 @@ write_gvar_data(cur@ Relocation init@ Initializer t@ Type buf@ i8 offset i32)@ R
         (cur = write_gvar_data cur init.children[i] g buf (offset + g.offset));
         (i += 1);;
     return cur;;
-  if (t.kind == TY_UNION) {
-    return cur;;
   if !init.expr return cur;
   let label = (0 as @@i8);
   let val = eval2 init.expr &label;
@@ -651,8 +645,6 @@ create_lvar_init(e @Initializer t @Type z @InitDesg j @Token)@ Node =
       (a = new_neth j cast @Type 0 a b);
       (i += 1);;
     return a;;
-  if (t.kind == TY_UNION) {
-    return create_lvar_init e.children[0] t.a &new InitDesg {z 0 t.a; j;;
   if !e.expr
     return new_none j ty_void;
   let a = init_desg_expr z j;
@@ -1048,8 +1040,7 @@ primary(k @@Token t @Type) @Node = return
             (!!current_fn ? strarray_push a sc.o.name :
             ( sc.o.is_root = true ) ) ) as void) ;:
         !!sc.o     ? new_reference k@ t sc.o                     :
-        !!sc.t ? new_lit k@ t sc.t cast i64 sc.v:
-        (error_tok k@ "internal compiler error") ;: cast @Node 0   :
+        new_lit k@ t sc.t cast i64 sc.v:
       (error_tok k@ "lookup failed") ;: cast @Node 0) :
     (k.kind == TK_STR) ?
       new_string_literal k.str t cast @Type k.t  is o
@@ -1202,18 +1193,9 @@ struct_decl(k @@Token) @Type =
       (t.alignment = g.alignment);;
   (t.size = align_to bits (t.alignment * 8) / 8);
   return t;;
-union_decl(k @@Token) @Type =
-  let t = struct_union_decl k;
-  (t.kind = TY_UNION);
-  if (t.size < 0) return t;
-  for (let g @Type = t.a; g; g = g.s) {
-    if (t.alignment < g.alignment) (t.alignment = g.alignment);
-    if (t.size < g.size) (t.size = g.size);;
-  (t.size = align_to t.size t.alignment);
-  return t;;
 get_struct_member(t @Type j @Token) @Type =
   for (let g @Type = t.a; g; g = g.s) {
-    if ((g.kind == TY_STRUCT || g.kind == TY_UNION) && (!g.name || equal g.name "_")) {
+    if ((g.kind == TY_STRUCT) && (!g.name || equal g.name "_")) {
       if cast bool get_struct_member g j return g;;
     else if (g.name.len == j.len && ! strncmp cast @  g.name.loc j.loc cast %i64 j.len ) return g;;
   return 0 as @Type;;
@@ -1266,7 +1248,7 @@ function(k @@Token attr @VarAttr) = return
   (enter_scope) ;:
   create_param_lvars t.params ;:
   t.a is rty
-  (((rty.kind == TY_STRUCT || rty.kind == TY_UNION) && rty.size > 16) && new_lvar "" pointer_to rty as) ;:
+  (((rty.kind == TY_STRUCT) && rty.size > 16) && new_lvar "" pointer_to rty as) ;:
   (o.params = locals) ;:
   (t.is_variadic && (o.va_area = new_lvar "__va_area__" array_of ty_i8 136) as void) ;:
   (o.alloca_bottom = new_lvar "__alloca_size__" pointer_to ty_i8) ;:

@@ -26,7 +26,6 @@ t.kind is c
 ( c == TY_I64     ) ? strcat s "i64"         :
 ( c == TY_ENUM    ) ? strcat s "enum"        :
 ( c == TY_STRUCT  ) ? strcat s "struct"      :
-( c == TY_UNION   ) ? strcat s "union"       :
 ( c == TY_RING) ? strcat s "% "          :; format_type t.a s :
 ( c == TY_ARRAY   ) ? strcat s "[]"          :; format_type t.a s :
 ( c == TY_PTR     ) ? strcat s "@"           :; format_type t.a s :

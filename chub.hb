@@ -16,21 +16,31 @@ type
     ND_FOR        ND_DO         ND_SWITCH  ND_CASE       ND_BLOCK
     ND_GOTO       ND_LABEL      ND_FUNCALL ND_LET
     ND_EXPR_STMT  ND_VAR        ND_NUM     ND_CAST
-    ND_MEMZERO    ND_ASM        ND_UNTIL
-    ND_REPEAT     ND_THE        ND_THEN    ND_CASSIGN
+    ND_MEMZERO    ND_REPEAT     ND_THE        ND_THEN    ND_CASSIGN
   ;
 
   TypeKind enum
     TY_VOID
     TY_BOOL
-    TY_I08 TY_I16   TY_I32     TY_I64
-    TY_FUNC    TY_ARRAY   TY_ENUM TY_STRUCT  TY_UNION   TY_PTR    TY_RING
+    TY_I08
+    TY_I16
+    TY_I32
+    TY_I64
+    TY_FUNC
+    TY_ARRAY
+    TY_ENUM
+    TY_STRUCT
+    TY_PTR
+    TY_RING
   ;
 
   TokenKind enum
-    TK_IDENT   TK_PUNCT
-    TK_KEYWORD TK_STR
-    TK_NUM     TK_PP_NUM
+    TK_IDENT
+    TK_PUNCT
+    TK_KEYWORD
+    TK_STR
+    TK_NUM
+    TK_PP_NUM
     TK_EOF
   ;
 
