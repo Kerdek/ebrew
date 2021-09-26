@@ -1,34 +1,34 @@
 #"chub.hb"
 
-export preprocess(j@Token include_paths@StringArray)@Token = return
-    new Token {; is head
-  &head is cur
-  (  j for j
-    (  j.kind != TK_EOF
-    && !equal j "#"
-    ?  (j.line_delta = j.file.line_delta)
-    ;: (j.filename = j.file.display_name)
-    ;: (cur.s = j)
-    ;: (cur = cur.s)
-    ;: j.s
-    :  (j.s.kind != TK_STR && (error_tok j.s "expected a filename") as void)
-    ;: tokenize_file (format"%s/%s" dirname strdup j.file.name strndup (j.s.loc + 1) cast %i64 (j.s.len - 2)) is a
-       (!a && (error_tok j.s "%s: cannot open file: %s" j.s strerror errno) as void)
-    ;: (a.kind == TK_EOF)
-    ?  j.s.s
-    :  new Token {; is head
-      &head is cur
-      (  a for b
-        (  b.kind != TK_EOF
-        && b.s
-        :; (cur.s = cast @Token calloc 1ul sizeof Token)
-        :; (cur.s@ = b@)
-        :; (cur.s.s = cast @Token 0)
-        :; (cur = cur.s) )
-      as void )
-    ;: (cur.s = j.s.s)
-    ;: head.s )
-  as void )
+export preprocess(j @Token include_paths @StringArray) @Token = return
+   new Token {; is head
+   &head is cur
+   (  j for j
+     (  j.kind != TK_EOF
+     && !equal j "#"
+     ?  (j.line_delta = j.file.line_delta)
+     ;: (j.filename = j.file.display_name)
+     ;: (cur.s = j)
+     ;: (cur = cur.s)
+     ;: j.s
+     :  (j.s.kind != TK_STR && (error_tok j.s "expected a filename") as void)
+     ;: tokenize_file (format"%s/%s" dirname strdup j.file.name strndup (j.s.loc + 1) cast %i64 (j.s.len - 2)) is a
+        (!a && (error_tok j.s "%s: cannot open file: %s" j.s strerror errno) as void)
+     ;: (a.kind == TK_EOF)
+     ?  j.s.s
+     :  new Token {; is head
+       &head is cur
+       (  a for b
+         (  b.kind != TK_EOF
+         && b.s
+         :; (cur.s = cast @Token calloc 1ul sizeof Token)
+         :; (cur.s@ = b@)
+         :; (cur.s.s = cast @Token 0)
+         :; (cur = cur.s) )
+       as void )
+     ;: (cur.s = j.s.s)
+     ;: head.s )
+   as void )
 ;: (j = head.s)
 ;: convert_pp_tokens j
 ;: (j for t (!!t && t.s :; (t.line_no += t.line_delta)) as void)

@@ -127,10 +127,6 @@ P_ALL
 P_PID
 P_PGID
 ;;
-type _Float32 f32;
-type _Float64 f64;
-type _Float32x f64;
-type _Float64x f80;
 type div_t struct
 {
 quot i32
@@ -963,13 +959,6 @@ export pclose              (stream        @FILE)i32;
 export flockfile           (stream        @FILE) ;
 export ftrylockfile        (stream        @FILE)i32 ;
 export funlockfile         (stream        @FILE) ;
-export atof                (nptr          @const i8)f64;
-export atoi                (nptr          @const i8)i32;
-export atol                (nptr          @const i8)i64;
-export atoll               (nptr          @const i8)i64;
-export strtod              (nptr          @const i8 endptr@@i8)f64;
-export strtof              (nptr          @const i8 endptr@@i8)f32 ;
-export strtold             (nptr          @const i8 endptr@@i8)f80;
 export strtol              (nptr          @const i8 endptr@@i8 base i32)i64;
 export strtoul             (nptr          @const i8 endptr@@i8 base i32)%i64;
 export strtoll             (nptr          @const i8 endptr@@i8 base i32)i64;
@@ -1093,7 +1082,6 @@ export waitpid             (pid           i32 stat_loc@i32 options i32)i32;
 export waitid              (idtype        idtype_t id %i32 infop@siginfo_t options i32)i32;
 export clock               (              )clock_t ;
 export time                (timer         @time_t)time_t ;
-export difftime            (time1         time_t time0 time_t)f64;
 export mktime              (tp            @struct tm)time_t ;
 export strftime            (s             @i8 maxsize %i64 format@const i8 tp@const struct tm)%i64 ;
 export strftime_l          (s             @i8 maxsize %i64 format@const i8 tp@const struct tm loc locale_t)%i64 ;

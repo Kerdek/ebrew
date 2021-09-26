@@ -6,10 +6,7 @@ export
   ty_i8   @Type = &new Type { TY_I08   1  1 ;
   ty_i16  @Type = &new Type { TY_I16   2  2 ;
   ty_i32  @Type = &new Type { TY_I32   4  4 ;
-  ty_i64  @Type = &new Type { TY_I64   8  8 ;
-  ty_f32  @Type = &new Type { TY_F32   4  4 ;
-  ty_f64  @Type = &new Type { TY_F64   8  8 ;
-  ty_f80  @Type = &new Type { TY_F80  16 16 ;;
+  ty_i64  @Type = &new Type { TY_I64   8  8 ;;
 
 new_type(kind TypeKind size i32 alignment i32) @Type = return
 cast @Type calloc 1ul sizeof Type is t t
@@ -23,9 +20,6 @@ export format_type(t @Type s @i8) = return
 t.kind is c
 ( c == TY_VOID    ) ? strcat s "void"        :
 ( c == TY_BOOL    ) ? strcat s "bool"        :
-( c == TY_F32     ) ? strcat s "f32"         :
-( c == TY_F64     ) ? strcat s "f64"         :
-( c == TY_F80     ) ? strcat s "f80"         :
 ( c == TY_I08     ) ? strcat s "i8"          :
 ( c == TY_I16     ) ? strcat s "i16"         :
 ( c == TY_I32     ) ? strcat s "i32"         :
@@ -54,10 +48,7 @@ export type_equal(t @Type u @Type) bool = return
       !!u.o ? type_equal t u.o :
       ( c == u.kind     && (
         c == TY_VOID    ||  
-        c == TY_BOOL    ||
-        c == TY_F32   ||
-        c == TY_F64  ||
-        c == TY_F80 || ((
+        c == TY_BOOL    ||((
             c == TY_I08  ||
             c == TY_I16 ||
             c == TY_I32   ||

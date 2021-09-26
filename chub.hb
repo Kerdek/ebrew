@@ -21,12 +21,10 @@ type
   ;
 
   TypeKind enum
-    TY_VOID    TY_BOOL    TY_I08
-    TY_I16   TY_I32     TY_I64
-    TY_F32   TY_F64  TY_F80
-    TY_FUNC    TY_ARRAY   TY_ENUM
-    TY_STRUCT  TY_UNION   TY_PTR
-    TY_RING
+    TY_VOID
+    TY_BOOL
+    TY_I08 TY_I16   TY_I32     TY_I64
+    TY_FUNC    TY_ARRAY   TY_ENUM TY_STRUCT  TY_UNION   TY_PTR    TY_RING
   ;
 
   TokenKind enum
@@ -54,7 +52,6 @@ type
     kind        TokenKind
     s       @same
     val         i64
-    fval        f80
     loc        @i8
     len         i32
     t         @
@@ -141,7 +138,6 @@ type
     begin          i64
     end            i64
     val            i64
-    fval           f80
     pass_by_stack  bool;
   }
 
@@ -165,9 +161,6 @@ export extern
   ty_i16  @Type
   ty_i32  @Type
   ty_i64  @Type
-  ty_f32  @Type
-  ty_f64  @Type
-  ty_f80  @Type
 ;
 
 export advance(k @@Token) @Token;

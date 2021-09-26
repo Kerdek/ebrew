@@ -66,10 +66,7 @@ load(t @Type) = return cast void(
   t.kind == TY_STRUCT ||
   t.kind == TY_UNION  ||
   t.kind == TY_FUNC   ||
-  ( (t.kind == TY_F32  ) ? (println "  movss (%%rax), %%xmm0"      ) :
-    (t.kind == TY_F64 ) ? (println "  movsd (%%rax), %%xmm0"      ) :
-    (t.kind == TY_F80) ? (println "  fldt (%%rax)"               ) :
-    ((t.kind == TY_RING) ? "movz" : "movs") is insn
+  ( ((t.kind == TY_RING) ? "movz" : "movs") is insn
     ((t.kind == TY_RING) ? t.a : t ) is u
     ( (u.size == 1         ) ? (println "  %sbl (%%rax), %%eax"   insn ) :
       (u.size == 2         ) ? (println "  %swl (%%rax), %%eax"   insn ) :
@@ -83,27 +80,14 @@ store(t@Type) =
   pop "%rdi"      ;:
   (t.kind == TY_STRUCT ||
    t.kind == TY_UNION   ) ? store_rax_struct_union t             :
-  (t.kind == TY_F32   ) ? (println "  movss %%xmm0, (%%rdi)"  ) :
-  (t.kind == TY_F64  ) ? (println "  movsd %%xmm0, (%%rdi)"  ) :
-  (t.kind == TY_F80 ) ? (println "  fstpt (%%rdi)"          ) : 
   (t.size == 1          ) ? (println "  mov %%al, (%%rdi)"      ) :
   (t.size == 2          ) ? (println "  mov %%ax, (%%rdi)"      ) :
   (t.size == 4          ) ? (println "  mov %%eax, (%%rdi)"     ) :
                              (println "  mov %%rax, (%%rdi)"     ) ;;
 cmp_zero(t@Type) =
-  (t.kind == TY_F32   ) ? (println "  xorps %%xmm1, %%xmm1"   )  ;:
-                             (println "  ucomiss %%xmm1, %%xmm0" ) :
-  (t.kind == TY_F64  ) ? (println "  xorpd %%xmm1, %%xmm1"   )  ;:
-                             (println "  ucomisd %%xmm1, %%xmm0" ) :
-  (t.kind == TY_F80 ) ? (println "  fldz"                   )  ;:
-                             (println "  fucomip"                )  ;:
-                             (println "  fstp %%st(0)"           ) :
   (t.size <= 4          ) ? (println "  cmp $0, %%eax"          ) :
                              (println "  cmp $0, %%rax"          ) ;;
 getTypeId(t @Type)TypeID = return
-  (t.kind == TY_F32  )  ? F32 :
-  (t.kind == TY_F64 )  ? F64 :
-  (t.kind == TY_F80)  ? F80 :
   (t.kind == TY_RING) ?
     (t.a.kind == TY_I08   ) ? U8  :
     (t.a.kind == TY_I16  ) ? U16 :
@@ -118,70 +102,19 @@ i32i8 []i8 = "movsbl %al, %eax"                                   ;
 i32u8 []i8 = "movzbl %al, %eax"                                   ;
 i32i16[]i8 = "movswl %ax, %eax"                                   ;
 i32u16[]i8 = "movzwl %ax, %eax"                                   ;
-i32f32[]i8 = "cvtsi2ssl %eax, %xmm0"                              ;
 i32i64[]i8 = "movsxd %eax, %rax"                                  ;
-i32f64[]i8 = "cvtsi2sdl %eax, %xmm0"                              ;
-i32f80[]i8 = "mov %eax, -4(%rsp); fildl -4(%rsp)"                 ;
-              
-u32f32[]i8 = "mov %eax, %eax; cvtsi2ssq %rax, %xmm0"              ;
 u32i64[]i8 = "mov %eax, %eax"                                     ;
-u32f64[]i8 = "mov %eax, %eax; cvtsi2sdq %rax, %xmm0"              ;
-u32f80[]i8 = "mov %eax, %eax; mov %rax, -8(%rsp); fildll -8(%rsp)";
 
-i64f32[]i8 = "cvtsi2ssq %rax, %xmm0";
-i64f64[]i8 = "cvtsi2sdq %rax, %xmm0";
-i64f80[]i8 = "movq %rax, -8(%rsp); fildll -8(%rsp)";
-
-u64f32[]i8 = "cvtsi2ssq %rax, %xmm0";
-u64f64[]i8 = "test %rax,%rax; js 1f; pxor %xmm0,%xmm0; cvtsi2sd %rax,%xmm0; jmp 2f; 1: mov %rax,%rdi; and $1,%eax; pxor %xmm0,%xmm0; shr %rdi; or %rax,%rdi; cvtsi2sd %rdi,%xmm0; addsd %xmm0,%xmm0; 2:";
-u64f80[]i8 = "mov %rax, -8(%rsp); fildq -8(%rsp); test %rax, %rax; jns 1f; mov $1602224128, %eax; mov %eax, -4(%rsp); fadds -4(%rsp); 1:";
-
-f32i8 []i8 = "cvttss2sil %xmm0, %eax; movsbl %al, %eax";
-f32u8 []i8 = "cvttss2sil %xmm0, %eax; movzbl %al, %eax";
-f32i16[]i8 = "cvttss2sil %xmm0, %eax; movswl %ax, %eax";
-f32u16[]i8 = "cvttss2sil %xmm0, %eax; movzwl %ax, %eax";
-f32i32[]i8 = "cvttss2sil %xmm0, %eax"                  ;
-f32u32[]i8 = "cvttss2siq %xmm0, %rax"                  ;
-f32i64[]i8 = "cvttss2siq %xmm0, %rax"                  ;
-f32u64[]i8 = "cvttss2siq %xmm0, %rax"                  ;
-f32f64[]i8 = "cvtss2sd %xmm0, %xmm0"                   ;
-f32f80[]i8 = "movss %xmm0, -4(%rsp); flds -4(%rsp)"    ;
-
-f64i8 []i8 = "cvttsd2sil %xmm0, %eax; movsbl %al, %eax";
-f64u8 []i8 = "cvttsd2sil %xmm0, %eax; movzbl %al, %eax";
-f64i16[]i8 = "cvttsd2sil %xmm0, %eax; movswl %ax, %eax";
-f64u16[]i8 = "cvttsd2sil %xmm0, %eax; movzwl %ax, %eax";
-f64i32[]i8 = "cvttsd2sil %xmm0, %eax"                  ;
-f64u32[]i8 = "cvttsd2siq %xmm0, %rax"                  ;
-f64i64[]i8 = "cvttsd2siq %xmm0, %rax"                  ;
-f64u64[]i8 = "cvttsd2siq %xmm0, %rax"                  ;
-f64f32[]i8 = "cvtsd2ss %xmm0, %xmm0"                   ;
-f64f80[]i8 = "movsd %xmm0, -8(%rsp); fldl -8(%rsp)"    ;
-
-f80i8 []i8 = "fnstcw -10(%rsp); movzwl -10(%rsp), %eax; or $12, %ah; mov %ax, -12(%rsp); fldcw -12(%rsp); fistps -24(%rsp); fldcw -10(%rsp); movsbl -24(%rsp), %eax"
-f80u8 []i8 = "fnstcw -10(%rsp); movzwl -10(%rsp), %eax; or $12, %ah; mov %ax, -12(%rsp); fldcw -12(%rsp); fistps -24(%rsp); fldcw -10(%rsp); movzbl -24(%rsp), %eax"
-f80i16[]i8 = "fnstcw -10(%rsp); movzwl -10(%rsp), %eax; or $12, %ah; mov %ax, -12(%rsp); fldcw -12(%rsp); fistps -24(%rsp); fldcw -10(%rsp); movzbl -24(%rsp), %eax"
-f80u16[]i8 = "fnstcw -10(%rsp); movzwl -10(%rsp), %eax; or $12, %ah; mov %ax, -12(%rsp); fldcw -12(%rsp); fistpl -24(%rsp); fldcw -10(%rsp); movswl -24(%rsp), %eax"
-f80i32[]i8 = "fnstcw -10(%rsp); movzwl -10(%rsp), %eax; or $12, %ah; mov %ax, -12(%rsp); fldcw -12(%rsp); fistpl -24(%rsp); fldcw -10(%rsp); mov -24(%rsp), %eax"
-f80u32[]i8 = "fnstcw -10(%rsp); movzwl -10(%rsp), %eax; or $12, %ah; mov %ax, -12(%rsp); fldcw -12(%rsp); fistpl -24(%rsp); fldcw -10(%rsp); mov -24(%rsp), %eax"
-f80i64[]i8 = "fnstcw -10(%rsp); movzwl -10(%rsp), %eax; or $12, %ah; mov %ax, -12(%rsp); fldcw -12(%rsp); fistpq -24(%rsp); fldcw -10(%rsp); mov -24(%rsp), %rax"
-f80u64[]i8 = "fnstcw -10(%rsp); movzwl -10(%rsp), %eax; or $12, %ah; mov %ax, -12(%rsp); fldcw -12(%rsp); fistpq -24(%rsp); fldcw -10(%rsp); mov -24(%rsp), %rax"
-f80f32[]i8 = "fstps -8(%rsp); movss -8(%rsp), %xmm0"
-f80f64[]i8 = "fstpl -8(%rsp); movsd -8(%rsp), %xmm0";
-
-cast_table[][11]@i8 = {
-  // i8   i16     i32     i64     u8     u16     u32     u64     f32     f64     f80
-  { 0     0      0      i32i64 i32u8 i32u16 0      i32i64 i32f32 i32f64 i32f80 ; // i8
-  { i32i8 0      0      i32i64 i32u8 i32u16 0      i32i64 i32f32 i32f64 i32f80 ; // i16
-  { i32i8 i32i16 0      i32i64 i32u8 i32u16 0      i32i64 i32f32 i32f64 i32f80 ; // i32
-  { i32i8 i32i16 0      0      i32u8 i32u16 0      0      i64f32 i64f64 i64f80 ; // i64
-  { i32i8 0      0      i32i64 0     0      0      i32i64 i32f32 i32f64 i32f80 ; // u8
-  { i32i8 i32i16 0      i32i64 i32u8 0      0      i32i64 i32f32 i32f64 i32f80 ; // u16
-  { i32i8 i32i16 0      u32i64 i32u8 i32u16 0      u32i64 u32f32 u32f64 u32f80 ; // u32
-  { i32i8 i32i16 0      0      i32u8 i32u16 0      0      u64f32 u64f64 u64f80 ; // u64
-  { f32i8 f32i16 f32i32 f32i64 f32u8 f32u16 f32u32 f32u64 0      f32f64 f32f80 ; // f32
-  { f64i8 f64i16 f64i32 f64i64 f64u8 f64u16 f64u32 f64u64 f64f32 0      f64f80 ; // f64
-  { f80i8 f80i16 f80i32 f80i64 f80u8 f80u16 f80u32 f80u64 f80f32 f80f64 0      ; // f80
+cast_table[][8]@i8 = {
+  // i8   i16     i32     i64     u8     u16     u32     u64
+  { 0     0      0      i32i64 i32u8 i32u16 0      i32i64 ; // i8
+  { i32i8 0      0      i32i64 i32u8 i32u16 0      i32i64 ; // i16
+  { i32i8 i32i16 0      i32i64 i32u8 i32u16 0      i32i64 ; // i32
+  { i32i8 i32i16 0      0      i32u8 i32u16 0      0      ; // i64
+  { i32i8 0      0      i32i64 0     0      0      i32i64 ; // u8
+  { i32i8 i32i16 0      i32i64 i32u8 0      0      i32i64 ; // u16
+  { i32i8 i32i16 0      u32i64 i32u8 i32u16 0      u32i64 ; // u32
+  { i32i8 i32i16 0      0      i32u8 i32u16 0      0      ; // u64
 ;;
 gen_cast(a@Type b@Type) = return
   (b.kind == TY_VOID) ? none :
@@ -193,16 +126,6 @@ gen_cast(a@Type b@Type) = return
   getTypeId b is t2
   (!!cast_table[t1][t2] && (println "  %s" cast_table[t1][t2]) as void) ;:
   none;;
-has_flonum(t@Type lo i32 hi i32 offset i32) bool =
-  if (t.kind == TY_STRUCT || t.kind == TY_UNION) {
-    for (let mem @Type = t.a; mem; mem = mem.s) if !has_flonum mem lo hi (offset + mem.offset) return false;
-    return true;;
-  if (t.kind == TY_ARRAY) {
-    for (let i i32 = 0; i < t.array_len; i += 1) if !has_flonum t.a lo hi (offset + t.a.size * i) return false;
-    return true;;
-  return offset < lo || hi <= offset || t.kind == TY_F32 || t.kind == TY_F64;;
-has_flonum1(t@Type)bool = return has_flonum t 0 8 0;;
-has_flonum2(t@Type)bool = return has_flonum t 8 16 0;;
 push_struct(t@Type) =
   let sz = align_to t.size 8;
   (println "  sub $%d, %%rsp" sz);
@@ -219,15 +142,6 @@ push_args2(args@Node first_pass bool) =
   case TY_STRUCT:
   case TY_UNION:
     push_struct args.t;
-    break;
-  case TY_F32:
-  case TY_F64:
-    (pushf) ;
-    break;
-  case TY_F80:
-    (println "  sub $16, %%rsp");
-    (println "  fstpt (%%rsp)");
-    (depth += 2);
     break;
   default:
     (push) ;;;
@@ -269,8 +183,8 @@ push_args(e@Node)i32 =
         (arg.pass_by_stack = true);
         (stack += align_to t.size 8 / 8);
       ; else {
-        let fp1 = cast i32 has_flonum1 t;
-        let fp2 = cast i32 has_flonum2 t;
+        let fp1 = 0;
+        let fp2 = 0;
 
         if (fp + fp1 + fp2 < 8 && gp + cast i32 !fp1 + cast i32 !fp2 < 6) {
           (fp = fp + fp1 + fp2);
@@ -280,17 +194,6 @@ push_args(e@Node)i32 =
           (stack += align_to t.size 8 / 8);
         ;
       ;
-      break;
-    case TY_F32:
-    case TY_F64:
-      if ((fp >= 8) :; (fp += 1)) {
-        (arg.pass_by_stack = true);
-        (stack += 1);
-      ;
-      break;
-    case TY_F80:
-      (arg.pass_by_stack = true);
-      (stack += 2);
       break;
     default:
       if ((gp >= 6) :; (gp += 1)) {
@@ -322,29 +225,20 @@ push_args(e@Node)i32 =
 copy_ret_buffer(var@Obj) =
   let t = var.t gp = 0 fp = 0;
 
-  if has_flonum1 t {
-    if (t.size == 4) (println "  movss %%xmm0, %d(%%rbp)" var.offset);
-    else (println "  movsd %%xmm0, %d(%%rbp)" var.offset);
-    (fp += 1);
-  ; else {
-    for (let i i32 = 0; i < minl 8l cast i64 t.size; i += 1) {
-      (println "  mov %%al, %d(%%rbp)" (var.offset + i));
-      (println "  shr $8, %%rax");
-    ;
-    (gp += 1);
+  
+  for (let i i32 = 0; i < minl 8l cast i64 t.size; i += 1) {
+    (println "  mov %%al, %d(%%rbp)" (var.offset + i));
+    (println "  shr $8, %%rax");
   ;
+  (gp += 1);
 
   if (t.size > 8) {
-    if has_flonum2 t {
-      if (t.size == 12) (println "  movss %%xmm%d, %d(%%rbp)" fp (var.offset + 8));
-      else (println "  movsd %%xmm%d, %d(%%rbp)" fp (var.offset + 8));
-    ; else {
-      let reg1 = (!gp ? "%al" : "%dl");
-      let reg2 = (!gp ? "%rax" : "%rdx");
-      for (let i i32 = 8; i < minl 16l cast i64 t.size; i += 1) {
-        (println "  mov %s, %d(%%rbp)" reg1 (var.offset + i));
-        (println "  shr $8, %s" reg2);
-      ;
+    
+    let reg1 = (!gp ? "%al" : "%dl");
+    let reg2 = (!gp ? "%rax" : "%rdx");
+    for (let i i32 = 8; i < minl 16l cast i64 t.size; i += 1) {
+      (println "  mov %s, %d(%%rbp)" reg1 (var.offset + i));
+      (println "  shr $8, %s" reg2);
     ;
   ;
 ;
@@ -354,31 +248,20 @@ copy_struct_reg() =
 
   (println "  mov %%rax, %%rdi");
 
-  if has_flonum t 0 8 0 {
-    if (t.size == 4) (println "  movss (%%rdi), %%xmm0");
-    else (println "  movsd (%%rdi), %%xmm0");
-    (fp += 1);
-  ; else {
-    (println "  mov $0, %%rax");
-    for (let i i32 = (minl 8l cast i64 t.size - 1l as i32); i >= 0; i -= 1) {
-      (println "  shl $8, %%rax");
-      (println "  mov %d(%%rdi), %%al" i);
-    ;
-    (gp += 1);
+  (println "  mov $0, %%rax");
+  for (let i i32 = (minl 8l cast i64 t.size - 1l as i32); i >= 0; i -= 1) {
+    (println "  shl $8, %%rax");
+    (println "  mov %d(%%rdi), %%al" i);
   ;
+  (gp += 1);
 
   if (t.size > 8) {
-    if has_flonum t 8 16 0 {
-      if (t.size == 4) (println "  movss 8(%%rdi), %%xmm%d" fp);
-      else (println "  movsd 8(%%rdi), %%xmm%d" fp);
-    ; else {
-      let reg1 = (!gp ? "%al" : "%dl");
-      let reg2 = (!gp ? "%rax" : "%rdx");
-      (println "  mov $0, %s" reg2);
-      for (let i i32 = (minl 16l cast i64 t.size - 1l as i32); i >= 8; i -= 1) {
-        (println "  shl $8, %s" reg2);
-        (println "  mov %d(%%rdi), %s" i reg1);
-      ;
+    let reg1 = (!gp ? "%al" : "%dl");
+    let reg2 = (!gp ? "%rax" : "%rdx");
+    (println "  mov $0, %s" reg2);
+    for (let i i32 = (minl 16l cast i64 t.size - 1l as i32); i >= 8; i -= 1) {
+      (println "  shl $8, %s" reg2);
+      (println "  mov %d(%%rdi), %s" i reg1);
     ;
   ;
 ;
@@ -403,54 +286,12 @@ gen_expr(e @Node) =
   case ND_THE:
     return gen_expr e.a ;
   case ND_NUM: {
-    switch  e.t.kind {
-    case TY_F32: {
-      let u union { f32 f32; u32 %i32; } = { cast f32 e.fval ;
-      (println "  mov $%u, %%eax  # f32 %Lf" u.u32 e.fval);
-      (println "  movq %%rax, %%xmm0");
-      return;
-    ;
-    case TY_F64: {
-      let u union { f64 f64 u64 % i64; } = { cast f64 e.fval ;
-      (println "  mov $%lu, %%rax  # f64 %Lf" u.u64 e.fval);
-      (println "  movq %%rax, %%xmm0");
-      return;
-    ;
-    case TY_F80: {
-      let u union { f80 f80; u64[2]% i64; };
-      memset cast @ &u 0 sizeof typeof u;
-      (u.f80 = e.fval);
-      (println "  mov $%lu, %%rax  # f80 %Lf" u.u64[0] e.fval);
-      (println "  mov %%rax, -16(%%rsp)");
-      (println "  mov $%lu, %%rax" u.u64[1]);
-      (println "  mov %%rax, -8(%%rsp)");
-      (println "  fldt -16(%%rsp)");
-      return;
-    ;
-    ;
 
     (println "  mov $%ld, %%rax" e.val);
     return;
   ;
   case ND_NEG:
     gen_expr e.a ;
-    switch  e.t.kind {
-    case TY_F32:
-      (println "  mov $1, %%rax");
-      (println "  shl $31, %%rax");
-      (println "  movq %%rax, %%xmm1");
-      (println "  xorps %%xmm1, %%xmm0");
-      return;
-    case TY_F64:
-      (println "  mov $1, %%rax");
-      (println "  shl $63, %%rax");
-      (println "  movq %%rax, %%xmm1");
-      (println "  xorpd %%xmm1, %%xmm0");
-      return;
-    case TY_F80:
-      (println "  fchs");
-      return;
-    ;
     (println "  neg %%rax");
     return;
   case ND_VAR: return
@@ -566,8 +407,8 @@ gen_expr(e @Node) =
       case TY_STRUCT:
       case TY_UNION:
         if !(t.size > 16) {
-          let fp1 = cast i32 has_flonum1 t;
-          let fp2 = cast i32 has_flonum2 t;
+          let fp1 = 0;
+          let fp2 = 0;
           if (fp + fp1 + fp2 < 8 && gp + cast i32 !fp1 + cast i32 !fp2 < 6) {
             if fp1 popf (fp :; (fp += 1));
             else pop argreg64[((gp :; (gp+=1)))];
@@ -575,9 +416,6 @@ gen_expr(e @Node) =
               if fp2 popf ((fp :; (fp+=1)));
               else pop argreg64[((gp :; (gp+=1)))];;;;
         break;
-      case TY_F32:
-      case TY_F64: if (fp < 8) popf ((fp :; (fp+=1)));
-      case TY_F80: break;
       default: if (gp < 6) pop argreg64[((gp :; (gp+=1)))];
       ;
     ;
@@ -620,102 +458,6 @@ gen_expr(e @Node) =
     return;
   ;
   ;
-
-  switch  e.a.t.kind {
-  case TY_F32:
-  case TY_F64: {
-    gen_expr e.a.s ;
-    (pushf) ;
-    gen_expr e.a ;
-    popf 1;
-
-    let sz = ((e.a.t.kind == TY_F32) ? "ss" : "sd");
-
-    switch  e.kind {
-    case ND_ADD:
-      (println "  add%s %%xmm1, %%xmm0" sz);
-      return;
-    case ND_SUB:
-      (println "  sub%s %%xmm1, %%xmm0" sz);
-      return;
-    case ND_MUL:
-      (println "  mul%s %%xmm1, %%xmm0" sz);
-      return;
-    case ND_DIV:
-      (println "  div%s %%xmm1, %%xmm0" sz);
-      return;
-    case ND_EQ:
-    case ND_NE:
-    case ND_LT:
-    case ND_LE:
-    case ND_GT:
-    case ND_GE:
-      (println "  ucomi%s %%xmm0, %%xmm1" sz);
-
-      if (e.kind == ND_EQ) {
-        (println "  sete %%al");
-        (println "  setnp %%dl");
-        (println "  and %%dl, %%al");
-      ; else if (e.kind == ND_NE) {
-        (println "  setne %%al");
-        (println "  setp %%dl");
-        (println "  or %%dl, %%al");
-      ;
-      else if (e.kind == ND_LT) (println "  seta %%al");
-      else if (e.kind == ND_LE) (println "  setae %%al");
-      else if (e.kind == ND_GT) (println "  setb %%al");
-      else if (e.kind == ND_GE) (println "  setbe %%al");
-
-
-      (println "  and $1, %%al");
-      (println "  movzb %%al, %%rax");
-      return;
-    ;
-
-    (error_tok e.j "invalid expression");
-  ;
-  case TY_F80: {
-    gen_expr e.a ;
-    gen_expr e.a.s ;
-
-    switch  e.kind {
-    case ND_ADD:
-      (println "  faddp");
-      return;
-    case ND_SUB:
-      (println "  fsubrp");
-      return;
-    case ND_MUL:
-      (println "  fmulp");
-      return;
-    case ND_DIV:
-      (println "  fdivrp");
-      return;
-    case ND_EQ:
-    case ND_NE:
-    case ND_LT:
-    case ND_LE:
-    case ND_GT:
-    case ND_GE:
-      (println "  fcomip");
-      (println "  fstp %%st(0)");
-
-      if (e.kind == ND_EQ)
-        (println "  sete %%al");
-      else if (e.kind == ND_NE)
-        (println "  setne %%al");
-
-      else if (e.kind == ND_LT) (println "  seta %%al");
-      else if (e.kind == ND_LE) (println "  setae %%al");
-      else if (e.kind == ND_GT) (println "  setb %%al");
-      else if (e.kind == ND_GE) (println "  setbe %%al");
-
-      (println "  movzb %%al, %%rax");
-      return;
-    ;
-
-    (error_tok e.j "invalid expression");
-  ;;
 
   gen_expr e.a.s ;
   ((push)) ;
@@ -926,16 +668,13 @@ assign_one_param_offset(var @Obj top @i32 gp @i32 fp @i32) =
   switch  t.kind {
     case TY_STRUCT:
     case TY_UNION:none;
-      let fp1 = cast i32 has_flonum t 0 8 0;
-      let fp2 = cast i32 has_flonum t 8 16 8;
+      let fp1 = 0;
+      let fp2 = 0;
       if (!(fp@ + fp1 + fp2 < 8 && gp@ + cast i32 !fp1 + cast i32 !fp2 < 6) && t.size > 16) {
         (fp@ = fp@ +           fp1 +           fp2);
         (gp@ = gp@ + cast i32 !fp1 + cast i32 !fp2);
         return;;
-    case TY_F64: if ((fp@ :; (fp@ += 1)) < 8) return;
-    default       : if ((gp@ :; (gp@ += 1)) < 6) return;
-    case TY_F32:
-    case TY_F80:none;;
+    default       : if ((gp@ :; (gp@ += 1)) < 6) return;;
   (top@ = align_to top@ 8);
   (var.offset = top@);
   (top@ += var.t.size);;
@@ -1058,9 +797,6 @@ emit_text(prog@Obj) =
         gp = 0
         fp = 0;
       for (let var@Obj = fn.params; var; var = var.s) {
-        if (var.t.kind == TY_F32 || var.t.kind == TY_F64 || var.t.kind == TY_F80)
-          ((fp :; (fp+=1)));
-        else
           ((gp :; (gp+=1)));
       ;
 
@@ -1102,19 +838,12 @@ emit_text(prog@Obj) =
           (  t.kind == TY_STRUCT
           || t.kind == TY_UNION ) ?
             cast i32 minl cast i64 t.size 8l is b
-            (  has_flonum t 0 8 0
-              ?  store_fp (fp :; (fp+=1)) o.offset b
-              :  store_gp (gp :; (gp+=1)) o.offset b )
+            ( store_gp (gp :; (gp+=1)) o.offset b )
             ;:(  (t.size   > 8)
               && (o.offset + 8) is b
                  (t.size   - 8) is c
-                 has_flonum t 8 16 0
-                ?  store_fp (fp :; (fp+=1)) b c
-                :  store_gp (gp :; (gp+=1)) b c as void) :
-          (  t.kind == TY_F32
-          || t.kind == TY_F64 )
-            ?  store_fp ((fp :; (fp+=1))) o.offset t.size
-            :  store_gp ((gp :; (gp+=1))) o.offset t.size
+                 store_gp (gp :; (gp+=1)) b c as void) :
+          store_gp ((gp :; (gp+=1))) o.offset t.size
         as void ) )
     as void )
     ;: gen_stmt cast @Node fn.body

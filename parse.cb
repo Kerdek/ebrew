@@ -92,7 +92,6 @@ eval               (node  @Node                                               ) 
 eval2              (node  @Node   label @@@i8                               ) i64
 eval_rval          (node  @Node   label @@@i8                               ) i64
 is_const_expr      (node  @Node                                               ) bool
-eval_double        (node  @Node                                               ) f64
 new_add            (j @Token t @Type a   @Node   b @Node                       ) @Node
 new_sub            (j @Token t @Type a   @Node   b @Node                       ) @Node
 get_struct_member  (t    @Type   j @Token                                  ) @Type;
@@ -177,7 +176,7 @@ new_binary          (j @Token t @Type g NodeKind a @Node b @Node                
 new_unary           (j @Token t @Type g NodeKind a @Node                        ) @Node = return new_node j t g is e e :; (e.a = a) ;;
 new_nullary         (j @Token t @Type g NodeKind                                ) @Node = return new_node j t g ;;
 
-new_lit             (j @Token t @Type t2 @Type l i64 ld f80 ) @Node = return expect_type j t t2             ;: new_nullary j t2             ND_NUM         is e e :; (e.val  = l) :; (e.fval = ld);;
+new_lit             (j @Token t @Type t2 @Type l i64        ) @Node = return expect_type j t t2             ;: new_nullary j t2             ND_NUM         is e e :; (e.val    = l) ;;
 new_reference       (j @Token t @Type         o @Obj        ) @Node = return expect_type j t o.t            ;: new_nullary j o.t            ND_VAR         is e e :; (e.var    = o) ;;
 new_member_reference(j @Token t @Type a @Node g @Type       ) @Node = return expect_type j t g              ;: new_unary   j g              ND_MEMBER  a   is e e :; (e.member = g) ;;
 new_cassign         (j @Token t @Type a @Node               ) @Node = return expect_type j t ty_void        ;: new_unary   j ty_void        ND_CASSIGN a   ;;
@@ -200,12 +199,12 @@ new_mul             (j @Token t @Type a @Node b @Node       ) @Node = return exp
 new_div             (j @Token t @Type a @Node b @Node       ) @Node = return expect_type j t a.t            ;: new_binary  j a.t            ND_DIV     a b ;;
 new_mod             (j @Token t @Type a @Node b @Node       ) @Node = return expect_type j t a.t            ;: new_binary  j a.t            ND_MOD     a b ;;
 
-new_none            (j @Token t @Type       ) @Node = return new_lit     j t ty_void 0l 0.0l;;
-new_bool            (j @Token t @Type l i64) @Node = return new_lit     j t ty_bool  l 0.0l;;
+new_none            (j @Token t @Type       ) @Node = return new_lit     j t ty_void 0l;;
+new_bool            (j @Token t @Type l i64) @Node = return new_lit     j t ty_bool  l;;
 new_false           (j @Token t @Type       ) @Node = return new_bool    j t 0l;;
 new_true            (j @Token t @Type       ) @Node = return new_bool    j t 1l;;
-new_long            (j @Token t @Type l i64) @Node = return new_lit     j t ty_i64  l 0.0l;;
-new_ulong           (j @Token t @Type l i64) @Node = return new_lit     j t ring_of ty_i64 l 0.0l;;
+new_long            (j @Token t @Type l i64) @Node = return new_lit     j t ty_i64  l ;;
+new_ulong           (j @Token t @Type l i64) @Node = return new_lit     j t ring_of ty_i64 l ;;
 
 
 new_cast(j @Token t @Type a @Node t2 @Type) @Node = return
@@ -383,9 +382,6 @@ type_specifier(k @@Token)@ Type = return
   consume k k@ "i16"       ? ty_i16             :
   consume k k@ "i32"       ? ty_i32             :
   consume k k@ "i64"       ? ty_i64             :
-  consume k k@ "f32"       ? ty_f32             :
-  consume k k@ "f64"       ? ty_f64             :
-  consume k k@ "f80"       ? ty_f80             :
   consume k k@ "struct"    ? struct_decl      k :
   consume k k@ "union"     ? union_decl       k :
   consume k k@ "enum"      ? enum_specifier   k :
@@ -490,9 +486,9 @@ string_initializer(k @@Token e@ Initializer)  =
   if e.is_flexible (e@ = (new_initializer array_of e.t.a (cast @Type k.t ).array_len false)@);
   let len = minl cast i64 e.t.array_len cast i64 (cast @Type k.t).array_len;
   switch e.t.a.size {
-  case 1: { let str = k.str                ; for (let i i32 = 0; i < len; i += 1) (e.children[i].expr = new_lit k@ cast @Type 0 ty_i32 cast i64 str[i] 0.0l); (k@ = k.s); return; ;
-  case 2: { let str = cast @%i16 k.str ; for (let i i32 = 0; i < len; i += 1) (e.children[i].expr = new_lit k@ cast @Type 0 ty_i32 cast i64 str[i] 0.0l); (k@ = k.s); return; ;
-  case 4: { let str = cast @%i32 k.str ; for (let i i32 = 0; i < len; i += 1) (e.children[i].expr = new_lit k@ cast @Type 0 ty_i32 cast i64 str[i] 0.0l); (k@ = k.s); return; ;;
+  case 1: { let str = k.str                ; for (let i i32 = 0; i < len; i += 1) (e.children[i].expr = new_lit k@ cast @Type 0 ty_i32 cast i64 str[i]); (k@ = k.s); return; ;
+  case 2: { let str = cast @%i16 k.str ; for (let i i32 = 0; i < len; i += 1) (e.children[i].expr = new_lit k@ cast @Type 0 ty_i32 cast i64 str[i]); (k@ = k.s); return; ;
+  case 4: { let str = cast @%i32 k.str ; for (let i i32 = 0; i < len; i += 1) (e.children[i].expr = new_lit k@ cast @Type 0 ty_i32 cast i64 str[i]); (k@ = k.s); return; ;;
   none ;;
 count_array_init_elements(j @Token t @Type) i32 =
   let
@@ -587,7 +583,7 @@ init_desg_expr(z @InitDesg j @Token) @Node = return
     (e.member = z.member) ;:
     (e.t = e.member) ;:
     e :
-  new_deref j cast @Type 0 new_add j ty_i32 init_desg_expr z.s j new_lit j cast @Type 0 ty_i32 cast i64 z.idx 0.0l;;
+  new_deref j cast @Type 0 new_add j ty_i32 init_desg_expr z.s j new_lit j cast @Type 0 ty_i32 cast i64 z.idx;;
 
 
 
@@ -623,12 +619,6 @@ write_gvar_data(cur@ Relocation init@ Initializer t@ Type buf@ i8 offset i32)@ R
   if (t.kind == TY_UNION) {
     return cur;;
   if !init.expr return cur;
-  if (t.kind == TY_F32) {
-    ((buf + offset as @f32)@ = eval_double init.expr as f32);
-    return cur;;
-  if (t.kind == TY_F64) {
-    ((buf + offset as @f64)@ = eval_double init.expr);
-    return cur;;
   let label = (0 as @@i8);
   let val = eval2 init.expr &label;
   if !label {
@@ -1058,7 +1048,7 @@ primary(k @@Token t @Type) @Node = return
             (!!current_fn ? strarray_push a sc.o.name :
             ( sc.o.is_root = true ) ) ) as void) ;:
         !!sc.o     ? new_reference k@ t sc.o                     :
-        !!sc.t ? new_lit k@ t sc.t cast i64 sc.v 0.0l:
+        !!sc.t ? new_lit k@ t sc.t cast i64 sc.v:
         (error_tok k@ "internal compiler error") ;: cast @Node 0   :
       (error_tok k@ "lookup failed") ;: cast @Node 0) :
     (k.kind == TK_STR) ?
@@ -1066,7 +1056,7 @@ primary(k @@Token t @Type) @Node = return
       new_cast k@ t new_the k@ cast @Type k.t new_reference k@ cast @Type k.t o o.t pointer_to (cast @Type k.t).a :;
       cast void advance k :
     (k.kind == TK_NUM) ?
-      ( new_lit k@ t cast @Type k.t k.val k.fval :; cast void advance k ) :
+      ( new_lit k@ t cast @Type k.t k.val :; cast void advance k ) :
     (error_tok k@ "expected an expression") ;: cast @Node 0);;
 
 tertiary(k @@Token t @Type) @Node = return
