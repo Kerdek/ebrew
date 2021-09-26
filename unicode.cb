@@ -1,4 +1,4 @@
-#include "chub.hb"
+# "chub.hb"
 
 encode_utf8_byte(p @i8 c %i32 i i64 p i32 s %i32 m %i32) =
   (p[i] = cast i8 the %i32 (cast %i32 the i8 p[i] | c >> s & m));;

@@ -1,6 +1,6 @@
 // This is an implementation of the open-addressing hash table.
 
-#include "chub.hb"
+# "chub.hb"
 
 fnv_hash(s@ i8 len i32) %i64 =
   let hash = 0xcbf29ce484222325;

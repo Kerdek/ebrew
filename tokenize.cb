@@ -1,4 +1,4 @@
-#include "chub.hb"
+# "chub.hb"
 
 current_file@ File;
 export input_files@@ File;

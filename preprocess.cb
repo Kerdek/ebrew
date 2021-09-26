@@ -1,48 +1,36 @@
-#include "chub.hb"
+#"chub.hb"
 
-copy_token(j@Token)@Token =
-  let t = cast @Token calloc 1ul sizeof Token as @Token;
-  (t@ = j@);
-  (t.s = cast @Token 0);
-  return t;;
-append(tok1@Token tok2@Token)@Token =
-  if (tok1.kind == TK_EOF) return tok2;
-  let
-    head = new Token {;
-    cur = &head;
-  for (; tok1.kind != TK_EOF; tok1 = tok1.s) { (cur.s = copy_token tok1); (cur = cur.s);;
-  (cur.s = tok2);
-  return head.s;;
-read_include_filename(rest@@Token j@Token include_paths @StringArray) @i8 =
-  if (j.kind == TK_STR) {
-    (rest@ = j.s);
-    return strndup (j.loc + 1) cast %i64 (j.len - 2);;
-  (error_tok j "expected a filename");;
-include_file(a @Token path @i8 filename_tok @Token) @Token = return
-   tokenize_file path is b
-   (!b && (error_tok filename_tok "%s: cannot open file: %s" path strerror errno) as void)
-;: append b a;;
-preprocess2(j@Token include_paths@StringArray)@Token =
-  let
-    head = new Token {;
-    cur = &head;
-  while (j.kind != TK_EOF) {
-    let start = j;
-    if !equal start "#" {
-      (start.line_delta = start.file.line_delta);
-      (start.filename = start.file.display_name);
-      (cur.s = start);
-      (cur = cur.s);
-      (start = start.s);
-      (j = j.s);;
-    else if equal j.s "include" {
-      let filename = read_include_filename &j j.s.s include_paths;
-      let path = (format"%s/%s" dirname strdup start.file.name filename);
-      (j = include_file j path start.s.s);;;
-  (cur.s = j);
-  return head.s;;
-export preprocess(j@Token include_paths@StringArray)@Token =
-  (j = preprocess2 j include_paths);
-  convert_pp_tokens j;
-  for (let t @Token = j; t; t = t.s) (t.line_no += t.line_delta);
-  return j;;
+export preprocess(j@Token include_paths@StringArray)@Token = return
+    new Token {; is head
+  &head is cur
+  (  j for j
+    (  j.kind != TK_EOF
+    && !equal j "#"
+    ?  (j.line_delta = j.file.line_delta)
+    ;: (j.filename = j.file.display_name)
+    ;: (cur.s = j)
+    ;: (cur = cur.s)
+    ;: j.s
+    :  (j.s.kind != TK_STR && (error_tok j.s "expected a filename") as void)
+    ;: tokenize_file (format"%s/%s" dirname strdup j.file.name strndup (j.s.loc + 1) cast %i64 (j.s.len - 2)) is a
+       (!a && (error_tok j.s "%s: cannot open file: %s" j.s strerror errno) as void)
+    ;: (a.kind == TK_EOF)
+    ?  j.s.s
+    :  new Token {; is head
+      &head is cur
+      (  a for b
+        (  b.kind != TK_EOF
+        && b.s
+        :; (cur.s = cast @Token calloc 1ul sizeof Token)
+        :; (cur.s@ = b@)
+        :; (cur.s.s = cast @Token 0)
+        :; (cur = cur.s) )
+      as void )
+    ;: (cur.s = j.s.s)
+    ;: head.s )
+  as void )
+;: (j = head.s)
+;: convert_pp_tokens j
+;: (j for t (!!t && t.s :; (t.line_no += t.line_delta)) as void)
+;: j
+;;
