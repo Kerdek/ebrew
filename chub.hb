@@ -1,9 +1,11 @@
-# "shite.hb"
+type va_list struct {
+gp_offset %i32
+fp_offset %i32
+overflow_arg_area@
+reg_save_area@;
+};
 
-maxl(a i64 b i64) i64 = (a > b) ? a : b;;
-minl(a i64 b i64) i64 = (a < b) ? a : b;;
-maxul(a % i64 b % i64) % i64 = (a > b) ? a : b;;
-minul(a % i64 b % i64) % i64 = (a < b) ? a : b;;
+type FILE struct _IO_FILE;
 
 type
   NodeKind enum
@@ -16,7 +18,7 @@ type
     ND_FOR        ND_DO         ND_SWITCH  ND_CASE       ND_BLOCK
     ND_GOTO       ND_LABEL      ND_FUNCALL ND_LET
     ND_EXPR_STMT  ND_VAR        ND_NUM     ND_CAST
-    ND_MEMZERO    ND_REPEAT     ND_THE        ND_THEN    ND_CASSIGN
+    ND_MEMZERO    ND_REPEAT     ND_THE        ND_THEN
   ;
 
   TypeKind enum
@@ -35,41 +37,30 @@ type
   ;
 
   TokenKind enum
-    TK_IDENT
-    TK_PUNCT
-    TK_KEYWORD
+    TK_ID
+    TK_PCT
+    TK_KEY
     TK_STR
     TK_NUM
-    TK_PP_NUM
     TK_EOF
   ;
-
-  StringArray struct {
-    data     @@i8
-    capacity   i32
-    len        i32;
-  }
 
   File struct {
     name         @i8
     file_no       i32
-    contents     @i8
-    display_name @i8
-    line_delta    i32;
+    contents     @i8;
   }
 
   Token struct {
     kind        TokenKind
-    s       @same
+    s          @same
     val         i64
     loc        @i8
     len         i32
-    t         @
+    t          @
     str        @i8
     file       @File
-    filename   @i8
     line_no     i32
-    line_delta  i32
     origin     @same;
   }
 
@@ -90,9 +81,9 @@ type
 
   Relocation struct {
     s       @same
-    offset      i32
-    label     @@i8
-    addend      i64;
+    offset   i32
+    label  @@i8
+    addend   i64;
   }
 
   Obj struct {
@@ -107,19 +98,14 @@ type
     is_definition    bool
     is_export        bool
     is_tentative     bool
-    is_tls           bool
+    is_inline        bool
     init_data       @i8
     rel             @Relocation
-    is_inline        bool
     params          @same
     body            @
     locals          @same
     va_area         @same
-    alloca_bottom   @same
-    stack_size       i32
-    is_live          bool
-    is_root          bool
-    refs             StringArray;
+    stack_size       i32;
   }
 
   Node struct {
@@ -129,7 +115,6 @@ type
     init          @same
     inc           @same
     body          @same
-    goto_next     @same
     case_next     @same
     default_case  @same
     s             @same
@@ -137,12 +122,9 @@ type
     t             @Type
     j             @Token
     brk_label     @i8
-    cont_label    @i8
     member        @Type
-    ret_buffer    @Obj
     label         @i8
     unique_label  @i8
-    asm_str       @i8
     var           @Obj
     kind           NodeKind
     begin          i64
@@ -152,8 +134,8 @@ type
   }
 
   HashEntry struct {
-    key    @i8
-    keylen  i32
+    a    @i8
+    n  i32
     val    @;
   }
 
@@ -173,22 +155,52 @@ export extern
   ty_i64  @Type
 ;
 
+export __errno_location    (             )@i32 ;
+export dirname             (path          @i8) @i8 ;
+export basename            (path          @i8) @i8 ;
+export isalnum             (c             i32) i32;
+export isdigit             (c             i32) i32;
+export isspace             (c             i32) i32;
+export isxdigit            (c             i32) i32;
+export fopen               (filename      @const i8 modes@const i8)@FILE ;
+export open_memstream      (bufloc        @@i8 sizeloc@%i64)@FILE ;
+export printf              (format        @const i8 ...)i32;
+export fputc               (c             i32 stream@FILE)i32;
+export fread               (ptr           @ size %i64 n %i64  stream@FILE)%i64 ;
+export fwrite              (ptr           @const size %i64 n %i64  s@FILE)%i64;
+export fclose              (stream        @FILE)i32;
+export fflush              (stream        @FILE)i32;
+export fprintf             (stream        @FILE format@const i8 ...)i32;
+export vprintf             (format@const i8 arg @va_list)i32;
+export vfprintf            (s             @FILE  format@const i8 arg @va_list)i32;
+export strtoul             (nptr          @const i8 endptr@@i8 base i32)%i64;
+export calloc              (nmemb         %i64 size %i64)@;
+export realloc             (ptr           @ size %i64)@;
+export free                (ptr           @) ;
+export exit                (status        i32) ;
+export memcmp              (s1            @ const s2@ const n %i64)i32;
+export strcat              (dest          @i8  src@const i8)@i8;
+export strncat             (dest          @i8  src@const i8 n %i64)@i8 ;
+export strcmp              (s1            @const i8 s2@ const i8)i32;
+export strncmp             (s1            @const i8 s2@ const i8 n %i64)i32;
+export strdup              (s             @const i8)@i8;
+export strndup             (string        @const i8 n %i64)@i8;
+export strrchr             (s             @const i8 c i32)@i8;
+export strstr              (haystack      @const i8 needle@ const i8)@i8;
+export strlen              (s             @const i8)%i64;
+export strerror            (errnum        i32)@i8 ;
+export strncasecmp         (s1            @const i8 s2@const i8 n %i64)i32;
+
 export advance(k @@Token) @Token;
-export strarray_push(arr@ StringArray s@ i8);
 export format(fmt@ i8 ...)@ i8;
-export error(fmt@ i8 ...);
-export error_at(loc@ i8 fmt@ i8 ...);
+export error_at(loc@ i8 file @File fmt@ i8 ...);
 export error_tok(j@ Token fmt@ i8 ...);
 export warn_tok(j@ Token fmt@ i8 ...);
 export equal(j@ Token op@ i8)bool;
 export expect(j@@ Token op@ i8);
-export skip(j@ Token op@ i8)@ Token;
 export consume(rest@@ Token j@ Token str@ i8)bool;
-export convert_pp_tokens(j@ Token);
-export extern input_files @@File;
-export new_file(name@ i8 file_no i32 contents@ i8)@ File;
-export tokenize(filename@ i8)@ Token;
-export preprocess(j @Token) @Token;
+export tokenize(filename@ i8 file_n i32 files @@@File)@ Token;
+export preprocess(in @i8 files @@@File) @Token;
 export const_expr(k @@Token) i64;
 export parse(j@ Token)@ Obj;
 export format_type      (t         @Type s    @i8)      ;
@@ -200,20 +212,18 @@ export func_type        (return_ty @Type           ) @Type;
 export array_of         (base      @Type size  i32 ) @Type;
 export enum_type        (                          ) @Type;
 export struct_type      (                          ) @Type;
-export preprocess(j@ Token include_paths @StringArray)@ Token;
-export codegen(prog@ Obj out@ FILE);
+export codegen(prog@ Obj out@ FILE files @@File);
 export align_to(n i32 alignment i32)i32;
-export encode_utf8(buf@ i8 c %i32)i32;
-export decode_utf8(new_pos@@ i8 p@ i8)%i32;
-export is_ident1(c %i32)bool;
-export is_ident2(c %i32)bool;
-export display_width(p@ i8 len i32)i32;
 
-export hashmap_get(map@ HashMap key@ i8)@;
-export hashmap_get2(map@ HashMap key@ i8 keylen i32)@;
-export hashmap_put(map@ HashMap key@ i8 val@);
-export hashmap_put2(map@ HashMap key@ i8 keylen i32 val@);
-export hashmap_delete(map@ HashMap key@ i8);
-export hashmap_delete2(map@ HashMap key@ i8 keylen i32);
+export hashmap_get(map@ HashMap a@ i8)@;
+export hashmap_get2(map@ HashMap a@ i8 n i32)@;
+export hashmap_put(map@ HashMap a@ i8 val@);
+export hashmap_put2(map@ HashMap a@ i8 n i32 val@);
+export hashmap_delete(map@ HashMap a@ i8);
+export hashmap_delete2(map@ HashMap a@ i8 n i32);
 
-export file_exists(path@ i8)bool;
+inline errno() i32 = (__errno_location)@;;
+inline maxl(a i64 b i64) i64 = (a > b) ? a : b;;
+inline minl(a i64 b i64) i64 = (a < b) ? a : b;;
+inline maxul(a % i64 b % i64) % i64 = (a > b) ? a : b;;
+inline minul(a % i64 b % i64) % i64 = (a < b) ? a : b;;

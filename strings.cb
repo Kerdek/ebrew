@@ -1,27 +1,12 @@
 # "chub.hb"
 
-export strarray_push(arr@ StringArray s@ i8)  =
-  if !arr.data {
-    (arr.data = cast @@i8 calloc 8ul sizeof @i8);
-    (arr.capacity = 8);;
-
-  if (arr.capacity == arr.len) {
-    (arr.data = cast @@i8 realloc (cast @ arr.data) (sizeof@ i8 * cast %i64 arr.capacity * 2ul));
-    (arr.capacity *= 2);
-    for (let i i32 = arr.len; i < arr.capacity; (i:;(i+=1)))
-      (arr.data[i] = cast @i8 0);;
-
-  (arr.data[(arr.len:;(arr.len+=1))] = s);;
-
-export format(fmt@ i8 ...)@ i8 =
-  let buf = cast @i8 0;
-  let buflen = cast %i64 0;
-  let b = &buflen;
-  let out = open_memstream &buf b;
-
-  let ap = new va_list {;;
-  (ap = (cast @__va_elem __va_area__)@);
-  (vfprintf out fmt &ap);
-  fclose out;
-  return buf;
-;
+export format(fmt@ i8 ...)@ i8 = return
+   cast @i8 0 is buf
+   cast %i64 0 is buflen
+   &buflen is b
+   open_memstream &buf b is out
+   (cast @va_list __va_area__)@ is ap
+   (vfprintf out fmt &ap)
+;: fclose out
+;: buf
+;;

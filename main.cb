@@ -3,12 +3,15 @@
 export main(argc i32 argv@@i8) i32 = return
    argv[1] is in
    basename strdup in is filename
-   strrchr filename '.' is dot
-   (!!dot && (dot@ = '\0' as i8) as void)
+   strrchr filename cast i32 '.' is dot
+   (!!dot && (dot@ = '\0') as void)
 ;: (format "%s%s" filename ".a") is output
    fopen output "w" is out
-   (!out && (error "cannot open output file: %s: %s" output strerror errno) as void)
-;: codegen parse preprocess tokenize in out
+   !out
+?  (cast void printf "cannot open output file: %s: %s" output strerror errno)
+;: 1
+:  cast @@File calloc 1ul sizeof @File is files
+   codegen parse preprocess in &files out files
 ;: cast void fclose out
 ;: 0
 ;;

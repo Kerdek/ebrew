@@ -18,23 +18,21 @@ cast @Type calloc 1ul sizeof Type is t t
 export format_type(t @Type s @i8) = return
 !t ? strcat s "undefined" :
 t.kind is c
-( c == TY_VOID    ) ? strcat s "void"        :
-( c == TY_BOOL    ) ? strcat s "bool"        :
-( c == TY_I08     ) ? strcat s "i8"          :
-( c == TY_I16     ) ? strcat s "i16"         :
-( c == TY_I32     ) ? strcat s "i32"         :
-( c == TY_I64     ) ? strcat s "i64"         :
-( c == TY_ENUM    ) ? strcat s "enum"        :
-( c == TY_STRUCT  ) ? strcat s "struct"      :
-( c == TY_RING) ? strcat s "% "          :; format_type t.a s :
-( c == TY_ARRAY   ) ? strcat s "[]"          :; format_type t.a s :
-( c == TY_PTR     ) ? strcat s "@"           :; format_type t.a s :
-( c == TY_FUNC    ) ? 
-  (cast void strcat s "(")  ;:
-  t.a.s is p
-    (p for p (!!p && p.s :; format_type p s) as void) ;:
-  strcat s ")" :;
-  format_type t.a s :
+( c == TY_VOID  ) ? strcat s "void"        :
+( c == TY_BOOL  ) ? strcat s "bool"        :
+( c == TY_I08   ) ? strcat s "i8"          :
+( c == TY_I16   ) ? strcat s "i16"         :
+( c == TY_I32   ) ? strcat s "i32"         :
+( c == TY_I64   ) ? strcat s "i64"         :
+( c == TY_ENUM  ) ? strcat s "enum"        :
+( c == TY_STRUCT) ? strcat s "struct"      :
+( c == TY_RING  ) ? strcat s "% "          :; format_type t.a s :
+( c == TY_ARRAY ) ? strcat s "[]"          :; format_type t.a s :
+( c == TY_PTR   ) ? strcat s "@"           :; format_type t.a s :
+( c == TY_FUNC  ) ? strcat s "("           :;             t.a.s
+        is p (p for p (!!p && p.s          :; format_type p   s
+        ) as void) ;: cast void
+                    strcat s ")"           :; format_type t.a s :
 strcat s "???" as void;;
 
 is_function_type_equal(p @Type q@Type) bool = while !(!p || !q) { if ! type_equal p q return false; (p = p.s); (q = q.s);; return p == q;;

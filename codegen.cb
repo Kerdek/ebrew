@@ -1,4 +1,4 @@
-# "chub.hb"
+#"chub.hb"
 
 type
   TypeID enum
@@ -8,26 +8,22 @@ type
 
 output_file@FILE
 depth i32
-argreg8 []@i8 = {"%dil" "%sil" "%dl"  "%cl"  "%r8b" "%r9b";
-argreg16[]@i8 = {"%di"  "%si"  "%dx"  "%cx"  "%r8w" "%r9w";
-argreg32[]@i8 = {"%edi" "%esi" "%edx" "%ecx" "%r8d" "%r9d";
-argreg64[]@i8 = {"%rdi" "%rsi" "%rdx" "%rcx" "%r8"  "%r9" ;
+argreg const [4][6]@i8 = {
+  {"%dil" "%sil" "%dl"  "%cl"  "%r8b" "%r9b";
+  {"%di"  "%si"  "%dx"  "%cx"  "%r8w" "%r9w";
+  {"%edi" "%esi" "%edx" "%ecx" "%r8d" "%r9d";
+  {"%rdi" "%rsi" "%rdx" "%rcx" "%r8"  "%r9" ;;
 current_fn@Obj;
 
-gen_expr(e @Node);
-gen_stmt(e @Node);
+gen_expr(e @Node c @i32);
+gen_stmt(e @Node c @i32);
 
 println(fmt @i8 ...) =
-  let ap = new va_list {;;
-  (ap = (cast @__va_elem __va_area__)@);
-  vfprintf output_file fmt &ap;
+  vfprintf output_file fmt cast @va_list __va_area__;
   (fprintf output_file "\n");;
 
-i counti i32 = 1;
-count(     ) i32 = return counti :; (counti += 1);;
-
-push (     )     = return (println "  push %%rax") ;: (depth += 1);;
-pop  (arg @i8)     = return (println "  pop %s" arg) ;: (depth -= 1);;
+push (     )     = return (println "  push %%rax") ;: (depth = depth + 1);;
+pop  (arg @i8)     = return (println "  pop %s" arg) ;: (depth = depth - 1);;
 
 export align_to(n i32 alignment i32) i32 = return (n + alignment - 1) / alignment * alignment;;
 
@@ -40,21 +36,21 @@ reg_ax(sz i32) @i8 = return (sz == 1) ? "%al"  :
                               (sz == 4) ? "%eax" :
                               (sz == 8) ? "%rax" : cast @i8 0 ;;
 
-gen_addr(e @Node) = return
+gen_addr(e @Node c @i32) = return
   ( e.kind    == ND_VAR     ) ?
   (  e.var.is_local
-  && (println "  lea %d(%%rbp), %%rax" e.var.offset)
-  || (println "  mov %s@GOTPCREL(%%rip), %%rax" e.var.name) as void) :
-  ( e.kind    == ND_COMMA   ) ? gen_expr e.a   ;: gen_expr e.a.s  :
-  ( e.kind    == ND_THEN    ) ? gen_expr e.a   ;: (push) ;: gen_expr e.a.s  ;: pop "%rax" :
-  ( e.kind    == ND_MEMBER  ) ? gen_addr e.a   ;: (println "  add $%d, %%rax" e.member.offset ) :
+  ? (println "  lea %d(%%rbp), %%rax" e.var.offset)
+  : (println "  mov %s@GOTPCREL(%%rip), %%rax" e.var.name)) :
+  ( e.kind    == ND_COMMA   ) ? gen_expr e.a c ;: gen_expr e.a.s c :
+  ( e.kind    == ND_THEN    ) ? gen_expr e.a c ;: (push) ;: gen_expr e.a.s c ;: pop "%rax" :
+  ( e.kind    == ND_MEMBER  ) ? gen_addr e.a c ;: (println "  add $%d, %%rax" e.member.offset ) :
   ( e.kind    == ND_THE    ||
-    e.kind    == ND_DEREF   ) ? gen_expr e.a  :
+    e.kind    == ND_DEREF   ) ? gen_expr e.a c :
   ( e.kind    == ND_FUNCALL||
     e.kind    == ND_COND   ||
     e.kind    == ND_LET    ||
-    e.kind    == ND_REPEAT  ) ? gen_expr e      :
-  ( e.t.kind == TY_STRUCT   ) ? gen_expr e      :
+    e.kind    == ND_REPEAT  ) ? gen_expr e   c :
+  ( e.t.kind == TY_STRUCT   ) ? gen_expr e   c :
   ( error_tok e.j "not an lvalue" );;
 load(t @Type) = return cast void(
   t.kind == TY_ARRAY  ||
@@ -66,10 +62,10 @@ load(t @Type) = return cast void(
       (u.size == 2         ) ? (println "  %swl (%%rax), %%eax"   insn ) :
       (u.size == 4         ) ? (println "  movsxd (%%rax), %%rax"      ) :
                                (println "  mov (%%rax), %%rax"         ) ) ));;
-store_rax_struct_union(t @Type) =
-  for (let i i32 = 0; i < t.size; i += 1) {
-    (println "  mov %d(%%rax), %%r8b" i);
-    (println "  mov %%r8b, %d(%%rdi)" i);;;
+store_rax_struct_union(t @Type) = return
+  0 for i (i < t.size && (i + 1)
+  :; (println "  mov %d(%%rax), %%r8b" i)
+  ;: (println "  mov %%r8b, %d(%%rdi)" i)) as void;;
 store(t@Type) =
   pop "%rdi"      ;:
   (t.kind == TY_STRUCT  ) ? store_rax_struct_union t             :
@@ -91,26 +87,26 @@ getTypeId(t @Type)TypeID = return
   (t.kind == TY_I32    ) ? I32 :
                            I64 ;;
 
-i32i8 []i8 = "movsbl %al, %eax"                                   ;
-i32u8 []i8 = "movzbl %al, %eax"                                   ;
-i32i16[]i8 = "movswl %ax, %eax"                                   ;
-i32u16[]i8 = "movzwl %ax, %eax"                                   ;
-i32i64[]i8 = "movsxd %eax, %rax"                                  ;
-u32i64[]i8 = "mov %eax, %eax"                                     ;
+i32i8 []i8 = "movsbl %al , %eax";
+i32u8 []i8 = "movzbl %al , %eax";
+i32i16[]i8 = "movswl %ax , %eax";
+i32u16[]i8 = "movzwl %ax , %eax";
+i32i64[]i8 = "movsxd %eax, %rax";
+u32i64[]i8 = "mov    %eax, %eax";
 
 cast_table[][8]@i8 = {
-  // i8   i16     i32     i64     u8     u16     u32     u64
-  { 0     0      0      i32i64 i32u8 i32u16 0      i32i64 ; // i8
-  { i32i8 0      0      i32i64 i32u8 i32u16 0      i32i64 ; // i16
-  { i32i8 i32i16 0      i32i64 i32u8 i32u16 0      i32i64 ; // i32
-  { i32i8 i32i16 0      0      i32u8 i32u16 0      0      ; // i64
-  { i32i8 0      0      i32i64 0     0      0      i32i64 ; // u8
-  { i32i8 i32i16 0      i32i64 i32u8 0      0      i32i64 ; // u16
-  { i32i8 i32i16 0      u32i64 i32u8 i32u16 0      u32i64 ; // u32
-  { i32i8 i32i16 0      0      i32u8 i32u16 0      0      ; // u64
+  /* i8   i16     i32     i64     u8     u16     u32     u64 */
+  { 0     0      0      i32i64 i32u8 i32u16 0      i32i64 ; /* i8  */
+  { i32i8 0      0      i32i64 i32u8 i32u16 0      i32i64 ; /* i16 */
+  { i32i8 i32i16 0      i32i64 i32u8 i32u16 0      i32i64 ; /* i32 */
+  { i32i8 i32i16 0      0      i32u8 i32u16 0      0      ; /* i64 */
+  { i32i8 0      0      i32i64 0     0      0      i32i64 ; /* u8  */
+  { i32i8 i32i16 0      i32i64 i32u8 0      0      i32i64 ; /* u16 */
+  { i32i8 i32i16 0      u32i64 i32u8 i32u16 0      u32i64 ; /* u32 */
+  { i32i8 i32i16 0      0      i32u8 i32u16 0      0      ; /* u64 */
 ;;
 gen_cast(a@Type b@Type) = return
-  (b.kind == TY_VOID) ? none :
+  (b.kind == TY_VOID) ? (println "  xor %%eax, %%eax") :
   (b.kind == TY_BOOL) ?
     cmp_zero a                        ;:
     (println "  setne %%al"        )  ;:
@@ -122,307 +118,218 @@ gen_cast(a@Type b@Type) = return
 push_struct(t@Type) =
   let sz = align_to t.size 8;
   (println "  sub $%d, %%rsp" sz);
-  (depth += sz / 8);
-  for (let i i32 = 0; i < t.size; i += 1) {
+  (depth = depth + sz / 8);
+  for (let i i32 = 0; i < t.size; i = i + 1) {
     (println "  mov %d(%%rax), %%r10b" i);
     (println "  mov %%r10b, %d(%%rsp)" i);;;
-push_args2(args@Node first_pass bool) =
+push_args2(args@Node first_pass bool c @i32) =
   if !args return;
-  push_args2 args.s first_pass ;
+  push_args2 args.s first_pass c;
   if ((first_pass && !args.pass_by_stack) || (!first_pass && args.pass_by_stack)) return;
-  gen_expr args ;
-  switch  args.t.kind {
-  case TY_STRUCT:
-    push_struct args.t;
-    break;
-  default:
-    (push) ;;;
-push_args(e@Node)i32 =
+  gen_expr args c;
+    (push) ;;
+push_args(e@Node c @i32)i32 =
   let stack = 0 gp = 0;
-  if (!!e.ret_buffer && e.t.size > 16) (gp += 1);
   for (let arg@Node = e.a.s; arg; arg = arg.s) {
     let t = arg.t;
-    switch  t.kind {
-    case TY_STRUCT:
-      if (t.size > 16) {
+      if ((gp >= 6) :; (gp = gp + 1)) {
         (arg.pass_by_stack = true);
-        (stack += align_to t.size 8 / 8);;
-      else {
-        if (gp + 2 < 6) {
-          (gp = gp + 2);;
-        else {
-          (arg.pass_by_stack = true);
-          (stack += align_to t.size 8 / 8);;;
-      break;
-    default:
-      if ((gp >= 6) :; (gp += 1)) {
-        (arg.pass_by_stack = true);
-        (stack += 1);;;;
+        (stack = stack + 1);;;
   if ((depth + stack) % 2 == 1) {
     (println "  sub $8, %%rsp");
-    (depth += 1);
-    (stack += 1);;
-  push_args2 e.a.s true ;
-  push_args2 e.a.s false ;
-  if (!!e.ret_buffer && e.t.size > 16) {
-    (println "  lea %d(%%rbp), %%rax" e.ret_buffer.offset);
-    (push) ;;
+    (depth = depth + 1);
+    (stack = stack + 1);;
+  push_args2 e.a.s true c;
+  push_args2 e.a.s false c;
   return stack;;
-copy_ret_buffer(var@Obj) =
-  let t = var.t gp = 0;
-  for (let i i32 = 0; i < minl 8l cast i64 t.size; i += 1) {
-    (println "  mov %%al, %d(%%rbp)" (var.offset + i));
-    (println "  shr $8, %%rax");;
-  (gp += 1);
-  if (t.size > 8) {
-    let reg1 = (!gp ? "%al" : "%dl");
-    let reg2 = (!gp ? "%rax" : "%rdx");
-    for (let i i32 = 8; i < minl 16l cast i64 t.size; i += 1) {
-      (println "  mov %s, %d(%%rbp)" reg1 (var.offset + i));
-      (println "  shr $8, %s" reg2);;;;
 copy_struct_reg() =
   let t = current_fn.t.a gp = 0;
   (println "  mov %%rax, %%rdi");
   (println "  mov $0, %%rax");
-  for (let i i32 = (minl 8l cast i64 t.size - 1l as i32); i >= 0; i -= 1) {
+  for (let i i32 = (minl 8l cast i64 t.size - 1l as i32); i >= 0; i = i - 1) {
     (println "  shl $8, %%rax");
     (println "  mov %d(%%rdi), %%al" i);;
-  (gp += 1);
+  (gp = gp + 1);
   if (t.size > 8) {
     let reg1 = (!gp ? "%al" : "%dl");
     let reg2 = (!gp ? "%rax" : "%rdx");
     (println "  mov $0, %s" reg2);
-    for (let i i32 = (minl 16l cast i64 t.size - 1l as i32); i >= 8; i -= 1) {
+    for (let i i32 = (minl 16l cast i64 t.size - 1l as i32); i >= 8; i = i - 1) {
       (println "  shl $8, %s" reg2);
       (println "  mov %d(%%rdi), %s" i reg1);;;;
 copy_struct_mem() =
   let t = current_fn.t.a var = current_fn.params;
   (println "  mov %d(%%rbp), %%rdi" var.offset);
-  for (let i i32 = 0; i < t.size; i += 1) {
+  for (let i i32 = 0; i < t.size; i = i + 1) {
     (println "  mov %d(%%rax), %%dl" i);
     (println "  mov %%dl, %d(%%rdi)" i);;;
-gen_expr(e @Node) =
+gen_expr(e @Node c @i32) =
   (println "  .loc %d %d" e.j.file.file_no e.j.line_no);
   switch  e.kind {
   case ND_NULL_EXPR: return;
-  case ND_THE      : return gen_expr e.a    ;
-  case ND_ADDR     : return gen_addr e.a    ;
+  case ND_THE      : return gen_expr e.a c   ;
+  case ND_ADDR     : return gen_addr e.a c   ;
   case ND_NUM      : return (println "  mov $%ld, %%rax" e.val);
-  case ND_NEG      : return gen_expr e.a    ;: (println "  neg %%rax");
-  case ND_VAR      : return gen_addr e      ;: load e.t;
-  case ND_MEMBER   : return gen_addr e      ;: load e.t;
-  case ND_DEREF    : return gen_expr e.a    ;: load e.t;
-  case ND_COMMA    : return gen_expr e.a    ;: gen_expr e.a.s ;
-  case ND_CAST     : return gen_expr e.a    ;: gen_cast e.a.t e.t;
-  case ND_CASSIGN  : return gen_addr e.a.a  ;: push ;: gen_expr e.a   ;: store e.a.a.t;
-  case ND_ASSIGN   : return gen_addr e.a    ;: push ;: gen_expr e.a.s ;: store e.a.t  ;
-  case ND_THEN     : return gen_expr e.a    ;: push ;: gen_expr e.a.s ;: pop "%rax";
-  case ND_NOT      : return gen_expr e.a    ;: cmp_zero e.a.t ;: (println "  sete %%al") ;: (println "  movzx %%al, %%rax");
-  case ND_BITNOT   : return gen_expr e.a    ;: (println "  not %%rax");
+  case ND_NEG      : return gen_expr e.a c   ;: (println "  neg %%rax");
+  case ND_VAR      : return gen_addr e   c   ;: load e.t;
+  case ND_MEMBER   : return gen_addr e   c   ;: load e.t;
+  case ND_DEREF    : return gen_expr e.a c   ;: load e.t;
+  case ND_COMMA    : return gen_expr e.a c   ;: gen_expr e.a.s c ;
+  case ND_CAST     : return gen_expr e.a c   ;: gen_cast e.a.t e.t;
+  case ND_ASSIGN   : return gen_addr e.a c   ;: push ;: gen_expr e.a.s c ;: store e.a.t ;
+  case ND_THEN     : return gen_expr e.a c   ;: push ;: gen_expr e.a.s c ;: pop "%rax";
+  case ND_NOT      : return gen_expr e.a c   ;: cmp_zero e.a.t ;: (println "  sete %%al") ;: (println "  movzx %%al, %%rax");
+  case ND_BITNOT   : return gen_expr e.a c   ;: (println "  not %%rax");
   case ND_LET      : return
-    (println "  lea %d(%%rbp), %%rax" e.var.offset ) ;:
-    (push) ;:
-    gen_expr e.a  ;:
-    store e.a.t ;:
-    gen_expr e.a.s;
+   (println "  lea %d(%%rbp), %%rax" e.var.offset )
+;: push
+;: gen_expr e.a  c
+;: store e.a.t
+;: gen_expr e.a.s c;
   case ND_REPEAT   : return
-    (count) is c
-    (println "  lea %d(%%rbp), %%rax" e.var.offset ) ;:
-    (push) ;:
-    gen_expr e.a  ;:
-    (println ".L.repeat.%d:" c) ;:
-    store e.a.t ;:
-    (println "  lea %d(%%rbp), %%rax" e.var.offset ) ;:
-    (push) ;:
-    gen_expr e.a.s  ;:
-    cmp_zero e.a.s.t ;:
-    (println "  jne .L.repeat.%d" c) ;:
-    pop "%rax" ;:
-    (println "  mov 0(%%rax), %%rax");
+   (c@ = c@ + 1)
+;: c@ is d
+   (println "  lea %d(%%rbp), %%rax" e.var.offset)
+;: push
+;: gen_expr e.a c
+;: (println ".L.repeat.%d:" d)
+;: store e.a.t
+;: (println "  lea %d(%%rbp), %%rax" e.var.offset )
+;: push
+;: gen_expr e.a.s c
+;: cmp_zero e.a.s.t
+;: (println "  jne .L.repeat.%d" d)
+;: pop "%rax"
+;: (println "  mov 0(%%rax), %%rax");
   case ND_MEMZERO: return
-    (println "  mov $%d, %%rcx" e.var.t.size) ;:
-    (println "  lea %d(%%rbp), %%rdi" e.var.offset) ;:
-    (println "  mov $0, %%al") ;:
-    (println "  rep stosb");
+   (println "  mov $%d, %%rcx" e.var.t.size)
+;: (println "  lea %d(%%rbp), %%rdi" e.var.offset)
+;: (println "  mov $0, %%al")
+;: (println "  rep stosb");
   case ND_COND: return
-    gen_expr e.a  ;:
-    (count) is c
-    cmp_zero e.a.t ;:
-    (println "  je .L.else.%d" c) ;:
-    gen_expr e.a.s  ;:
-    (println "  jmp .L.end.%d" c) ;:
-    (println ".L.else.%d:" c) ;:
-    gen_expr e.a.s.s  ;:
-    (println ".L.end.%d:" c);
+   gen_expr e.a c
+;: (c@ = c@ + 1)
+;: c@ is d
+   cmp_zero e.a.t
+;: (println "  je .L.else.%d" d)
+;: gen_expr e.a.s c
+;: (println "  jmp .L.end.%d" d)
+;: (println ".L.else.%d:" d)
+;: gen_expr e.a.s.s c
+;: (println ".L.end.%d:" d);
   case ND_LOGAND: 
   case ND_LOGOR : return
-    gen_expr e.a  ;:
-    (count) is c
-    cmp_zero e.a.t ;:
-    (println ((e.kind == ND_LOGAND) ? "  je .L.end.%ld" : "  jne .L.end.%ld")  c) ;:
-    gen_expr e.a.s  ;:
-    (println ".L.end.%ld:" c);
+   gen_expr e.a c
+;: (c@ = c@ + 1)
+;: c@ is d
+   cmp_zero e.a.t
+;: (println ((e.kind == ND_LOGAND) ? "  je .L.end.%ld" : "  jne .L.end.%ld") d)
+;: (e.a.s.t.kind == TY_VOID && push)
+;: gen_expr e.a.s c
+;: (e.a.s.t.kind == TY_VOID && pop "%rax")
+;: (println ".L.end.%ld:" d);
   case ND_FUNCALL: {
-    let stack_args = push_args e ;
-    gen_expr e.a ;
+    let stack_args = push_args e c;
+    gen_expr e.a c;
     let gp = 0;
-    if (!!e.ret_buffer && e.t.size > 16) pop argreg64[gp :; (gp += 1)];
     for (let arg @Node = e.a.s; arg; arg = arg.s) {
       let t = arg.t;
-      switch  t.kind {
-      case TY_STRUCT:
-        if !(t.size > 16) {
-          if (gp + 2 < 6) {
-            pop argreg64[((gp :; (gp+=1)))];
-            if (t.size > 8) {
-              pop argreg64[((gp :; (gp+=1)))];;;;
-        break;
-      default: if (gp < 6) pop argreg64[((gp :; (gp+=1)))];;;
-    (println "  mov %%rax, %%r10");
-    (println "  call *%%r10");
-    (println "  add $%d, %%rsp" (stack_args * 8));
-    (depth -= stack_args);
-    if (!!e.ret_buffer && e.t.size <= 16) {
-      copy_ret_buffer e.ret_buffer;
-      (println "  lea %d(%%rbp), %%rax" e.ret_buffer.offset);;
-    return;;;
-
-  gen_expr e.a.s ;
-  push;
-  gen_expr e.a ;
-  pop "%rdi";
-
-  let
-    big = (e.a.t.kind == TY_I64 || !!e.a.t.a)
-    ax = (big ? "%rax" : "%eax")
-    di = (big ? "%rdi" : "%edi")
-    dx = (big ? "%rdx" : "%edx");
-
-  switch  e.kind {
-  case ND_ADD:
+      if (gp < 6) pop argreg[3][((gp :; (gp = gp + 1)))];;
     return
-    ((e.a.t.kind == TY_PTR || e.a.t.kind == TY_ARRAY) && (println "  imul $%d, %s" e.a.t.a.size di) as void) ;:
+    (println "  mov %%rax, %%r10");:
+    (println "  call *%%r10");:
+    (println "  add $%d, %%rsp" (stack_args * 8));:
+    (depth = depth - stack_args);
+    ;;
+
+  return
+  gen_expr e.a.s c ;:
+  push;:
+  gen_expr e.a c ;:
+  pop "%rdi";:
+
+  (e.a.t.kind == TY_I64 || !!e.a.t.a) is big
+  (big ? "%rax" : "%eax") is ax
+  (big ? "%rdi" : "%edi") is di
+  (big ? "%rdx" : "%edx") is dx
+  (e.kind == ND_ADD) ? ((e.a.t.kind == TY_PTR || e.a.t.kind == TY_ARRAY) && (println "  imul $%d, %s" e.a.t.a.size di) as void) ;:
     ((e.a.s.t.kind == TY_PTR || e.a.s.t.kind == TY_ARRAY) && (println "  imul $%d, %s" e.a.s.t.a.size ax) as void) ;:
-    (println "  add %s, %s" di ax);
-  case ND_SUB:
-    return
+    (println "  add %s, %s" di ax) :
+  (e.kind == ND_SUB) ? 
     ((e.a.t.kind == TY_PTR || e.a.t.kind == TY_ARRAY) && !(e.a.s.t.kind == TY_PTR || e.a.s.t.kind == TY_ARRAY) && (println "  imul $%d, %s" e.a.t.a.size di) as void) ;:
     (println "  sub %s, %s" di ax) ;:
-    ((e.a.s.t.kind == TY_PTR || e.a.s.t.kind == TY_ARRAY) && (println "  mov $%d,%s" e.a.s.t.a.size di) ;: (println "  mov $0, %s" dx) ;: (println "  div %s" di) as void);
-  case ND_MUL:
-    (println "  imul %s, %s" di ax);
-    return;
-  case ND_DIV:
-  case ND_MOD:
-    if (e.t.kind == TY_RING) {
-      (println "  mov $0, %s" dx);
-      (println "  div %s" di);;
-    else {
-      if (e.a.t.size == 8) (println "  cqo");
-      else (println "  cdq");
-      (println "  idiv %s" di);;
-    if (e.kind == ND_MOD) (println "  mov %%rdx, %%rax");
-    return;
-  case ND_BITAND: (println "  and %s, %s" di ax); return;
-  case ND_BITOR : (println "  or  %s, %s" di ax); return;
-  case ND_BITXOR: (println "  xor %s, %s" di ax); return;
-  case ND_EQ:
-  case ND_NE:
-  case ND_LT:
-  case ND_LE:
-  case ND_GT:
-  case ND_GE:
-    (println "  cmp %s, %s" di ax);
-
-    if (e.kind == ND_EQ) {
-      (println "  sete %%al");
-    ; else if (e.kind == ND_NE) {
-      (println "  setne %%al");
-    ; else if (e.kind == ND_LT) {
-      if (e.a.t.kind == TY_RING)
-        (println "  setb %%al");
-      else
-        (println "  setl %%al");
-    ; else if (e.kind == ND_LE){
-      if (e.a.t.kind == TY_RING)
-        (println "  setbe %%al");
-      else
-        (println "  setle %%al");
-    ; else if (e.kind == ND_GT){
-      if (e.a.t.kind == TY_RING)
-        (println "  seta %%al");
-      else
-        (println "  setg %%al");
-    ; else if (e.kind == ND_GE){
-      if (e.a.t.kind == TY_RING)
-        (println "  setae %%al");
-      else
-        (println "  setge %%al");
-    ;
-
-    (println "  movzb %%al, %%rax");
-    return;
-  case ND_SHL:
-    (println "  mov %%rdi, %%rcx");
-    (println "  shl %%cl, %s" ax);
-    return;
-  case ND_SHR:
-    (println "  mov %%rdi, %%rcx");
-    if (e.a.t.kind == TY_RING)
-      (println "  shr %%cl, %s" ax);
-    else
-      (println "  sar %%cl, %s" ax);
-    return;
-  ;
-
-  (error_tok e.j "invalid expression");
+    ((e.a.s.t.kind == TY_PTR || e.a.s.t.kind == TY_ARRAY) && (println "  mov $%d,%s" e.a.s.t.a.size di) ;: (println "  mov $0, %s" dx) ;: (println "  div %s" di) as void) :
+  (e.kind == ND_MUL) ? (println "  imul %s, %s" di ax) :
+  (e.kind == ND_DIV || e.kind == ND_MOD) ?
+    (  (e.t.kind == TY_RING)
+    ?  (println "  mov $0, %s" dx)
+    ;: (println "  div %s" di)
+    :  ((e.a.t.size == 8) ? (println "  cqo") : (println "  cdq"))
+    ;: (println "  idiv %s" di))
+    ;: (e.kind == ND_MOD && (println "  mov %%rdx, %%rax") as void) :
+    (e.kind == ND_BITAND ) ? (println "  and %s, %s" di ax) :
+    (e.kind == ND_BITOR  ) ? (println "  or  %s, %s" di ax) :
+    (e.kind == ND_BITXOR ) ? (println "  xor %s, %s" di ax) :
+    (e.kind == ND_EQ)  ?                           (println "  cmp %s, %s" di ax) ;: (println "  sete  %%al") ;: (println "  movzb %%al, %%rax") :
+    (e.kind == ND_NE)  ?                           (println "  cmp %s, %s" di ax) ;: (println "  setne %%al") ;: (println "  movzb %%al, %%rax") :
+    (e.kind == ND_SHL) ?                           (println "  mov %%rdi, %%rcx") ;: (println "  shl %%cl, %s" ax)                               :
+    (e.kind == ND_LT)  ? (e.a.t.kind == TY_RING) ? (println "  cmp %s, %s" di ax) ;: (println "  setb  %%al") ;: (println "  movzb %%al, %%rax") 
+                                                 : (println "  cmp %s, %s" di ax) ;: (println "  setl  %%al") ;: (println "  movzb %%al, %%rax") :
+    (e.kind == ND_LE)  ? (e.a.t.kind == TY_RING) ? (println "  cmp %s, %s" di ax) ;: (println "  setbe %%al") ;: (println "  movzb %%al, %%rax") 
+                                                 : (println "  cmp %s, %s" di ax) ;: (println "  setle %%al") ;: (println "  movzb %%al, %%rax") :
+    (e.kind == ND_GT)  ? (e.a.t.kind == TY_RING) ? (println "  cmp %s, %s" di ax) ;: (println "  seta  %%al") ;: (println "  movzb %%al, %%rax") 
+                                                 : (println "  cmp %s, %s" di ax) ;: (println "  setg  %%al") ;: (println "  movzb %%al, %%rax") :
+    (e.kind == ND_GE)  ? (e.a.t.kind == TY_RING) ? (println "  cmp %s, %s" di ax) ;: (println "  setae %%al") ;: (println "  movzb %%al, %%rax") 
+                                                 : (println "  cmp %s, %s" di ax) ;: (println "  setge %%al") ;: (println "  movzb %%al, %%rax") :
+                         (e.a.t.kind == TY_RING) ? (println "  mov %%rdi, %%rcx") ;: (println "  shr %%cl, %s" ax)
+                                                 : (println "  mov %%rdi, %%rcx") ;: (println "  sar %%cl, %s" ax) ;
 ;
 
-gen_stmt(e@Node) =
+gen_stmt(e@Node c @i32) =
   (println "  .loc %d %d" e.j.file.file_no e.j.line_no);
-
   switch  e.kind {
   case ND_IF: {
-    let c = (count) ;
-    gen_expr e.cond ;
+    (c@ = c@ + 1) ;
+    let d = c@;
+    gen_expr e.cond c;
     cmp_zero e.cond.t;
-    (println "  je  .L.else.%d" c);
-    gen_stmt e.then ;
-    (println "  jmp .L.end.%d" c);
-    (println ".L.else.%d:" c);
-    if e.els gen_stmt e.els ;
-    (println ".L.end.%d:" c);
+    (println "  je  .L.else.%d" d);
+    gen_stmt e.then c;
+    (println "  jmp .L.end.%d" d);
+    (println ".L.else.%d:" d);
+    if e.els gen_stmt e.els c;
+    (println ".L.end.%d:" d);
     return;
   ;
   case ND_FOR: {
-    let c = (count) ;
-    if e.init gen_stmt e.init ;
-    (println ".L.begin.%d:" c);
+    (c@ = c@ + 1) ;
+    let d = c@;
+    if e.init gen_stmt e.init c;
+    (println ".L.begin.%d:" d);
     if e.cond{
-      gen_expr e.cond ;
+      gen_expr e.cond c;
       cmp_zero e.cond.t;
       (println "  je %s" e.brk_label);
     ;
-    gen_stmt e.then ;
-    (println "%s:" e.cont_label);
-    if e.inc gen_expr e.inc ;
-    (println "  jmp .L.begin.%d" c);
+    gen_stmt e.then c;
+    if e.inc gen_expr e.inc c;
+    (println "  jmp .L.begin.%d" d);
     (println "%s:" e.brk_label);
     return;
   ;
   case ND_DO: {
-    let c = (count) ;
-    (println ".L.begin.%d:" c);
-    gen_stmt e.then ;
-    (println "%s:" e.cont_label);
-    gen_expr e.cond ;
+    (c@ = c@ + 1) ;
+    let d = c@;
+    (println ".L.begin.%d:" d);
+    gen_stmt e.then c;
+    gen_expr e.cond c;
     cmp_zero e.cond.t;
-    (println "  jne .L.begin.%d" c);
+    (println "  jne .L.begin.%d" d);
     (println "%s:" e.brk_label);
     return;
   ;
   case ND_SWITCH:
-    gen_expr e.cond ;
+    gen_expr e.cond c;
 
     for (let n@Node = e.case_next; n; n = n.case_next) {
       let ax = ((e.cond.t.size == 8) ? "%rax" : "%eax");
@@ -434,26 +341,26 @@ gen_stmt(e@Node) =
 
     if e.default_case (println "  jmp %s" e.default_case.label);
     (println "  jmp %s" e.brk_label);
-    gen_stmt e.then ;
+    gen_stmt e.then c;
     (println "%s:" e.brk_label);
     return;
   case ND_CASE:
     (println "%s:" e.label);
-    gen_stmt e.a ;
+    gen_stmt e.a c;
     return;
   case ND_BLOCK:
-    for (let n@Node = e.body; n; n = n.s) gen_stmt n ;
+    for (let n@Node = e.body; n; n = n.s) gen_stmt n c;
     return;
   case ND_GOTO:
     (println "  jmp %s" e.unique_label);
     return;
   case ND_LABEL:
     (println "%s:" e.unique_label);
-    gen_stmt e.a ;
+    gen_stmt e.a c;
     return;
   case ND_RETURN:
     if e.a{
-      gen_expr e.a ;
+      gen_expr e.a c;
       let t = e.a.t;
       switch  t.kind {
       case TY_STRUCT:
@@ -466,7 +373,7 @@ gen_stmt(e@Node) =
     ((println "  jmp .L.return.%s" current_fn.name));
     return;
   case ND_EXPR_STMT:
-    gen_expr e.a ;
+    gen_expr e.a c;
     return;
   ;
 
@@ -480,10 +387,10 @@ assign_one_param_offset(var @Obj top @i32 gp @i32) =
       if (!(gp@ + 2 < 6) && t.size > 16) {
         (gp@ = gp@ + 2);
         return;;
-    default       : if ((gp@ :; (gp@ += 1)) < 6) return;;
+    default       : if ((gp@ :; (gp@ = gp@ + 1)) < 6) return;;
   (top@ = align_to top@ 8);
   (var.offset = top@);
-  (top@ += var.t.size);;
+  (top@ = top@ + var.t.size);;
 assign_param_offsets(fn @Obj) =
   let top = 16 gp = 0;
   for (let var @Obj = fn.params; var; var = var.s)
@@ -496,13 +403,11 @@ assign_one_lvar_offset(fn @Obj) =
   for (let var@Obj = fn.locals; var; var = var.s)
     if !var.offset {
     let alignment = var.alignment as i64;
-    (bottom += var.t.size);
+    (bottom = bottom + var.t.size);
     (bottom = align_to bottom alignment);
     (var.offset = -bottom);;
   (fn.stack_size = align_to bottom 16);;
-assign_lvar_offsets(prog @Obj) =
-  for (let fn @Obj = prog; fn; fn = fn.s)
-    assign_one_lvar_offset fn;;
+assign_lvar_offsets(prog @Obj) = return prog for fn fn.s :; assign_one_lvar_offset fn as void;;
 
 emit_data(prog @Obj) =
   for (let var@Obj = prog; var; var = var.s)
@@ -513,13 +418,8 @@ emit_data(prog @Obj) =
     let alignment = ((var.t.kind == TY_ARRAY && var.t.size >= 16)
       ? maxl 16l cast i64 var.alignment : cast i64 var.alignment);
 
-    // .data or .tdata
     if var.init_data{
-      if var.is_tls
-        (println "  .section .tdata,\"awT\",@progbits");
-      else
-        (println "  .data");
-
+      (println "  .data");
       (println "  .type %s, @object" var.name);
       (println "  .size %s, %d" var.name var.t.size);
       (println "  .align %d" alignment);
@@ -532,19 +432,14 @@ emit_data(prog @Obj) =
         if (!!rel && rel.offset == pos) {
           (println "  .quad %s%+ld" rel.label@ rel.addend);
           (rel = rel.s);
-          (pos += 8);
+          (pos = pos + 8);
         ; else {
-          (println "  .byte %d" var.init_data[((pos :; (pos+=1)))]);
+          (println "  .byte %d" var.init_data[((pos :; (pos = pos + 1)))]);
         ;
       ;
     ;
     else {
-      // .bss or .tbss
-      if var.is_tls
-        (println "  .section .tbss,\"awT\",@nobits");
-      else
-        (println "  .bss");
-
+      (println "  .bss");
       (println "  .align %d" alignment);
       (println "%s:" var.name);
       (println "  .zero %d" var.t.size);
@@ -554,29 +449,29 @@ emit_data(prog @Obj) =
 store_gp(r i32 offset i32 sz i32) =
   switch  sz {
   case 1:
-    (println "  mov %s, %d(%%rbp)" argreg8[r] offset);
+    (println "  mov %s, %d(%%rbp)" argreg[0][r] offset);
     return;
   case 2:
-    (println "  mov %s, %d(%%rbp)" argreg16[r] offset);
+    (println "  mov %s, %d(%%rbp)" argreg[1][r] offset);
     return;
   case 4:
-    (println "  mov %s, %d(%%rbp)" argreg32[r] offset);
+    (println "  mov %s, %d(%%rbp)" argreg[2][r] offset);
     return;
   case 8:
-    (println "  mov %s, %d(%%rbp)" argreg64[r] offset);
+    (println "  mov %s, %d(%%rbp)" argreg[3][r] offset);
     return;
   default:
-    for (let i i32 = 0; i < sz; ((i :; (i+=1)))) {
-      (println "  mov %s, %d(%%rbp)" argreg8[r] (offset + i));
-      (println "  shr $8, %s" argreg64[r]);
+    for (let i i32 = 0; i < sz; ((i :; (i = i + 1)))) {
+      (println "  mov %s, %d(%%rbp)" argreg[0][r] (offset + i));
+      (println "  shr $8, %s" argreg[3][r]);
     ;
     return;
   ;
 ;
 
-emit_text(prog@Obj) =
-  for (let fn@Obj = prog; fn; fn = fn.s)
-    if (!(!fn.is_function || !fn.is_definition) && fn.is_live) {
+emit_text(prog @Obj c @i32) =
+  for (let fn @Obj = prog; fn; fn = fn.s)
+    if (!(!fn.is_function || !fn.is_definition)) {
     if !fn.is_export (println "  .local %s" fn.name);
     else             (println "  .globl %s" fn.name);
     (println "  .text");
@@ -586,10 +481,9 @@ emit_text(prog@Obj) =
     (println "  push %%rbp");
     (println "  mov %%rsp, %%rbp");
     (println "  sub $%d, %%rsp" fn.stack_size);
-    (println "  mov %%rsp, %d(%%rbp)" fn.alloca_bottom.offset);
     if fn.va_area {
       let gp = 0;
-      for (let var@Obj = fn.params; var; var = var.s) ((gp :; (gp+=1)));
+      for (let var@Obj = fn.params; var; var = var.s) ((gp :; (gp = gp + 1)));
       let off = fn.va_area.offset;
       (println "  movl $%d, %d(%%rbp)" (gp * 8) off);
       (println "  movq %%rbp, %d(%%rbp)" (off + 8));
@@ -598,11 +492,11 @@ emit_text(prog@Obj) =
       (println "  addq $%d, %d(%%rbp)" (off + 24) (off + 16));
       let b = (off + 24);
       (println "  movq %%rdi, %d(%%rbp)"   b);
-      (b += 8); (println "  movq %%rsi, %d(%%rbp)"   b);
-      (b += 8); (println "  movq %%rdx, %d(%%rbp)"   b);
-      (b += 8); (println "  movq %%rcx, %d(%%rbp)"   b);
-      (b += 8); (println "  movq %%r8, %d(%%rbp)"    b);
-      (b += 8); (println "  movq %%r9, %d(%%rbp)"    b);;
+      (b = b + 8); (println "  movq %%rsi, %d(%%rbp)"   b);
+      (b = b + 8); (println "  movq %%rdx, %d(%%rbp)"   b);
+      (b = b + 8); (println "  movq %%rcx, %d(%%rbp)"   b);
+      (b = b + 8); (println "  movq %%r8, %d(%%rbp)"    b);
+      (b = b + 8); (println "  movq %%r9, %d(%%rbp)"    b);;
 
     (  0 is gp
        fn.params for o
@@ -612,27 +506,27 @@ emit_text(prog@Obj) =
         && o.t is t
           (  t.kind == TY_STRUCT ) ?
             cast i32 minl cast i64 t.size 8l is b
-            ( store_gp (gp :; (gp+=1)) o.offset b )
+            ( store_gp (gp :; (gp = gp + 1)) o.offset b )
             ;:(  (t.size   > 8)
               && (o.offset + 8) is b
                  (t.size   - 8) is c
-                 store_gp (gp :; (gp+=1)) b c as void) :
-          store_gp ((gp :; (gp+=1))) o.offset t.size
+                 store_gp (gp :; (gp = gp + 1)) b c as void) :
+          store_gp ((gp :; (gp = gp + 1))) o.offset t.size
         as void ) )
     as void )
-    ;: gen_stmt cast @Node fn.body
-    ;: (! strcmp cast @ fn.name "main" && (println "  mov $0, %%rax") as void)
+    ;: gen_stmt cast @Node fn.body c
+    ;: (! strcmp fn.name "main" && (println "  mov $0, %%rax") as void)
     ;: (println ".L.return.%s:" fn.name)
     ;: (println "  mov %%rbp, %%rsp")
     ;: (println "  pop %%rbp")
     ;: (println "  ret");;;
 
-export codegen(prog@Obj out@FILE) = return
+export codegen(prog @Obj out @FILE files @@File) = return
   (output_file = out) ;:
-  (input_files) is files
   (  0 for i 
     (  !!files[i] && (i + 1) :;
-    (println "  .file %d \"%s\"" files[i].file_no files[i].name) ) as void) ;:
+    (println "  .file %d \q%s\q" files[i].file_no files[i].name) ) as void) ;:
   assign_lvar_offsets prog ;:
   emit_data prog  ;:
-  emit_text prog ;;
+  0 is c
+  emit_text prog &c;;

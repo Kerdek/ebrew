@@ -1,18 +1,19 @@
 #"chub.hb"
 
-export preprocess(j @Token) @Token = return
+export preprocess(in @i8 files @@@File) @Token = return
    new Token {; is head
+   0 is file_n
+   tokenize in file_n files is j
    &head is cur
    (  j for j
      (  j.kind != TK_EOF
      && !equal j "#"
-     ?  (j.line_delta = j.file.line_delta)
-     ;: (j.filename = j.file.display_name)
-     ;: (cur.s = j)
+     ?  (cur.s = j)
      ;: (cur = cur.s)
      ;: j.s
      :  (j.s.kind != TK_STR && (error_tok j.s "expected a filename") as void)
-     ;: tokenize (format"%s/%s" dirname strdup j.file.name strndup (j.s.loc + 1) cast %i64 (j.s.len - 2)) is a
+     ;: (file_n = file_n + 1)
+     ;: tokenize (format"%s/%s" dirname strdup j.file.name strndup (j.s.loc + 1) cast %i64 (j.s.len - 2)) file_n files is a
         (!a && (error_tok j.s "%s: cannot open file: %s" j.s strerror errno) as void)
      ;: (a.kind == TK_EOF)
      ?  j.s.s
@@ -29,8 +30,5 @@ export preprocess(j @Token) @Token = return
      ;: (cur.s = j.s.s)
      ;: head.s )
    as void )
-;: (j = head.s)
-;: convert_pp_tokens j
-;: (j for t (!!t && t.s :; (t.line_no += t.line_delta)) as void)
-;: j
+;: head.s
 ;;
