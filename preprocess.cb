@@ -7,7 +7,7 @@ export preprocess(in @i8 files @@@File) @Token = return
    &head is cur
    (  j for j
      (  j.kind != TK_EOF
-     && !equal j "#"
+     && !token_equal j "#"
      ?  (cur.s = j)
      ;: (cur = cur.s)
      ;: j.s

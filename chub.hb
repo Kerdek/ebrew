@@ -25,7 +25,6 @@ type
     TY_VOID
     TY_BOOL
     TY_I08
-    TY_I16
     TY_I32
     TY_I64
     TY_FUNC
@@ -150,7 +149,6 @@ export extern
   ty_void @Type
   ty_bool @Type
   ty_i8   @Type
-  ty_i16  @Type
   ty_i32  @Type
   ty_i64  @Type
 ;
@@ -191,12 +189,14 @@ export strlen              (s             @const i8)%i64;
 export strerror            (errnum        i32)@i8 ;
 export strncasecmp         (s1            @const i8 s2@const i8 n %i64)i32;
 
+export token_equal(j @Token op @i8) bool;
+
+export type_equal (a @Type b @Type) bool;
+
 export advance(k @@Token) @Token;
 export format(fmt@ i8 ...)@ i8;
 export error_at(loc@ i8 file @File fmt@ i8 ...);
 export error_tok(j@ Token fmt@ i8 ...);
-export warn_tok(j@ Token fmt@ i8 ...);
-export equal(j@ Token op@ i8)bool;
 export expect(j@@ Token op@ i8);
 export consume(rest@@ Token j@ Token str@ i8)bool;
 export tokenize(filename@ i8 file_n i32 files @@@File)@ Token;
@@ -204,7 +204,6 @@ export preprocess(in @i8 files @@@File) @Token;
 export const_expr(k @@Token) i64;
 export parse(j@ Token)@ Obj;
 export format_type      (t         @Type s    @i8)      ;
-export type_equal       (t         @Type u    @Type) bool ;
 export copy_type        (t         @Type           ) @Type;
 export pointer_to       (base      @Type           ) @Type;
 export ring_of      (base      @Type           ) @Type;
@@ -213,7 +212,6 @@ export array_of         (base      @Type size  i32 ) @Type;
 export enum_type        (                          ) @Type;
 export struct_type      (                          ) @Type;
 export codegen(prog@ Obj out@ FILE files @@File);
-export align_to(n i32 alignment i32)i32;
 
 export hashmap_get(map@ HashMap a@ i8)@;
 export hashmap_get2(map@ HashMap a@ i8 n i32)@;
@@ -227,3 +225,4 @@ inline maxl(a i64 b i64) i64 = (a > b) ? a : b;;
 inline minl(a i64 b i64) i64 = (a < b) ? a : b;;
 inline maxul(a % i64 b % i64) % i64 = (a > b) ? a : b;;
 inline minul(a % i64 b % i64) % i64 = (a < b) ? a : b;;
+inline align_to(n i32 alignment i32) i32 = return (n + alignment - 1) / alignment * alignment;;

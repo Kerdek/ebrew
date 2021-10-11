@@ -18,15 +18,14 @@ export error_at(loc@ i8 file @File fmt@ i8 ...) = return
 ;: exit 1
 ;;
 export error_tok(j@ Token fmt@ i8 ...) = return vdiag j.file.name j.file.contents j.line_no j.loc fmt cast @va_list __va_area__ ;: exit 1 ;;
-export warn_tok(j@ Token fmt@ i8 ...) = return vdiag j.file.name j.file.contents j.line_no j.loc fmt cast @va_list __va_area__;;
-export equal(j @Token op @i8) bool = return ! memcmp cast @ j.loc cast @ op cast %i64 j.len && !op[j.len];;
+export token_equal(j @Token op @i8) bool = return ! memcmp cast @ j.loc cast @ op cast %i64 j.len && !op[j.len];;
 export advance(k @@Token) @Token = return k@ :; (k@ = k.s) ;;
 export expect(j @@Token op@ i8) = return
-   (!equal j@ op && (error_tok j@ "expected '%s'" op) as void)
+   (!token_equal j@ op && (error_tok j@ "expected '%s'" op) as void)
 ;: (j@ = j.s)
 ;;
 export consume(rest@@ Token j@ Token str@ i8) bool = return
-  equal j str is c c :; (rest@ = c ? j.s : j);;
+  token_equal j str is c c :; (rest@ = c ? j.s : j);;
 new_token(kind typeof TK_ID start@ i8 end@ i8 file @File)@ Token = return
   cast @Token calloc 1ul sizeof Token is j j
 :; (j.kind = kind              )
@@ -50,24 +49,23 @@ rpkw[]@ i8 = {
 ;;
 rpkwn %i64 = (sizeof typeof rpkw / sizeof typeof rpkw[0]);
 read_punct(p@ i8) i32 = return 0 is c (0 for i (i != rpkwn && !(startswith p rpkw[i] && true :; (c = cast i32 strlen rpkw[i])) && (i + 1)) as void) ;: c ;;
-escape(c @i8 file @File) i8 = return 
-   (c@ == '0') ? '\0'
-:  (c@ == 'a') ? '\a'
-:  (c@ == 'b') ? '\b'
-:  (c@ == 'f') ? '\f'
-:  (c@ == 'n') ? '\n'
-:  (c@ == 'r') ? '\r'
-:  (c@ == 't') ? '\t'
-:  (c@ == 'v') ? '\v'
-:  (c@ == 'p') ? '\p'
-:  (c@ == 'q') ? '\q'
-:  (c@ == 's') ? '\s'
-:  (error_at c file "invalid escape sequence")
-;: '\0'
+escape_one(c i8 ca i8 cb i8) i8 = return c == ca && cb;;
+escape(c @i8 file @File) i8 = return
+&escape_one is f
+(  f@ c@ 'a' '\a'
+|| f@ c@ 'b' '\b'
+|| f@ c@ 'f' '\f'
+|| f@ c@ 'n' '\n'
+|| f@ c@ 'r' '\r'
+|| f@ c@ 't' '\t'
+|| f@ c@ 'v' '\v'
+|| f@ c@ 'p' '\p'
+|| f@ c@ 'q' '\q'
+|| f@ c@ 's' '\s'
+|| '\0' :; (c@ != '0' && (error_at c file "invalid escape sequence") as void) )
 ;;
-string_literal_end(file @File p@ i8)@ i8 = return p for q (q@ != '"' && (q + 1) :; (q@ == '\0' && (error_at p file "unclosed string literal") as void)) ;;
 read_string_literal(file @File start@ i8 quote@ i8)@ Token = return
-   string_literal_end file (quote + 1) is end
+   ((quote + 1) for q (q@ != '"' && (q + 1) :; (q@ == '\0' && (error_at quote file "unclosed string literal") as void))) is end
    cast @i8 calloc 1ul (end - quote as %i64) is buf
    0 is len
   ( (quote + 1) for p (p < end &&
@@ -80,9 +78,15 @@ read_string_literal(file @File start@ i8 quote@ i8)@ Token = return
 ;: j
 ;;
 read_char_literal(file @File start@ i8 quote@ i8)@ Token = return
-   (quote + 1) is p
+   (quote + 1)
+is p
    (p@ == '\0' && (error_at start file "unclosed literal i8") as void)
-;: ((p@ == '\s') ? (p = p + 1) ;: (p@ == '\0' && (error_at start file "unclosed literal i8") as void) ;: escape p file : p@) is c
+;:(  (p@ == '\s')
+  ? (p = p + 1)
+  ;: (p@ == '\0' && (error_at start file "unclosed literal i8") as void)
+  ;: escape p file
+  : p@ )
+is c
    (p = p + 1) 
 ;: (p@ != '\p' && (error_at start file "unclosed literal i8") as void)
 ;: new_token TK_NUM start (p + 1) file is j
