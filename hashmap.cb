@@ -6,20 +6,20 @@ fnv_hash(s@ i8 n i32) %i64 = return
 ;;
 
 rehash(a@ HashMap) =
-  let n = 0;
-  for (let i i32 = 0; i < a.capacity; i = i + 1)
+  let n = 0 i = 0;
+  for (none; i < a.capacity; i = i + 1)
     if (!!a.buckets[i].a && a.buckets[i].a != /* TOMBSTONE */ cast @i8 -1)
-      (n = n +  1);
+      (n = n + 1);
 
   let c = a.capacity;
   while ((n * 100) / c >= /* Low_WATERMARK */ 50)
     (c = c * 2);
 
-  let b = new HashMap {;;
+  let b = new HashMap;
   (b.buckets = cast @HashEntry calloc cast %i64 c sizeof HashEntry);
   (b.capacity = c);
-
-  for (let i i32 = 0; i < a.capacity; i = i + 1) {
+  let i = 0;
+  for (none; i < a.capacity; i = i + 1) {
     let ent = &a.buckets[i];
     let a = &b;
     if (!!ent.a && ent.a != /* TOMBSTONE */ cast @i8 -1) hashmap_put2 a ent.a ent.n ent.val;;
@@ -30,7 +30,8 @@ match(e@ HashEntry a@ i8 n i32) bool =
 get_entry(f@ HashMap a@ i8 n i32)@ HashEntry =
   if !f.buckets return cast @HashEntry 0;
   let hash = fnv_hash a n;
-  for (let i i32 = 0; i < f.capacity; i = i + 1) {
+  let i = 0;
+  for (none; i < f.capacity; i = i + 1) {
     let ent = &f.buckets[(hash + cast %i64 i) % cast %i64 f.capacity];
     if match ent a n return ent;
     if !ent.a return cast @HashEntry 0;;
@@ -40,8 +41,8 @@ get_or_insert_entry(f@ HashMap a@ i8 n i32 val @) =
     (f.buckets = (calloc /* INIT_SIZE */ 16ul sizeof HashEntry as @HashEntry));
     (f.capacity = /* INIT_SIZE */ 16ul as i32);;
   else if ((f.used * 100) / f.capacity >= /* HIGH_WATERMARK */ 70) rehash f;
-  let hash = fnv_hash a n;
-  for (let i i32 = 0; i < f.capacity; i = i + 1) {
+  let hash = fnv_hash a n i = 0;
+  for (none; i < f.capacity; i = i + 1) {
     let ent = &f.buckets[(hash + cast %i64 i) % cast %i64 f.capacity];
     if match ent a n { (ent.val = val); return;;
     if (ent.a == /* TOMBSTONE */ cast @i8 -1) {

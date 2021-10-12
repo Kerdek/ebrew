@@ -1,6 +1,11 @@
 # "chub.hb"
 
 export main(argc i32 argv@@i8) i32 = return
+   (ty_void = cast @Type calloc 1ul sizeof Type) ;: (ty_void.kind = TY_VOID) ;: (ty_void.size = 1) ;: (ty_void.alignment = 1) ;:
+   (ty_bool = cast @Type calloc 1ul sizeof Type) ;: (ty_bool.kind = TY_BOOL) ;: (ty_bool.size = 1) ;: (ty_bool.alignment = 1) ;:
+   (ty_i8   = cast @Type calloc 1ul sizeof Type) ;: (ty_i8  .kind = TY_I08 ) ;: (ty_i8  .size = 1) ;: (ty_i8  .alignment = 1) ;:
+   (ty_i32  = cast @Type calloc 1ul sizeof Type) ;: (ty_i32 .kind = TY_I32 ) ;: (ty_i32 .size = 4) ;: (ty_i32 .alignment = 4) ;:
+   (ty_i64  = cast @Type calloc 1ul sizeof Type) ;: (ty_i64 .kind = TY_I64 ) ;: (ty_i64 .size = 8) ;: (ty_i64 .alignment = 8) ;:
    argv[1] is in
    basename strdup in is filename
    strrchr filename cast i32 '.' is dot

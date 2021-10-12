@@ -24,8 +24,7 @@ export expect(j @@Token op@ i8) = return
    (!token_equal j@ op && (error_tok j@ "expected '%s'" op) as void)
 ;: (j@ = j.s)
 ;;
-export consume(rest@@ Token j@ Token str@ i8) bool = return
-  token_equal j str is c c :; (rest@ = c ? j.s : j);;
+export consume(rest@@ Token j@ Token str@ i8) bool = return token_equal j str is c c :; (rest@ = c ? j.s : j) ;;
 new_token(kind typeof TK_ID start@ i8 end@ i8 file @File)@ Token = return
   cast @Token calloc 1ul sizeof Token is j j
 :; (j.kind = kind              )
@@ -33,22 +32,72 @@ new_token(kind typeof TK_ID start@ i8 end@ i8 file @File)@ Token = return
 ;: (j.len  = end - start as i32)
 ;: (j.file = file              )
 ;;
-startswith(p@ i8 q@ i8) bool = return ! strncmp p q strlen q;;
+startswith(p@ i8 q@ i8) bool = return
+true is r
+(true for _ (
+   (!q@) ? false :
+   (p@ != q@) ? (r = false) ;: false :
+   (p = p + 1) ;: (q = q + 1) ;: true )
+as void )
+;: r
+;;
 isident(c i8) bool = return 'A' <= c && c <= 'Z' || 'a' <= c && c <= 'z' || '0' <= c && c <= '9' || c == '_';;
 read_ident(p@ i8) i32 = return
    0 is r
    (p for q (isident q@ && q + 1 || cast @i8 0 :; (r = q - p as i32) ) as void)
 ;: r;;
 from_hex(c i8) i8 = return c - ( ('0' <= c && c <= '9') ? '0' : ('a' + cast i8 10) );;
-rpkw[]@ i8 = {
-  "<<="  ">>="  "&&="  "||="  "..."
-  "=="  "!="  "<="  ">="  "+="  "-="  "*="  "/="  "%="
-  "&="  "|="  "^="  "&&"  "||"  "<<"  ">>"  ":;"  ";:"  "="
-  "<"  ">"  "+"  "-"  "*"  "/"  "&"  "|"  "@"  "#"  "{"  "}"  "("
-  ")"  "["  "]"  "!"  "?"  ":"  ";"  ","  "."  "~"  "^"  "%"
-;;
-rpkwn %i64 = (sizeof typeof rpkw / sizeof typeof rpkw[0]);
-read_punct(p@ i8) i32 = return 0 is c (0 for i (i != rpkwn && !(startswith p rpkw[i] && true :; (c = cast i32 strlen rpkw[i])) && (i + 1)) as void) ;: c ;;
+read_punct(p@ i8) i32 = return
+&startswith is f
+(  f@ p "<<="
+|| f@ p ">>="
+|| f@ p "&&="
+|| f@ p "||="
+|| f@ p "..." ) ? 3 :
+(  f@ p "==" 
+|| f@ p "!=" 
+|| f@ p "<=" 
+|| f@ p ">=" 
+|| f@ p "+=" 
+|| f@ p "-=" 
+|| f@ p "*=" 
+|| f@ p "/=" 
+|| f@ p "%=" 
+|| f@ p "&=" 
+|| f@ p "|=" 
+|| f@ p "^=" 
+|| f@ p "&&" 
+|| f@ p "||" 
+|| f@ p "<<" 
+|| f@ p ">>" 
+|| f@ p ";:" 
+|| f@ p ":;" ) ? 2 :
+(  f@ p "=" 
+|| f@ p "<"
+|| f@ p ">"
+|| f@ p "+"
+|| f@ p "-"
+|| f@ p "*"
+|| f@ p "/"
+|| f@ p "&"
+|| f@ p "|"
+|| f@ p "@"
+|| f@ p "#"
+|| f@ p "{"
+|| f@ p "}"
+|| f@ p "("
+|| f@ p ")"
+|| f@ p "["
+|| f@ p "]"
+|| f@ p "!"
+|| f@ p "?"
+|| f@ p ":"
+|| f@ p ";"
+|| f@ p ","
+|| f@ p "."
+|| f@ p "~"
+|| f@ p "^"
+|| f@ p "%" ) ? 1 : 0;;
 escape_one(c i8 ca i8 cb i8) i8 = return c == ca && cb;;
 escape(c @i8 file @File) i8 = return
 &escape_one is f
@@ -96,28 +145,16 @@ is c
 ;;
 
 add_line_numbers(file @File j@ Token) = return
-   1 is n
-   file.contents for p
-  (  !!p@
-  && (p + 1)
-  :; (j = (p == j.loc) ? (j.line_no = n) ;: j.s : j)
-  :; (n = n + ((p@ == '\n') ? 1 : 0)) )
-as void
 ;;
 
-tokenizefr(file@ File)@ Token =
-  let
-    p = file.contents
-    head = new Token {;
-    cur = &head;
-  while p@ {
-    if startswith p "/*" {
-      let q = strstr (p + 2) "*/" ;
-      if !q (error_at p file "unclosed block comment");
-      (p = q + 2);;
-    else if (p@ == '\n' || cast bool isspace cast i32 p@) (p = p + 1);
-    else if (isdigit cast i32 p@ || (p@ == '.' && isdigit cast i32 p[1])) {
-       ((p + 1) for q ( !!isalnum cast i32 q@ && q + 1 )) is q
+tokenshit(file @File p @i8 cur @Token) = while p@
+    startswith p "/*"
+    ?  strstr (p + 2) "*/" is q
+       (!q && (error_at p file "unclosed block comment") as void)
+    ;: (p = q + 2)
+    :  (p@ == '\n' || cast bool isspace cast i32 p@) ? (p = p + 1)
+    :  (!!isdigit cast i32 p@ || (p@ == '.' && !!isdigit cast i32 p[1]))
+    ?  ((p + 1) for q ( !!isalnum cast i32 q@ && q + 1 )) is q
        (cur.s = new_token TK_NUM p q file)
     ;: (cur.s.loc is p
   10 is base
@@ -145,33 +182,27 @@ tokenizefr(file@ File)@ Token =
    true)
     ;: (cur = cur.s)
     ;: (p = q)
-    ;;
-    else if (p@ == '"') {
-      (cur.s = read_string_literal file p p);
-      (cur = cur.s);
-      (p = p + cur.len);;
-    else if (p@ == '\p') {
-      (cur.s = read_char_literal file p p);
-      (cur = cur.s);
-      (cur.val = cur.val as i8 as i64);
-      (p = p + cur.len);;
-    else {
-      let ident_len = read_ident p;
-      if ident_len {
-        (cur.s = new_token TK_ID p (p + ident_len) file);
-        (cur = cur.s);
-        (p = p + cur.len);;
-      else {
-        let punct_len = read_punct p;
-        if punct_len {
-          (cur.s = new_token TK_PCT p (p + punct_len) file);
-          (cur = cur.s);
-          (p = p + cur.len);;
-        else (error_at p file "invalid token");;;;
-      (cur.s = new_token TK_EOF p p file);
-      (cur = cur.s);
-  add_line_numbers file head.s;
-  return head.s;;
+    :  (p@ == '"')
+    ?  (cur.s = read_string_literal file p p)
+    ;: (cur = cur.s)
+    ;: (p = p + cur.len)
+    :  (p@ == '\p')
+    ?  (cur.s = read_char_literal file p p)
+    ;: (cur = cur.s)
+    ;: (cur.val = cur.val as i8 as i64)
+    ;: (p = p + cur.len)
+    :  read_ident p is ident_len
+       !!ident_len
+    ?  (cur.s = new_token TK_ID p (p + ident_len) file)
+    ;: (cur = cur.s)
+    ;: (p = p + cur.len)
+    :  read_punct p is punct_len
+       !!punct_len
+    ?  (cur.s = new_token TK_PCT p (p + punct_len) file)
+    ;: (cur = cur.s)
+    ;: (p = p + cur.len)
+    :  (error_at p file "invalid token");
+ (cur.s = new_token TK_EOF p p file);;
 
 read_file(path@ i8)@ i8 =
   let rfbuf2 [4096]i8;
@@ -182,7 +213,8 @@ read_file(path@ i8)@ i8 =
   let buflen = 0ul;
   let b = &buflen;
   let out = open_memstream &buf b;
-  for (let k bool = true;k;) {
+  let k = true;
+  for (none;k;) {
     let
       m = (sizeof typeof rfbuf2)
       n = fread cast @ rfbuf2 1ul m fp;
@@ -197,21 +229,27 @@ read_file(path@ i8)@ i8 =
 ;: buf
 ;;
 
-export new_file(name@ i8 file_no i32 contents@ i8)@ File = return
-   cast @File calloc 1ul sizeof File is file
-   (file.name = name)
-;: (file.file_no = file_no)
-;: (file.contents = contents)
-;: file
-;;
-
 export tokenize(path @i8 file_n i32 files @@@File) @Token = return
    read_file path is p
-  (  !p
-  ?  cast @Token 0
-  :  new_file path (file_n + 1) p is f
-     (files@ = cast @@File realloc (cast @ files@) (sizeof @File * cast %i64 (file_n + 1)))
-  ;: (files@[file_n] = f)
-  ;: (files@[file_n + 1] = cast @File 0)
-  ;: tokenizefr f )
+   !p
+?  cast @Token 0
+:  cast @File calloc 1ul sizeof File is f
+   (f.name = path)
+;: (f.file_no = file_n + 1)
+;: (f.contents = p)
+;: (files@ = cast @@File realloc (cast @ files@) (sizeof @File * cast %i64 (file_n + 1)))
+;: (files@[file_n] = f)
+;: (files@[file_n + 1] = cast @File 0)
+;: f.contents is p
+   new Token is head
+   tokenshit f p &head
+;: head.s is j
+   1 is n
+  ( f.contents for p
+    (  !!p@
+    && (p + 1)
+    :; (j = (p == j.loc) ? (j.line_no = n) ;: j.s : j)
+    :; (n = n + ((p@ == '\n') ? 1 : 0)) )
+  as void )
+;: head.s 
 ;;

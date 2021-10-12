@@ -1,9 +1,24 @@
 #"chub.hb"
 
-argreg [4][6]@i8 = {
-  {"%dil" "%sil" "%dl"  "%cl"  "%r8b" "%r9b";
-  {"%edi" "%esi" "%edx" "%ecx" "%r8d" "%r9d";
-  {"%rdi" "%rsi" "%rdx" "%rcx" "%r8"  "%r9" ;;
+argreg(sz i32 g i32) @i8 = return
+  (sz == 0) ? (g == 0) ? "%dil" :
+              (g == 1) ? "%sil" :
+              (g == 2) ? "%dl"  :
+              (g == 3) ? "%cl"  :
+              (g == 4) ? "%r8b" :
+                         "%r9b" :
+  (sz == 1) ? (g == 0) ? "%edi" :
+              (g == 1) ? "%esi" :
+              (g == 2) ? "%edx" :
+              (g == 3) ? "%ecx" :
+              (g == 4) ? "%r8d" :
+                         "%r9d" :
+              (g == 0) ? "%rdi" :
+              (g == 1) ? "%rsi" :
+              (g == 2) ? "%rdx" :
+              (g == 3) ? "%rcx" :
+              (g == 4) ? "%r8"  :
+                         "%r9"  ;;
 
 gen_expr(out @FILE e @Node c @i32 depth @i32);
 gen_stmt(out @FILE e @Node c @i32 depth @i32);
@@ -32,7 +47,7 @@ gen_addr(out @FILE e @Node c @i32 depth @i32) = return
   ( e.t.kind == TY_STRUCT   ) ? gen_expr out e   c depth :
   ( error_tok e.j "not an lvalue" );;
 
-load(out @FILE t @Type) = return cast void(
+load(out @FILE t @Type) = return
   t.kind == TY_ARRAY  ||
   t.kind == TY_STRUCT ||
   t.kind == TY_FUNC   ||
@@ -40,15 +55,18 @@ load(out @FILE t @Type) = return cast void(
     ((t.kind == TY_RING) ? t.a : t ) is u
     ( (u.size == 1         ) ? (println out "  %sbl (%%rax), %%eax"   insn ) :
       (u.size == 4         ) ? (println out "  movsxd (%%rax), %%rax"      ) :
-                               (println out "  mov (%%rax), %%rax"         ) ) ));;
+                               (println out "  mov (%%rax), %%rax"         ) ) )
+as void
+;;
 store(out @FILE t @Type depth @i32) =
-  gen_pop out depth "%rdi"      ;:
-  (t.kind == TY_STRUCT  ) ? (0 for i (i < t.size && (i + 1)
-  :; (println out "  mov %d(%%rax), %%r8b" i)
-  ;: (println out "  mov %%r8b, %d(%%rdi)" i)) as void)             :
-  (t.size == 1) ? (println out "  mov %%al , (%%rdi)") :
-  (t.size == 4) ? (println out "  mov %%eax, (%%rdi)") :
-                  (println out "  mov %%rax, (%%rdi)") ;;
+   gen_pop out depth "%rdi"
+;: (t.kind == TY_STRUCT  ) ? (0 for i (i < t.size && (i + 1)
+:; (println out "  mov %d(%%rax), %%r8b" i)
+;: (println out "  mov %%r8b, %d(%%rdi)" i)) as void)
+:  (t.size == 1) ? (println out "  mov %%al , (%%rdi)")
+:  (t.size == 4) ? (println out "  mov %%eax, (%%rdi)")
+:                  (println out "  mov %%rax, (%%rdi)")
+;;
 
 gen_zero(out @FILE) = return (println out "  xor %%eax, %%eax") ;;
 gen_cmpz(out @FILE) = return (println out "  cmp $0, %%rax"   ) ;;
@@ -73,8 +91,8 @@ push_args2(out @FILE args @Node first_pass bool c @i32 depth @i32) =
   gen_expr out args c depth;
   gen_push out depth ;;
 push_args(out @FILE e @Node c @i32 depth @i32) i32 =
-  let stack = 0 gp = 0;
-  for (let arg@Node = e.a.s; arg; arg = arg.s) {
+  let stack = 0 gp = 0 arg = e.a.s;
+  for (none; arg; arg = arg.s) {
     let t = arg.t;
       if ((gp >= 6) :; (gp = gp + 1)) {
         (arg.pass_by_stack = true);
@@ -87,30 +105,29 @@ push_args(out @FILE e @Node c @i32 depth @i32) i32 =
   push_args2 out e.a.s false c depth;
   return stack;;
 gen_expr(out @FILE e @Node c @i32 depth @i32) =
-  (println out "  .loc %d %d" e.j.file.file_no e.j.line_no);
-  switch  e.kind {
-  case ND_NULL_EXPR: return;
-  case ND_THE      : return gen_expr out e.a c  depth  ;
-  case ND_ADDR     : return gen_addr out e.a c  depth  ;
-  case ND_NUM      : return (println out "  mov $%ld, %%rax" e.val);
-  case ND_NEG      : return gen_expr out e.a c  depth  ;: (println out "  neg %%rax");
-  case ND_VAR      : return gen_addr out e   c  depth  ;: load out e.t;
-  case ND_MEMBER   : return gen_addr out e   c  depth  ;: load out e.t;
-  case ND_DEREF    : return gen_expr out e.a c  depth  ;: load out e.t;
-  case ND_COMMA    : return gen_expr out e.a c  depth  ;: gen_expr out e.a.s c  depth;
-  case ND_CAST     : return gen_expr out e.a c  depth  ;: gen_cast out e.a.t e.t;
-  case ND_ASSIGN   : return gen_addr out e.a c  depth  ;: gen_push out depth ;: gen_expr out e.a.s c depth ;: store out e.a.t depth ;: (println out "  xor %%eax, %%eax") ;
-  case ND_THEN     : return gen_expr out e.a c  depth  ;: gen_push out depth ;: gen_expr out e.a.s c depth ;: gen_pop out depth "%rax";
-  case ND_NOT      : return gen_expr out e.a c  depth  ;: gen_cmpz out       ;: (println out "  sete %%al") ;: (println out "  movzx %%al, %%rax");
-  case ND_BITNOT   : return gen_expr out e.a c  depth  ;: (println out "  not %%rax");
-  case ND_LET      : return
+   (println out "  .loc %d %d" e.j.file.file_no e.j.line_no)
+;: (e.kind == ND_NULL_EXPR) ? none
+:  (e.kind == ND_THE   ) ? gen_expr out e.a c depth
+:  (e.kind == ND_ADDR  ) ? gen_addr out e.a c depth
+:  (e.kind == ND_NUM   ) ? (println out "  mov $%ld, %%rax" e.val)
+:  (e.kind == ND_NEG   ) ? gen_expr out e.a c depth ;: (println out "  neg %%rax")
+:  (e.kind == ND_VAR   ) ? gen_addr out e   c depth ;: load out e.t
+:  (e.kind == ND_MEMBER) ? gen_addr out e   c depth ;: load out e.t
+:  (e.kind == ND_DEREF ) ? gen_expr out e.a c depth ;: load out e.t
+:  (e.kind == ND_COMMA ) ? gen_expr out e.a c depth ;: gen_expr out e.a.s c  depth
+:  (e.kind == ND_CAST  ) ? gen_expr out e.a c depth ;: gen_cast out e.a.t e.t
+:  (e.kind == ND_ASSIGN) ? gen_addr out e.a c depth ;: gen_push out depth ;: gen_expr out e.a.s c depth ;: store out e.a.t depth ;: (println out "  xor %%eax, %%eax") 
+:  (e.kind == ND_THEN  ) ? gen_expr out e.a c depth ;: gen_push out depth ;: gen_expr out e.a.s c depth ;: gen_pop out depth "%rax"
+:  (e.kind == ND_NOT   ) ? gen_expr out e.a c depth ;: gen_cmpz out       ;: (println out "  sete %%al") ;: (println out "  movzx %%al, %%rax")
+:  (e.kind == ND_BITNOT) ? gen_expr out e.a c depth ;: (println out "  not %%rax")
+:  (e.kind == ND_LET   ) ?
    (println out "  lea %d(%%rbp), %%rax" e.var.offset )
 ;: gen_push out depth
 ;: gen_expr out e.a  c depth
 ;: store out e.a.t depth
-;: gen_expr out e.a.s c depth;
-  case ND_REPEAT   : return
-   (c@ = c@ + 1)
+;: gen_expr out e.a.s c depth
+:  (e.kind == ND_REPEAT)
+?  (c@ = c@ + 1)
 ;: c@ is d
    (println out "  lea %d(%%rbp), %%rax" e.var.offset)
 ;: gen_push out depth
@@ -123,14 +140,14 @@ gen_expr(out @FILE e @Node c @i32 depth @i32) =
 ;: gen_cmpz out
 ;: (println out "  jne .L.repeat.%d" d)
 ;: gen_pop out depth "%rax"
-;: (println out "  mov 0(%%rax), %%rax");
-  case ND_MEMZERO: return
-   (println out "  mov $%d, %%rcx" e.var.t.size)
+;: (println out "  mov 0(%%rax), %%rax")
+:  (e.kind == ND_MEMZERO)
+?  (println out "  mov $%d, %%rcx" e.var.t.size)
 ;: (println out "  lea %d(%%rbp), %%rdi" e.var.offset)
 ;: (println out "  mov $0, %%al")
-;: (println out "  rep stosb");
-  case ND_COND: return
-   gen_expr out e.a c depth
+;: (println out "  rep stosb")
+:  (e.kind == ND_COND)
+?  gen_expr out e.a c depth
 ;: (c@ = c@ + 1)
 ;: c@ is d
    gen_cmpz out
@@ -139,10 +156,9 @@ gen_expr(out @FILE e @Node c @i32 depth @i32) =
 ;: (println out "  jmp .L.end.%d" d)
 ;: (println out ".L.else.%d:" d)
 ;: gen_expr out e.a.s.s c depth
-;: (println out ".L.end.%d:" d);
-  case ND_LOGAND: 
-  case ND_LOGOR : return
-   gen_expr out e.a c depth
+;: (println out ".L.end.%d:" d)
+:  (e.kind == ND_LOGAND || e.kind ==  ND_LOGOR)
+?  gen_expr out e.a c depth
 ;: (c@ = c@ + 1)
 ;: c@ is d
    gen_cmpz out
@@ -150,22 +166,17 @@ gen_expr(out @FILE e @Node c @i32 depth @i32) =
 ;: (e.a.s.t.kind == TY_VOID && gen_push out depth)
 ;: gen_expr out e.a.s c depth
 ;: (e.a.s.t.kind == TY_VOID && gen_pop out depth "%rax")
-;: (println out ".L.end.%ld:" d);
-  case ND_FUNCALL: {
-    let stack_args = push_args out e c depth;
-    gen_expr out e.a c depth;
-    let gp = 0;
-    for (let arg @Node = e.a.s; arg; arg = arg.s)
-      if (gp < 6) gen_pop out depth argreg[2][gp] :; (gp = gp + 1);
-    return
-    (println out "  mov %%rax, %%r10") ;:
-    (println out "  call *%%r10") ;:
-    (println out "  add $%d, %%rsp" (stack_args * 8)) ;:
-    (depth@ = depth@ - stack_args);
-    ;;
-
-  return
-   gen_expr out e.a.s c depth
+;: (println out ".L.end.%ld:" d)
+:  (e.kind == ND_FUNCALL)
+?  push_args out e c depth is stack_args
+   gen_expr out e.a c depth
+;: 0 is gp
+   (!!e.a.s && e.a.s for e e.s :; (gp < 6 && gen_pop out depth argreg 2 gp :; (gp = gp + 1)) as void)
+;: (println out "  mov %%rax, %%r10")
+;: (println out "  call *%%r10")
+;: (println out "  add $%d, %%rsp" (stack_args * 8))
+;: (depth@ = depth@ - stack_args)
+:  gen_expr out e.a.s c depth
 ;: gen_push out depth
 ;: gen_expr out e.a c depth
 ;: gen_pop out depth "%rdi"
@@ -177,9 +188,9 @@ gen_expr(out @FILE e @Node c @i32 depth @i32) =
     ((e.a.s.t.kind == TY_PTR || e.a.s.t.kind == TY_ARRAY) && (println out "  imul $%d, %s" e.a.s.t.a.size ax) as void) ;:
     (println out "  add %s, %s" di ax) :
   (e.kind == ND_SUB) ? 
-    ((e.a.t.kind == TY_PTR || e.a.t.kind == TY_ARRAY) && !(e.a.s.t.kind == TY_PTR || e.a.s.t.kind == TY_ARRAY) && (println out "  imul $%d, %s" e.a.t.a.size di) as void) ;:
+    ((e.a.t.kind == TY_PTR || e.a.t.kind == TY_ARRAY) && !(e.a.s.t.kind is k (k == TY_PTR || k == TY_ARRAY)) && (println out "  imul $%d, %s" e.a.t.a.size di) as void) ;:
     (println out "  sub %s, %s" di ax) ;:
-    ((e.a.s.t.kind == TY_PTR || e.a.s.t.kind == TY_ARRAY) && (println out "  mov $%d,%s" e.a.s.t.a.size di) ;: (println out "  mov $0, %s" dx) ;: (println out "  div %s" di) as void) :
+    ((e.a.s.t.kind is k (k == TY_PTR || k == TY_ARRAY)) && (println out "  mov $%d,%s" e.a.s.t.a.size di) ;: (println out "  mov $0, %s" dx) ;: (println out "  div %s" di) as void) :
   (e.kind == ND_MUL) ? (println out "  imul %s, %s" di ax) :
   (e.kind == ND_DIV || e.kind == ND_MOD) ?
     (  (e.t.kind == TY_RING)
@@ -191,106 +202,58 @@ gen_expr(out @FILE e @Node c @i32 depth @i32) =
     (e.kind == ND_BITAND ) ? (println out "  and %s, %s" di ax) :
     (e.kind == ND_BITOR  ) ? (println out "  or  %s, %s" di ax) :
     (e.kind == ND_BITXOR ) ? (println out "  xor %s, %s" di ax) :
-    (e.kind == ND_EQ)  ?                           (println out "  cmp %s, %s" di ax) ;: (println out "  sete  %%al") ;: (println out "  movzb %%al, %%rax") :
-    (e.kind == ND_NE)  ?                           (println out "  cmp %s, %s" di ax) ;: (println out "  setne %%al") ;: (println out "  movzb %%al, %%rax") :
-    (e.kind == ND_SHL) ?                           (println out "  mov %%rdi, %%rcx") ;: (println out "  shl %%cl, %s" ax)                               :
-    (e.kind == ND_LT)  ? (e.a.t.kind == TY_RING) ? (println out "  cmp %s, %s" di ax) ;: (println out "  setb  %%al") ;: (println out "  movzb %%al, %%rax") 
-                                                 : (println out "  cmp %s, %s" di ax) ;: (println out "  setl  %%al") ;: (println out "  movzb %%al, %%rax") :
-    (e.kind == ND_LE)  ? (e.a.t.kind == TY_RING) ? (println out "  cmp %s, %s" di ax) ;: (println out "  setbe %%al") ;: (println out "  movzb %%al, %%rax") 
-                                                 : (println out "  cmp %s, %s" di ax) ;: (println out "  setle %%al") ;: (println out "  movzb %%al, %%rax") :
-    (e.kind == ND_GT)  ? (e.a.t.kind == TY_RING) ? (println out "  cmp %s, %s" di ax) ;: (println out "  seta  %%al") ;: (println out "  movzb %%al, %%rax") 
-                                                 : (println out "  cmp %s, %s" di ax) ;: (println out "  setg  %%al") ;: (println out "  movzb %%al, %%rax") :
-    (e.kind == ND_GE)  ? (e.a.t.kind == TY_RING) ? (println out "  cmp %s, %s" di ax) ;: (println out "  setae %%al") ;: (println out "  movzb %%al, %%rax") 
-                                                 : (println out "  cmp %s, %s" di ax) ;: (println out "  setge %%al") ;: (println out "  movzb %%al, %%rax") :
-                         (e.a.t.kind == TY_RING) ? (println out "  mov %%rdi, %%rcx") ;: (println out "  shr %%cl, %s" ax)
-                                                 : (println out "  mov %%rdi, %%rcx") ;: (println out "  sar %%cl, %s" ax) ;
+    (e.kind == ND_EQ     ) ?                           (println out "  cmp %s, %s" di ax) ;: (println out "  sete  %%al") ;: (println out "  movzb %%al, %%rax") :
+    (e.kind == ND_NE     ) ?                           (println out "  cmp %s, %s" di ax) ;: (println out "  setne %%al") ;: (println out "  movzb %%al, %%rax") :
+    (e.kind == ND_SHL    ) ?                           (println out "  mov %%rdi, %%rcx") ;: (println out "  shl %%cl, %s" ax)                                   :
+    (e.kind == ND_LT     ) ? (e.a.t.kind == TY_RING) ? (println out "  cmp %s, %s" di ax) ;: (println out "  setb  %%al") ;: (println out "  movzb %%al, %%rax")
+                                                     : (println out "  cmp %s, %s" di ax) ;: (println out "  setl  %%al") ;: (println out "  movzb %%al, %%rax") :
+    (e.kind == ND_LE     ) ? (e.a.t.kind == TY_RING) ? (println out "  cmp %s, %s" di ax) ;: (println out "  setbe %%al") ;: (println out "  movzb %%al, %%rax")
+                                                     : (println out "  cmp %s, %s" di ax) ;: (println out "  setle %%al") ;: (println out "  movzb %%al, %%rax") :
+    (e.kind == ND_GT     ) ? (e.a.t.kind == TY_RING) ? (println out "  cmp %s, %s" di ax) ;: (println out "  seta  %%al") ;: (println out "  movzb %%al, %%rax")
+                                                     : (println out "  cmp %s, %s" di ax) ;: (println out "  setg  %%al") ;: (println out "  movzb %%al, %%rax") :
+    (e.kind == ND_GE     ) ? (e.a.t.kind == TY_RING) ? (println out "  cmp %s, %s" di ax) ;: (println out "  setae %%al") ;: (println out "  movzb %%al, %%rax")
+                                                     : (println out "  cmp %s, %s" di ax) ;: (println out "  setge %%al") ;: (println out "  movzb %%al, %%rax") :
+                             (e.a.t.kind == TY_RING) ? (println out "  mov %%rdi, %%rcx") ;: (println out "  shr %%cl, %s" ax)
+                                                     : (println out "  mov %%rdi, %%rcx") ;: (println out "  sar %%cl, %s" ax) ;
 ;
 
-gen_stmt(out @FILE e @Node c @i32 depth @i32) =
-  (println out "  .loc %d %d" e.j.file.file_no e.j.line_no);
-  switch  e.kind {
-  case ND_IF: {
-    (c@ = c@ + 1) ;
-    let d = c@;
-    gen_expr out e.cond c depth;
-    gen_cmpz out;
-    (println out "  je  .L.else.%d" d);
-    gen_stmt out e.then c depth;
-    (println out "  jmp .L.end.%d" d);
-    (println out ".L.else.%d:" d);
-    if e.els gen_stmt out e.els c depth;
-    (println out ".L.end.%d:" d);
-    return;
-  ;
-  case ND_FOR: {
-    (c@ = c@ + 1) ;
-    let d = c@;
-    if e.init gen_stmt out e.init c depth;
-    (println out ".L.begin.%d:" d);
-    if e.cond{
-      gen_expr out e.cond c depth;
-      gen_cmpz out;
-      (println out "  je %s" e.brk_label);
-    ;
-    gen_stmt out e.then c depth;
-    if e.inc gen_expr out e.inc c depth;
-    (println out "  jmp .L.begin.%d" d);
-    (println out "%s:" e.brk_label);
-    return;
-  ;
-  case ND_DO: {
-    (c@ = c@ + 1) ;
-    let d = c@;
-    (println out ".L.begin.%d:" d);
-    gen_stmt out e.then c depth;
-    gen_expr out e.cond c depth;
-    gen_cmpz out;
-    (println out "  jne .L.begin.%d" d);
-    (println out "%s:" e.brk_label);
-    return;
-  ;
-  case ND_SWITCH:
-    gen_expr out e.cond c depth;
-
-    for (let n@Node = e.case_next; n; n = n.case_next) {
-      let ax = ((e.cond.t.size == 8) ? "%rax" : "%eax");
-      let di = ((e.cond.t.size == 8) ? "%rdi" : "%edi");
-
-      (println out "  cmp $%ld, %s" n.begin ax);
-      (println out "  je %s" n.label);
-    ;
-
-    if e.default_case (println out "  jmp %s" e.default_case.label);
-    (println out "  jmp %s" e.brk_label);
-    gen_stmt out e.then c depth;
-    (println out "%s:" e.brk_label);
-    return;
-  case ND_CASE:
-    (println out "%s:" e.label);
-    gen_stmt out e.a c depth;
-    return;
-  case ND_BLOCK:
-    for (let n@Node = e.body; n; n = n.s) gen_stmt out n c depth;
-    return;
-  case ND_GOTO:
-    (println out "  jmp %s" e.unique_label);
-    return;
-  case ND_LABEL:
-    (println out "%s:" e.unique_label);
-    gen_stmt out e.a c depth;
-    return;
-  case ND_RETURN:
-    if e.a gen_expr out e.a c depth;
-    (println out "  mov %%rbp, %%rsp")
-    ;: (println out "  pop %%rbp")
-    ;: (println out "  ret");
-    return;
-  case ND_EXPR_STMT:
-    gen_expr out e.a c depth;
-    return;
-  ;
-  (error_tok e.j "invalid statement");
-;
+gen_stmt(out @FILE e @Node c @i32 depth @i32) = return
+   (println out "  .loc %d %d" e.j.file.file_no e.j.line_no)
+;: (e.kind == ND_IF)
+?  (c@ = c@ + 1)
+;: c@ is d
+   gen_expr out e.cond c depth
+;: gen_cmpz out
+;: (println out "  je  .L.else.%d" d)
+;: gen_stmt out e.then c depth
+;: (println out "  jmp .L.end.%d" d)
+;: (println out ".L.else.%d:" d)
+;: (!!e.els && gen_stmt out e.els c depth as void)
+;: (println out ".L.end.%d:" d)
+:  (e.kind == ND_FOR)
+?  (c@ = c@ + 1)
+;: c@ is d
+   (!!e.init && gen_stmt out e.init c depth as void )
+;: (println out ".L.begin.%d:" d)
+;:(  !!e.cond
+  && gen_expr out e.cond c depth
+  ;: gen_cmpz out
+  ;: (println out "  je .L.end.%d" d) as void )
+;: gen_stmt out e.then c depth
+;: (!!e.inc && gen_expr out e.inc c depth as void )
+;: (println out "  jmp .L.begin.%d" d)
+;: (println out ".L.end.%d:" d)
+:  (e.kind == ND_BLOCK)
+?  (!!e.body && e.body for a a.s :; gen_stmt out a c depth as void)
+:  (e.kind == ND_RETURN)
+?  (!!e.a && gen_expr out e.a c depth as void)
+;: (println out "  mov %%rbp, %%rsp")
+;: (println out "  pop %%rbp")
+;: (println out "  ret")
+:  (e.kind  == ND_EXPR_STMT)
+?  gen_expr out e.a c depth
+:  (error_tok e.j "invalid statement")
+;;
 
 assign_param_offsets(f @Obj) = return
    !!f.params
@@ -307,8 +270,8 @@ as void
 assign_one_lvar_offset(fn @Obj) =
   if !fn.is_function return;
   assign_param_offsets fn;
-  let bottom = 0;
-  for (let var@Obj = fn.locals; var; var = var.s)
+  let bottom = 0 var = fn.locals;
+  for (none; var; var = var.s)
     if !var.offset {
     let alignment = var.alignment as i64;
     (bottom = bottom + var.t.size);
@@ -318,7 +281,8 @@ assign_one_lvar_offset(fn @Obj) =
 assign_lvar_offsets(prog @Obj) = return prog for f f.s :; assign_one_lvar_offset f as void;;
 
 emit_data(out @FILE prog @Obj) =
-  for (let var@Obj = prog; var; var = var.s)
+  let var = prog;
+  for (none; var; var = var.s)
     if !(var.is_function || !var.is_definition) {
     if !var.is_export (println out "  .local %s" var.name);
     else (println out "  .globl %s" var.name);
@@ -355,17 +319,19 @@ emit_data(out @FILE prog @Obj) =
 ;
 
 store_gp_shit(out @FILE r i32 offset i32 sz i32) =
-  for (let i i32 = 0; i < sz; ((i :; (i = i + 1)))) {
-    (println out "  mov %s, %d(%%rbp)" argreg[0][r] (offset + i));
-    (println out "  shr $8, %s" argreg[2][r]);;;
+  let i = 0;
+  for (none; i < sz; ((i :; (i = i + 1)))) {
+    (println out "  mov %s, %d(%%rbp)" argreg 0 r (offset + i));
+    (println out "  shr $8, %s" argreg 2 r);;;
 store_gp(out @FILE r i32 offset i32 sz i32) = return
-  (sz == 1) ? (println out "  mov %s, %d(%%rbp)" argreg[0][r] offset) :
-  (sz == 4) ? (println out "  mov %s, %d(%%rbp)" argreg[1][r] offset) :
-  (sz == 8) ? (println out "  mov %s, %d(%%rbp)" argreg[2][r] offset) :
+  (sz == 1) ? (println out "  mov %s, %d(%%rbp)" argreg 0 r offset) :
+  (sz == 4) ? (println out "  mov %s, %d(%%rbp)" argreg 1 r offset) :
+  (sz == 8) ? (println out "  mov %s, %d(%%rbp)" argreg 2 r offset) :
               store_gp_shit out r offset sz                           ;;
 
 emit_text(out @FILE prog @Obj c @i32) =
-  for (let fn @Obj = prog; fn; fn = fn.s)
+  let fn = prog;
+  for (none; fn; fn = fn.s)
     if (!(!fn.is_function || !fn.is_definition)) {
     if !fn.is_export (println out "  .local %s" fn.name);
     else             (println out "  .globl %s" fn.name);
@@ -376,8 +342,8 @@ emit_text(out @FILE prog @Obj c @i32) =
     (println out "  mov %%rsp, %%rbp");
     (println out "  sub $%d, %%rsp" fn.stack_size);
     if fn.va_area {
-      let gp = 0;
-      for (let var@Obj = fn.params; var; var = var.s) ((gp :; (gp = gp + 1)));
+      let gp = 0 var = fn.params;
+      for (none; var; var = var.s) ((gp :; (gp = gp + 1)));
       let off = fn.va_area.offset;
       (println out "  movl $%d, %d(%%rbp)" (gp * 8) off);
       (println out "  movq %%rbp, %d(%%rbp)" (off + 8));
@@ -391,7 +357,6 @@ emit_text(out @FILE prog @Obj c @i32) =
       (b = b + 8); (println out "  movq %%rcx, %d(%%rbp)"   b);
       (b = b + 8); (println out "  movq %%r8, %d(%%rbp)"    b);
       (b = b + 8); (println out "  movq %%r9, %d(%%rbp)"    b);;
-    
     (  0 is gp
        fn.params for o
       (  !!o

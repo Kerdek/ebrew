@@ -1,12 +1,12 @@
 #"chub.hb"
 
 export preprocess(in @i8 files @@@File) @Token = return
-   new Token {; is head
+   new Token is head
    0 is file_n
    tokenize in file_n files is j
    &head is cur
    (  j for j
-     (  j.kind != TK_EOF
+     (  j.kind != 0
      && !token_equal j "#"
      ?  (cur.s = j)
      ;: (cur = cur.s)
@@ -15,12 +15,12 @@ export preprocess(in @i8 files @@@File) @Token = return
      ;: (file_n = file_n + 1)
      ;: tokenize (format"%s/%s" dirname strdup j.file.name strndup (j.s.loc + 1) cast %i64 (j.s.len - 2)) file_n files is a
         (!a && (error_tok j.s "%s: cannot open file: %s" j.s strerror errno) as void)
-     ;: (a.kind == TK_EOF)
+     ;: (a.kind == 0)
      ?  j.s.s
-     :  new Token {; is head
+     :  new Token is head
        &head is cur
        (  a for b
-         (  b.kind != TK_EOF
+         (  b.kind != 0
          && b.s
          :; (cur.s = cast @Token calloc 1ul sizeof Token)
          :; (cur.s@ = b@)

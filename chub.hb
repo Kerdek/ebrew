@@ -5,20 +5,19 @@ overflow_arg_area@
 reg_save_area@;
 };
 
-type FILE struct _IO_FILE;
+type FILE struct {};
 
 type
   NodeKind enum
-    ND_NULL_EXPR  ND_ADD        ND_SUB     ND_MUL        ND_DIV
-    ND_NEG        ND_MOD        ND_BITAND  ND_BITOR      ND_BITXOR
-    ND_SHL        ND_SHR        ND_EQ      ND_NE         ND_LT
-    ND_LE         ND_GT         ND_GE      ND_ASSIGN     ND_COND
-    ND_COMMA      ND_MEMBER     ND_ADDR    ND_DEREF      ND_NOT
-    ND_BITNOT     ND_LOGAND     ND_LOGOR   ND_RETURN     ND_IF
-    ND_FOR        ND_DO         ND_SWITCH  ND_CASE       ND_BLOCK
-    ND_GOTO       ND_LABEL      ND_FUNCALL ND_LET
-    ND_EXPR_STMT  ND_VAR        ND_NUM     ND_CAST
-    ND_MEMZERO    ND_REPEAT     ND_THE        ND_THEN
+    ND_NULL_EXPR ND_ADD    ND_SUB     ND_MUL     ND_DIV
+    ND_NEG       ND_MOD    ND_BITAND  ND_BITOR   ND_BITXOR
+    ND_SHL       ND_SHR    ND_EQ      ND_NE      ND_LT
+    ND_LE        ND_GT     ND_GE      ND_ASSIGN  ND_COND
+    ND_COMMA     ND_MEMBER ND_ADDR    ND_DEREF   ND_NOT
+    ND_BITNOT    ND_LOGAND ND_LOGOR   ND_RETURN  ND_IF
+    ND_FOR       ND_BLOCK  ND_FUNCALL ND_LET     ND_EXPR_STMT
+    ND_VAR       ND_NUM    ND_CAST    ND_MEMZERO ND_REPEAT
+    ND_THE       ND_THEN
   ;
 
   TypeKind enum
@@ -36,12 +35,12 @@ type
   ;
 
   TokenKind enum
+    TK_EOF
     TK_ID
     TK_PCT
     TK_KEY
     TK_STR
     TK_NUM
-    TK_EOF
   ;
 
   File struct {
@@ -74,7 +73,6 @@ type
     a            @same
     params       @same
     name         @Token
-    name_pos     @Token
     is_variadic   bool;
   }
 
@@ -114,8 +112,6 @@ type
     init          @same
     inc           @same
     body          @same
-    case_next     @same
-    default_case  @same
     s             @same
     a             @same
     t             @Type
@@ -190,7 +186,6 @@ export strerror            (errnum        i32)@i8 ;
 export strncasecmp         (s1            @const i8 s2@const i8 n %i64)i32;
 
 export token_equal(j @Token op @i8) bool;
-
 export type_equal (a @Type b @Type) bool;
 
 export advance(k @@Token) @Token;

@@ -1,11 +1,11 @@
 # "chub.hb"
 
 export 
-  ty_void @Type = &new Type { TY_VOID  1  1 ;
-  ty_bool @Type = &new Type { TY_BOOL  1  1 ;
-  ty_i8   @Type = &new Type { TY_I08   1  1 ;
-  ty_i32  @Type = &new Type { TY_I32   4  4 ;
-  ty_i64  @Type = &new Type { TY_I64   8  8 ;;
+  ty_void @Type
+  ty_bool @Type
+  ty_i8   @Type
+  ty_i32  @Type
+  ty_i64  @Type;
 
 new_type(kind TypeKind size i32 alignment i32) @Type = return
 cast @Type calloc 1ul sizeof Type is t t
@@ -56,26 +56,26 @@ export type_equal(t @Type u @Type) bool = return
                           false                                             )))));;
 
 export copy_type(t @Type) @Type = return
-  cast @Type calloc 1ul sizeof Type is u
-  (u@ = t@) ;:
-  (u.o = t) ;:
-  u;;
+   cast @Type calloc 1ul sizeof Type is u u
+:; (u@ = t@)
+;: (u.o = t)
+;;
 export pointer_to(base@ Type)@ Type = return
-  new_type TY_PTR 8 8 is t
-  (t.a = base) ;:
-  t;;
+   new_type TY_PTR 8 8 is t t
+:; (t.a = base)
+;;
 export ring_of(base @Type) @Type = return
-  new_type TY_RING base.size base.alignment is t
-  (t.a = base) ;:
-  t;;
+   new_type TY_RING base.size base.alignment is t t
+:; (t.a = base)
+;;
 export func_type(return_ty@ Type)@ Type = return
-  new_type TY_FUNC 1 1 is t
-  (t.a = return_ty) ;:
-  t;;
+   new_type TY_FUNC 1 1 is t t
+:; (t.a = return_ty)
+;;
 export array_of(base @Type len i32)@ Type = return
-  new_type TY_ARRAY (base.size * len) base.alignment is t
-  (t.a = base) ;:
-  (t.array_len = len) ;:
-  t;;
-export enum_type  () @Type = return new_type TY_ENUM 4 4;;
+   new_type TY_ARRAY (base.size * len) base.alignment is t t
+:; (t.a = base)
+;: (t.array_len = len)
+;;
+export enum_type  () @Type = return new_type TY_ENUM   4 4;;
 export struct_type() @Type = return new_type TY_STRUCT 0 1;;
