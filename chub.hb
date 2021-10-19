@@ -1,13 +1,14 @@
-type va_list struct {
-gp_offset %i32
-fp_offset %i32
-overflow_arg_area@
-reg_save_area@;
-};
-
-type FILE struct {};
-
 type
+
+  va_list struct {
+    gp_offset         %i32
+    fp_offset         %i32
+    overflow_arg_area @
+    reg_save_area     @
+  }
+
+  FILE struct {}
+
   NodeKind enum
     ND_NULL_EXPR ND_ADD    ND_SUB     ND_MUL     ND_DIV
     ND_NEG       ND_MOD    ND_BITAND  ND_BITOR   ND_BITXOR
@@ -57,7 +58,7 @@ type
     len         i32
     t          @
     str        @i8
-    file       @File
+    in         @File
     line_no     i32
     origin     @same;
   }
@@ -65,7 +66,7 @@ type
   Type struct  {
     kind          TypeKind
     size          i32
-    alignment     i32
+    align     i32
     offset        i32
     array_len     i32
     s            @same
@@ -73,23 +74,22 @@ type
     a            @same
     params       @same
     name         @Token
-    is_variadic   bool;
+    is_variadic   bool
   }
 
   Relocation struct {
     s       @same
     offset   i32
     label  @@i8
-    addend   i64;
+    addend   i64
   }
 
   Obj struct {
     s            @same
     name            @i8
-    t              @Type
-    j             @Token
+    t               @Type
+    j               @Token
     is_local         bool
-    alignment        i32
     offset           i32
     is_function      bool
     is_definition    bool
@@ -102,7 +102,7 @@ type
     body            @
     locals          @same
     va_area         @same
-    stack_size       i32;
+    stack_size       i32
   }
 
   Node struct {
@@ -117,7 +117,6 @@ type
     t             @Type
     j             @Token
     brk_label     @i8
-    member        @Type
     label         @i8
     unique_label  @i8
     var           @Obj
@@ -125,99 +124,125 @@ type
     begin          i64
     end            i64
     val            i64
-    pass_by_stack  bool;
+    pass_by_stack  bool
   }
 
   HashEntry struct {
     a    @i8
-    n  i32
-    val    @;
+    n     i32
+    val  @
   }
 
   HashMap struct {
     buckets  @HashEntry
     capacity  i32
-    used      i32;
+    used      i32
   }
 ;
 
 export extern
-  ty_void @Type
-  ty_bool @Type
+  ty_null @Type
+  ty_none @Type
+  ty_i1   @Type
   ty_i8   @Type
   ty_i32  @Type
   ty_i64  @Type
 ;
 
 export __errno_location    (             )@i32 ;
+
 export dirname             (path          @i8) @i8 ;
 export basename            (path          @i8) @i8 ;
-export isalnum             (c             i32) i32;
-export isdigit             (c             i32) i32;
-export isspace             (c             i32) i32;
-export isxdigit            (c             i32) i32;
-export fopen               (filename      @const i8 modes@const i8)@FILE ;
-export open_memstream      (bufloc        @@i8 sizeloc@%i64)@FILE ;
-export printf              (format        @const i8 ...)i32;
-export fputc               (c             i32 stream@FILE)i32;
-export fread               (ptr           @ size %i64 n %i64  stream@FILE)%i64 ;
-export fwrite              (ptr           @const size %i64 n %i64  s@FILE)%i64;
-export fclose              (stream        @FILE)i32;
-export fflush              (stream        @FILE)i32;
-export fprintf             (stream        @FILE format@const i8 ...)i32;
-export vprintf             (format@const i8 arg @va_list)i32;
-export vfprintf            (s             @FILE  format@const i8 arg @va_list)i32;
-export strtoul             (nptr          @const i8 endptr@@i8 base i32)%i64;
-export calloc              (nmemb         %i64 size %i64)@;
-export realloc             (ptr           @ size %i64)@;
-export free                (ptr           @) ;
-export exit                (status        i32) ;
-export memcmp              (s1            @ const s2@ const n %i64)i32;
-export strcat              (dest          @i8  src@const i8)@i8;
-export strncat             (dest          @i8  src@const i8 n %i64)@i8 ;
-export strcmp              (s1            @const i8 s2@ const i8)i32;
-export strncmp             (s1            @const i8 s2@ const i8 n %i64)i32;
-export strdup              (s             @const i8)@i8;
-export strndup             (string        @const i8 n %i64)@i8;
-export strrchr             (s             @const i8 c i32)@i8;
-export strstr              (haystack      @const i8 needle@ const i8)@i8;
-export strlen              (s             @const i8)%i64;
-export strerror            (errnum        i32)@i8 ;
-export strncasecmp         (s1            @const i8 s2@const i8 n %i64)i32;
 
-export token_equal(j @Token op @i8) bool;
-export type_equal (a @Type b @Type) bool;
+export open_memstream      (p    @@i8 n    @%i64) @FILE ;
+export fopen               (path  @i8 mode @ i8 ) @FILE ;
 
-export advance(k @@Token) @Token;
-export format(fmt@ i8 ...)@ i8;
-export error_at(loc@ i8 file @File fmt@ i8 ...);
-export error_tok(j@ Token fmt@ i8 ...);
-export expect(j@@ Token op@ i8);
-export consume(rest@@ Token j@ Token str@ i8)bool;
-export tokenize(filename@ i8 file_n i32 files @@@File)@ Token;
-export preprocess(in @i8 files @@@File) @Token;
-export const_expr(k @@Token) i64;
-export parse(j@ Token)@ Obj;
-export format_type      (t         @Type s    @i8)      ;
-export copy_type        (t         @Type           ) @Type;
-export pointer_to       (base      @Type           ) @Type;
-export ring_of      (base      @Type           ) @Type;
-export func_type        (return_ty @Type           ) @Type;
-export array_of         (base      @Type size  i32 ) @Type;
-export enum_type        (                          ) @Type;
-export struct_type      (                          ) @Type;
-export codegen(prog@ Obj out@ FILE files @@File);
+export fclose              (io @FILE) i32 ;
+export fflush              (io @FILE) i32 ;
 
-export hashmap_get(map@ HashMap a@ i8)@;
-export hashmap_get2(map@ HashMap a@ i8 n i32)@;
-export hashmap_put(map@ HashMap a@ i8 val@);
-export hashmap_put2(map@ HashMap a@ i8 n i32 val@);
-export hashmap_delete(map@ HashMap a@ i8);
-export hashmap_delete2(map@ HashMap a@ i8 n i32);
+export fread               (ptr @ m %i64 n %i64 io @FILE) %i64 ;
+export fwrite              (ptr @ m %i64 n %i64 io @FILE) %i64 ;
+export fputc               (c   i32             io @FILE)  i32 ;
 
-inline errno() i32 = (__errno_location)@;;
-inline maxl(a i64 b i64) i64 = (a > b) ? a : b;;
-inline minl(a i64 b i64) i64 = (a < b) ? a : b;;
-inline maxul(a % i64 b % i64) % i64 = (a > b) ? a : b;;
-inline minul(a % i64 b % i64) % i64 = (a < b) ? a : b;;
-inline align_to(n i32 alignment i32) i32 = return (n + alignment - 1) / alignment * alignment;;
+export printf              (         fmt @i8 ...          ) i32 ;
+export vprintf             (         fmt @i8 args @va_list) i32 ;
+export fprintf             (io @FILE fmt @i8 ...          ) i32 ;
+export vfprintf            (io @FILE fmt @i8 args @va_list) i32 ;
+
+export exit                (status i32) ;
+
+export calloc              (m %i64 n %i64) @ ;
+export realloc             (p @    n %i64) @ ;
+export free                (p @          )   ;
+
+export memcmp              (p @ q @ n %i64) i32 ;
+
+export strtoul             (p @i8 q @@i8  b  i32) %i64 ;
+export strrchr             (p @i8 q   i32       ) @i8  ;
+export strcat              (p @i8 q  @i8        ) @i8  ;
+export strstr              (p @i8 q  @i8        ) @i8  ;
+export strcmp              (p @i8 q  @i8        )  i32 ;
+export strncat             (p @i8 q  @i8  n %i64) @i8  ;
+export strncmp             (p @i8 q  @i8  n %i64)  i32 ;
+export strncasecmp         (p @i8 q  @i8  n %i64)  i32 ;
+export strndup             (p @i8         n %i64) @i8  ;
+export strdup              (p @i8               ) @i8  ;
+export strlen              (p @i8               ) %i64 ;
+
+export strerror            (errnum          i32              ) @i8  ;
+
+export type_equal       (a @Type b @Type                      ) bool   ;
+export tokenize         (filename@ i8 file_n i32 files @@@File) @Token ;
+export const_expr       (k @@Token                            ) i64    ;
+export parse            (j  @Token                            ) @Obj   ;
+export format_type      (t         @Type s    @i8             )        ;
+export copy_type        (t         @Type                      ) @Type  ;
+export pointer_to       (base      @Type                      ) @Type  ;
+export ring_of          (base      @Type                      ) @Type  ;
+export func_type        (return_ty @Type                      ) @Type  ;
+export array_of         (base      @Type size  i32            ) @Type  ;
+export enum_type        (                                     ) @Type  ;
+export struct_type      (                                     ) @Type  ;
+export codegen          (prog@ Obj out@ FILE files @@File     )        ;
+
+inline errno() i32 = (__errno_location)@ ;;
+
+inline maxl (a i64 b i64    )   i64 = (a > b) ? a : b ;;
+inline minl (a i64 b i64    )   i64 = (a < b) ? a : b ;;
+inline maxul(a % i64 b % i64) % i64 = (a > b) ? a : b ;;
+inline minul(a % i64 b % i64) % i64 = (a < b) ? a : b ;;
+
+inline align_to(n i32 a i32) i32 = return (n + a - 1) / a * a;;
+
+inline vdiag(in @i8 c @i8 line_n i32 p @i8 fmt @i8 args @va_list) = return
+   (p for q (c < q && q[-1] != '\n' && (q - 1)))    is line
+   (p for q (!!q@  && q[ 0] != '\n' && (q + 1)))    is end
+   (printf "./%s:(%d,%d): " in line_n (p - line + 1)) is indent
+   (cast none printf "%.*s\n%*s^ " (end - line) line ((p - line as i32) + indent) "")
+;:  cast none vprintf fmt args
+;: (cast none printf "\n")
+;;
+
+inline diag(p@ i8 in @File fmt@ i8 ...) = return
+   1 is line_no
+   (in.contents for p (p < p && (p + 1) :; ((p@ == '\n') && (line_no = line_no + 1) as none)) as none)
+;: vdiag in.name in.contents line_no p fmt cast @va_list __va_area__
+;: exit 1
+;;
+
+inline jdiag(j@ Token fmt@ i8 ...) = return vdiag j.in.name j.in.contents j.line_no j.loc fmt cast @va_list __va_area__ ;: exit 1 ;;
+inline jeq(j @Token op @i8) bool = return ! memcmp cast @ j.loc cast @ op cast %i64 j.len && !op[j.len];;
+inline jadv(k @@Token) @Token = return k@ :; (k@ = k.s) ;;
+
+inline expect(j @@Token op@ i8) = return (!jeq j@ op && (jdiag j@ "expected '%s'" op) as none) ;: (j@ = j.s) ;;
+inline consume(rest@@ Token j@ Token str@ i8) bool = return jeq j str is c c :; (rest@ = c ? j.s : j) ;;
+
+inline format(fmt@ i8 ...) @i8 = return
+   cast @i8  0 is buf
+   cast %i64 0 is buflen
+   open_memstream &buf &buflen is out
+   (cast @va_list __va_area__)@ is ap
+   (vfprintf out fmt &ap)
+;: fclose out
+;: buf
+;;

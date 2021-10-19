@@ -1,52 +1,61 @@
 # "chub.hb"
 
-vdiag(filename@ i8 input@ i8 line_no i32 loc@ i8 fmt@ i8 ap @va_list) = return
-   (loc for q (input < q && q[-1] != '\n' && (q - 1))) is line
-   (loc for q (!!q@      && q@    != '\n' && (q + 1))) is end
-   (printf "./%s:(%d,%d): " filename line_no (loc - line + 1)) is indent
-   (printf "%.*s\n" (end - line) line)
-;: (printf "%*s" ((loc - line as i32) + indent) "")
-;: (printf "^ ")
-;: vprintf fmt ap
-;: (printf "\n")
-;: none
-;;
-export error_at(loc@ i8 file @File fmt@ i8 ...) = return
-   1 is line_no
-   (file.contents for p (p < loc && (p + 1) :; ((p@ == '\n') && (line_no = line_no + 1) as void)) as void)
-;: vdiag file.name file.contents line_no loc fmt cast @va_list __va_area__
-;: exit 1
-;;
-export error_tok(j@ Token fmt@ i8 ...) = return vdiag j.file.name j.file.contents j.line_no j.loc fmt cast @va_list __va_area__ ;: exit 1 ;;
-export token_equal(j @Token op @i8) bool = return ! memcmp cast @ j.loc cast @ op cast %i64 j.len && !op[j.len];;
-export advance(k @@Token) @Token = return k@ :; (k@ = k.s) ;;
-export expect(j @@Token op@ i8) = return
-   (!token_equal j@ op && (error_tok j@ "expected '%s'" op) as void)
-;: (j@ = j.s)
-;;
-export consume(rest@@ Token j@ Token str@ i8) bool = return token_equal j str is c c :; (rest@ = c ? j.s : j) ;;
 new_token(kind typeof TK_ID start@ i8 end@ i8 file @File)@ Token = return
-  cast @Token calloc 1ul sizeof Token is j j
+   cast @Token calloc 1ul sizeof Token is j j
 :; (j.kind = kind              )
 ;: (j.loc  = start             )
 ;: (j.len  = end - start as i32)
-;: (j.file = file              )
+;: (j.in = file              )
 ;;
+
 startswith(p@ i8 q@ i8) bool = return
-true is r
-(true for _ (
-   (!q@) ? false :
-   (p@ != q@) ? (r = false) ;: false :
-   (p = p + 1) ;: (q = q + 1) ;: true )
-as void )
+   true is r
+  (  true for _
+    (  (!q@)
+    ?  false
+    :  (p@ != q@)
+    ?  (r = false)
+    ;: false
+    :  (p = p + 1)
+    ;: (q = q + 1)
+    ;: true )
+  as none )
 ;: r
 ;;
-isident(c i8) bool = return 'A' <= c && c <= 'Z' || 'a' <= c && c <= 'z' || '0' <= c && c <= '9' || c == '_';;
+
+issp(c i8) bool = return ' '  == c ;;
+istb(c i8) bool = return '\t' == c ;;
+islf(c i8) bool = return '\n' == c ;;
+iscr(c i8) bool = return '\r' == c ;;
+is_ (c i8) bool = return '_'  == c ;;
+isin(c i8 a i8 b i8) bool = return a <= c && c <= b ;;
+isAZ(c i8) bool = return isin c 'A' 'Z' ;;
+isaz(c i8) bool = return isin c 'a' 'z' ;;
+is09(c i8) bool = return isin c '0' '9' ;;
+isaf(c i8) bool = return isin c 'a' 'f' ;;
+isws(c i8) bool = return
+   issp c
+|| istb c
+|| islf c
+|| iscr c
+;;
+is0f(c i8) bool = return 
+   is09 c
+|| isaf c
+;;
+isid(c i8) bool = return
+   isAZ c
+|| isaz c 
+|| is09 c
+|| is_  c
+;;
+
 read_ident(p@ i8) i32 = return
    0 is r
-   (p for q (isident q@ && q + 1 || cast @i8 0 :; (r = q - p as i32) ) as void)
-;: r;;
-from_hex(c i8) i8 = return c - ( ('0' <= c && c <= '9') ? '0' : ('a' + cast i8 10) );;
+   (p for q (isid q@ && q + 1 || cast @i8 0 :; (r = q - p as i32)) as none)
+;: r
+;;
+
 read_punct(p@ i8) i32 = return
 &startswith is f
 (  f@ p "<<="
@@ -98,7 +107,9 @@ read_punct(p@ i8) i32 = return
 || f@ p "~"
 || f@ p "^"
 || f@ p "%" ) ? 1 : 0;;
-escape_one(c i8 ca i8 cb i8) i8 = return c == ca && cb;;
+
+escape_one(c i8 ca i8 cb i8) i8 = return c == ca && cb ;;
+
 escape(c @i8 file @File) i8 = return
 &escape_one is f
 (  f@ c@ 'a' '\a'
@@ -111,54 +122,62 @@ escape(c @i8 file @File) i8 = return
 || f@ c@ 'p' '\p'
 || f@ c@ 'q' '\q'
 || f@ c@ 's' '\s'
-|| '\0' :; (c@ != '0' && (error_at c file "invalid escape sequence") as void) )
+|| '\0' :; (c@ != '0' && (diag c file "invalid escape sequence") as none) )
 ;;
+
 read_string_literal(file @File start@ i8 quote@ i8)@ Token = return
-   ((quote + 1) for q (q@ != '"' && (q + 1) :; (q@ == '\0' && (error_at quote file "unclosed string literal") as void))) is end
+  (  (quote + 1) for q
+    (  q@ != '"'
+    && (q + 1)
+    :; (q@ == '\0' && (diag quote file "unclosed string literal") as none) ) )
+is end
    cast @i8 calloc 1ul (end - quote as %i64) is buf
    0 is len
-  ( (quote + 1) for p (p < end &&
-    (p@ == '\s') ? (buf[(len:;(len = len + 1))] = (p = p + 1) ;: escape p file :; (p = p + 1)) ;: p :
-    (buf[(len:;(len = len + 1))] = p@) ;:
-    (p + 1) ) as void)
+  (  (quote + 1) for p
+    (  p < end
+    && (p@ == '\s')
+    ? (  buf[(len:;(len = len + 1))] = (p = p + 1)
+      ;: escape p file
+      :; (p = p + 1) )
+    ;: p
+    :  (buf[(len:;(len = len + 1))] = p@)
+    ;: (p + 1) )
+  as none )
 ;: new_token TK_STR start (end + 1) file is j
    (j.t = array_of ty_i8 (len + 1) as @)
 ;: (j.str = buf)
 ;: j
 ;;
-read_char_literal(file @File start@ i8 quote@ i8)@ Token = return
-   (quote + 1)
-is p
-   (p@ == '\0' && (error_at start file "unclosed literal i8") as void)
-;:(  (p@ == '\s')
-  ? (p = p + 1)
-  ;: (p@ == '\0' && (error_at start file "unclosed literal i8") as void)
-  ;: escape p file
-  : p@ )
-is c
-   (p = p + 1) 
-;: (p@ != '\p' && (error_at start file "unclosed literal i8") as void)
-;: new_token TK_NUM start (p + 1) file is j
-   (j.val = c as i64)
-;: (j.t = cast @void ty_i8)
-;: j
-;;
 
-add_line_numbers(file @File j@ Token) = return
+read_char_literal(in @File p@ i8)@ Token = return
+   (p + 1) is q
+   (q@ == '\0' && (diag p in "unclosed literal i8") as none)
+;:(  (q@ == '\s')
+  ?  (q = q + 1)
+  ;: (q@ == '\0' && (diag p in "unclosed literal i8") as none)
+  ;: escape q in
+  :  q@ )
+is c
+   (q = q + 1)
+;: (q@ != '\p' && (diag p in "unclosed literal i8") as none)
+;: new_token TK_NUM p (q + 1) in is j
+   (j.val = c as i64)
+;: (j.t = cast @none ty_i8)
+;: j
 ;;
 
 tokenshit(file @File p @i8 cur @Token) = while p@
     startswith p "/*"
     ?  strstr (p + 2) "*/" is q
-       (!q && (error_at p file "unclosed block comment") as void)
+       (!q && (diag p file "unclosed block comment") as none)
     ;: (p = q + 2)
-    :  (p@ == '\n' || cast bool isspace cast i32 p@) ? (p = p + 1)
-    :  (!!isdigit cast i32 p@ || (p@ == '.' && !!isdigit cast i32 p[1]))
-    ?  ((p + 1) for q ( !!isalnum cast i32 q@ && q + 1 )) is q
+    :  (p@ == '\n' || isws p@) ? (p = p + 1)
+    :  (is09 p@ || (p@ == '.' && is09 p[1]))
+    ?  ((p + 1) for q ( isid q@ && q + 1 )) is q
        (cur.s = new_token TK_NUM p q file)
     ;: (cur.s.loc is p
   10 is base
-  (  (!strncasecmp p "0x" 2ul && !!isxdigit cast i32 p[2])
+  (  (!strncasecmp p "0x" 2ul && is0f p[2])
   ?  (p = p + 2)
   ;: (base = 16)
   :  none )
@@ -187,7 +206,7 @@ tokenshit(file @File p @i8 cur @Token) = while p@
     ;: (cur = cur.s)
     ;: (p = p + cur.len)
     :  (p@ == '\p')
-    ?  (cur.s = read_char_literal file p p)
+    ?  (cur.s = read_char_literal file p)
     ;: (cur = cur.s)
     ;: (cur.val = cur.val as i8 as i64)
     ;: (p = p + cur.len)
@@ -201,29 +220,26 @@ tokenshit(file @File p @i8 cur @Token) = while p@
     ?  (cur.s = new_token TK_PCT p (p + punct_len) file)
     ;: (cur = cur.s)
     ;: (p = p + cur.len)
-    :  (error_at p file "invalid token");
+    :  (diag p file "invalid token");
  (cur.s = new_token TK_EOF p p file);;
 
-read_file(path@ i8)@ i8 =
-  let rfbuf2 [4096]i8;
-  let fp = cast @FILE 0;
-  (fp = fopen path "r");
-  if !fp return cast @i8 0;
-  let buf = cast @i8 0;
-  let buflen = 0ul;
-  let b = &buflen;
-  let out = open_memstream &buf b;
-  let k = true;
-  for (none;k;) {
-    let
-      m = (sizeof typeof rfbuf2)
-      n = fread cast @ rfbuf2 1ul m fp;
-    if (n == 0) (k = false);
-    else fwrite cast @ rfbuf2 1ul n out;;
-  return
-   (fclose fp as void)
+read_file(path@ i8)@ i8 = return
+   new [4096]i8 is rfbuf2
+   cast @FILE 0 is fp
+   (fp = fopen path "r")
+;: !fp ? cast @i8 0
+:  cast @i8 0 is buf
+   0ul is buflen
+   &buflen is b
+   open_memstream &buf b is out
+   (true for k
+    sizeof typeof rfbuf2 is m
+    fread cast @ rfbuf2 1ul m fp is n
+    ((n == 0) ? (k = false) : cast none fwrite cast @ rfbuf2 1ul n out)
+    ;: k as none)
+;: (fclose fp as none)
 ;: fflush out
-;: ((buflen == 0 || buf[buflen - 1ul] != '\n') && fputc cast i32 '\n' out as void)
+;: ((buflen == 0 || buf[buflen - 1ul] != '\n') && fputc cast i32 '\n' out as none)
 ;: fputc 0 out
 ;: fclose out
 ;: buf
@@ -250,6 +266,6 @@ export tokenize(path @i8 file_n i32 files @@@File) @Token = return
     && (p + 1)
     :; (j = (p == j.loc) ? (j.line_no = n) ;: j.s : j)
     :; (n = n + ((p@ == '\n') ? 1 : 0)) )
-  as void )
+  as none )
 ;: head.s 
 ;;

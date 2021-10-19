@@ -1,22 +1,61 @@
 # "chub.hb"
 
-export main(argc i32 argv@@i8) i32 = return
-   (ty_void = cast @Type calloc 1ul sizeof Type) ;: (ty_void.kind = TY_VOID) ;: (ty_void.size = 1) ;: (ty_void.alignment = 1) ;:
-   (ty_bool = cast @Type calloc 1ul sizeof Type) ;: (ty_bool.kind = TY_BOOL) ;: (ty_bool.size = 1) ;: (ty_bool.alignment = 1) ;:
-   (ty_i8   = cast @Type calloc 1ul sizeof Type) ;: (ty_i8  .kind = TY_I08 ) ;: (ty_i8  .size = 1) ;: (ty_i8  .alignment = 1) ;:
-   (ty_i32  = cast @Type calloc 1ul sizeof Type) ;: (ty_i32 .kind = TY_I32 ) ;: (ty_i32 .size = 4) ;: (ty_i32 .alignment = 4) ;:
-   (ty_i64  = cast @Type calloc 1ul sizeof Type) ;: (ty_i64 .kind = TY_I64 ) ;: (ty_i64 .size = 8) ;: (ty_i64 .alignment = 8) ;:
-   argv[1] is in
-   basename strdup in is filename
-   strrchr filename cast i32 '.' is dot
-   (!!dot && (dot@ = '\0') as void)
-;: (format "%s%s" filename ".a") is output
-   fopen output "w" is out
-   !out
-?  (cast void printf "cannot open output file: %s: %s" output strerror errno)
-;: 1
-:  cast @@File calloc 1ul sizeof @File is files
-   codegen parse preprocess in &files out files
-;: cast void fclose out
-;: 0
+preprocess(in @i8 files @@@File) @Token = return
+   new Token is head
+   0 is file_n
+   tokenize in file_n files is j
+   &head is cur
+   (  j for j
+     (  j.kind != 0
+     && !jeq j "#"
+     ?  (cur.s = j)
+     ;: (cur = cur.s)
+     ;: j.s
+     :  (j.s.kind != TK_STR && (jdiag j.s "expected a filename") as none)
+     ;: (file_n = file_n + 1)
+     ;: tokenize (format"%s/%s" dirname strdup j.in.name strndup (j.s.loc + 1) cast %i64 (j.s.len - 2)) file_n files is a
+        (!a && (jdiag j.s "%s: cannot open file: %s" j.s strerror errno) as none)
+     ;: (a.kind == 0)
+     ?  j.s.s
+     :  new Token is head
+       &head is cur
+       (  a for b
+         (  b.kind != 0
+         && b.s
+         :; (cur.s = cast @Token calloc 1ul sizeof Token)
+         :; (cur.s@ = b@)
+         :; (cur.s.s = cast @Token 0)
+         :; (cur = cur.s) )
+       as none )
+     ;: (cur.s = j.s.s)
+     ;: head.s )
+   as none )
+;: head.s
+;;
+
+open_file(path @i8 mode @i8) @FILE = return fopen path mode || (cast none printf "cannot open file '%s' with mode '%s': %s" mode path strerror errno) ;;
+
+export main(argc i32 argv @@i8) i32 = return
+
+(ty_null = cast @Type 0                     ) ;:
+(ty_none = cast @Type calloc 1ul sizeof Type) ;: (ty_none.kind = TY_VOID) ;: (ty_none.size = 1) ;: (ty_none.align = 1) ;:
+(ty_i1   = cast @Type calloc 1ul sizeof Type) ;: (ty_i1  .kind = TY_BOOL) ;: (ty_i1  .size = 1) ;: (ty_i1  .align = 1) ;:
+(ty_i8   = cast @Type calloc 1ul sizeof Type) ;: (ty_i8  .kind = TY_I08 ) ;: (ty_i8  .size = 1) ;: (ty_i8  .align = 1) ;:
+(ty_i32  = cast @Type calloc 1ul sizeof Type) ;: (ty_i32 .kind = TY_I32 ) ;: (ty_i32 .size = 4) ;: (ty_i32 .align = 4) ;:
+(ty_i64  = cast @Type calloc 1ul sizeof Type) ;: (ty_i64 .kind = TY_I64 ) ;: (ty_i64 .size = 8) ;: (ty_i64 .align = 8) ;:
+
+                           argv[1] is in
+                basename strdup in is inpath
+       strrchr inpath cast i32 '.' is dot
+
+   (!!dot && (dot@ = '\0') as none) ;:
+
+  open_file (format "%s%s" inpath ".a") "w" is out
+
+  !out ? 1 : 0 :;
+
+        cast @@File calloc 1ul sizeof @File is files
+
+   codegen parse preprocess in &files out files ;: cast none fclose out ;: 0
+
 ;;
