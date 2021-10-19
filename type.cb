@@ -8,14 +8,14 @@ export
   ty_i32  @Type
   ty_i64  @Type;
 
-new_type(kind TypeKind size i32 align i32) @Type = return
+new_type(kind TypeKind size i32 align i32) @Type =
 cast @Type calloc 1ul sizeof Type is t t
 :; (t.kind  = kind )
 :; (t.size  = size )
 :; (t.align = align)
-;;
 
-export format_type(t @Type s @i8) = return
+
+export format_type(t @Type s @i8) =
 &strcat      is f
 &format_type is g
 t.kind       is c
@@ -37,12 +37,12 @@ t.kind       is c
                     f@ s "???"
 
 as none
-;;
 
-is_function_type_equal(p @Type q@Type) bool = return
-(true for _ (!!p && !!q && type_equal p q && (p = p.s) ;: (q = q.s) ) as none) ;: (p == q) ;;
 
-export type_equal(t @Type u @Type) bool = return
+is_function_type_equal(p @Type q@Type) bool =
+(true for _ (!!p && !!q && type_equal p q && (p = p.s) ;: (q = q.s) ) as none) ;: (p == q) 
+
+export type_equal(t @Type u @Type) bool =
   !!t &&
   !!u &&
   t.kind is c (
@@ -61,29 +61,29 @@ export type_equal(t @Type u @Type) bool = return
                           (t.array_len == u.array_len)                :
             (c == TY_PTR      ||
              c == TY_RING  )   ? type_equal t.a u.a                :
-                          false                                             )))));;
+                          false                                             )))))
 
-export copy_type(t @Type) @Type = return
+export copy_type(t @Type) @Type =
    cast @Type calloc 1ul sizeof Type is u u
 :; (u@ = t@)
 ;: (u.o = t)
-;;
-export ptr_of(base@ Type)@ Type = return
+
+export ptr_of(base@ Type)@ Type =
    new_type TY_PTR 8 8 is t t
 :; (t.a = base)
-;;
-export ring_of(base @Type) @Type = return
+
+export ring_of(base @Type) @Type =
    new_type TY_RING base.size base.align is t t
 :; (t.a = base)
-;;
-export func_of(return_ty@ Type)@ Type = return
+
+export func_of(return_ty@ Type)@ Type =
    new_type TY_FUNC 1 1 is t t
 :; (t.a = return_ty)
-;;
-export array_of(base @Type len i32)@ Type = return
+
+export array_of(base @Type len i32)@ Type =
    new_type TY_ARRAY (base.size * len) base.align is t t
 :; (t.a = base)
 ;: (t.array_len = len)
-;;
-export enum_of  () @Type = return new_type TY_ENUM   4 4;;
-export struct_of() @Type = return new_type TY_STRUCT 0 1;;
+
+export enum_of  () @Type = new_type TY_ENUM   4 4
+export struct_of() @Type = new_type TY_STRUCT 0 1

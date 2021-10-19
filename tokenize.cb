@@ -1,14 +1,14 @@
 # "chub.hb"
 
-new_token(kind typeof TK_ID start@ i8 end@ i8 file @File)@ Token = return
+new_token(kind typeof TK_ID start@ i8 end@ i8 file @File)@ Token =
    cast @Token calloc 1ul sizeof Token is j j
 :; (j.kind = kind              )
 ;: (j.loc  = start             )
 ;: (j.len  = end - start as i32)
 ;: (j.in = file              )
-;;
 
-startswith(p@ i8 q@ i8) bool = return
+
+startswith(p@ i8 q@ i8) bool =
    true is r
   (  true for _
     (  (!q@)
@@ -21,42 +21,42 @@ startswith(p@ i8 q@ i8) bool = return
     ;: true )
   as none )
 ;: r
-;;
 
-issp(c i8) bool = return ' '  == c ;;
-istb(c i8) bool = return '\t' == c ;;
-islf(c i8) bool = return '\n' == c ;;
-iscr(c i8) bool = return '\r' == c ;;
-is_ (c i8) bool = return '_'  == c ;;
-isin(c i8 a i8 b i8) bool = return a <= c && c <= b ;;
-isAZ(c i8) bool = return isin c 'A' 'Z' ;;
-isaz(c i8) bool = return isin c 'a' 'z' ;;
-is09(c i8) bool = return isin c '0' '9' ;;
-isaf(c i8) bool = return isin c 'a' 'f' ;;
-isws(c i8) bool = return
+
+issp(c i8) bool = ' '  == c 
+istb(c i8) bool = '\t' == c 
+islf(c i8) bool = '\n' == c 
+iscr(c i8) bool = '\r' == c 
+is_ (c i8) bool = '_'  == c 
+isin(c i8 a i8 b i8) bool = a <= c && c <= b 
+isAZ(c i8) bool = isin c 'A' 'Z' 
+isaz(c i8) bool = isin c 'a' 'z' 
+is09(c i8) bool = isin c '0' '9' 
+isaf(c i8) bool = isin c 'a' 'f' 
+isws(c i8) bool =
    issp c
 || istb c
 || islf c
 || iscr c
-;;
-is0f(c i8) bool = return 
+
+is0f(c i8) bool = 
    is09 c
 || isaf c
-;;
-isid(c i8) bool = return
+
+isid(c i8) bool =
    isAZ c
 || isaz c 
 || is09 c
 || is_  c
-;;
 
-read_ident(p@ i8) i32 = return
+
+read_ident(p@ i8) i32 =
    0 is r
    (p for q (isid q@ && q + 1 || cast @i8 0 :; (r = q - p as i32)) as none)
 ;: r
-;;
 
-read_punct(p@ i8) i32 = return
+
+read_punct(p@ i8) i32 =
 &startswith is f
 (  f@ p "<<="
 || f@ p ">>="
@@ -106,11 +106,11 @@ read_punct(p@ i8) i32 = return
 || f@ p "."
 || f@ p "~"
 || f@ p "^"
-|| f@ p "%" ) ? 1 : 0;;
+|| f@ p "%" ) ? 1 : 0
 
-escape_one(c i8 ca i8 cb i8) i8 = return c == ca && cb ;;
+escape_one(c i8 ca i8 cb i8) i8 = c == ca && cb 
 
-escape(c @i8 file @File) i8 = return
+escape(c @i8 file @File) i8 =
 &escape_one is f
 (  f@ c@ 'a' '\a'
 || f@ c@ 'b' '\b'
@@ -123,9 +123,9 @@ escape(c @i8 file @File) i8 = return
 || f@ c@ 'q' '\q'
 || f@ c@ 's' '\s'
 || '\0' :; (c@ != '0' && (diag c file "invalid escape sequence") as none) )
-;;
 
-read_string_literal(file @File start@ i8 quote@ i8)@ Token = return
+
+read_string_literal(file @File start@ i8 quote@ i8)@ Token =
   (  (quote + 1) for q
     (  q@ != '"'
     && (q + 1)
@@ -147,9 +147,9 @@ is end
    (j.t = array_of ty_i8 (len + 1) as @)
 ;: (j.str = buf)
 ;: j
-;;
 
-read_char_literal(in @File p@ i8)@ Token = return
+
+read_char_literal(in @File p@ i8)@ Token =
    (p + 1) is q
    (q@ == '\0' && (diag p in "unclosed literal i8") as none)
 ;:(  (q@ == '\s')
@@ -164,9 +164,9 @@ is c
    (j.val = c as i64)
 ;: (j.t = cast @none ty_i8)
 ;: j
-;;
 
-tokenshit(file @File p @i8 cur @Token) = return
+
+tokenshit(file @File p @i8 cur @Token) =
    (true for _ (p@ &&
     startswith p "/*"
     ?  strstr (p + 2) "*/" is q
@@ -222,9 +222,9 @@ tokenshit(file @File p @i8 cur @Token) = return
     ;: (cur = cur.s)
     ;: (p = p + cur.len)
     :  (diag p file "invalid token")) as none) ;:
- (cur.s = new_token TK_EOF p p file);;
+ (cur.s = new_token TK_EOF p p file)
 
-read_file(path@ i8)@ i8 = return
+read_file(path@ i8)@ i8 =
    new [4096]i8 is rfbuf2
    cast @FILE 0 is fp
    (fp = fopen path "r")
@@ -244,9 +244,9 @@ read_file(path@ i8)@ i8 = return
 ;: fputc 0 out
 ;: fclose out
 ;: buf
-;;
 
-export tokenize(path @i8 file_n i32 files @@@File) @Token = return
+
+export tokenize(path @i8 file_n i32 files @@@File) @Token =
    read_file path is p
    !p
 ?  cast @Token 0
@@ -269,4 +269,3 @@ export tokenize(path @i8 file_n i32 files @@@File) @Token = return
     :; (n = n + ((p@ == '\n') ? 1 : 0)) )
   as none )
 ;: head.s 
-;;

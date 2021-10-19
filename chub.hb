@@ -218,39 +218,39 @@ export struct_of   (                 ) @Type  ;
 
 
 
-inline errno() i32 = return (__errno_location)@ ;;
+inline errno() i32 = (__errno_location)@ 
 
-inline maxl (a i64 b i64    )   i64 = return (a > b) ? a : b ;;
-inline minl (a i64 b i64    )   i64 = return (a < b) ? a : b ;;
-inline maxul(a % i64 b % i64) % i64 = return (a > b) ? a : b ;;
-inline minul(a % i64 b % i64) % i64 = return (a < b) ? a : b ;;
+inline maxl (a i64 b i64    )   i64 = (a > b) ? a : b 
+inline minl (a i64 b i64    )   i64 = (a < b) ? a : b 
+inline maxul(a % i64 b % i64) % i64 = (a > b) ? a : b 
+inline minul(a % i64 b % i64) % i64 = (a < b) ? a : b 
 
-inline align_to(n i32 a i32) i32 = return (n + a - 1) / a * a;;
+inline align_to(n i32 a i32) i32 = (n + a - 1) / a * a
 
-inline vdiag(in @i8 c @i8 line_n i32 p @i8 fmt @i8 args @va_list) = return
+inline vdiag(in @i8 c @i8 line_n i32 p @i8 fmt @i8 args @va_list) =
    (p for q (c < q && q[-1] != '\n' && (q - 1)))    is line
    (p for q (!!q@  && q[ 0] != '\n' && (q + 1)))    is end
    (printf "./%s:(%d,%d): " in line_n (p - line + 1)) is indent
    (cast none printf "%.*s\n%*s^ " (end - line) line ((p - line as i32) + indent) "")
 ;:  cast none vprintf fmt args
 ;: (cast none printf "\n")
-;;
 
-inline diag(p@ i8 in @File fmt@ i8 ...) = return
+
+inline diag(p@ i8 in @File fmt@ i8 ...) =
    1 is line_no
    (in.contents for p (p < p && (p + 1) :; ((p@ == '\n') && (line_no = line_no + 1) as none)) as none)
 ;: vdiag in.name in.contents line_no p fmt cast @va_list __va_area__
 ;: exit 1
-;;
 
-inline jdiag(j@ Token fmt@ i8 ...) = return vdiag j.in.name j.in.contents j.line_no j.loc fmt cast @va_list __va_area__ ;: exit 1 ;;
-inline jeq(j @Token op @i8) bool = return ! memcmp cast @ j.loc cast @ op cast %i64 j.len && !op[j.len];;
-inline jadv(k @@Token) @Token = return k@ :; (k@ = k.s) ;;
 
-inline expect(j @@Token op@ i8) = return (!jeq j@ op && (jdiag j@ "expected '%s'" op) as none) ;: (j@ = j.s) ;;
-inline consume(rest@@ Token j@ Token str@ i8) bool = return jeq j str is c c :; (rest@ = c ? j.s : j) ;;
+inline jdiag(j@ Token fmt@ i8 ...) = vdiag j.in.name j.in.contents j.line_no j.loc fmt cast @va_list __va_area__ ;: exit 1 
+inline jeq(j @Token op @i8) bool = ! memcmp cast @ j.loc cast @ op cast %i64 j.len && !op[j.len]
+inline jadv(k @@Token) @Token = k@ :; (k@ = k.s) 
 
-inline format(fmt@ i8 ...) @i8 = return
+inline expect(j @@Token op@ i8) = (!jeq j@ op && (jdiag j@ "expected '%s'" op) as none) ;: (j@ = j.s) 
+inline consume(rest@@ Token j@ Token str@ i8) bool = jeq j str is c c :; (rest@ = c ? j.s : j) 
+
+inline format(fmt@ i8 ...) @i8 =
    cast @i8  0 is buf
    cast %i64 0 is buflen
    open_memstream &buf &buflen is out
@@ -258,4 +258,3 @@ inline format(fmt@ i8 ...) @i8 = return
    (vfprintf out fmt &ap)
 ;: fclose out
 ;: buf
-;;

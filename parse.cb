@@ -42,73 +42,73 @@ eval               (node @Node            ) i64
 eval2              (node @Node label @@@i8) i64
 eval_rval          (node @Node label @@@i8) i64;
 
-format_types(t @Type u @Type) = return
+format_types(t @Type u @Type) =
    (s1[0] = ""@)
 ;: (s2[0] = ""@) 
 ;: format_type t &s1[0] 
 ;: format_type u &s2[0] 
 ;: none
-;;
 
-push_scope  (k @Ctx c @i8       ) @Scope = return cast @Scope calloc 1ul sizeof Scope is s s :; (s.c = c) ;: (s.s = k.scope) ;: (k.scope = s) ;;
-search_scope(k @Ctx c @i8 n %i64) @Scope = return cast @Scope 0 is r (!!k.scope && k.scope for s (n != strlen s.c || !!strncmp s.c c n) ? s.s : (r = s) ;: cast @Scope 0 as none) ;: r ;;
 
-new_var(k @Ctx c @i8 t @Type) @Obj = return
+push_scope  (k @Ctx c @i8       ) @Scope = cast @Scope calloc 1ul sizeof Scope is s s :; (s.c = c) ;: (s.s = k.scope) ;: (k.scope = s) 
+search_scope(k @Ctx c @i8 n %i64) @Scope = cast @Scope 0 is r (!!k.scope && k.scope for s (n != strlen s.c || !!strncmp s.c c n) ? s.s : (r = s) ;: cast @Scope 0 as none) ;: r 
+
+new_var(k @Ctx c @i8 t @Type) @Obj =
    (calloc 1ul sizeof Obj as @Obj) is o
    (o.name = c) 
 ;: (o.t = t) 
 ;: ((push_scope k c).o = o) 
 ;: o
-;;
 
-new_lvar(k @Ctx c @i8 t @Type) @Obj = return
+
+new_lvar(k @Ctx c @i8 t @Type) @Obj =
    new_var k c t is o
    (o.is_local = true)
 ;: (o.s = k.locals)
 ;: (k.locals = o)
 ;: o
-;;
 
-new_gvar(k @Ctx c @i8 t @Type) @Obj = return
+
+new_gvar(k @Ctx c @i8 t @Type) @Obj =
    new_var k c t is o
    (o.s = k.globals)
 ;: (o.is_definition = true)
 ;: (k.globals = o)
 ;: o
-;;
 
-new_unique_name(k @Ctx) @i8 = return (format ".L..%d" k.nunid) :; (k.nunid = k.nunid + 1) ;;
-new_anon_gvar(k @Ctx t @Type) @Obj = return new_gvar k new_unique_name k t;;
-new_string_literal(k @Ctx p @i8 t @Type t2 @Type) @Obj = return new_anon_gvar k t2 is o (o.init_data = p) ;: o;;
 
-expect_type(j @Token t @Type u @Type) = return
+new_unique_name(k @Ctx) @i8 = (format ".L..%d" k.nunid) :; (k.nunid = k.nunid + 1) 
+new_anon_gvar(k @Ctx t @Type) @Obj = new_gvar k new_unique_name k t
+new_string_literal(k @Ctx p @i8 t @Type t2 @Type) @Obj = new_anon_gvar k t2 is o (o.init_data = p) ;: o
+
+expect_type(j @Token t @Type u @Type) =
    !!t
 && !type_equal t u
 && format_types t u
 ;: (jdiag j "expected %s but found %s" s1 s2) as none
-;;
 
-get_ident(j @Token) @i8 = return
+
+get_ident(j @Token) @i8 =
    ((j.kind != TK_ID) && (jdiag j "expected an nonymousifier") as none)
 ;: strndup j.loc cast %i64 j.len
-;;
 
-find_type(k @Ctx c @i8 n %i64) @Type = return
+
+find_type(k @Ctx c @i8 n %i64) @Type =
    (k.j.kind != TK_ID) ? ty_null
 :  search_scope k c n is s
    (!!s && s.t)
-;;
 
-declspec(k @Ctx v @VarAttr) = return
+
+declspec(k @Ctx v @VarAttr) =
   true for i (
     consume &k.j k.j "type"    && true :; (v.is_type   = true) ||
     consume &k.j k.j "export"  && true :; (v.is_export = true) ||
     consume &k.j k.j "extern"  && true :; (v.is_extern = true) ||
     consume &k.j k.j "inline"  && true :; (v.is_inline = true)  )
   as none
-;;
 
-enum_specifier(k @Ctx) @Type = return 
+
+enum_specifier(k @Ctx) @Type = 
   enum_of is t
   0 is l
   (  true for _
@@ -121,15 +121,15 @@ enum_specifier(k @Ctx) @Type = return
     ;: (l = l + 1) )
   as none )
 ;: t
-;;
 
-declarator(k @Ctx)@ Type = return
+
+declarator(k @Ctx)@ Type =
    jadv &k.j is j
    copy_type type_suffix k is t t
 :; (t.name = j)
-;;
 
-struct_members(k @Ctx t @Type) = return
+
+struct_members(k @Ctx t @Type) =
   new Type is head
   &head is cur
   (  true for _ 
@@ -140,18 +140,18 @@ struct_members(k @Ctx t @Type) = return
     ;: (cur = cur.s) )
   as none )
 ;: (t.a = head.s)
-;;
 
-struct_union_decl(k @Ctx) @Type = return
+
+struct_union_decl(k @Ctx) @Type =
    struct_of is t
    expect &k.j "{"
 ;: (k.current_type = t)
 ;: struct_members k t
 ;: (k.current_type = 0 as @Type)
 ;: t
-;;
 
-struct_decl(k @Ctx) @Type = return
+
+struct_decl(k @Ctx) @Type =
    struct_union_decl k is t
    (t.kind = TY_STRUCT)
 ;: (t.size < 0) ? t
@@ -164,9 +164,9 @@ struct_decl(k @Ctx) @Type = return
   as none)
 ;: (t.size = align_to bits (t.align * 8) / 8)
 ;: t
-;;
 
-type_specifier(k @Ctx)@ Type = return
+
+type_specifier(k @Ctx)@ Type =
    consume &k.j k.j "null"   ? ty_null
 :  consume &k.j k.j "none"   ? ty_none
 :  consume &k.j k.j "bool"   ? ty_i1
@@ -181,9 +181,9 @@ type_specifier(k @Ctx)@ Type = return
    find_type k k.j.loc cast %i64 k.j.len is t
    !t ? ty_none : t
 :; cast none jadv &k.j
-;;
 
-func_params(k @Ctx) @Type = return
+
+func_params(k @Ctx) @Type =
    new Type is head
    false is is_variadic
    &head is cur
@@ -199,9 +199,9 @@ as none)
    (t.params = head.s)
 ;: (t.is_variadic = is_variadic)
 ;: t
-;;
 
-array_dimensions(k @Ctx) @Type = return
+
+array_dimensions(k @Ctx) @Type =
    consume &k.j k.j "]"
 ?  type_suffix k is t
    array_of t -1
@@ -209,17 +209,17 @@ array_dimensions(k @Ctx) @Type = return
    expect &k.j "]"
 ;: type_suffix k is t
    array_of t cast i32 eval e
-;;
 
-type_suffix(k @Ctx) @Type = return
+
+type_suffix(k @Ctx) @Type =
    consume &k.j k.j "%" ? ring_of    type_suffix k
 :  consume &k.j k.j "(" ? func_params            k
 :  consume &k.j k.j "[" ? array_dimensions       k
 :  consume &k.j k.j "@" ? ptr_of type_suffix k
 :  type_specifier k
-;;
 
-eval2(e@ Node label @@@i8) i64 = return
+
+eval2(e@ Node label @@@i8) i64 =
   (e.kind == ND_NOT   ) ? cast i64 !eval e.a              :
   (e.kind == ND_ADD   ) ? (eval2 e.a label + eval e.a.s)   :
   (e.kind == ND_SUB   ) ? (eval2 e.a label - eval e.a.s)   :
@@ -272,20 +272,20 @@ eval2(e@ Node label @@@i8) i64 = return
     (label@ = &e.var.name) ;: 0l :
   (e.kind == ND_NUM      ) ? e.val :
   (jdiag e.j "not a compile-time constant") ;:
-  0l;;
+  0l
 
-eval(e@ Node) i64 = return eval2 e cast @@@i8 0;;
+eval(e@ Node) i64 = eval2 e cast @@@i8 0
 
-eval_rval(e@ Node label @@@i8) i64 = return
+eval_rval(e@ Node label @@@i8) i64 =
   (e.kind == ND_VAR) ?
     e.var.is_local ? (jdiag e.j "not a compile-time constant") ;: 0l :
     (label@ = &e.var.name) ;: 0l :
   (e.kind == ND_DEREF ) ? (eval2     e.a label                  ) :
   (e.kind == ND_MEMBER) ? (eval_rval e.a label + cast i64 e.t.offset) :
   (jdiag e.j "invalid initializer") ;:
-  0l;;
+  0l
 
-is_const_expr(e@ Node) bool = return
+is_const_expr(e@ Node) bool =
   ( e.kind == ND_NEG    ||
     e.kind == ND_NOT    ||
     e.kind == ND_BITNOT ||
@@ -309,52 +309,52 @@ is_const_expr(e@ Node) bool = return
     e.kind == ND_LOGAND ||
     e.kind == ND_LOGOR   )  ? (is_const_expr e.a  && is_const_expr e.a.s                           ) :
   ( e.kind == ND_COND    )  ? (is_const_expr e.a && is_const_expr (!!eval e.a ? e.a.s : e.a.s.s)) :
-  ( e.kind == ND_NUM     ) ;;
-export const_expr(k @Ctx) i64 = return eval tertiary k ty_i64;;
+  ( e.kind == ND_NUM     ) 
+export const_expr(k @Ctx) i64 = eval tertiary k ty_i64
 
 
-new_node            (j @Token t @Type g NodeKind                        ) @Node = return cast @Node calloc 1ul sizeof Node is e e :; (e.j = j) :; (e.t = t) :; (e.kind = g);;
-new_ternary         (j @Token t @Type g NodeKind a @Node b @Node c @Node) @Node = return new_node j t g is e e :; (e.a = a) :; (e.a.s = b) :; (e.a.s.s = c) ;;
-new_binary          (j @Token t @Type g NodeKind a @Node b @Node        ) @Node = return new_node j t g is e e :; (e.a = a) :; (e.a.s = b) ;;
-new_unary           (j @Token t @Type g NodeKind a @Node                ) @Node = return new_node j t g is e e :; (e.a = a) ;;
-new_nullary         (j @Token t @Type g NodeKind                        ) @Node = return new_node j t g ;;
+new_node            (j @Token t @Type g NodeKind                        ) @Node = cast @Node calloc 1ul sizeof Node is e e :; (e.j = j) :; (e.t = t) :; (e.kind = g)
+new_ternary         (j @Token t @Type g NodeKind a @Node b @Node c @Node) @Node = new_node j t g is e e :; (e.a = a) :; (e.a.s = b) :; (e.a.s.s = c) 
+new_binary          (j @Token t @Type g NodeKind a @Node b @Node        ) @Node = new_node j t g is e e :; (e.a = a) :; (e.a.s = b) 
+new_unary           (j @Token t @Type g NodeKind a @Node                ) @Node = new_node j t g is e e :; (e.a = a) 
+new_nullary         (j @Token t @Type g NodeKind                        ) @Node = new_node j t g 
 
-new_lit             (j @Token t @Type t2 @Type l i64         ) @Node = return new_nullary j t2      ND_NUM        is e e :; (e.val    = l) ;;
-new_reference       (j @Token t @Type          o @Obj        ) @Node = return new_nullary j o.t     ND_VAR        is e e :; (e.var    = o) ;;
-new_call            (j @Token t @Type a @Node                ) @Node = return new_unary   j a.t.a          ND_FUNCALL a ;;
-new_neg             (j @Token t @Type a  @Node               ) @Node = return new_unary   j            a.t ND_NEG  a ;;
-new_addressof       (j @Token t @Type a  @Node               ) @Node = return new_unary   j ptr_of a.t ND_ADDR a ;;
-new_sizeof          (j @Token t @Type t2 @Type               ) @Node = return new_lit     j t ring_of ty_i64 cast i64 t2.size       ;;
-new_alignof         (j @Token t @Type t2 @Type               ) @Node = return new_lit     j t ring_of ty_i64 cast i64 t2.align  ;;
-new_lognot          (j @Token t @Type a @Node                ) @Node = return new_unary   j ty_i1 ND_NOT    a   ;;
-new_bitnot          (j @Token t @Type a @Node                ) @Node = return new_unary   j a.t     ND_BITNOT a   ;;
-new_the             (j @Token t @Type a @Node u @Type        ) @Node = return new_unary   j a.t     ND_THE    a   ;;
-new_assign          (j @Token t @Type a @Node b @Node        ) @Node = return new_binary  j ty_none ND_ASSIGN a b ;;
-new_bitor           (j @Token t @Type a @Node b @Node        ) @Node = return new_binary  j a.t     ND_BITOR  a b ;;
-new_bitxor          (j @Token t @Type a @Node b @Node        ) @Node = return new_binary  j a.t     ND_BITXOR a b ;;
-new_bitand          (j @Token t @Type a @Node b @Node        ) @Node = return new_binary  j a.t     ND_BITAND a b ;;
-new_eq              (j @Token t @Type a @Node b @Node        ) @Node = return new_binary  j ty_i1 ND_EQ     a b ;;
-new_neq             (j @Token t @Type a @Node b @Node        ) @Node = return new_binary  j ty_i1 ND_NE     a b ;;
-new_gt              (j @Token t @Type a @Node b @Node        ) @Node = return new_binary  j ty_i1 ND_GT     a b ;;
-new_lt              (j @Token t @Type a @Node b @Node        ) @Node = return new_binary  j ty_i1 ND_LT     a b ;;
-new_ge              (j @Token t @Type a @Node b @Node        ) @Node = return new_binary  j ty_i1 ND_GE     a b ;;
-new_le              (j @Token t @Type a @Node b @Node        ) @Node = return new_binary  j ty_i1 ND_LE     a b ;;
-new_shl             (j @Token t @Type a @Node b @Node        ) @Node = return new_binary  j a.t     ND_SHL    a b ;;
-new_shr             (j @Token t @Type a @Node b @Node        ) @Node = return new_binary  j a.t     ND_SHR    a b ;;
-new_mul             (j @Token t @Type a @Node b @Node        ) @Node = return new_binary  j a.t     ND_MUL    a b ;;
-new_div             (j @Token t @Type a @Node b @Node        ) @Node = return new_binary  j a.t     ND_DIV    a b ;;
-new_mod             (j @Token t @Type a @Node b @Node        ) @Node = return new_binary  j a.t     ND_MOD    a b ;;
-new_cast            (j @Token t @Type a @Node t2 @Type       ) @Node = return new_unary   j t2      ND_CAST   a   ;;
-new_then            (j @Token t @Type a @Node b @Node        ) @Node = return new_binary  j a.t     ND_THEN   a b ;;
-new_neth            (j @Token t @Type a @Node b @Node        ) @Node = return new_binary  j b.t     ND_COMMA  a b ;;
-new_deref           (j @Token t @Type a @Node                ) @Node = return new_unary   j a.t.a   ND_DEREF  a   ;;
-new_deref_all       (j @Token t @Type a @Node                ) @Node = return a for e (e.t.kind == TY_PTR && new_deref j t e) ;;
-new_let             (j @Token t @Type a @Node b @Node o @Obj ) @Node = return new_binary  j b.t     ND_LET    a b is e e :; (e.var = o) ;;
-new_repeat          (j @Token t @Type a @Node b @Node o @Obj ) @Node = return new_binary  j b.t     ND_REPEAT a b is e e :; (e.var = o) ;;
-new_conditional     (j @Token t @Type a @Node b @Node c @Node) @Node = return new_ternary j b.t     ND_COND   a b c ;;
-new_logor           (j @Token t @Type a @Node b @Node        ) @Node = return new_binary  j a.t     ND_LOGOR  a b   ;;
-new_logand          (j @Token t @Type a @Node b @Node        ) @Node = return new_binary  j ((b.t.kind == TY_VOID) ? ty_i1 : b.t) ND_LOGAND a b ;;
-new_add             (j @Token t @Type a @Node b @Node        ) @Node = return
+new_lit             (j @Token t @Type t2 @Type l i64         ) @Node = new_nullary j t2      ND_NUM        is e e :; (e.val    = l) 
+new_reference       (j @Token t @Type          o @Obj        ) @Node = new_nullary j o.t     ND_VAR        is e e :; (e.var    = o) 
+new_call            (j @Token t @Type a @Node                ) @Node = new_unary   j a.t.a          ND_FUNCALL a 
+new_neg             (j @Token t @Type a  @Node               ) @Node = new_unary   j            a.t ND_NEG  a 
+new_addressof       (j @Token t @Type a  @Node               ) @Node = new_unary   j ptr_of a.t ND_ADDR a 
+new_sizeof          (j @Token t @Type t2 @Type               ) @Node = new_lit     j t ring_of ty_i64 cast i64 t2.size       
+new_alignof         (j @Token t @Type t2 @Type               ) @Node = new_lit     j t ring_of ty_i64 cast i64 t2.align  
+new_lognot          (j @Token t @Type a @Node                ) @Node = new_unary   j ty_i1 ND_NOT    a   
+new_bitnot          (j @Token t @Type a @Node                ) @Node = new_unary   j a.t     ND_BITNOT a   
+new_the             (j @Token t @Type a @Node u @Type        ) @Node = new_unary   j a.t     ND_THE    a   
+new_assign          (j @Token t @Type a @Node b @Node        ) @Node = new_binary  j ty_none ND_ASSIGN a b 
+new_bitor           (j @Token t @Type a @Node b @Node        ) @Node = new_binary  j a.t     ND_BITOR  a b 
+new_bitxor          (j @Token t @Type a @Node b @Node        ) @Node = new_binary  j a.t     ND_BITXOR a b 
+new_bitand          (j @Token t @Type a @Node b @Node        ) @Node = new_binary  j a.t     ND_BITAND a b 
+new_eq              (j @Token t @Type a @Node b @Node        ) @Node = new_binary  j ty_i1 ND_EQ     a b 
+new_neq             (j @Token t @Type a @Node b @Node        ) @Node = new_binary  j ty_i1 ND_NE     a b 
+new_gt              (j @Token t @Type a @Node b @Node        ) @Node = new_binary  j ty_i1 ND_GT     a b 
+new_lt              (j @Token t @Type a @Node b @Node        ) @Node = new_binary  j ty_i1 ND_LT     a b 
+new_ge              (j @Token t @Type a @Node b @Node        ) @Node = new_binary  j ty_i1 ND_GE     a b 
+new_le              (j @Token t @Type a @Node b @Node        ) @Node = new_binary  j ty_i1 ND_LE     a b 
+new_shl             (j @Token t @Type a @Node b @Node        ) @Node = new_binary  j a.t     ND_SHL    a b 
+new_shr             (j @Token t @Type a @Node b @Node        ) @Node = new_binary  j a.t     ND_SHR    a b 
+new_mul             (j @Token t @Type a @Node b @Node        ) @Node = new_binary  j a.t     ND_MUL    a b 
+new_div             (j @Token t @Type a @Node b @Node        ) @Node = new_binary  j a.t     ND_DIV    a b 
+new_mod             (j @Token t @Type a @Node b @Node        ) @Node = new_binary  j a.t     ND_MOD    a b 
+new_cast            (j @Token t @Type a @Node t2 @Type       ) @Node = new_unary   j t2      ND_CAST   a   
+new_then            (j @Token t @Type a @Node b @Node        ) @Node = new_binary  j a.t     ND_THEN   a b 
+new_neth            (j @Token t @Type a @Node b @Node        ) @Node = new_binary  j b.t     ND_COMMA  a b 
+new_deref           (j @Token t @Type a @Node                ) @Node = new_unary   j a.t.a   ND_DEREF  a   
+new_deref_all       (j @Token t @Type a @Node                ) @Node = a for e (e.t.kind == TY_PTR && new_deref j t e) 
+new_let             (j @Token t @Type a @Node b @Node o @Obj ) @Node = new_binary  j b.t     ND_LET    a b is e e :; (e.var = o) 
+new_repeat          (j @Token t @Type a @Node b @Node o @Obj ) @Node = new_binary  j b.t     ND_REPEAT a b is e e :; (e.var = o) 
+new_conditional     (j @Token t @Type a @Node b @Node c @Node) @Node = new_ternary j b.t     ND_COND   a b c 
+new_logor           (j @Token t @Type a @Node b @Node        ) @Node = new_binary  j a.t     ND_LOGOR  a b   
+new_logand          (j @Token t @Type a @Node b @Node        ) @Node = new_binary  j ((b.t.kind == TY_VOID) ? ty_i1 : b.t) ND_LOGAND a b 
+new_add             (j @Token t @Type a @Node b @Node        ) @Node =
   ( ( (     a.t.kind == TY_PTR
       ||    a.t.kind == TY_ARRAY )
     &&(     b.t.kind == TY_PTR 
@@ -366,8 +366,8 @@ new_add             (j @Token t @Type a @Node b @Node        ) @Node = return
     &&     !type_equal a.t b.t
     &&     format_types a.t b.t
     ;: jdiag j "(%s + %s) must be (T + T) or (@T + U) or (T + @U)" s1 s2 ) as none )
-;: new_binary j ((a.t.kind == TY_PTR || a.t.kind == TY_ARRAY) ? ptr_of(a.t.a) : (b.t.kind == TY_PTR || b.t.kind == TY_ARRAY) ? ptr_of(b.t.a) : a.t) ND_ADD a b;;
-new_sub(j @Token t @Type a @Node b @Node) @Node = return
+;: new_binary j ((a.t.kind == TY_PTR || a.t.kind == TY_ARRAY) ? ptr_of(a.t.a) : (b.t.kind == TY_PTR || b.t.kind == TY_ARRAY) ? ptr_of(b.t.a) : a.t) ND_ADD a b
+new_sub(j @Token t @Type a @Node b @Node) @Node =
   (  a.t.kind != TY_PTR 
   && a.t.kind != TY_ARRAY
   &&(  b.t.kind == TY_PTR
@@ -380,17 +380,17 @@ new_sub(j @Token t @Type a @Node b @Node) @Node = return
   &&(  format_types a.t b.t
     ;: jdiag j "(%s - %s) must be (T - T) or (@T - U) or (@T - @U)" s1 s2 ) as none )
 ;: new_binary j ((a.t.kind == TY_PTR || a.t.kind == TY_ARRAY) ? ptr_of(a.t.a) : (b.t.kind == TY_PTR || b.t.kind == TY_ARRAY) ? ty_i64 : a.t) ND_SUB a b
-;;
 
-get_struct_member(t @Type j @Token) @Type = return
+
+get_struct_member(t @Type j @Token) @Type =
    ty_null is r
    (t.a for g (   (g.kind == TY_STRUCT && (!g.name || jeq g.name "_")) ? (!!get_struct_member g j && g)
 :  (g.name.len == j.len && !strncmp g.name.loc j.loc cast %i64 j.len && g)
 ) is g1 !g1 ? g.s : (r = g1) ;: ty_null as none)
 ;: r
-;;
 
-new_member_access(j @Token t @Type a  @Node) @Node = return
+
+new_member_access(j @Token t @Type a  @Node) @Node =
    (a = new_deref_all j t a)
 ;:(  a.t.kind != TY_STRUCT
   &&(  format_types a.t ty_none
@@ -400,43 +400,43 @@ new_member_access(j @Token t @Type a  @Node) @Node = return
   &&(  format_types a.t ty_none
     ;: jdiag j "(%s . %.*s) no such member" s1 j.s.len j.s.loc ) as none )
 ;: new_unary j g ND_MEMBER a
-;;
 
-left(k @Ctx t @Type op @i8 parse_@ (k @Ctx t @Type) @Node) @Node = return
-jeq k.j op && parse_@ k t ;;
-right(k @Ctx t @Type a @Node op @i8 parse_@ (k @Ctx t @Type a @Node) @Node) @Node = return
-jeq k.j op && parse_@ k t a ;;
 
-array_access(k @Ctx t @Type a @Node) @Node = return
+left(k @Ctx t @Type op @i8 parse_@ (k @Ctx t @Type) @Node) @Node =
+jeq k.j op && parse_@ k t 
+right(k @Ctx t @Type a @Node op @i8 parse_@ (k @Ctx t @Type a @Node) @Node) @Node =
+jeq k.j op && parse_@ k t a 
+
+array_access(k @Ctx t @Type a @Node) @Node =
    jadv &k.j is j
    infix k ty_i32 is b
    expect &k.j "]"
 ;: new_deref j t new_add j ty_i32 a b
-;;
-member_access(k @Ctx t @Type a @Node) @Node = return
+
+member_access(k @Ctx t @Type a @Node) @Node =
    cast none jadv &k.j
 ;: new_member_access jadv &k.j t a
-;;
 
-nonee      (k @Ctx t @Type        ) @Node = return jadv &k.j is j                                                                                                                     new_lit         j t ty_none 0l             ;;
-falsee     (k @Ctx t @Type        ) @Node = return jadv &k.j is j                                                                                                                     new_lit         j t ty_i1 0l               ;;
-truee      (k @Ctx t @Type        ) @Node = return jadv &k.j is j                                                                                                                     new_lit         j t ty_i1 1l               ;;
-sizee      (k @Ctx t @Type        ) @Node = return jadv &k.j is j type_suffix k is t2                                                                                                 new_sizeof      j t t2                     ;;
-aligne     (k @Ctx t @Type        ) @Node = return jadv &k.j is j type_suffix k is t2                                                                                                 new_alignof     j t t2                     ;;
-deref      (k @Ctx t @Type a @Node) @Node = return jadv &k.j is j                                                                                                                     new_unary       j a.t.a ND_DEREF a         ;;
-addressof  (k @Ctx t @Type        ) @Node = return jadv &k.j is j                                                          secondary k t       is a                                   new_addressof   j t a                      ;;
-theorem    (k @Ctx t @Type        ) @Node = return jadv &k.j is j type_suffix k is t2                                       tertiary k t       is a                                   new_the         j t a t2                   ;;
-axiom      (k @Ctx t @Type        ) @Node = return jadv &k.j is j type_suffix k is t2                                       tertiary k t       is a                                   new_cast        j t a t2                   ;;
-neg        (k @Ctx t @Type        ) @Node = return jadv &k.j is j                                                           tertiary k t       is a                                   new_neg         j t a                      ;;
-lognot     (k @Ctx t @Type        ) @Node = return jadv &k.j is j                                                           tertiary k t       is a                                   new_lognot      j t a                      ;;
-bitnot     (k @Ctx t @Type        ) @Node = return jadv &k.j is j                                                           tertiary k t       is a                                   new_bitnot      j t a                      ;;
-then       (k @Ctx t @Type a @Node) @Node = return jadv &k.j is j                                                                seq k ty_none is b                                   new_binary      j a.t ND_THEN  a b         ;;
-neth       (k @Ctx t @Type a @Node) @Node = return jadv &k.j is j                                                                seq k t       is b                                   new_binary      j b.t ND_COMMA a b         ;;
-conditional(k @Ctx t @Type a @Node) @Node = return jadv &k.j is j                                                                seq k t       is b  expect &k.j ":" ;: seq k t is c  new_conditional j t a b c                  ;;
-islet      (k @Ctx t @Type a @Node) @Node = return jadv &k.j is j k.scope is s new_lvar k get_ident jadv &k.j a.t is o        seq k t       is b                                   new_let         j t a b o :; (k.scope = s) ;;
-repeat     (k @Ctx t @Type a @Node) @Node = return jadv &k.j is j k.scope is s new_lvar k get_ident jadv &k.j a.t is o        seq k t       is b                                   new_repeat      j t a b o :; (k.scope = s) ;;
 
-primary(k @Ctx t @Type) @Node = return
+nonee      (k @Ctx t @Type        ) @Node = jadv &k.j is j                                                                                                                     new_lit         j t ty_none 0l             
+falsee     (k @Ctx t @Type        ) @Node = jadv &k.j is j                                                                                                                     new_lit         j t ty_i1 0l               
+truee      (k @Ctx t @Type        ) @Node = jadv &k.j is j                                                                                                                     new_lit         j t ty_i1 1l               
+sizee      (k @Ctx t @Type        ) @Node = jadv &k.j is j type_suffix k is t2                                                                                                 new_sizeof      j t t2                     
+aligne     (k @Ctx t @Type        ) @Node = jadv &k.j is j type_suffix k is t2                                                                                                 new_alignof     j t t2                     
+deref      (k @Ctx t @Type a @Node) @Node = jadv &k.j is j                                                                                                                     new_unary       j a.t.a ND_DEREF a         
+addressof  (k @Ctx t @Type        ) @Node = jadv &k.j is j                                                          secondary k t       is a                                   new_addressof   j t a                      
+theorem    (k @Ctx t @Type        ) @Node = jadv &k.j is j type_suffix k is t2                                       tertiary k t       is a                                   new_the         j t a t2                   
+axiom      (k @Ctx t @Type        ) @Node = jadv &k.j is j type_suffix k is t2                                       tertiary k t       is a                                   new_cast        j t a t2                   
+neg        (k @Ctx t @Type        ) @Node = jadv &k.j is j                                                           tertiary k t       is a                                   new_neg         j t a                      
+lognot     (k @Ctx t @Type        ) @Node = jadv &k.j is j                                                           tertiary k t       is a                                   new_lognot      j t a                      
+bitnot     (k @Ctx t @Type        ) @Node = jadv &k.j is j                                                           tertiary k t       is a                                   new_bitnot      j t a                      
+then       (k @Ctx t @Type a @Node) @Node = jadv &k.j is j                                                                seq k ty_none is b                                   new_binary      j a.t ND_THEN  a b         
+neth       (k @Ctx t @Type a @Node) @Node = jadv &k.j is j                                                                seq k t       is b                                   new_binary      j b.t ND_COMMA a b         
+conditional(k @Ctx t @Type a @Node) @Node = jadv &k.j is j                                                                seq k t       is b  expect &k.j ":" ;: seq k t is c  new_conditional j t a b c                  
+islet      (k @Ctx t @Type a @Node) @Node = jadv &k.j is j k.scope is s new_lvar k get_ident jadv &k.j a.t is o        seq k t       is b                                   new_let         j t a b o :; (k.scope = s) 
+repeat     (k @Ctx t @Type a @Node) @Node = jadv &k.j is j k.scope is s new_lvar k get_ident jadv &k.j a.t is o        seq k t       is b                                   new_repeat      j t a b o :; (k.scope = s) 
+
+primary(k @Ctx t @Type) @Node =
   ( jeq k.j "new" ?
       jadv &k.j is j
       type_suffix k is t2
@@ -456,9 +456,9 @@ primary(k @Ctx t @Type) @Node = return
       cast none jadv &k.j :
     (k.j.kind == TK_NUM) ?
       ( new_lit k.j t cast @Type k.j.t k.j.val :; cast none jadv &k.j ) :
-    (jdiag k.j "expected an expression") ;: cast @Node 0);;
+    (jdiag k.j "expected an expression") ;: cast @Node 0)
 
-secondary(k @Ctx t @Type) @Node = return
+secondary(k @Ctx t @Type) @Node =
    left    k t       "cast"    &axiom
 || left    k t       "the"     &theorem
 || left    k t       "&"       &addressof
@@ -471,15 +471,15 @@ secondary(k @Ctx t @Type) @Node = return
 (  right   k t     a "["       &array_access
 || right   k t     a "."       &member_access
 || right   k t     a "@"       &deref
- ) ;;
+ ) 
 
-tertiary_left(k @Ctx t @Type) @Node = return
+tertiary_left(k @Ctx t @Type) @Node =
 (  left k t "-"     &neg
 || left k t "!"     &lognot
 || left k t "~"     &bitnot
- ) ;;
+ ) 
 
-seq(k @Ctx t @Type) @Node = return 
+seq(k @Ctx t @Type) @Node = 
   tertiary k ty_null is a
 (  right k t a ":;"  &then
 || right k t a ";:"  &neth
@@ -487,9 +487,9 @@ seq(k @Ctx t @Type) @Node = return
 || right k t a "for" &repeat
 || right k t a "?"   &conditional
 || a
- ) ;;
+ ) 
 
-tertiary(k @Ctx t @Type) @Node = return
+tertiary(k @Ctx t @Type) @Node =
    tertiary_left k ty_null
 || secondary k ty_null for a
   (  a.t.kind == TY_FUNC
@@ -505,72 +505,72 @@ tertiary(k @Ctx t @Type) @Node = return
     as none )
   ;: (!!u && (jdiag k.j "not enough arguments") as none)
   ;: new_call k.j t a )
-;;
 
-mul        (k @Ctx t @Type) @Node = return seq        k t             for a (  jeq k.j "*"  && jadv &k.j is j new_mul    j t a seq        k a.t
+
+mul        (k @Ctx t @Type) @Node = seq        k t             for a (  jeq k.j "*"  && jadv &k.j is j new_mul    j t a seq        k a.t
                                                                                || jeq k.j "/"  && jadv &k.j is j new_div    j t a seq        k a.t
-                                                                               || jeq k.j "%"  && jadv &k.j is j new_mod    j t a seq        k a.t) ;;
-add        (k @Ctx t @Type) @Node = return mul        k t             for a (  jeq k.j "+"  && jadv &k.j is j new_add    j t a mul        k a.t
-                                                                               || jeq k.j "-"  && jadv &k.j is j new_sub    j t a mul        k a.t) ;;
-shift      (k @Ctx t @Type) @Node = return add        k t             for a (  jeq k.j "<<" && jadv &k.j is j new_shl    j t a add        k a.t
-                                                                               || jeq k.j ">>" && jadv &k.j is j new_shr    j t a add        k a.t) ;;
-relational (k @Ctx t @Type) @Node = return shift      k ty_null  for a (  jeq k.j "<"  && jadv &k.j is j new_lt     j t a shift      k ty_null
+                                                                               || jeq k.j "%"  && jadv &k.j is j new_mod    j t a seq        k a.t) 
+add        (k @Ctx t @Type) @Node = mul        k t             for a (  jeq k.j "+"  && jadv &k.j is j new_add    j t a mul        k a.t
+                                                                               || jeq k.j "-"  && jadv &k.j is j new_sub    j t a mul        k a.t) 
+shift      (k @Ctx t @Type) @Node = add        k t             for a (  jeq k.j "<<" && jadv &k.j is j new_shl    j t a add        k a.t
+                                                                               || jeq k.j ">>" && jadv &k.j is j new_shr    j t a add        k a.t) 
+relational (k @Ctx t @Type) @Node = shift      k ty_null  for a (  jeq k.j "<"  && jadv &k.j is j new_lt     j t a shift      k ty_null
                                                                                || jeq k.j ">"  && jadv &k.j is j new_gt     j t a shift      k ty_null
                                                                                || jeq k.j "<=" && jadv &k.j is j new_le     j t a shift      k ty_null
                                                                                || jeq k.j ">=" && jadv &k.j is j new_ge     j t a shift      k ty_null
                                                                                || jeq k.j "==" && jadv &k.j is j new_eq     j t a shift      k ty_null
-                                                                               || jeq k.j "!=" && jadv &k.j is j new_neq    j t a shift      k ty_null) ;;
-bitand     (k @Ctx t @Type) @Node = return relational k t             for a (  jeq k.j "&"  && jadv &k.j is j new_bitand j t a relational k a.t) ;;
-bitxor     (k @Ctx t @Type) @Node = return bitand     k t             for a (  jeq k.j "^"  && jadv &k.j is j new_bitxor j t a bitand     k a.t) ;;
-bitor      (k @Ctx t @Type) @Node = return bitxor     k t             for a (  jeq k.j "|"  && jadv &k.j is j new_bitor  j t a bitxor     k a.t) ;;
-logand     (k @Ctx t @Type) @Node = return bitor      k ty_null  for a (  jeq k.j "&&" && jadv &k.j is j new_logand j t a bitor      k a.t) ;;
-logor      (k @Ctx t @Type) @Node = return logand     k t             for a (  jeq k.j "||" && jadv &k.j is j new_logor  j t a logand     k a.t) ;;
+                                                                               || jeq k.j "!=" && jadv &k.j is j new_neq    j t a shift      k ty_null) 
+bitand     (k @Ctx t @Type) @Node = relational k t             for a (  jeq k.j "&"  && jadv &k.j is j new_bitand j t a relational k a.t) 
+bitxor     (k @Ctx t @Type) @Node = bitand     k t             for a (  jeq k.j "^"  && jadv &k.j is j new_bitxor j t a bitand     k a.t) 
+bitor      (k @Ctx t @Type) @Node = bitxor     k t             for a (  jeq k.j "|"  && jadv &k.j is j new_bitor  j t a bitxor     k a.t) 
+logand     (k @Ctx t @Type) @Node = bitor      k ty_null  for a (  jeq k.j "&&" && jadv &k.j is j new_logand j t a bitor      k a.t) 
+logor      (k @Ctx t @Type) @Node = logand     k t             for a (  jeq k.j "||" && jadv &k.j is j new_logor  j t a logand     k a.t) 
 
-infix(k @Ctx t @Type) @Node = return
+infix(k @Ctx t @Type) @Node =
    logor k ty_null for a
   (  jeq k.j "as"   && jadv &k.j is j type_suffix k is u new_cast j u a u :; (t = u)
   || jeq k.j "from" && jadv &k.j is j type_suffix k is u new_the  j u a u :; (t = u) )
-;;
 
-quaternary(k @Ctx t @Type) @Node = return
+
+quaternary(k @Ctx t @Type) @Node =
    infix k ty_null is a
                      k.j is j
    jeq k.j "="
 ?  jadv &k.j is j new_assign j t a infix k a.t
 :  a
-;;
 
-typedecl(k @Ctx) @Token = return
+
+typedecl(k @Ctx) @Token =
    k.j for j
   (  !jeq k.j ";"
   &&(  declarator k is t
        ((push_scope k get_ident t.name).t = t)
     ;: k.j ) )
-;;
 
-create_param_lvars(k @Ctx param@ Type) = return
+
+create_param_lvars(k @Ctx param@ Type) =
    !!param
 ?  create_param_lvars k param.s
 ;: (new_lvar k get_ident param.name param as)
 :  none
-;;
 
-find_func(k @Ctx c @i8 n %i64) @Obj = return
+
+find_func(k @Ctx c @i8 n %i64) @Obj =
   search_scope k c n is s
   (!!s && !!s.o && s.o.is_function && s.o)
-;;
 
-function(k @Ctx attr @VarAttr) = return
+
+function(k @Ctx attr @VarAttr) =
   declarator k is t
   find_func k t.name.loc cast %i64 t.name.len is o
   (  !!o
   ?  (!o.is_function                  && (jdiag k.j "redeclared as a different kind of symbol") as none)
-  ;: (o.is_definition && !jeq k.j ";"  && (jdiag k.j "redefinition of %s" o.name) as none)
+  ;: (o.is_definition && jeq k.j "="  && (jdiag k.j "redefinition of %s" o.name) as none)
   ;: (o.is_export != attr.is_export   && (jdiag k.j "mismatched visibility") as none)
-  ;: (o.is_definition = o.is_definition || !jeq k.j ";")
+  ;: (o.is_definition = o.is_definition || jeq k.j "=")
   :  (o = new_gvar k get_ident t.name t)
   ;: (o.is_function = true)
-  ;: (o.is_definition = !jeq k.j ";")
+  ;: (o.is_definition = jeq k.j "=")
   ;: (o.is_export = attr.is_export)
   ;: (o.is_inline = attr.is_inline) )
 ;:(  jeq k.j ";"
@@ -582,12 +582,13 @@ function(k @Ctx attr @VarAttr) = return
   ;: t.a is rty
      (o.params = k.locals)
   ;: (t.is_variadic && (o.va_area = new_lvar k "__va_area__" array_of ty_i8 136) as none)
+  ;: expect &k.j "="
   ;: (o.body = infix k rty as @)
   ;: (o.locals = k.locals)
   ;: (k.scope = s) )
-;;
 
-global_variable(k @Ctx attr @VarAttr) = return
+
+global_variable(k @Ctx attr @VarAttr) =
    true for _ 
   ( !consume &k.j k.j ";"
   && declarator k is t
@@ -600,9 +601,9 @@ global_variable(k @Ctx attr @VarAttr) = return
     ;:  (!attr.is_extern && (o.is_tentative = true) as none)
     as none ) )
 as none
-;;
 
-scan_globals(k @Ctx) = return
+
+scan_globals(k @Ctx) =
    new Obj is head
    &head is cur
   (  k.globals for o
@@ -615,9 +616,9 @@ scan_globals(k @Ctx) = return
   as none )
 ;: (cur.s = 0 as @Obj)
 ;: (k.globals = head.s)
-;;
 
-export parse(j @Token) @Obj = return
+
+export parse(j @Token) @Obj =
    new Ctx is k
    (k.j            = j            )
 ;: (k.locals       = cast @Obj   0)
@@ -638,4 +639,3 @@ export parse(j @Token) @Obj = return
 ;: (k.scope = s)
 ;: scan_globals &k
 ;: k.globals
-;;

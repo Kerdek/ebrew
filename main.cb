@@ -1,6 +1,6 @@
 # "chub.hb"
 
-preprocess(in @i8 files @@@File) @Token = return
+preprocess(in @i8 files @@@File) @Token =
    new Token is head
    0 is file_n
    tokenize in file_n files is j
@@ -31,11 +31,11 @@ preprocess(in @i8 files @@@File) @Token = return
      ;: head.s )
    as none )
 ;: head.s
-;;
 
-open_file(path @i8 mode @i8) @FILE = return fopen path mode || (cast none printf "cannot open file '%s' with mode '%s': %s" mode path strerror errno) ;;
 
-export main(argc i32 argv @@i8) i32 = return
+open_file(path @i8 mode @i8) @FILE = fopen path mode || (cast none printf "cannot open file '%s' with mode '%s': %s" mode path strerror errno) 
+
+export main(argc i32 argv @@i8) i32 =
 
 (ty_null = ty_null                     ) ;:
 (ty_none = cast @Type calloc 1ul sizeof Type) ;: (ty_none.kind = TY_VOID) ;: (ty_none.size = 1) ;: (ty_none.align = 1) ;:
@@ -58,4 +58,4 @@ export main(argc i32 argv @@i8) i32 = return
 
    codegen parse preprocess in &files out files ;: cast none fclose out ;: 0
 
-;;
+

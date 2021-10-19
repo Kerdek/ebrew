@@ -1,6 +1,6 @@
 #"chub.hb"
 
-argreg(sz i32 g i32) @i8 = return
+argreg(sz i32 g i32) @i8 =
   (sz == 0) ? (g == 0) ? "%dil" :
               (g == 1) ? "%sil" :
               (g == 2) ? "%dl"  :
@@ -18,19 +18,19 @@ argreg(sz i32 g i32) @i8 = return
               (g == 2) ? "%rdx" :
               (g == 3) ? "%rcx" :
               (g == 4) ? "%r8"  :
-                         "%r9"  ;;
+                         "%r9"  
 
 gen_expr(out @FILE e @Node c @i32 depth @i32);
 
-println(out @FILE fmt @i8 ...) = return
+println(out @FILE fmt @i8 ...) =
   vfprintf out fmt cast @va_list __va_area__
 ;: (cast none fprintf out "\n")
-;;
 
-gen_push (out @FILE depth @i32        )     = return (println out "  push %%rax") ;: (depth@ = depth@ + 1);;
-gen_pop  (out @FILE depth @i32 arg @i8)     = return (println out "  pop %s" arg) ;: (depth@ = depth@ - 1);;
 
-gen_addr(out @FILE e @Node c @i32 depth @i32) = return
+gen_push (out @FILE depth @i32        )     = (println out "  push %%rax") ;: (depth@ = depth@ + 1)
+gen_pop  (out @FILE depth @i32 arg @i8)     = (println out "  pop %s" arg) ;: (depth@ = depth@ - 1)
+
+gen_addr(out @FILE e @Node c @i32 depth @i32) =
   ( e.kind    == ND_VAR     ) ?
   (  e.var.is_local
   ? (println out "  lea %d(%%rbp), %%rax" e.var.offset)
@@ -45,9 +45,9 @@ gen_addr(out @FILE e @Node c @i32 depth @i32) = return
     e.kind    == ND_LET    ||
     e.kind    == ND_REPEAT  ) ? gen_expr out e   c depth :
   ( e.t.kind == TY_STRUCT   ) ? gen_expr out e   c depth :
-  ( jdiag e.j "not an lvalue" );;
+  ( jdiag e.j "not an lvalue" )
 
-load(out @FILE t @Type) = return
+load(out @FILE t @Type) =
   t.kind == TY_ARRAY  ||
   t.kind == TY_STRUCT ||
   t.kind == TY_FUNC   ||
@@ -57,8 +57,8 @@ load(out @FILE t @Type) = return
       (u.size == 4         ) ? (println out "  movsxd (%%rax), %%rax"      ) :
                                (println out "  mov (%%rax), %%rax"         ) ) )
 as none
-;;
-store(out @FILE t @Type depth @i32) = return
+
+store(out @FILE t @Type depth @i32) =
    gen_pop out depth "%rdi"
 ;: (t.kind == TY_STRUCT  ) ? (0 for i (i < t.size && (i + 1)
 :; (println out "  mov %d(%%rax), %%r8b" i)
@@ -66,33 +66,33 @@ store(out @FILE t @Type depth @i32) = return
 :  (t.size == 1) ? (println out "  mov %%al , (%%rdi)")
 :  (t.size == 4) ? (println out "  mov %%eax, (%%rdi)")
 :                  (println out "  mov %%rax, (%%rdi)")
-;;
 
-gen_zero(out @FILE) = return (println out "  xor %%eax, %%eax") ;;
-gen_cmpz(out @FILE) = return (println out "  cmp $0, %%rax"   ) ;;
-gen_not (out @FILE) = return (println out "  not %%eax"       ) ;;
 
-gen_casti8 (out @FILE a @Type b @Type) = return a.kind != b.kind &&                     (println out "  movsbl %%al  , %%eax") as none ;;
-gen_castu8 (out @FILE a @Type b @Type) = return a.kind != b.kind &&                     (println out "  movzbl %%al  , %%eax") as none ;;
-gen_cast64 (out @FILE a @Type b @Type) = return (a.size < 32 || a.kind == TY_I32)    && (println out "  movsxd %%eax , %%rax") as none ;;
+gen_zero(out @FILE) = (println out "  xor %%eax, %%eax") 
+gen_cmpz(out @FILE) = (println out "  cmp $0, %%rax"   ) 
+gen_not (out @FILE) = (println out "  not %%eax"       ) 
 
-gen_cast(out @FILE a @Type b @Type) = return
+gen_casti8 (out @FILE a @Type b @Type) = a.kind != b.kind &&                     (println out "  movsbl %%al  , %%eax") as none 
+gen_castu8 (out @FILE a @Type b @Type) = a.kind != b.kind &&                     (println out "  movzbl %%al  , %%eax") as none 
+gen_cast64 (out @FILE a @Type b @Type) = (a.size < 32 || a.kind == TY_I32)    && (println out "  movsxd %%eax , %%rax") as none 
+
+gen_cast(out @FILE a @Type b @Type) =
 (b.kind == TY_VOID) ? gen_zero out               :
 (b.kind == TY_BOOL) ? gen_not out ;: gen_not out :
 (b.kind == TY_I08 ) ? gen_casti8 out a b         :
 (b.kind == TY_RING) ? (b.a.kind == TY_I08) ? gen_castu8 out a b :
                                              gen_cast64 out a b :
-                      gen_cast64 out a b      ;;
+                      gen_cast64 out a b      
 
-push_args2(out @FILE args @Node first_pass bool c @i32 depth @i32) = return
+push_args2(out @FILE args @Node first_pass bool c @i32 depth @i32) =
    !!args
 && push_args2 out args.s first_pass c depth
 ;: !((first_pass && !args.pass_by_stack) || (!first_pass && args.pass_by_stack))
 && gen_expr out args c depth
 ;: gen_push out depth
 as none
-;;
-push_args(out @FILE e @Node c @i32 depth @i32) i32 = return
+
+push_args(out @FILE e @Node c @i32 depth @i32) i32 =
   0 is stack
   0 is gp
   (  !!e.a.s && e.a.s for arg
@@ -110,8 +110,8 @@ push_args(out @FILE e @Node c @i32 depth @i32) i32 = return
 ;: push_args2 out e.a.s true c depth
 ;: push_args2 out e.a.s false c depth
 ;: stack
-;;
-gen_expr(out @FILE e @Node c @i32 depth @i32) = return
+
+gen_expr(out @FILE e @Node c @i32 depth @i32) =
    (println out "  .loc %d %d" e.j.in.file_no e.j.line_no)
 ;: (e.kind == ND_NULL_EXPR) ? none
 :  (e.kind == ND_THE   ) ? gen_expr out e.a c depth
@@ -224,7 +224,7 @@ gen_expr(out @FILE e @Node c @i32 depth @i32) = return
                                                      : (println out "  mov %%rdi, %%rcx") ;: (println out "  sar %%cl, %s" ax) ;
 ;
 
-assign_param_offsets(f @Obj) = return
+assign_param_offsets(f @Obj) =
    !!f.params
 && 16 is t
     0 is g
@@ -234,9 +234,9 @@ assign_param_offsets(f @Obj) = return
 ;: (o.offset = t           )
 ;: (t        = t + o.t.size) )
 as none
-;;
 
-assign_one_lvar_offset(fn @Obj) = return
+
+assign_one_lvar_offset(fn @Obj) =
    fn.is_function
 && assign_param_offsets fn
 ;: 0 is bottom
@@ -250,10 +250,10 @@ assign_one_lvar_offset(fn @Obj) = return
   as none )
 ;: (fn.stack_size = align_to bottom 16)
 as none
-;;
-assign_lvar_offsets(prog @Obj) = return prog for f f.s :; assign_one_lvar_offset f as none;;
 
-emit_datum_data(out @FILE var @Obj) = return
+assign_lvar_offsets(prog @Obj) = prog for f f.s :; assign_one_lvar_offset f as none
+
+emit_datum_data(out @FILE var @Obj) =
    (println out "  .data")
 ;: (println out "  .type %s, @object" var.name)
 ;: (println out "  .size %s, %d" var.name var.t.size)
@@ -269,27 +269,27 @@ emit_datum_data(out @FILE var @Obj) = return
     ;: (pos = pos + 8)
     :  (println out "  .byte %d" var.init_data[((pos :; (pos = pos + 1)))]) )
   as none )
-;;
 
-emit_datum_bss(out @FILE o @Obj) = return
+
+emit_datum_bss(out @FILE o @Obj) =
    (println out "  .bss")
 ;: (println out "  .align %d" o.t.align)
 ;: (println out "%s:" o.name)
 ;: (println out "  .zero %d" o.t.size)
-;;
 
-emit_datum(out @FILE var @Obj) = return
+
+emit_datum(out @FILE var @Obj) =
    (  !var.is_export
    ?  (println out "  .local %s" var.name)
    :  (println out "  .globl %s" var.name) )
 ;: var.init_data
 ?  emit_datum_data out var
 :  emit_datum_bss  out var
-;;
 
-emit_data(out @FILE prog @Obj) = return (!!prog && prog for var var.s :; (!(var.is_function || !var.is_definition) && emit_datum out var as none) as none);;
 
-store_gp(out @FILE r i32 offset i32 sz i32) = return
+emit_data(out @FILE prog @Obj) = (!!prog && prog for var var.s :; (!(var.is_function || !var.is_definition) && emit_datum out var as none) as none)
+
+store_gp(out @FILE r i32 offset i32 sz i32) =
    (sz == 1) ? (println out "  mov %s, %d(%%rbp)" argreg 0 r offset)
 :  (sz == 4) ? (println out "  mov %s, %d(%%rbp)" argreg 1 r offset)
 :  (sz == 8) ? (println out "  mov %s, %d(%%rbp)" argreg 2 r offset)
@@ -299,9 +299,9 @@ store_gp(out @FILE r i32 offset i32 sz i32) = return
     :; (println out "  mov %s, %d(%%rbp)" argreg 0 r (offset + i))
     ;: (println out "  shr $8, %s" argreg 2 r) )
   as none )
-;;
 
-emit_text(out @FILE prog @Obj c @i32) = return
+
+emit_text(out @FILE prog @Obj c @i32) =
   (  !!prog && prog for fn fn.s
   :;(  !!fn.is_function
     && !!fn.is_definition
@@ -354,9 +354,9 @@ emit_text(out @FILE prog @Obj c @i32) = return
     ;: (println out "  ret")
     as none )
   as none )
-;;
 
-export codegen(prog @Obj out @FILE files @@File) = return
+
+export codegen(prog @Obj out @FILE files @@File) =
   ( &files[0] for i
     (  !!i@
     && (i + 1)
@@ -366,4 +366,4 @@ export codegen(prog @Obj out @FILE files @@File) = return
 ;: emit_data out prog
 ;: 0 is c
    emit_text out prog &c
-;;
+
