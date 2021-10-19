@@ -39,7 +39,9 @@ t.kind       is c
 as none
 ;;
 
-is_function_type_equal(p @Type q@Type) bool = while !(!p || !q) { if ! type_equal p q return false; (p = p.s); (q = q.s);; return p == q;;
+is_function_type_equal(p @Type q@Type) bool = return
+(true for _ (!!p && !!q && type_equal p q && (p = p.s) ;: (q = q.s) ) as none) ;: (p == q) ;;
+
 export type_equal(t @Type u @Type) bool = return
   !!t &&
   !!u &&
@@ -66,7 +68,7 @@ export copy_type(t @Type) @Type = return
 :; (u@ = t@)
 ;: (u.o = t)
 ;;
-export pointer_to(base@ Type)@ Type = return
+export ptr_of(base@ Type)@ Type = return
    new_type TY_PTR 8 8 is t t
 :; (t.a = base)
 ;;
@@ -74,7 +76,7 @@ export ring_of(base @Type) @Type = return
    new_type TY_RING base.size base.align is t t
 :; (t.a = base)
 ;;
-export func_type(return_ty@ Type)@ Type = return
+export func_of(return_ty@ Type)@ Type = return
    new_type TY_FUNC 1 1 is t t
 :; (t.a = return_ty)
 ;;
@@ -83,5 +85,5 @@ export array_of(base @Type len i32)@ Type = return
 :; (t.a = base)
 ;: (t.array_len = len)
 ;;
-export enum_type  () @Type = return new_type TY_ENUM   4 4;;
-export struct_type() @Type = return new_type TY_STRUCT 0 1;;
+export enum_of  () @Type = return new_type TY_ENUM   4 4;;
+export struct_of() @Type = return new_type TY_STRUCT 0 1;;

@@ -10,15 +10,14 @@ type
   FILE struct {}
 
   NodeKind enum
-    ND_NULL_EXPR ND_ADD    ND_SUB     ND_MUL     ND_DIV
-    ND_NEG       ND_MOD    ND_BITAND  ND_BITOR   ND_BITXOR
-    ND_SHL       ND_SHR    ND_EQ      ND_NE      ND_LT
-    ND_LE        ND_GT     ND_GE      ND_ASSIGN  ND_COND
-    ND_COMMA     ND_MEMBER ND_ADDR    ND_DEREF   ND_NOT
-    ND_BITNOT    ND_LOGAND ND_LOGOR   ND_RETURN  ND_IF
-    ND_FOR       ND_BLOCK  ND_FUNCALL ND_LET     ND_EXPR_STMT
-    ND_VAR       ND_NUM    ND_CAST    ND_MEMZERO ND_REPEAT
-    ND_THE       ND_THEN
+    ND_NULL_EXPR ND_ADD     ND_SUB     ND_MUL       ND_DIV
+    ND_NEG       ND_MOD     ND_BITAND  ND_BITOR     ND_BITXOR
+    ND_SHL       ND_SHR     ND_EQ      ND_NE        ND_LT
+    ND_LE        ND_GT      ND_GE      ND_ASSIGN    ND_COND
+    ND_COMMA     ND_MEMBER  ND_ADDR    ND_DEREF     ND_NOT
+    ND_BITNOT    ND_LOGAND  ND_LOGOR   ND_THEN      ND_FUNCALL
+    ND_LET       ND_VAR     ND_NUM     ND_CAST      ND_MEMZERO
+    ND_REPEAT    ND_THE
   ;
 
   TypeKind enum
@@ -149,68 +148,82 @@ export extern
   ty_i64  @Type
 ;
 
-export __errno_location    (             )@i32 ;
+export __errno_location    ( ) @i32                                       ;
 
-export dirname             (path          @i8) @i8 ;
-export basename            (path          @i8) @i8 ;
+export dirname             (path          @i8) @i8                        ;
+export basename            (path          @i8) @i8                        ;
 
-export open_memstream      (p    @@i8 n    @%i64) @FILE ;
-export fopen               (path  @i8 mode @ i8 ) @FILE ;
+export open_memstream      (p    @@i8 n    @%i64) @FILE                   ;
+export fopen               (path  @i8 mode @ i8 ) @FILE                   ;
 
-export fclose              (io @FILE) i32 ;
-export fflush              (io @FILE) i32 ;
+export fclose              (io @FILE) i32                                 ;
+export fflush              (io @FILE) i32                                 ;
 
-export fread               (ptr @ m %i64 n %i64 io @FILE) %i64 ;
-export fwrite              (ptr @ m %i64 n %i64 io @FILE) %i64 ;
-export fputc               (c   i32             io @FILE)  i32 ;
+export fread               (ptr @ m %i64 n %i64 io @FILE) %i64            ;
+export fwrite              (ptr @ m %i64 n %i64 io @FILE) %i64            ;
+export fputc               (c   i32             io @FILE)  i32            ;
 
-export printf              (         fmt @i8 ...          ) i32 ;
-export vprintf             (         fmt @i8 args @va_list) i32 ;
-export fprintf             (io @FILE fmt @i8 ...          ) i32 ;
-export vfprintf            (io @FILE fmt @i8 args @va_list) i32 ;
+export printf              (         fmt @i8 ...          ) i32           ;
+export vprintf             (         fmt @i8 args @va_list) i32           ;
+export fprintf             (io @FILE fmt @i8 ...          ) i32           ;
+export vfprintf            (io @FILE fmt @i8 args @va_list) i32           ;
 
-export exit                (status i32) ;
+export exit                (status i32)                                   ;
 
-export calloc              (m %i64 n %i64) @ ;
-export realloc             (p @    n %i64) @ ;
-export free                (p @          )   ;
+export calloc              (m %i64 n %i64) @                              ;
+export realloc             (p @    n %i64) @                              ;
+export free                (p @          )                                ;
 
-export memcmp              (p @ q @ n %i64) i32 ;
+export memcmp              (p @ q @ n %i64) i32                           ;
 
-export strtoul             (p @i8 q @@i8  b  i32) %i64 ;
-export strrchr             (p @i8 q   i32       ) @i8  ;
-export strcat              (p @i8 q  @i8        ) @i8  ;
-export strstr              (p @i8 q  @i8        ) @i8  ;
-export strcmp              (p @i8 q  @i8        )  i32 ;
-export strncat             (p @i8 q  @i8  n %i64) @i8  ;
-export strncmp             (p @i8 q  @i8  n %i64)  i32 ;
-export strncasecmp         (p @i8 q  @i8  n %i64)  i32 ;
-export strndup             (p @i8         n %i64) @i8  ;
-export strdup              (p @i8               ) @i8  ;
-export strlen              (p @i8               ) %i64 ;
+export strtoul             (p @i8 q @@i8  b  i32) %i64                    ;
+export strrchr             (p @i8 q   i32       ) @i8                     ;
+export strcat              (p @i8 q  @i8        ) @i8                     ;
+export strstr              (p @i8 q  @i8        ) @i8                     ;
+export strcmp              (p @i8 q  @i8        )  i32                    ;
+export strncat             (p @i8 q  @i8  n %i64) @i8                     ;
+export strncmp             (p @i8 q  @i8  n %i64)  i32                    ;
+export strncasecmp         (p @i8 q  @i8  n %i64)  i32                    ;
+export strndup             (p @i8         n %i64) @i8                     ;
+export strdup              (p @i8               ) @i8                     ;
+export strlen              (p @i8               ) %i64                    ;
 
-export strerror            (errnum          i32              ) @i8  ;
+export strerror            (errnum          i32              ) @i8        ;
 
-export type_equal       (a @Type b @Type                      ) bool   ;
-export tokenize         (filename@ i8 file_n i32 files @@@File) @Token ;
-export const_expr       (k @@Token                            ) i64    ;
-export parse            (j  @Token                            ) @Obj   ;
-export format_type      (t         @Type s    @i8             )        ;
-export copy_type        (t         @Type                      ) @Type  ;
-export pointer_to       (base      @Type                      ) @Type  ;
-export ring_of          (base      @Type                      ) @Type  ;
-export func_type        (return_ty @Type                      ) @Type  ;
-export array_of         (base      @Type size  i32            ) @Type  ;
-export enum_type        (                                     ) @Type  ;
-export struct_type      (                                     ) @Type  ;
-export codegen          (prog@ Obj out@ FILE files @@File     )        ;
 
-inline errno() i32 = (__errno_location)@ ;;
 
-inline maxl (a i64 b i64    )   i64 = (a > b) ? a : b ;;
-inline minl (a i64 b i64    )   i64 = (a < b) ? a : b ;;
-inline maxul(a % i64 b % i64) % i64 = (a > b) ? a : b ;;
-inline minul(a % i64 b % i64) % i64 = (a < b) ? a : b ;;
+
+
+
+export tokenize    (filename@ i8 file_n i32 files @@@File) @Token ;
+export codegen     (prog@ Obj out@ FILE files @@File     )        ;
+export parse       (j @Token         ) @Obj   ;
+
+export const_expr  (k @@Token        ) i64    ;
+
+export type_equal  (a @Type   b @Type) bool   ;
+export format_type (t @Type   s @i8  )        ;
+
+export copy_type   (t @Type          ) @Type  ;
+
+export ptr_of      (t @Type          ) @Type  ;
+export ring_of     (t @Type          ) @Type  ;
+export func_of     (t @Type          ) @Type  ;
+export array_of    (t @Type n  i32   ) @Type  ;
+export enum_of     (                 ) @Type  ;
+export struct_of   (                 ) @Type  ;
+
+
+
+
+
+
+inline errno() i32 = return (__errno_location)@ ;;
+
+inline maxl (a i64 b i64    )   i64 = return (a > b) ? a : b ;;
+inline minl (a i64 b i64    )   i64 = return (a < b) ? a : b ;;
+inline maxul(a % i64 b % i64) % i64 = return (a > b) ? a : b ;;
+inline minul(a % i64 b % i64) % i64 = return (a < b) ? a : b ;;
 
 inline align_to(n i32 a i32) i32 = return (n + a - 1) / a * a;;
 

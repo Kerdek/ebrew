@@ -21,7 +21,6 @@ argreg(sz i32 g i32) @i8 = return
                          "%r9"  ;;
 
 gen_expr(out @FILE e @Node c @i32 depth @i32);
-gen_stmt(out @FILE e @Node c @i32 depth @i32);
 
 println(out @FILE fmt @i8 ...) = return
   vfprintf out fmt cast @va_list __va_area__
@@ -59,7 +58,7 @@ load(out @FILE t @Type) = return
                                (println out "  mov (%%rax), %%rax"         ) ) )
 as none
 ;;
-store(out @FILE t @Type depth @i32) =
+store(out @FILE t @Type depth @i32) = return
    gen_pop out depth "%rdi"
 ;: (t.kind == TY_STRUCT  ) ? (0 for i (i < t.size && (i + 1)
 :; (println out "  mov %d(%%rax), %%r8b" i)
@@ -112,7 +111,7 @@ push_args(out @FILE e @Node c @i32 depth @i32) i32 = return
 ;: push_args2 out e.a.s false c depth
 ;: stack
 ;;
-gen_expr(out @FILE e @Node c @i32 depth @i32) =
+gen_expr(out @FILE e @Node c @i32 depth @i32) = return
    (println out "  .loc %d %d" e.j.in.file_no e.j.line_no)
 ;: (e.kind == ND_NULL_EXPR) ? none
 :  (e.kind == ND_THE   ) ? gen_expr out e.a c depth
@@ -225,44 +224,6 @@ gen_expr(out @FILE e @Node c @i32 depth @i32) =
                                                      : (println out "  mov %%rdi, %%rcx") ;: (println out "  sar %%cl, %s" ax) ;
 ;
 
-gen_stmt(out @FILE e @Node c @i32 depth @i32) = return
-   (println out "  .loc %d %d" e.j.in.file_no e.j.line_no)
-;: (e.kind == ND_IF)
-?  (c@ = c@ + 1)
-;: c@ is d
-   gen_expr out e.cond c depth
-;: gen_cmpz out
-;: (println out "  je  .L.else.%d" d)
-;: gen_stmt out e.then c depth
-;: (println out "  jmp .L.end.%d" d)
-;: (println out ".L.else.%d:" d)
-;: (!!e.els && gen_stmt out e.els c depth as none)
-;: (println out ".L.end.%d:" d)
-:  (e.kind == ND_FOR)
-?  (c@ = c@ + 1)
-;: c@ is d
-   (!!e.init && gen_stmt out e.init c depth as none )
-;: (println out ".L.begin.%d:" d)
-;:(  !!e.cond
-  && gen_expr out e.cond c depth
-  ;: gen_cmpz out
-  ;: (println out "  je .L.end.%d" d) as none )
-;: gen_stmt out e.then c depth
-;: (!!e.inc && gen_expr out e.inc c depth as none )
-;: (println out "  jmp .L.begin.%d" d)
-;: (println out ".L.end.%d:" d)
-:  (e.kind == ND_BLOCK)
-?  (!!e.body && e.body for a a.s :; gen_stmt out a c depth as none)
-:  (e.kind == ND_RETURN)
-?  (!!e.a && gen_expr out e.a c depth as none)
-;: (println out "  mov %%rbp, %%rsp")
-;: (println out "  pop %%rbp")
-;: (println out "  ret")
-:  (e.kind  == ND_EXPR_STMT)
-?  gen_expr out e.a c depth
-:  (jdiag e.j "invalid statement")
-;;
-
 assign_param_offsets(f @Obj) = return
    !!f.params
 && 16 is t
@@ -275,48 +236,56 @@ assign_param_offsets(f @Obj) = return
 as none
 ;;
 
-assign_one_lvar_offset(fn @Obj) =
-  if !fn.is_function return;
-  assign_param_offsets fn;
-  let bottom = 0 var = fn.locals;
-  for (none; var; var = var.s)
-    if !var.offset {
-    (bottom = bottom + var.t.size);
-    (bottom = align_to bottom var.t.align);
-    (var.offset = -bottom);;
-  (fn.stack_size = align_to bottom 16);;
+assign_one_lvar_offset(fn @Obj) = return
+   fn.is_function
+&& assign_param_offsets fn
+;: 0 is bottom
+  (  !!fn.locals
+  && fn.locals for o o.s
+  :;(  !o.offset
+    && (bottom = bottom + o.t.size)
+    ;: (bottom = align_to bottom o.t.align)
+    ;: (o.offset = -bottom)
+    as none )
+  as none )
+;: (fn.stack_size = align_to bottom 16)
+as none
+;;
 assign_lvar_offsets(prog @Obj) = return prog for f f.s :; assign_one_lvar_offset f as none;;
 
-emit_datum(out @FILE var @Obj) =
-    if !var.is_export (println out "  .local %s" var.name);
-    else (println out "  .globl %s" var.name);
+emit_datum_data(out @FILE var @Obj) = return
+   (println out "  .data")
+;: (println out "  .type %s, @object" var.name)
+;: (println out "  .size %s, %d" var.name var.t.size)
+;: (println out "  .align %d" var.t.align)
+;: (println out "%s:" var.name)
+;: var.rel is rel
+   0 is pos
+  (  true for _
+    (  pos < var.t.size
+    && (!!rel && rel.offset == pos)
+    ?  (println out "  .quad %s%+ld" rel.label@ rel.addend)
+    ;: (rel = rel.s)
+    ;: (pos = pos + 8)
+    :  (println out "  .byte %d" var.init_data[((pos :; (pos = pos + 1)))]) )
+  as none )
+;;
 
-    if var.init_data{
-      (println out "  .data");
-      (println out "  .type %s, @object" var.name);
-      (println out "  .size %s, %d" var.name var.t.size);
-      (println out "  .align %d" var.t.align);
-      (println out "%s:" var.name);
+emit_datum_bss(out @FILE o @Obj) = return
+   (println out "  .bss")
+;: (println out "  .align %d" o.t.align)
+;: (println out "%s:" o.name)
+;: (println out "  .zero %d" o.t.size)
+;;
 
-      let
-        rel = var.rel
-        pos = 0;
-      while (pos < var.t.size) {
-        if (!!rel && rel.offset == pos) {
-          (println out "  .quad %s%+ld" rel.label@ rel.addend);
-          (rel = rel.s);
-          (pos = pos + 8);
-        ; else {
-          (println out "  .byte %d" var.init_data[((pos :; (pos = pos + 1)))]);
-        ;
-      ;
-    ;
-    else {
-      (println out "  .bss");
-      (println out "  .align %d" var.t.align);
-      (println out "%s:" var.name);
-      (println out "  .zero %d" var.t.size);
-  ;;
+emit_datum(out @FILE var @Obj) = return
+   (  !var.is_export
+   ?  (println out "  .local %s" var.name)
+   :  (println out "  .globl %s" var.name) )
+;: var.init_data
+?  emit_datum_data out var
+:  emit_datum_bss  out var
+;;
 
 emit_data(out @FILE prog @Obj) = return (!!prog && prog for var var.s :; (!(var.is_function || !var.is_definition) && emit_datum out var as none) as none);;
 
@@ -332,56 +301,60 @@ store_gp(out @FILE r i32 offset i32 sz i32) = return
   as none )
 ;;
 
-emit_text(out @FILE prog @Obj c @i32) =
-  let fn = prog;
-  for (none; fn; fn = fn.s)
-    if (!(!fn.is_function || !fn.is_definition)) {
-    if !fn.is_export (println out "  .local %s" fn.name);
-    else             (println out "  .globl %s" fn.name);
-    (println out "  .text");
-    (println out "  .type %s, @function" fn.name);
-    (println out "%s:" fn.name);
-    (println out "  push %%rbp");
-    (println out "  mov %%rsp, %%rbp");
-    (println out "  sub $%d, %%rsp" fn.stack_size);
-    if fn.va_area {
-      let gp = 0 var = fn.params;
-      for (none; var; var = var.s) ((gp :; (gp = gp + 1)));
-      let off = fn.va_area.offset;
-      (println out "  movl $%d, %d(%%rbp)" (gp * 8) off);
-      (println out "  movq %%rbp, %d(%%rbp)" (off + 8));
-      (println out "  addq $16, %d(%%rbp)" (off + 8));
-      (println out "  movq %%rbp, %d(%%rbp)" (off + 16));
-      (println out "  addq $%d, %d(%%rbp)" (off + 24) (off + 16));
-      let b = (off + 24);
-      (println out "  movq %%rdi, %d(%%rbp)"   b);
-      (b = b + 8); (println out "  movq %%rsi, %d(%%rbp)"   b);
-      (b = b + 8); (println out "  movq %%rdx, %d(%%rbp)"   b);
-      (b = b + 8); (println out "  movq %%rcx, %d(%%rbp)"   b);
-      (b = b + 8); (println out "  movq %%r8, %d(%%rbp)"    b);
-      (b = b + 8); (println out "  movq %%r9, %d(%%rbp)"    b);;
-    (  0 is gp
-       fn.params for o
-      (  !!o
-      && o.s
-      :;(  o.offset <= 0
-        && o.t is t
-          (  t.kind == TY_STRUCT ) ?
-            cast i32 minl cast i64 t.size 8l is b
-            ( store_gp out (gp :; (gp = gp + 1)) o.offset b )
-            ;:(  (t.size   > 8)
-              && (o.offset + 8) is b
-                 (t.size   - 8) is c
-                 store_gp out (gp :; (gp = gp + 1)) b c as none) :
-          store_gp out ((gp :; (gp = gp + 1))) o.offset t.size
-        as none ) )
-    as none )
+emit_text(out @FILE prog @Obj c @i32) = return
+  (  !!prog && prog for fn fn.s
+  :;(  !!fn.is_function
+    && !!fn.is_definition
+    &&( !fn.is_export
+      ?  (println out "  .local %s" fn.name)
+      :  (println out "  .globl %s" fn.name) )
+    ;: (println out "  .text")
+    ;: (println out "  .type %s, @function" fn.name)
+    ;: (println out "%s:" fn.name)
+    ;: (println out "  push %%rbp")
+    ;: (println out "  mov %%rsp, %%rbp")
+    ;: (println out "  sub $%d, %%rsp" fn.stack_size)
+    ;:(  fn.va_area
+      && 0 is gp
+         (!!fn.params && fn.params for o o.s :; (gp = gp + 1) as none)
+      ;: fn.va_area.offset is off
+         (println out "  movl $%d, %d(%%rbp)" (gp * 8) off)
+      ;: (println out "  movq %%rbp, %d(%%rbp)" (off + 8))
+      ;: (println out "  addq $16, %d(%%rbp)" (off + 8))
+      ;: (println out "  movq %%rbp, %d(%%rbp)" (off + 16))
+      ;: (println out "  addq $%d, %d(%%rbp)" (off + 24) (off + 16))
+      ;: (off + 24) is b
+         (println out "  movq %%rdi, %d(%%rbp)"                b)
+      ;: (b = b + 8) ;: (println out "  movq %%rsi, %d(%%rbp)" b)
+      ;: (b = b + 8) ;: (println out "  movq %%rdx, %d(%%rbp)" b)
+      ;: (b = b + 8) ;: (println out "  movq %%rcx, %d(%%rbp)" b)
+      ;: (b = b + 8) ;: (println out "  movq %%r8, %d(%%rbp)"  b)
+      ;: (b = b + 8) ;: (println out "  movq %%r9, %d(%%rbp)"  b) as none)
+    ;:(  0 is gp
+         fn.params for o
+        (  !!o
+        && o.s
+        :;(  o.offset <= 0
+          && o.t is t
+            (  t.kind == TY_STRUCT ) ?
+              cast i32 minl cast i64 t.size 8l is b
+              ( store_gp out (gp :; (gp = gp + 1)) o.offset b )
+              ;:(  (t.size   > 8)
+                && (o.offset + 8) is b
+                   (t.size   - 8) is c
+                   store_gp out (gp :; (gp = gp + 1)) b c as none) :
+            store_gp out ((gp :; (gp = gp + 1))) o.offset t.size
+          as none ) )
+      as none )
     ;: 0 is depth
-       gen_stmt out cast @Node fn.body c &depth
+       gen_expr out cast @Node fn.body c &depth
     ;: (! strcmp fn.name "main" && (println out "  mov $0, %%rax") as none)
     ;: (println out "  mov %%rbp, %%rsp")
     ;: (println out "  pop %%rbp")
-    ;: (println out "  ret");;;
+    ;: (println out "  ret")
+    as none )
+  as none )
+;;
 
 export codegen(prog @Obj out @FILE files @@File) = return
   ( &files[0] for i

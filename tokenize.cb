@@ -166,7 +166,8 @@ is c
 ;: j
 ;;
 
-tokenshit(file @File p @i8 cur @Token) = while p@
+tokenshit(file @File p @i8 cur @Token) = return
+   (true for _ (p@ &&
     startswith p "/*"
     ?  strstr (p + 2) "*/" is q
        (!q && (diag p file "unclosed block comment") as none)
@@ -220,7 +221,7 @@ tokenshit(file @File p @i8 cur @Token) = while p@
     ?  (cur.s = new_token TK_PCT p (p + punct_len) file)
     ;: (cur = cur.s)
     ;: (p = p + cur.len)
-    :  (diag p file "invalid token");
+    :  (diag p file "invalid token")) as none) ;:
  (cur.s = new_token TK_EOF p p file);;
 
 read_file(path@ i8)@ i8 = return
