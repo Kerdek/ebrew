@@ -20,4 +20,4 @@ bin/stage3/%.a: %.cb | bin/stage2/chub
 	diff bin/stage3/$*.a bin/stage2/$*.a
 
 clean:
-	rm bin/stage*/*
+	rm -f bin/stage*/*
