@@ -51,7 +51,7 @@ type
     s          @same
     l           nat
     loc        @byte
-    len         nat
+    n        %nat
     t          @none
     str        @byte
     in         @File
@@ -63,7 +63,7 @@ type
     size          nat
     align         nat
     offset        nat
-    array_len     nat
+    n     nat
     s            @same
     o            @same
     a            @same
@@ -132,8 +132,7 @@ type
 
 export __errno_location    ( ) @nat ;
 
-export dirname             (path @byte) @byte ;
-export basename            (path @byte) @byte ;
+export aname            (path @byte) @byte ;
 
 export open_memstream      (p    @@byte n    @%nat) @FILE ;
 export fopen               (path  @byte mode @ byte ) @FILE ;
@@ -153,21 +152,16 @@ export vfprintf            (io @FILE fmt @byte args @va_list) nat ;
 export exit                (status nat) none ;
 
 export calloc              (m %nat  n %nat) @none ;
-export realloc             (p @none n %nat) @none ;
-export free                (p @none       )  none ;
 
 export memcmp              (p @none q @none n %nat) nat ;
 
 export strtoul             (p @byte q @@byte  b  nat) %nat ;
-export strrchr             (p @byte q   nat       ) @byte  ;
 export strcat              (p @byte q  @byte        ) @byte  ;
 export strstr              (p @byte q  @byte        ) @byte  ;
 export strcmp              (p @byte q  @byte        )  nat ;
-export strncat             (p @byte q  @byte  n %nat) @byte  ;
 export strncmp             (p @byte q  @byte  n %nat)  nat ;
 export strncasecmp         (p @byte q  @byte  n %nat)  nat ;
 export strndup             (p @byte         n %nat) @byte  ;
-export strdup              (p @byte               ) @byte  ;
 export strlen              (p @byte               ) %nat ;
 
 export strerror            (errnum  nat) @byte ;
@@ -180,7 +174,7 @@ quaternary         (k @Ctx t @Type) @Node ;
 
 type_suffix        (k @Ctx) @Type ;
 
-gen_expr(out @FILE e @Node c @nat) none;
+gen_rval(out @FILE e @Node c @nat) none;
 
 errno() nat = (__errno_location)@
 
@@ -206,14 +200,14 @@ diag(p@ byte in @File fmt@ byte ...) none =
 ;: exit 1
 
 jdiag(j@ Token fmt@ byte ...) none = vdiag j.in.name j.in.contents j.line_no j.loc fmt cast @va_list __va_area__ ;: exit 1 
-jeq(j @Token op @byte) bit = ! memcmp cast @none j.loc cast @none op cast %nat j.len && !op^j.len
+jeq(j @Token op @byte) bit = ! memcmp cast @none j.loc cast @none op cast %nat j.n && !op^j.n
 jadv(k @@Token) @Token = k@ :; (k@ = k.s) 
 
 expect(j @@Token op@ byte) none = (!jeq j@ op && (jdiag j@ "expected '%s'" op) as none) ;: (j@ = j.s) 
 consume(rest@@ Token j@ Token str@ byte) bit = jeq j str is c c :; (rest@ = c ? j.s : j) 
 
 new_type(q TypeKind size nat align nat) @Type
-=  cast @Type calloc 1ul sizeof Type is t t
+=  cast @Type calloc 1u sizeof Type is t t
 :; (t.q     = q    )
 :; (t.size  = size )
 :; (t.align = align)
@@ -245,7 +239,7 @@ format_type_a(t @Type s @byte) none
   as none )
 
 format_type(t @Type) @byte
-=  cast @byte calloc 1ul 1ul is s s
+=  cast @byte calloc 1u 1u is s s
 :; format_type_a t s
 
 type_equal(t @Type u @Type) bit
@@ -271,7 +265,7 @@ type_equal(t @Type u @Type) bit
           :  (c == TY_ARRAY)
           ?  !type_equal t.a u.a
           ?  0b
-          :  (t.array_len == u.array_len)
+          :  (t.n == u.n)
           :  (  c == TY_PTR
              || c == TY_RING )
           ?  type_equal t.a u.a
@@ -279,41 +273,41 @@ type_equal(t @Type u @Type) bit
 
 ty_null () @Type = cast @Type 0
 ty_none () @Type = new_type TY_VOID 1 1
-ty_bit   () @Type = new_type TY_BOOL 1 1
-ty_byte   () @Type = new_type TY_BYTE  1 1
+ty_bit  () @Type = new_type TY_BOOL 1 1
+ty_byte () @Type = new_type TY_BYTE 1 1
 ty_nat  () @Type = new_type TY_NAT  8 8
 
 copy_type(t @Type) @Type
-=  cast @Type calloc 1ul sizeof Type is u u
+=  cast @Type calloc 1u sizeof Type is u u
 :; (u@ = t@)
 ;: (u.o = t)
 
-ptr_of(base@ Type) @Type
+ptr_of(a@ Type) @Type
 =  new_type TY_PTR 8 8 is t t
-:; (t.a = base)
+:; (t.a = a)
 
-ring_of(base @Type) @Type
-=  new_type TY_RING base.size base.align is t t
-:; (t.a = base)
+ring_of(a @Type) @Type
+=  new_type TY_RING a.size a.align is t t
+:; (t.a = a)
 
 func_of(return_ty@ Type) @Type
 =  new_type TY_FUNC 1 1 is t t
 :; (t.a = return_ty)
 
-array_of(base @Type len nat) @Type
-=  new_type TY_ARRAY (base.size * len) base.align is t t
-:; (t.a = base)
-;: (t.array_len = len)
+array_of(a @Type n nat) @Type
+=  new_type TY_ARRAY (a.size * n) a.align is t t
+:; (t.a = a)
+;: (t.n = n)
 
 enum_of  () @Type = new_type TY_ENUM   8 8
 struct_of() @Type = new_type TY_STRUCT 0 1
 
-new_token(q typeof TK_ID start@ byte end@ byte file @File) @Token
-=  cast @Token calloc 1ul sizeof Token is j j
-:; (j.q = q              )
-;: (j.loc  = start             )
-;: (j.len  = end - start as nat)
-;: (j.in = file              )
+new_token(q typeof TK_ID a@ byte b@ byte in @File) @Token
+=  cast @Token calloc 1u sizeof Token is j j
+:; (j.q   = q    )
+;: (j.loc = a    )
+;: (j.n = b - a)
+;: (j.in  = in   )
 
 startswith(p@ byte q@ byte) bit
 = 1b is r
@@ -408,47 +402,49 @@ read_punct(p@ byte) nat =
 || f@ p "`"
 || f@ p "%" ) ? 1 : 0
 
-escape_one(c byte ca byte cb byte) byte = c == ca && cb
+escape_one(c byte ca byte cb byte) byte
+= c == ca && cb
 
-escape(c @byte file @File) byte =
-&escape_one is f
-(  f@ c@ 'a' '\a'
-|| f@ c@ 'b' '\b'
-|| f@ c@ 'f' '\f'
-|| f@ c@ 'n' '\n'
-|| f@ c@ 'r' '\r'
-|| f@ c@ 't' '\t'
-|| f@ c@ 'v' '\v'
-|| f@ c@ 'p' '\p'
-|| f@ c@ 'q' '\q'
-|| f@ c@ 's' '\s'
-|| '\0' :; (c@ != '0' && (diag c file "invalid escape sequence") as none) )
+escape(c @byte file @File) byte
+=  &escape_one is f
+  (  f@ c@ 'a' '\a'
+  || f@ c@ 'b' '\b'
+  || f@ c@ 'f' '\f'
+  || f@ c@ 'n' '\n'
+  || f@ c@ 'r' '\r'
+  || f@ c@ 't' '\t'
+  || f@ c@ 'v' '\v'
+  || f@ c@ 'p' '\p'
+  || f@ c@ 'q' '\q'
+  || f@ c@ 's' '\s'
+  || '\0'
+  :; (c@ != '0' && (diag c file "invalid escape sequence") as none) )
 
-read_string_literal(file @File start@ byte quote@ byte)@ Token =
-  (  (quote + 1) for q
+string_literal(file @File start@ byte quote@ byte)@ Token
+= (  (quote + 1) for q
     (  q@ != '"'
     && (q + 1)
     :; (q@ == '\0' && (diag quote file "unclosed string literal") as none) ) )
 is end
-   cast @byte calloc 1ul (end - quote as %nat) is buf
-   0 is len
+   cast @byte calloc 1u (end - quote as %nat) is buf
+   0 is n
   (  (quote + 1) for p
     (  p < end
     && (p@ == '\s')
-    ? (  buf^(len:;(len = len + 1)) = (p = p + 1)
+    ? (  buf^(n:;(n = n + 1)) = (p = p + 1)
       ;: escape p file
       :; (p = p + 1) )
     ;: p
-    :  (buf^(len:;(len = len + 1)) = p@)
+    :  (buf^(n:;(n = n + 1)) = p@)
     ;: (p + 1) )
   as none )
 ;: new_token TK_STR start (end + 1) file is j
-   (j.t = array_of ty_byte (len + 1) as @none)
+   (j.t = array_of ty_byte (n + 1) as @none)
 ;: (j.str = buf)
 ;: j
 
-read_char_literal(in @File p@ byte)@ Token =
-   (p + 1) is q
+byte_literal(in @File p@ byte)@ Token
+=  (p + 1) is q
    (q@ == '\0' && (diag p in "unclosed literal byte") as none)
 ;:(  (q@ == '\s')
   ?  (q = q + 1)
@@ -463,55 +459,6 @@ is c
 ;: (j.t = cast @none ty_byte)
 ;: j
 
-tokenshit(file @File p @byte cur @Token) none =
-   (1b for _ (p@ &&
-    startswith p "/*"
-    ?  strstr (p + 2) "*/" is q
-       (!q && (diag p file "unclosed block comment") as none)
-    ;: (p = q + 2)
-    :  (p@ == '\n' || isws p@) ? (p = p + 1)
-    :  (is09 p@ || (p@ == '.' && is09 p^1))
-    ?  ((p + 1) for q ( isid q@ && q + 1 )) is q
-       (cur.s = new_token TK_NUM p q file)
-    ;: (cur.s.loc is p
-  10 is base
-  (  (!strncasecmp p "0x" 2ul && is0f p^2)
-  && (p = p + 2)
-  ;: (base = 16)
-  as none )
-;: strtoul p &p base is v
-   ( (startswith p "b"  ) ? (p = p + 1) ;:         ty_bit  :
-     (startswith p "ul" ) ? (p = p + 2) ;: ring_of ty_nat :
-     (startswith p "l"  ) ? (p = p + 1) ;:         ty_nat :
-     (startswith p "u"  ) ? (p = p + 1) ;: ring_of ty_nat :
-                                                   ty_nat ) is t
-   (cur.s.l = v as nat ) ;:
-   (cur.s.t = t as @none   ) ;:
-   1b)
-    ;: (cur = cur.s)
-    ;: (p = q)
-    :  (p@ == '"')
-    ?  (cur.s = read_string_literal file p p)
-    ;: (cur = cur.s)
-    ;: (p = p + cur.len)
-    :  (p@ == '\p')
-    ?  (cur.s = read_char_literal file p)
-    ;: (cur = cur.s)
-    ;: (cur.l = cur.l as byte as nat)
-    ;: (p = p + cur.len)
-    :  read_ident p is n
-       !!n
-    ?  (cur.s = new_token TK_ID p (p + n) file)
-    ;: (cur = cur.s)
-    ;: (p = p + cur.len)
-    :  read_punct p is n
-       !!n
-    ?  (cur.s = new_token TK_PCT p (p + n) file)
-    ;: (cur = cur.s)
-    ;: (p = p + cur.len)
-    :  (diag p file "invalid token")) as none )
-;: (cur.s = new_token TK_EOF p p file)
-
 open_file(path @byte mode @byte) @FILE =
 fopen path mode ||
 ( cast none printf "cannot open file '%s' with mode '%s': %s" mode path strerror errno )
@@ -520,17 +467,17 @@ read_file(path@ byte)@ byte =
    new ^4096 byte is rfbuf2
    open_file path "r" is fp
    cast @byte 0 is buf
-   0ul is buflen
+   0u is buflen
    &buflen is b
    open_memstream &buf b is out
    (1b for k
     sizeof typeof rfbuf2 is m
-    fread cast @none rfbuf2 1ul m fp is n
-    ((n == 0) ? (k = 0b) : cast none fwrite cast @none rfbuf2 1ul n out)
+    fread cast @none rfbuf2 1u m fp is n
+    ((n == 0) ? (k = 0b) : cast none fwrite cast @none rfbuf2 1u n out)
     ;: k as none)
 ;: (fclose fp as none)
 ;: fflush out
-;: ((buflen == 0 || buf^(buflen - 1ul) != '\n') && fputc cast nat '\n' out as none)
+;: ((buflen == 0 || buf^(buflen - 1u) != '\n') && fputc cast nat '\n' out as none)
 ;: fputc 0 out
 ;: fclose out
 ;: buf
@@ -539,30 +486,76 @@ tokenize(path @byte) @Token =
    read_file path is p
    !p
 ?  cast @Token 0
-:  cast @File calloc 1ul sizeof File is f
-   (f.name = path)
-;: (f.contents = p)
-;: f.contents is p
-   new Token is head
-   tokenshit f p &head
-;: head.s is j
+:  cast @File calloc 1u sizeof File is in
+   (in.name = path)
+;: (in.contents = p)
+;: new Token is j
+   (in.contents is p &j is j
+   (1b for _ (p@ &&
+    startswith p "/*"
+    ?  strstr (p + 2) "*/" is q
+       (!q && (diag p in "unclosed block comment") as none)
+    ;: (p = q + 2)
+    :  (p@ == '\n' || isws p@) ? (p = p + 1)
+    :  (is09 p@ || (p@ == '.' && is09 p^1))
+    ?  ((p + 1) for q ( isid q@ && q + 1 )) is q
+       (j.s = new_token TK_NUM p q in)
+    ;: (j.s.loc is p
+  10 is a
+  (  (!strncasecmp p "0x" 2u && is0f p^2)
+  && (p = p + 2)
+  ;: (a = 16)
+  as none )
+;: strtoul p &p a is v
+   ( (startswith p "b"  ) ? (p = p + 1) ;:         ty_bit :
+     (startswith p "u"  ) ? (p = p + 1) ;: ring_of ty_nat :
+                                                   ty_nat ) is t
+   (j.s.l = v as nat ) ;:
+   (j.s.t = t as @none   ) ;:
+   1b)
+    ;: (j = j.s)
+    ;: (p = q)
+    :  (p@ == '"')
+    ?  (j.s = string_literal in p p)
+    ;: (j = j.s)
+    ;: (p = p + j.n)
+    :  (p@ == '\p')
+    ?  (j.s = byte_literal in p)
+    ;: (j = j.s)
+    ;: (j.l = j.l as byte as nat)
+    ;: (p = p + j.n)
+    :  0 is n
+       (p for q (isid q@ && q + 1 || cast @byte 0 :; (n = q - p as nat)) as none)
+    ;: !!n
+    ?  (j.s = new_token TK_ID p (p + n) in)
+    ;: (j = j.s)
+    ;: (p = p + j.n)
+    :  read_punct p is n
+       !!n
+    ?  (j.s = new_token TK_PCT p (p + n) in)
+    ;: (j = j.s)
+    ;: (p = p + j.n)
+    :  (diag p in "invalid token")) as none )
+;: (j.s = new_token TK_EOF p p in)
+   )
+;: j.s is j2
    1 is n
-  ( f.contents for p
+  ( in.contents for p
     (  !!p@
     && (p + 1)
-    :; (j = (p == j.loc) ? (j.line_no = n) ;: j.s : j)
+    :; (j2 = (p == j2.loc) ? (j2.line_no = n) ;: j2.s : j2)
     :; (n = n + ((p@ == '\n') ? 1 : 0)) )
   as none )
-;: head.s
+;: j.s
 
 push_scope  (k @Ctx c @byte       ) @Scope
-= cast @Scope calloc 1ul sizeof Scope is s s :; (s.c = c) ;: (s.s = k.s) ;: (k.s = s)
+= cast @Scope calloc 1u sizeof Scope is s s :; (s.c = c) ;: (s.s = k.s) ;: (k.s = s)
 
 search_scope(k @Ctx c @byte n %nat) @Scope
 = cast @Scope 0 is r (!!k.s && k.s for s (n != strlen s.c || !!strncmp s.c c n) ? s.s : (r = s) ;: cast @Scope 0 as none) ;: r
 
 new_var(k @Ctx c @byte t @Type) @Obj
-=  (calloc 1ul sizeof Obj as @Obj) is o
+=  (calloc 1u sizeof Obj as @Obj) is o
    (o.name = c) 
 ;: (o.t = t) 
 ;: ((push_scope k c).o = o) 
@@ -591,8 +584,7 @@ new_unique_name(k @Ctx) @byte
 ;: buf
 :; (k.n = k.n + 1)
 
-new_anon_gvar     (k @Ctx       t @Type        ) @Obj = new_gvar      k new_unique_name k t
-new_string_literal(k @Ctx p @byte t @Type u @Type) @Obj = new_anon_gvar k u is o (o.init_data = p) ;: o
+new_string_literal(k @Ctx p @byte t @Type u @Type) @Obj = new_gvar      k new_unique_name k u is o (o.init_data = p) ;: o
 
 expect_type(j @Token t @Type u @Type) none
 =  !!t
@@ -601,18 +593,12 @@ expect_type(j @Token t @Type u @Type) none
 
 get_ident(j @Token) @byte
 =  ((j.q != TK_ID) && (jdiag j "expected an nonymousifier") as none)
-;: strndup j.loc cast %nat j.len
+;: strndup j.loc cast %nat j.n
 
 find_type(k @Ctx c @byte n %nat) @Type
 =  (k.j.q != TK_ID) ? ty_null
 :  search_scope k c n is s
    (!!s && s.t)
-
-declspec(k @Ctx v @VarAttr) none
-=  1b for i
-  (  consume &k.j k.j "type"    && 1b :; (v.is_type   = 1b)
-  || consume &k.j k.j "export"  && 1b :; (v.is_export = 1b) )
-as none
 
 enum_specifier(k @Ctx) @Type
 =  enum_of is t
@@ -633,29 +619,22 @@ declarator(k @Ctx) @Type
    copy_type type_suffix k is t t
 :; (t.name = j)
 
-struct_members(k @Ctx t @Type) none
-=  new Type is head
+struct_decl(k @Ctx) @Type
+=  struct_of is t
+   expect &k.j "{"
+;: (k.t = t)
+;: new Type is head
    &head is cur
   (  1b for _ 
     (  !consume &k.j k.j "}"
-    && (calloc 1ul sizeof Type as @Type) is g
+    && (calloc 1u sizeof Type as @Type) is g
        (g@ = declarator k)
     ;: (cur.s = g)
     ;: (cur = cur.s) )
   as none )
 ;: (t.a = head.s)
-
-struct_union_decl(k @Ctx) @Type
-=  struct_of is t
-   expect &k.j "{"
-;: (k.t = t)
-;: struct_members k t
 ;: (k.t = 0 as @Type)
-;: t
-
-struct_decl(k @Ctx) @Type
-=  struct_union_decl k is t
-   (t.q = TY_STRUCT)
+;: (t.q = TY_STRUCT)
 ;: (t.size < 0) ? t
 :  0 is bits
   (  !!t.a && t.a for g g.s
@@ -680,7 +659,7 @@ type_specifier(k @Ctx) @Type
 :  consume &k.j k.j "enum"   ? enum_specifier   k
 :  consume &k.j k.j "typeof" ? (tertiary k ty_null).t
 :  consume &k.j k.j "same"   ? k.t
-: (  find_type k k.j.loc cast %nat k.j.len
+: (  find_type k k.j.loc cast %nat k.j.n
   && cast none jadv &k.j
   || ty_none :; (jdiag k.j "invalid type specifier") )
 
@@ -714,7 +693,7 @@ type_suffix(k @Ctx) @Type =
 :  consume &k.j k.j "(" ? func_params            k
 :  type_specifier k
 
-new_node       (j @Token t @Type g NodeKind                        ) @Node = cast @Node calloc 1ul sizeof Node is e e :; (e.j = j) :; (e.t = t) :; (e.q = g)
+new_node       (j @Token t @Type g NodeKind                        ) @Node = cast @Node calloc 1u sizeof Node is e e :; (e.j = j) :; (e.t = t) :; (e.q = g)
 new_nullary    (j @Token t @Type g NodeKind                        ) @Node = new_node j t g
 new_unary      (j @Token t @Type g NodeKind a @Node                ) @Node = new_node j t g is e e :; (e.a = a) 
 new_binary     (j @Token t @Type g NodeKind a @Node b @Node        ) @Node = new_node j t g is e e :; (e.a = a) :; (e.a.s = b) 
@@ -775,7 +754,7 @@ array_access(k @Ctx t @Type a @Node) @Node =
 get_struct_member(t @Type j @Token) @Type =
    ty_null is r
    (t.a for g (   (g.q == TY_STRUCT && !g.name) ? (!!get_struct_member g j && g)
-:  (g.name.len == j.len && !strncmp g.name.loc j.loc cast %nat j.len && g)
+:  (g.name.n == j.n && !strncmp g.name.loc j.loc cast %nat j.n && g)
 ) is g1 !g1 ? g.s : (r = g1) ;: ty_null as none)
 ;: r
 
@@ -784,11 +763,11 @@ member_access(k @Ctx t @Type a @Node) @Node =
 ;: jadv &k.j is j
    (a = new_deref_all j t a)
 ;:(  a.t.q != TY_STRUCT
-  && (jdiag j "(%s . %.*s) must be of the form (@*struct . %.*s)" format_type a.t j.s.len j.s.loc j.s.len j.s.loc)
+  && (jdiag j "(%s . %.*s) must be of the form (@*struct . %.*s)" format_type a.t j.s.n j.s.loc j.s.n j.s.loc)
   as none )
 ;: get_struct_member a.t j is g
   (  !g
-  &&(  jdiag j "(%s . %.*s) no such member" format_type a.t j.s.len j.s.loc ) as none )
+  &&(  jdiag j "(%s . %.*s) no such member" format_type a.t j.s.n j.s.loc ) as none )
 ;: new_unary j g ND_MEMBER a
 
 sizee      (k @Ctx t @Type        ) @Node = jadv   &k.j is j type_suffix k is u                                                        new_sizeof      j   t   u
@@ -806,18 +785,18 @@ conditional(k @Ctx t @Type a @Node) @Node = jadv   &k.j is j                    
                                             expect &k.j ":" ;:                                                      seq k t       is c new_conditional j   t     a b c
 islet      (k @Ctx t @Type a @Node) @Node = jadv   &k.j is j k.s is s new_lvar k get_ident jadv &k.j a.t is o       seq k t       is b new_let         j   t     a b   o :; (k.s = s)
 repeat     (k @Ctx t @Type a @Node) @Node = jadv   &k.j is j k.s is s new_lvar k get_ident jadv &k.j a.t is o       seq k t       is b new_repeat      j   t     a b   o :; (k.s = s)
-
-primary(k @Ctx t @Type) @Node =
-  ( jeq k.j "new" ?
-      jadv &k.j is j
+newe       (k @Ctx t @Type        ) @Node = jadv &k.j is j
       type_suffix k is u
       new_lvar k "" u is o
       new_node k.j ty_none ND_MEMZERO is b
       (b.o = o) ;:
-      new_neth k.j t b new_reference k.j t o :
+      new_neth k.j t b new_reference k.j t o
+
+primary(k @Ctx t @Type) @Node =
+  ( jeq k.j "new" ? newe k t :
     consume &k.j k.j "(" ? quaternary k t :; expect &k.j ")" :
     (k.j.q == TK_ID) ?
-      search_scope k k.j.loc cast %nat k.j.len is s
+      search_scope k k.j.loc k.j.n is s
       jadv &k.j;:
       (!!s ? !!s.o ? new_reference k.j t s.o : new_lit k.j t s.t cast nat s.v :
       (jdiag k.j "lookup failed") ;: cast @Node 0) :
@@ -923,7 +902,7 @@ find_func(k @Ctx c @byte n %nat) @Obj =
 
 function(k @Ctx attr @VarAttr) none =
   declarator k is t
-  find_func k t.name.loc cast %nat t.name.len is o
+  find_func k t.name.loc cast %nat t.name.n is o
   (  !!o
   ?  (o.t.q != TY_FUNC                && (jdiag k.j "redeclared as a different q of symbol") as none)
   ;: (o.is_definition && jeq k.j "="  && (jdiag k.j "redefinition of %s" o.name) as none)
@@ -933,7 +912,7 @@ function(k @Ctx attr @VarAttr) none =
   ;: (o.is_definition = jeq k.j "=")
   ;: (o.is_export = attr.is_export) )
 ;:(  !consume &k.j k.j ";"
-  && (k.locals = 0 as @Obj)
+  && (k.locals = cast @Obj 0)
   ;: k.s is s
      create_param_lvars k t.params
   ;: t.a is rty
@@ -955,7 +934,10 @@ parse(j @Token) @Obj =
   (  k.j for j
     (  !!j.q
     && new VarAttr is v
-       declspec &k &v
+       (1b for i
+  (  consume &k.j k.j "type"    && 1b :; (v.is_type   = 1b)
+  || consume &k.j k.j "export"  && 1b :; (v.is_export = 1b) )
+as none)
     ;: v.is_type
     ?  typedecl &k
     :  function &k &v
@@ -1031,93 +1013,69 @@ gen_store(out @FILE t @Type c @nat) none
 :  (t.size == 1) ? (gen_ln out "  mov %%al , (%%rdi)")
 :                  (gen_ln out "  mov %%rax, (%%rdi)")
 
-gen_addr_local (out @FILE e @Node) none = (gen_ln out "  lea %d(%%rbp), %%rax"          e.o.offset)
-gen_addr_global(out @FILE e @Node) none = (gen_ln out "  mov %s@GOTPCREL(%%rip), %%rax" e.o.name  )
+gen_lval_local (out @FILE e @Node) none = (gen_ln out "  lea %d(%%rbp), %%rax"          e.o.offset)
+gen_lval_global(out @FILE e @Node) none = (gen_ln out "  mov %s@GOTPCREL(%%rip), %%rax" e.o.name  )
 
-gen_addr(out @FILE e @Node c @nat) none
-=  ( e.q    == ND_COMMA   ) ? gen_expr out e.a   c ;: gen_expr out e.a.s c
-:  ( e.q    == ND_THEN    ) ? gen_expr out e.a   c ;: gen_push out c ;: gen_expr out e.a.s c ;: gen_pop out c "%rax"
-:  ( e.q    == ND_ELEM    ) ? gen_expr out e.a   c ;: (gen_ln out "  mov %%rax, %%rdx") ;: gen_expr out e.a.s c ;: (gen_ln out "  imul $%ld, %%rax" e.a.t.a.size) ;: (gen_ln out "  add %%rdx, %%rax")
-:  ( e.q    == ND_MEMBER  ) ? gen_addr out e.a   c ;: gen_add out e.t.offset
+gen_lval(out @FILE e @Node c @nat) none
+=  ( e.q    == ND_COMMA   ) ? gen_rval out e.a   c ;: gen_lval out e.a.s c
+:  ( e.q    == ND_THEN    ) ? gen_lval out e.a   c ;: gen_push out c ;: gen_rval out e.a.s c ;: gen_pop out c "%rax"
+:  ( e.q    == ND_ELEM    ) ? gen_rval out e.a   c ;: (gen_ln out "  mov %%rax, %%rdx") ;: gen_rval out e.a.s c ;: (gen_ln out "  imul $%ld, %%rax" e.a.t.a.size) ;: (gen_ln out "  add %%rdx, %%rax")
+:  ( e.q    == ND_MEMBER  ) ? gen_lval out e.a   c ;: gen_add out e.t.offset
 :  ( e.q    == ND_THE    ||
-     e.q    == ND_DEREF   ) ? gen_expr out e.a   c
+     e.q    == ND_DEREF   ) ? gen_rval out e.a   c
 :  ( e.q    == ND_FUNCALL||
      e.q    == ND_COND   ||
      e.q    == ND_LET    ||
-     e.q    == ND_REPEAT  ) ? gen_expr out e     c
+     e.q    == ND_REPEAT  ) ? gen_rval out e     c
 :  ( e.q    == ND_VAR     ) ? e.o.is_local
-                            ?  gen_addr_local  out e
-                            :  gen_addr_global out e
+                            ?  gen_lval_local  out e
+                            :  gen_lval_global out e
                             :  (jdiag e.j "not an lvalue")
 
-push_args2(out @FILE e @Node pass bit c @nat gp nat) none
+push_args2(out @FILE e @Node pass bit c @nat d nat) none
 =  !!e
-&& push_args2 out e.s pass c (gp + 1)
-;: (pass == (gp < 6))
-&& gen_expr out e c
+&& push_args2 out e.s pass c (d + 1)
+;: (pass == (d < 6))
+&& gen_rval out e c
 ;: gen_push out c
 as none
 
-gen_expr(out @FILE e @Node c @nat) none
+gen_rval(out @FILE e @Node c @nat) none
 =  (gen_ln out "  .loc 0 %d" e.j.line_no)
-;: (e.q == ND_NUM   ) ? gen_lit  out e.l
-:  (e.q == ND_SIZE  ) ? gen_lit  out e.t.s.size
-:  (e.q == ND_ALIGN ) ? gen_lit  out e.t.s.align
-:  (e.q == ND_THE   ) ? gen_expr out e.a c
-:  (e.q == ND_ADDR  ) ? gen_addr out e.a c
-:  (e.q == ND_NEG   ) ? gen_expr out e.a c ;: gen_neg  out
-:  (e.q == ND_VAR   ) ? gen_addr out e   c ;: gen_load out e
-:  (e.q == ND_MEMBER) ? gen_addr out e   c ;: gen_load out e
-:  (e.q == ND_ELEM  ) ? gen_addr out e   c ;: gen_load out e
-:  (e.q == ND_DEREF ) ? gen_expr out e.a c ;: gen_load out e
-:  (e.q == ND_COMMA ) ? gen_expr out e.a c ;: gen_expr out e.a.s c
-:  (e.q == ND_CAST  ) ? gen_expr out e.a c ;: gen_cast out e.a.t e.t
-:  (e.q == ND_ASSIGN) ? gen_addr out e.a c ;: gen_push out c ;: gen_expr out e.a.s c ;: gen_store out e.a.t c ;: gen_zero out
-:  (e.q == ND_THEN  ) ? gen_expr out e.a c ;: gen_push out c ;: gen_expr out e.a.s c ;: gen_pop out c "%rax"
-:  (e.q == ND_NOT   ) ? gen_expr out e.a c ;: gen_cmpz out       ;: (gen_ln out "  sete %%al") ;: (gen_ln out "  movzx %%al, %%rax")
-:  (e.q == ND_BITNOT) ? gen_expr out e.a c ;: gen_not  out
-:  (e.q == ND_LET   ) ? gen_addr_local out e     ;: gen_push out c ;: gen_expr out e.a c ;: gen_store out e.a.t c ;: gen_expr out e.a.s c
-:  (e.q == ND_REPEAT) ? 
-   (gen_ln out "  lea %d(%%rbp), %%rax" e.o.offset)
-;: gen_push out c
-;: gen_expr out e.a c
-;: gen_label out e ""
-;: gen_store out e.a.t c
-;: gen_addr_local out e
-;: gen_push out c
-;: gen_expr out e.a.s c
-;: gen_cmpz out
-;: (gen_ln out "  jne .L..%lu" cast %nat e)
-;: gen_pop out c "%rax"
-;: gen_load out e.a
-:  (e.q == ND_MEMZERO)
-?  (gen_ln out "  mov $%d, %%rcx" e.o.t.size)
-;: (gen_ln out "  lea %d(%%rbp), %%rdi" e.o.offset)
-;: (gen_ln out "  mov $0, %%al")
-;: (gen_ln out "  rep stosb")
-:  (e.q == ND_COND)
-?  gen_expr out e.a c
-;: gen_cmpz out
-;: (gen_ln out "  je .L.a.%lu" e)
-;: gen_expr out e.a.s c
-;: (gen_ln out "  jmp .L.b.%lu" e)
-;: gen_label out e "a"
-;: gen_expr out e.a.s.s c
-;: gen_label out e "b"
+;: (e.q == ND_NUM   )  ? gen_lit  out e.l
+:  (e.q == ND_SIZE  )  ? gen_lit  out e.t.s.size
+:  (e.q == ND_ALIGN )  ? gen_lit  out e.t.s.align
+:  (e.q == ND_THE   )  ? gen_rval out e.a c
+:  (e.q == ND_ADDR  )  ? gen_lval out e.a c
+:  (e.q == ND_NEG   )  ? gen_rval out e.a c ;: gen_neg  out
+:  (e.q == ND_VAR   )  ? gen_lval out e   c ;: gen_load out e
+:  (e.q == ND_MEMBER)  ? gen_lval out e   c ;: gen_load out e
+:  (e.q == ND_ELEM  )  ? gen_lval out e   c ;: gen_load out e
+:  (e.q == ND_DEREF )  ? gen_rval out e.a c ;: gen_load out e
+:  (e.q == ND_COMMA )  ? gen_rval out e.a c ;: gen_rval out e.a.s c
+:  (e.q == ND_CAST  )  ? gen_rval out e.a c ;: gen_cast out e.a.t e.t
+:  (e.q == ND_ASSIGN)  ? gen_lval out e.a c ;: gen_push out c ;: gen_rval out e.a.s c ;: gen_store out e.a.t c ;: gen_zero out
+:  (e.q == ND_THEN  )  ? gen_rval out e.a c ;: gen_push out c ;: gen_rval out e.a.s c ;: gen_pop out c "%rax"
+:  (e.q == ND_NOT   )  ? gen_rval out e.a c ;: gen_cmpz out   ;: (gen_ln out "  sete %%al") ;: (gen_ln out "  movzx %%al, %%rax")
+:  (e.q == ND_BITNOT)  ? gen_rval out e.a c ;: gen_not  out
+:  (e.q == ND_LET   )  ? gen_lval_local out e ;: gen_push out c ;: gen_rval out e.a c ;: gen_store out e.a.t c ;: gen_rval out e.a.s c
+:  (e.q == ND_REPEAT)  ? gen_lval_local out e ;: gen_push out c ;: gen_rval out e.a c ;: gen_label out e "" ;: gen_store out e.a.t c ;: gen_lval_local out e ;: gen_push out c ;: gen_rval out e.a.s c ;: gen_cmpz out ;: (gen_ln out "  jne .L..%lu" e) ;: gen_pop out c "%rax" ;: gen_load out e.a
+:  (e.q == ND_MEMZERO) ? (gen_ln out "  mov $%d, %%rcx" e.o.t.size) ;: (gen_ln out "  lea %d(%%rbp), %%rdi" e.o.offset) ;: (gen_ln out "  mov $0, %%al") ;: (gen_ln out "  rep stosb")
+:  (e.q == ND_COND)    ? gen_rval out e.a c ;: gen_cmpz out ;: (gen_ln out "  je .L.a.%lu" e) ;: gen_rval out e.a.s c ;: (gen_ln out "  jmp .L.b.%lu" e) ;: gen_label out e "a" ;: gen_rval out e.a.s.s c ;: gen_label out e "b"
 :  (e.q == ND_LOGAND || e.q ==  ND_LOGOR)
-?  gen_expr out e.a c
+?  gen_rval out e.a c
 ;: gen_cmpz out
 ;: (gen_ln out "  j%se .L.end.%lu" ((e.q == ND_LOGAND) ? "" : "n") e)
 ;: (e.a.s.t.q == TY_VOID && gen_push out c)
-;: gen_expr out e.a.s c
+;: gen_rval out e.a.s c
 ;: (e.a.s.t.q == TY_VOID && gen_pop out c "%rax")
 ;: gen_label out e "end"
 :  (e.q == ND_FUNCALL)
 ?  0 is stack
-   0 is gp
+   0 is d
   (  !!e.a.s && e.a.s for arg
      arg.s
-  :;(  ((gp >= 6) :; (gp = gp + 1))
+  :;(  ((d >= 6) :; (d = d + 1))
     && (stack = stack + 1)
     as none )
   as none )
@@ -1128,18 +1086,18 @@ gen_expr(out @FILE e @Node c @nat) none
 ;: push_args2 out e.a.s 1b c 0
 ;: push_args2 out e.a.s 0b c 0
 ;:(  (e.a.q == ND_VAR && !e.a.o.is_local)
-  ?  0 is gp
-     (!!e.a.s && e.a.s for e e.s :; (gp < 6 && gen_pop out c argreg 2 gp :; (gp = gp + 1)) as none)
+  ?  0 is d
+     (!!e.a.s && e.a.s for e e.s :; (d < 6 && gen_pop out c argreg 2 d :; (d = d + 1)) as none)
   ;: (gen_ln out "  call *%s@GOTPCREL(%%rip)" e.a.o.name)
-  :  gen_expr out e.a c
-  ;: 0 is gp
-     (!!e.a.s && e.a.s for e e.s :; (gp < 6 && gen_pop out c argreg 2 gp :; (gp = gp + 1)) as none)
+  :  gen_rval out e.a c
+  ;: 0 is d
+     (!!e.a.s && e.a.s for e e.s :; (d < 6 && gen_pop out c argreg 2 d :; (d = d + 1)) as none)
   ;: (gen_ln out "  mov %%rax, %%r10")
   ;: (gen_ln out "  call *%%r10") )
 ;: gen_fpop out c stack
-:  gen_expr out e.a.s c
+:  gen_rval out e.a.s c
 ;: gen_push out c
-;: gen_expr out e.a c
+;: gen_rval out e.a c
 ;: gen_pop out c "%rdi"
 ;: (e.q == ND_ADD) ? ((e.a.t.q == TY_PTR || e.a.t.q == TY_ARRAY) && (gen_ln out "  imul $%d, %%rdi" e.a.t.a.size) as none) ;:
     ((e.a.s.t.q == TY_PTR || e.a.s.t.q == TY_ARRAY) && (gen_ln out "  imul $%d, %%rax" e.a.s.t.a.size) as none) ;:
@@ -1190,8 +1148,8 @@ emit_datum_data(out @FILE o @Obj) none
     :  (gen_ln out "  .byte %d" o.init_data^((pos :; (pos = pos + 1)))) )
   as none )
 
-store_gp(out @FILE r nat p nat n nat) none =
-   (n == 1) ? (gen_ln out "  mov %s, %d(%%rbp)" argreg 0 r p)
+store_gp(out @FILE r nat p nat n nat) none
+=  (n == 1) ? (gen_ln out "  mov %s, %d(%%rbp)" argreg 0 r p)
 :  (n == 8) ? (gen_ln out "  mov %s, %d(%%rbp)" argreg 2 r p)
 : (  0 for i
     (  i < n
@@ -1222,14 +1180,12 @@ emit_datum_text(out @FILE o @Obj) none
 ;: (gen_ln out "  .text")
 ;: (gen_ln out "  .type %s, @function" o.name)
 ;: (gen_ln out "%s:" o.name)
-;: (gen_ln out "  push %%rbp")
-;: (gen_ln out "  mov %%rsp, %%rbp")
-;: (gen_ln out "  sub $%d  , %%rsp" o.stack_size)
+;: (gen_ln out "  enter $%d, $0" o.stack_size)
 ;:(  o.va_area
-  && 0 is gp
-     (!!o.params && o.params for o o.s :; (gp = gp + 1) as none)
+  && 0 is d
+     (!!o.params && o.params for o o.s :; (d = d + 1) as none)
   ;: o.va_area.offset is off
-     (gen_ln out "  movl $%d  , %d(%%rbp)" (gp * 8) off)
+     (gen_ln out "  movl $%d  , %d(%%rbp)" (d * 8) off)
   ;: (gen_ln out "  movq %%rbp, %d(%%rbp)" (off + 8))
   ;: (gen_ln out "  addq $16  , %d(%%rbp)" (off + 8))
   ;: (gen_ln out "  movq %%rbp, %d(%%rbp)" (off + 16))
@@ -1241,20 +1197,18 @@ emit_datum_text(out @FILE o @Obj) none
   ;: (b = b + 8) ;: (gen_ln out "  movq %%rcx, %d(%%rbp)" b)
   ;: (b = b + 8) ;: (gen_ln out "  movq %%r8 , %d(%%rbp)" b)
   ;: (b = b + 8) ;: (gen_ln out "  movq %%r9 , %d(%%rbp)" b) as none )
-;:(  0 is gp
+;:(  0 is d
      o.params for o
     (  !!o
     && o.s
     :;(  o.offset <= 0
       && o.t is t
-        store_gp out ((gp :; (gp = gp + 1))) o.offset t.size
+        store_gp out ((d :; (d = d + 1))) o.offset t.size
       as none ) )
   as none )
 ;: 0 is c
-   gen_expr out cast @Node o.body &c
-;: (! strcmp o.name "main" && (gen_ln out "  mov $0, %%rax") as none)
-;: (gen_ln out "  mov %%rbp, %%rsp")
-;: (gen_ln out "  pop %%rbp")
+   gen_rval out cast @Node o.body &c
+;: (gen_ln out "  leave")
 ;: (gen_ln out "  ret")
 
 emit_datum(out @FILE o @Obj) none
@@ -1270,7 +1224,7 @@ codegen(o @Obj out @FILE in @byte) none
 =  (gen_ln out "  .file 0 \q%s\q" in)
 ;: 0 is c (!!o && o for o o.s :; emit_datum out o &c as none)
 
-export main(argc nat argv @@byte) nat =
-  open_file argv^2 "w" is out
-  (!out ? 1 : 0 :; codegen parse tokenize argv^1 out argv^1) :;
-  cast none fclose out
+export main(argc nat argv @@byte) nat
+=  open_file argv^2 "w" is out
+   (!out ? 1 : 0 :; codegen parse tokenize argv^1 out argv^1)
+:; cast none fclose out
