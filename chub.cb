@@ -262,9 +262,6 @@ plor  ekt ;
 
 type_suffix(k K) T ;
 
-grval(y Y e E c @N) nat;
-glval(y Y e E c @N) nat;
-
 maxl (a N b N) N = ((a > b) ? a : b)
 minl (a N b N) N = ((a < b) ? a : b)
 maxul(a N b N) N = ((a > b) ? a : b)
@@ -1028,14 +1025,26 @@ gpush (y Y c @N      ) none = ((gln y "  push %%rax")    (c@ = c@ + 8))
 gpop  (y Y c @N  s S ) none = ((gln y "  pop %%r%s" s  )    (c@ = c@ - 8))
 gindex(y Y       l N ) none = (!!l && (gln y "  add $%ld, %%rax" l))
 
-gload(y Y t T) none =
-(  (t.q == TY_ARRAY)
-|| (t.q == TY_STRUCT)
-|| (t.q == TY_FUNC)
-|| (t.size == 1)
-?  (gln y "  movzbl (%%rax), %%eax")
-:  (gln y "  mov    (%%rax), %%rax")
+gaddr(y Y q TypeKind n N s S d S) none = (gln y "  lea    %lu(%%r%s), %%r%s" n s d)
+gload(y Y q TypeKind n N s S d S) none =
+( ((q == TY_ARRAY)|| (q == TY_STRUCT)|| (q == TY_FUNC))
+? gaddr y q n s d
+: ((q == TY_BYTE) || (q == TY_BOOL) || (q == TY_ENUM))
+? (gln y "  movzbl %lu(%%r%s), %%e%s" n s d)
+: (gln y "  mov    %lu(%%r%s), %%r%s" n s d)
 as none )
+
+gaddrg(y Y o O c @N d S) none = (gln y "  lea    %s, %%r%s" o.name d)
+gloadg(y Y o O c @N d S) none =
+( ((o.t.q == TY_ARRAY)|| (o.t.q == TY_STRUCT)|| (o.t.q == TY_FUNC))
+? gaddrg y o c d
+: ((o.t.q == TY_BYTE) || (o.t.q == TY_BOOL) || (o.t.q == TY_ENUM))
+? (gln y "  movzbl %s, %%e%s" o.name d)
+: (gln y "  mov    %s, %%r%s" o.name d)
+as none )
+
+gaddrl(y Y o O c @N d S) none = gaddr y o.t.q (o.offset + c@) "sp" d
+gloadl(y Y o O c @N d S) none = gload y o.t.q (o.offset + c@) "sp" d
 
 gstore(y Y t T c @N) none =
 (  gpop y c "di"
@@ -1045,37 +1054,37 @@ ret (gln y "  mov %ld(%%rax), %%r8b    " i)
 :  (t.size == 1) ? (gln y "  mov %%al , (%%rdi)")
 :                  (gln y "  mov %%rax, (%%rdi)") )
 
-gvar_local (y Y e E c @N s S) none = ((gln y "  lea %ld(%%rsp), %%r%s" (e.o.offset + c@) s))
-gvar_global(y Y e E c @N s S) none = (gln y "  mov %s@GOTPCREL(%%rip), %%r%s" e.o.name   s)
-gvar       (y Y e E c @N s S) none = (e.o.is_local ? &gvar_local : &gvar_global)@ y e c s
-
-push_args2(y Y e E c @N d N) none =
-(  !!e
-&&(  (d < 6)
-  && push_args2 y e.s c (d + 1) )
-   cast none /*gmuster*/ grval y e c
-   gpush y c
-as none )
-
 type gexpr    (y Y e E c @N            ) nat;
 type gexprexpr(y Y e E c @N            ) @gexpr;
 type gexprcat (y Y e E c @N gcat @gexpr) nat;
 
-gdrop (y Y e E c @N gcat @gexpr) none = cast none gcat@ y e c
-geval (y Y e E c @N gcat @gexpr) none = cast none gcat@ y e c
+grval gexpr;
+glval gexpr;
 
-gltor gexprcat = (
-  (1 + glval y e   c)
-  gload y e.t
-  0
+gltor   (gcat @gexpr) nat = ((gcat == &grval) ? 1 : 0)
+
+gdrop (y Y e E c @N gcat @gexpr) none = (cast none gcat@ y e c is l (l && gln y "#elided loads: %ld" l))
+geval (y Y e E c @N gcat @gexpr) none = (
+  gcat@ y e c is l
+  ((l > 1) && gln y "#compacted loads: %ld" (l - 1))
+  !!l && l for l
+  gload y (((l == 1) && (gcat == &grval)) ? e.t.q : TY_PTR) 0 "ax" "ax"
+  (l - 1)
 )
 
 gelit   gexprcat = (glit  y e.l          0)
 gesize  gexprcat = (glit  y e.t.s.size   0)
-geref   gexprcat = (gvar  y e   c "ax"   0)
-gderef  gexprcat = (geval y e.a c &grval 0)
+gderef  gexprcat = (grval y e.a c    + gltor gcat)
 geaddr  gexprcat = glval y e.a c
 gethe   gexprcat = gcat@ y e.a c
+
+geref   gexprcat = (
+  (e.o.is_local ? &gaddrl : &gaddrg) is gaddr
+  (e.o.is_local ? &gloadl : &gloadg) is gload
+  ((gcat == &grval) ? gload : gaddr)
+  @ y e.o c "ax"
+  0
+)
 
 geelem  gexprcat = (
   geval y e.a   c &grval
@@ -1083,7 +1092,7 @@ geelem  gexprcat = (
   geval y e.a.s c &grval
   gpop  y       c "dx"
   (gln y "  lea (%%rdx, %%rax, %ld), %%rax" e.a.t.a.size)
-  0
+  gltor gcat
 )
 
 gemem   gexprcat = (
@@ -1091,23 +1100,25 @@ gemem   gexprcat = (
   ( e.a.t for t
     ( (t.q == TY_PTR) &&
       t.a ret
-      gload y t.a
+      gload y t.a.q 0 "ax" "ax"
     as none )
   as none )
   gindex y e.t.offset
-  0
+  gltor gcat
 )
 
 geseq gexprcat = (
   gdrop y e.a   c &grval
-  gcat@ y e.a.s c
+  geval y e.a.s c gcat
+  0
 )
 
 geret gexprcat = (
-  gcat@ y e.a   c ret
+  geval y e.a   c gcat
   gpush y       c
   gdrop y e.a.s c &grval
   gpop  y       c "ax"
+  0
 )
 
 gecond gexprcat = (
@@ -1184,28 +1195,37 @@ geass   gexprcat = (
 )
 
 gelet   gexprcat = (
-  gvar   y e     c "ax"
+  gaddrl y e.o   c "ax"
   gpush  y       c
   geval  y e.a   c &grval
   gstore y e.a.t c
-  gcat@  y e.a.s c
+  geval  y e.a.s c gcat
+  0
 )
 
 gefor   gexprcat = (
-  gvar   y e     c "ax"
+  gaddrl y e.o   c "ax"
   gpush  y       c
   geval  y e.a   c &grval
   glabel y e       "a"
   gstore y e.a.t c
-  gvar   y e     c "ax"
+  gaddrl y e.o   c "ax"
   gpush  y       c
   geval  y e.a.s c &grval
   gcmpz  y
   gjne   y e       "a"
   gpop   y       c "ax"
-  gload  y e.a.t
+  gload  y e.a.t.q 0 "ax" "ax"
   0
 )
+
+gargs(y Y e E c @N d N) none =
+(  !!e
+&&(  (d < 6)
+  && gargs y e.s c (d + 1) )
+   geval y e c &grval
+   gpush y c
+as none )
 
 gecall gexprcat = (
   0 is stack
@@ -1214,7 +1234,7 @@ gecall gexprcat = (
     gfpush y c 1
     (stack = stack + 8)
   as none )
-  push_args2  y e.a.s c 0
+  gargs y e.a.s c 0
   geval y e.a   c &grval
   0 is d
   (!!e.a.s && e.a.s for e e.s ret ((d < 6) && gpop y c argreg8 d ret (d = d + 1)) as none)
@@ -1225,7 +1245,7 @@ gecall gexprcat = (
 
 gez gexprcat = (
   (gln y "  mov $%ld, %%rcx" e.o.t.size)
-  gvar y e c "di"
+  gaddrl y e.o   c "di"
   (gln y "  mov $0, %%al")
   (gln y "  rep stosb")
   0
@@ -1281,10 +1301,10 @@ grval(y Y e E c @N) nat = (
   e.q     is q
   &grval  is g
 
-  (q == EVAR  ) ? gltor  y e c g :
-  (q == EMEM  ) ? gltor  y e c g :
-  (q == EELEM ) ? gltor  y e c g :
-  (q == EDEREF) ? gltor  y e c g :
+  (q == EVAR  ) ? geref  y e c g :
+  (q == EMEM  ) ? gemem  y e c g :
+  (q == EELEM ) ? geelem y e c g :
+  (q == EDEREF) ? gderef y e c g :
   (q == ELIT  ) ? gelit  y e c g :
   (q == ESIZE ) ? gesize y e c g :
   (q == ECALL ) ? gecall y e c g :
