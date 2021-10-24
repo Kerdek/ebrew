@@ -261,7 +261,7 @@ p4    ekt ;
 
 type_suffix(k K) T ;
 
-gen_rval(out @FILE e E c @N) none;
+grval(out @FILE e E c @N) nat;
 
 maxl (a N b N) N = ((a > b) ? a : b)
 minl (a N b N) N = ((a < b) ? a : b)
@@ -273,7 +273,7 @@ align_to(n N a N) N = ((n + a - 1) / a * a)
 vdiag(in S c S line_n N p S fmt S args @va_list) none =
 (  (p for q ((c < q) && (q^-1 != '\n') && &q^-1)) is line
    (p for q (!!q@  && (q@ != '\n') && &q^1)) is end
-   (printf "./%s:(%lu,%lu): " in line_n (cast N (p - line) + 1)) is indent
+   (printf "./%s:(%ld,%ld): " in line_n (cast N (p - line) + 1)) is indent
    (cast none printf "%.*s\n%*s^ " (end - line) line ((p - line as N) + indent) "")
     cast none vprintf fmt args
    (cast none printf "\n") )
@@ -550,7 +550,7 @@ nstr o_kst =
 (  cast S 0 is s2
    cast N 0 is n
    open_memstream &s2 &n is out
-   (fprintf out ".L..%lu" k.n)
+   (fprintf out ".L..%ld" k.n)
    fclose out
    (k.n = k.n + 1)
    ngvar k s2 t is o (o.init_data = s)
@@ -594,7 +594,7 @@ enumerators_a tktn =
    t )
 
 enumerators    tkt = enumerators_a k t 0
-enum_specifier tk  = enumerators k ntype TY_ENUM 8 8
+enum_specifier tk  = enumerators k ntype TY_ENUM 1 1
 
 declarator tk =
 (  jadv k is j
@@ -959,177 +959,194 @@ argreg1(d N) S =
               "%r9b" )
 
 argreg8(d N) S =
-( (d == 0) ? "%rdi" :
-  (d == 1) ? "%rsi" :
-  (d == 2) ? "%rdx" :
-  (d == 3) ? "%rcx" :
-  (d == 4) ? "%r8"  :
-             "%r9"  )
+( (d == 0) ? "di" :
+  (d == 1) ? "si" :
+  (d == 2) ? "dx" :
+  (d == 3) ? "cx" :
+  (d == 4) ? "8"  :
+             "9"  )
 
-gen_ln(out @FILE fmt S ...) none =
+gln(out @FILE fmt S ...) none =
 (  vfprintf out fmt cast @va_list __va_area__
    (cast none fprintf out "\n") )
 
-gen_zero(out @FILE    ) none = (gen_ln out "  xor %%eax, %%eax"  )
-gen_cmpz(out @FILE    ) none = (gen_ln out "  cmp $0, %%rax"     )
-gen_not (out @FILE    ) none = (gen_ln out "  not %%eax"         )
-gen_lit (out @FILE l N) none = (gen_ln out "  mov $%ld, %%rax"  l)
-gen_neg (out @FILE    ) none = (gen_ln out "  neg %%rax"         )
+gbin (out @FILE s S) none = (gln out "  %s  %%rdi, %%rax" s)
+gzero(out @FILE r C) none = (gln out "  xor %%e%cx, %%e%cx" r r)
+glit (out @FILE l N) none = (!!l ? (gln out "  mov $%ld , %%rax" l) : gzero out 'a')
+gcmpz(out @FILE    ) none = (gln out "  test %%rax, %%rax"  )
+gnot (out @FILE    ) none = (gln out "  not %%eax"         )
+gneg (out @FILE    ) none = (gln out "  neg %%rax"         )
+gadd (out @FILE    ) none = (gbin out "add")
+gsub (out @FILE    ) none = (gbin out "sub")
+gand (out @FILE    ) none = (gbin out "and")
+gor  (out @FILE    ) none = (gbin out "or ")
+gxor (out @FILE    ) none = (gbin out "xor")
+gcmp (out @FILE    ) none = (gbin out "cmp")
+gshx (out @FILE x C) none = ( (gln out "  mov %%dil, %%cl"   )
+                                 (gln out "  sh%c %%cl, %%rax" x) )
+gshr (out @FILE    ) none = (gshx out 'r')
+gshl (out @FILE    ) none = (gshx out 'l')
+gmul (out @FILE    ) none = (gln out "  mul %%rdi"         )
+gdiv (out @FILE    ) none = ( gzero out 'd'
+                                 (gln out "  div %%rdi"         ) )
+gmod (out @FILE    ) none = ( gdiv out
+                                 (gln out "  mov %%rdx, %%rax") )
 
-gen_cast1(out @FILE) none = (gen_ln out "  movsbl %%al  , %%eax")
-gen_cast8(out @FILE) none = (gen_ln out "  movsxd %%eax , %%rax")
+gpromote(out @FILE) none = (gln out "  movzbl %%al , %%eax")
 
-gen_cmp (out @FILE) none = (gen_ln out "  cmp %%rdi, %%rax")
-gen_setf(out @FILE s S) none = (gen_cmp out (gen_ln out "  set%s  %%al" s) gen_cast8 out)
-gen_cmp_setf (out @FILE s S) none = (gen_cmp  out gen_setf out s)
-gen_cmpz_setf(out @FILE s S) none = (gen_cmpz out gen_setf out s)
+gsetf     (out @FILE         s S) none = ((gln out "  set%s  %%al" s) gpromote out)
+gcmp_setf (out @FILE         s S) none = (gcmp  out gsetf out s)
+gcmpz_setf(out @FILE         s S) none = (gcmpz out gsetf out s)
+gj        (out @FILE e E l S    ) none = (gln out "  jmp .L.%s.%ld"   l e)
+gjc       (out @FILE e E l S s S) none = (gln out "  j%s .L.%s.%ld" s l e)
 
-gen_cast(out @FILE a T b T) none =
-(  (b.q == TY_VOID) ? gen_zero   out
-:  (b.q == TY_BYTE) && gen_cast1 out)
+gje  (out @FILE e E l S) none = gjc out e l "e "
+gjne (out @FILE e E l S) none = gjc out e l "ne"
+gjb  (out @FILE e E l S) none = gjc out e l "b "
+gjbe (out @FILE e E l S) none = gjc out e l "be"
+gja  (out @FILE e E l S) none = gjc out e l "a "
+gjae (out @FILE e E l S) none = gjc out e l "ae"
 
-gen_fpush(out @FILE c @N  l N ) none = ((gen_ln out "  sub $%lu, %%rsp" (8 * l))    (c@ = c@ + l))
-gen_fpop (out @FILE c @N  l N ) none = ((gen_ln out "  add $%lu, %%rsp" (8 * l))    (c@ = c@ - l))
-gen_push (out @FILE c @N      ) none = ((gen_ln out "  push %%rax")    (c@ = c@ + 1))
-gen_pop  (out @FILE c @N  l S ) none = ((gen_ln out "  pop %s" l  )    (c@ = c@ - 1))
-gen_add  (out @FILE       l N ) none = ((gen_ln out "  add $%lu, %%rax" l))
-gen_label(out @FILE e E   l S ) none = ((gen_ln out ".L.%s.%lu:" l e))
+ge  (out @FILE) none = gcmp_setf out "e "
+gne (out @FILE) none = gcmp_setf out "ne"
+gb  (out @FILE) none = gcmp_setf out "b "
+gbe (out @FILE) none = gcmp_setf out "be"
+ga  (out @FILE) none = gcmp_setf out "a "
+gae (out @FILE) none = gcmp_setf out "ae"
 
-gen_load(out @FILE t T) none =
+gcast(out @FILE a T b T) none =
+(  (b.q == TY_VOID) ?  gzero    out 'a'
+:  (b.q == TY_BYTE) && gpromote out)
+
+gfpush(out @FILE c @N  l N ) none = (!!l && (gln out "  sub $%ld, %%rsp" (8 * l))    (c@ = c@ + l))
+gfpop (out @FILE c @N  l N ) none = (!!l && (gln out "  add $%ld, %%rsp" (8 * l))    (c@ = c@ - l))
+gpush (out @FILE c @N      ) none = ((gln out "  push %%rax")    (c@ = c@ + 1))
+gpop  (out @FILE c @N  s S ) none = ((gln out "  pop %%r%s" s  )    (c@ = c@ - 1))
+gindex(out @FILE       l N ) none = (!!l && (gln out "  add $%ld, %%rax" l))
+glabel(out @FILE e E   l S ) none = ((gln out ".L.%s.%ld:" l e))
+
+gload(out @FILE t T) none =
 (  (t.q == TY_ARRAY)
 || (t.q == TY_STRUCT)
 || (t.q == TY_FUNC)
 || (t.size == 1)
-?  (gen_ln out "  movzbl (%%rax), %%eax")
-:  (gen_ln out "  mov    (%%rax), %%rax")
+?  (gln out "  movzbl (%%rax), %%eax")
+:  (gln out "  mov    (%%rax), %%rax")
 as none )
 
-gen_store(out @FILE t T c @N) none =
-(  gen_pop out c "%rdi"
+gstore(out @FILE t T c @N) none =
+(  gpop out c "di"
    ((t.q == TY_STRUCT) || (t.q == TY_ARRAY)) ? (0 for i ((i < t.size) && (i + 1)
-ret (gen_ln out "  mov %lu(%%rax), %%r8b    " i)
-   (gen_ln out "  mov %%r8b    , %lu(%%rdi)" i)) as none)
-:  (t.size == 1) ? (gen_ln out "  mov %%al , (%%rdi)")
-:                  (gen_ln out "  mov %%rax, (%%rdi)") )
+ret (gln out "  mov %ld(%%rax), %%r8b    " i)
+    (gln out "  mov %%r8b    , %ld(%%rdi)" i)) as none)
+:  (t.size == 1) ? (gln out "  mov %%al , (%%rdi)")
+:                  (gln out "  mov %%rax, (%%rdi)") )
 
-gen_var_local (out @FILE e E c @N s S) none = ((gen_ln out "  lea %lu(%%rsp), %s"          (e.o.offset + 8 * c@) s))
-gen_var_global(out @FILE e E c @N s S) none = (gen_ln out "  mov %s@GOTPCREL(%%rip), %s" e.o.name   s)
-gen_var       (out @FILE e E c @N s S) none = (e.o.is_local ? &gen_var_local : &gen_var_global)@ out e c s
+gvar_local (out @FILE e E c @N s S) none = ((gln out "  lea %ld(%%rsp), %s"          (e.o.offset + 8 * c@) s))
+gvar_global(out @FILE e E c @N s S) none = (gln out "  mov %s@GOTPCREL(%%rip), %s" e.o.name   s)
+gvar       (out @FILE e E c @N s S) none = (e.o.is_local ? &gvar_local : &gvar_global)@ out e c s
 
-push_args2(out @FILE e E pass bit c @N d N) none =
+push_args2(out @FILE e E c @N d N) none =
 (  !!e
-&& push_args2 out e.s pass c (d + 1)
-   (pass == (d < 6))
-&& gen_rval out e c
-   gen_push out c
+&&(  (d < 6)
+  && push_args2 out e.s c (d + 1) )
+   cast none /*gmuster*/ grval out e c
+   gpush out c
 as none )
 
-gen_rval_unary(out @FILE q1 NodeKind q2 NodeKind e E c @N) bit =
-((q1 == q2) && gen_rval out e.a c)
+type gexpr     (out @FILE e E c @N            ) nat;
+type gexprkind (out @FILE e E c @N gcat @gexpr) nat;
 
-gen_lval(out @FILE e E c @N) none =
-(  ( e.q    == ND_COMMA   ) ? gen_rval out e.a c    gen_lval out e.a.s c
-:  ( e.q    == ND_ELEM    ) ? gen_rval out e.a c    (gen_ln out "  mov %%rax, %%rdx")    gen_rval out e.a.s c    (gen_ln out "  imul $%ld, %%rax" e.a.t.a.size)    (gen_ln out "  add %%rdx, %%rax")
-:  ( e.q    == ND_THEN    ) ? gen_lval out e.a c    gen_push out c    gen_rval out e.a.s c    gen_pop out c "%rax"
-:  ( e.q    == ND_MEMBER  ) ? gen_rval out e.a c    (e.a.t for t ((t.q == TY_PTR) && t.a ret gen_load out t.a as none) as none)    gen_add out e.t.offset
-:  ( e.q    == ND_THE     ) ? gen_lval out e.a c
-:  ( e.q    == ND_DEREF   ) ? gen_rval out e.a c
-:  ( e.q    == ND_COND    ) ? gen_rval out e.a c    gen_cmpz out    (gen_ln out "  je .L.a.%lu" e)    gen_lval out e.a.s c    (gen_ln out "  jmp .L.b.%lu" e)    gen_label out e "a"    gen_lval out e.a.s.s c    gen_label out e "b"
-:  ( e.q    == ND_VAR     ) ? gen_var  out e   c "%rax"
+gcomma gexprkind = (cast none /*gdisacrd*/ grval out e.a c                                          gcat@ out e.a.s c                    )
+gthen  gexprkind = (                       gcat@ out e.a c       ret gpush out c  cast none /*gdiscard*/ grval out e.a.s c  gpop out c "ax")
+gthe   gexprkind = (gcat@ out e.a c)
+gcond  gexprkind = (cast none /*gmuster*/  grval out e.a c     0 ret gcmpz out gje out e "a" cast none /*gmustger*/ gcat@ out e.a.s c gj out e "b" glabel out e "a" cast none /*gmuster*/ gcat@ out e.a.s.s c glabel out e "b")
+
+glval(out @FILE e E c @N) nat =
+(  ( e.q    == ND_ELEM    ) ? cast none /*gmuster*/ grval out e.a c    gpush out c    cast none /*gmuster*/ grval out e.a.s c   0 ret (gln out "  imul $%ld, %%rax" e.a.t.a.size) gpop out c "dx"    (gln out "  add %%rdx, %%rax")
+:  ( e.q    == ND_MEMBER  ) ? cast none /*gmuster*/ grval out e.a c    (e.a.t for t ((t.q == TY_PTR) && t.a ret gload out t.a as none) as none)    gindex out e.t.offset
+:  ( e.q    == ND_DEREF   ) ? cast none /*gmuster*/ grval out e.a c 0
+:  ( e.q    == ND_COMMA   ) ? gcomma out e c &glval
+:  ( e.q    == ND_THEN    ) ? gthen  out e c &glval
+:  ( e.q    == ND_THE     ) ? gthe   out e c &glval
+:  ( e.q    == ND_COND    ) ? gcond  out e c &glval
+:  ( e.q    == ND_VAR     ) ? gvar  out e   c "%rax"
                             :  (jdiag e.j "not an lvalue") )
 
-gen_rval(out @FILE e E c @N) none =
-(  (e.q == ND_LIT   ) ? gen_lit  out e.l
-:  (e.q == ND_SIZE  ) ? gen_lit  out cast nat e.t.s.size
-:  (e.q == ND_ALIGN ) ? gen_lit  out e.t.s.align
-:  (e.q == ND_ADDR  ) ? gen_lval out e.a c   
+grval(out @FILE e E c @N) nat =
+(  (e.q == ND_LIT   )    ? glit   out e.l
+:  (e.q == ND_SIZE  )    ? glit   out e.t.s.size
+:  (e.q == ND_ALIGN )    ? glit   out e.t.s.align
+:  (e.q == ND_COMMA )    ? gcomma out e c &grval
+:  (e.q == ND_THEN  )    ? gthen  out e c &grval
+:  (e.q == ND_THE   )    ? gthe   out e c &grval
+:  (e.q == ND_COND  )    ? gcond  out e c &grval
+:  (e.q == ND_ADDR  )    ? glval out e.a c
 :  (  (e.q == ND_VAR)
    || (e.q == ND_MEMBER)
-   || (e.q == ND_ELEM  ))? gen_lval out e   c      gen_load out e.t
-:  gen_rval_unary out e.q ND_DEREF  e c ? gen_load out e.t
-:  gen_rval_unary out e.q ND_THE    e c ? cast none 0
-:  gen_rval_unary out e.q ND_NEG    e c ? gen_neg  out
-:  gen_rval_unary out e.q ND_CAST   e c ? gen_cast out e.a.t e.t
-:  gen_rval_unary out e.q ND_COMMA  e c ? (gen_ln out "  .loc 0 %lu" e.a.j.line_no) gen_rval out e.a.s c
-:  gen_rval_unary out e.q ND_THEN   e c ? gen_push out c    gen_rval out e.a.s c      gen_pop out c "%rax"
-:  gen_rval_unary out e.q ND_NOT    e c ? gen_cmpz out      (gen_ln out "  sete %%al")    (gen_ln out "  movzx %%al, %%rax")
-:  gen_rval_unary out e.q ND_BITNOT e c ? gen_not  out
-:  (e.q == ND_ASSIGN)  ? gen_lval out e.a c    gen_push out c    gen_rval out e.a.s c     gen_store out e.a.t c    gen_zero out
-:  (e.q == ND_LET   )  ? gen_var  out e c "%rax"       gen_push out c    gen_rval out e.a   c      gen_store out e.a.t c    gen_rval out e.a.s c
-:  (e.q == ND_REPEAT)  ? gen_var  out e c "%rax"       gen_push out c    gen_rval out e.a   c    gen_label out e ""   gen_store out e.a.t c    gen_var out e c "%rax"    gen_push out c    gen_rval out e.a.s c    gen_cmpz out    (gen_ln out "  jne .L..%lu" e)    gen_pop out c "%rax"    gen_load out e.a.t
-:  (e.q == ND_MEMZERO) ? (gen_ln out "  mov $%lu, %%rcx" e.o.t.size)    gen_var out e c "%rdi"    (gen_ln out "  mov $0, %%al")    (gen_ln out "  rep stosb")
-:  (e.q == ND_COND)    ? gen_rval out e.a c     gen_cmpz out    (gen_ln out "  je .L.a.%lu" e)    gen_rval out e.a.s c    (gen_ln out "  jmp .L.b.%lu" e)    gen_label out e "a"    gen_rval out e.a.s.s c    gen_label out e "b"
+   || (e.q == ND_ELEM)
+   || (e.q == ND_DEREF)  )? cast none /*gmuster*/  glval out e c 0 ret gload out e.t
+:  (e.q == ND_NEG   )    ?                                             cast none /*gmuster*/  grval out e.a c     0 ret gneg       out
+:  (e.q == ND_CAST  )    ?                                             cast none /*gmuster*/  grval out e.a c     0 ret gcast      out e.a.t e.t
+:  (e.q == ND_NOT   )    ?                                             cast none /*gmuster*/  grval out e.a c     0 ret gcmpz_setf out "e"
+:  (e.q == ND_BITNOT)    ?                                             cast none /*gmuster*/  grval out e.a c     0 ret gnot       out
+:  (e.q == ND_ASSIGN)    ?                                             cast none /*gmuster*/  glval out e.a c           gpush      out c      grval  out e.a.s c    gstore out e.a.t c    gzero out 'a'
+:  (e.q == ND_LET   )    ? gvar out e c "%rax"    gpush out c    cast none /*gmuster*/  grval out e.a c                                    gstore out e.a.t c    grval out e.a.s c
+:  (e.q == ND_REPEAT)    ? gvar out e c "%rax"    gpush out c    cast none /*gmuster*/  grval out e.a c           glabel     out e ""   gstore out e.a.t c    gvar out e c "%rax"    gpush out c    cast none /*gmuster*/ grval out e.a.s c  0 ret   gcmpz out    (gln out "  jne .L..%ld" e)    gpop out c "ax"    gload out e.a.t
+:  (e.q == ND_MEMZERO)   ? (gln out "  mov $%ld, %%rcx" e.o.t.size)    gvar out e c "%rdi"    (gln out "  mov $0, %%al")    (gln out "  rep stosb")
 :  ((e.q == ND_LOGAND) || (e.q ==  ND_LOGOR))
-?  gen_rval out e.a c
-   gen_cmpz out
-   (gen_ln out "  j%se .L..%lu" ((e.q == ND_LOGAND) ? "" : "n") e)
-   ((e.a.s.t.q == TY_VOID) && gen_push out c)
-   gen_rval out e.a.s c
-   ((e.a.s.t.q == TY_VOID) && gen_pop out c "%rax")
-   gen_label out e ""
+?  cast none /*gmuster*/ grval out e.a c
+   gcmpz out
+   (gln out "  j%se .L..%ld" ((e.q == ND_LOGAND) ? "" : "n") e)
+   ((e.a.s.t.q == TY_VOID) && gpush out c)
+   cast none /*gmuster*/ 0 ret grval out e.a.s c
+   ((e.a.s.t.q == TY_VOID) && gpop out c "ax")
+   glabel out e ""
 :  (e.q == ND_FUNCALL)
 ?  0 is stack
    0 is d
   (  ((c@ + stack) % 2 == 1)
-  && gen_fpush out c 1
+  && gfpush out c 1
      (stack = stack + 1)
   as none )
-   push_args2 out e.a.s 1b c 0
-   push_args2 out e.a.s 0b c 0
-   gen_rval out e.a c
+   push_args2 out e.a.s c 0
+   cast none /*gmuster*/ grval out e.a c
    0 is d
-   (!!e.a.s && e.a.s for e e.s ret ((d < 6) && gen_pop out c argreg8 d ret (d = d + 1)) as none)
-   (gen_ln out "  mov %%rax, %%r10")
-   
-   (gen_ln out "  call *%%r10")
-   gen_fpop out c stack
-:  gen_rval out e.a.s c
-   gen_push out c
-   gen_rval out e.a c
-   gen_pop out c "%rdi"
-   
-   (e.q == ND_ADD) ? (gen_ln out "  add  %%rdi, %%rax")
-:  (e.q == ND_SUB) ? (gen_ln out "  sub  %%rdi, %%rax")
-:  (e.q == ND_MUL) ? (gen_ln out "  imul %%rdi, %%rax") /* thx terry */
-:  ((e.q == ND_DIV) || (e.q == ND_MOD)) ?
-    (  (e.t.q == TY_NAT)
-    ?  (gen_ln out "  mov $0, %%rdx")
-       (gen_ln out "  div %%rdi"    )
-    :  (gen_ln out "  cqo"          )
-       (gen_ln out "  idiv %%rdi"   ))
-       ((e.q == ND_MOD)  && (gen_ln out "  mov %%rdx, %%rax") as none) :
-    (e.q == ND_BITAND ) ? (gen_ln out "  and %%rdi, %%rax") :
-    (e.q == ND_BITOR  ) ? (gen_ln out "  or  %%rdi, %%rax") :
-    (e.q == ND_BITXOR ) ? (gen_ln out "  xor %%rdi, %%rax") :
-    (e.q == ND_EQ     ) ? (gen_ln out "  cmp %%rdi, %%rax")    (gen_ln out "  sete  %%al")    (gen_ln out "  movzb %%al, %%rax") :
-    (e.q == ND_NE     ) ? (gen_ln out "  cmp %%rdi, %%rax")    (gen_ln out "  setne %%al")    (gen_ln out "  movzb %%al, %%rax") :
-    (e.q == ND_SHL    ) ? (gen_ln out "  mov %%rdi, %%rcx")    (gen_ln out "  shl %%cl, %%rax")                                   :
-    (e.q == ND_LT     ) ? (e.a.t.q == TY_NAT) ? (gen_ln out "  cmp %%rdi, %%rax")    (gen_ln out "  setb  %%al")    (gen_ln out "  movzb %%al, %%rax")
-                                               : (gen_ln out "  cmp %%rdi, %%rax")    (gen_ln out "  setl  %%al")    (gen_ln out "  movzb %%al, %%rax") :
-    (e.q == ND_LE     ) ? (e.a.t.q == TY_NAT) ? (gen_ln out "  cmp %%rdi, %%rax")    (gen_ln out "  setbe %%al")    (gen_ln out "  movzb %%al, %%rax")
-                                               : (gen_ln out "  cmp %%rdi, %%rax")    (gen_ln out "  setle %%al")    (gen_ln out "  movzb %%al, %%rax") :
-    (e.q == ND_GT     ) ? (e.a.t.q == TY_NAT) ? (gen_ln out "  cmp %%rdi, %%rax")    (gen_ln out "  seta  %%al")    (gen_ln out "  movzb %%al, %%rax")
-                                               : (gen_ln out "  cmp %%rdi, %%rax")    (gen_ln out "  setg  %%al")    (gen_ln out "  movzb %%al, %%rax") :
-    (e.q == ND_GE     ) ? (e.a.t.q == TY_NAT) ? (gen_ln out "  cmp %%rdi, %%rax")    (gen_ln out "  setae %%al")    (gen_ln out "  movzb %%al, %%rax")
-                                               : (gen_ln out "  cmp %%rdi, %%rax")    (gen_ln out "  setge %%al")    (gen_ln out "  movzb %%al, %%rax") :
-                          (e.a.t.q == TY_NAT) ? (gen_ln out "  mov %%rdi, %%rcx")    (gen_ln out "  shr %%cl, %%rax")
-                                               : (gen_ln out "  mov %%rdi, %%rcx")    (gen_ln out "  sar %%cl, %%rax") )
+   (!!e.a.s && e.a.s for e e.s ret ((d < 6) && gpop out c argreg8 d ret (d = d + 1)) as none)
+   (gln out "  call *%%rax")
+   gfpop out c stack
+:  cast none /*gmuster*/ grval out e.a.s c
+   gpush out c
+   cast none /*gmuster*/ grval out e.a c
+   gpop out c "di"
+    ( (e.q == ND_DIV    ) ? &gdiv :
+      (e.q == ND_MOD    ) ? &gmod :
+      (e.q == ND_EQ     ) ? &ge   :
+      (e.q == ND_NE     ) ? &gne  :
+      (e.q == ND_LT     ) ? &gb   :
+      (e.q == ND_LE     ) ? &gbe  :
+      (e.q == ND_GT     ) ? &ga   :
+      (e.q == ND_GE     ) ? &gae  :
+      (e.q == ND_ADD    ) ? &gadd :
+      (e.q == ND_SUB    ) ? &gsub :
+      (e.q == ND_MUL    ) ? &gmul :
+      (e.q == ND_BITAND ) ? &gand :
+      (e.q == ND_BITOR  ) ? &gor  :
+      (e.q == ND_BITXOR ) ? &gxor :
+      (e.q == ND_SHL    ) ? &gshl :
+                            &gshr )@ out )
 
 emit_datum_data(out @FILE o O) none =
-(  (gen_ln out "  .data")
-   (gen_ln out "  .type %s, @object" o.name)
-   (gen_ln out "  .size %s, %lu" o.name o.t.size)
-   (gen_ln out "  .align %lu" o.t.align)
-   (gen_ln out "%s:" o.name)
+(  (gln out "  .data")
+   (gln out "  .type %s, @object" o.name)
+   (gln out "  .size %s, %ld" o.name o.t.size)
+   (gln out "  .align %ld" o.t.align)
+   (gln out "%s:" o.name)
    0 is pos
   (  1b for _
     (  (pos < o.t.size)
-    && (gen_ln out "  .byte %lu" o.init_data^((pos ret (pos = pos + 1)))) )
+    && (gln out "  .byte %ld" o.init_data^((pos ret (pos = pos + 1)))) )
   as none ) )
-
-store_gp(out @FILE c @N r N p N n N) none =
-(  (n == 1) ? (gen_ln out "  mov %s, %lu(%%rsp)" argreg1 r (p + 8 * c@))
-:             (gen_ln out "  mov %s, %lu(%%rsp)" argreg8 r (p + 8 * c@)) )
 
 emit_datum_text(out @FILE o O) none =
 ( (  !!o.params
@@ -1149,27 +1166,26 @@ emit_datum_text(out @FILE o O) none =
        (o.offset = -bottom)
     as none )
   as none )
-   (gen_ln out "  .text")
-   (gen_ln out "  .type %s, @function" o.name)
-   (gen_ln out "%s:" o.name)
+   (gln out "  .text")
+   (gln out "  .type %s, @function" o.name)
+   (gln out "%s:" o.name)
    (bottom = align_to bottom 16) /* abi says bottom of frame is aligned to 16 */
-   (gen_ln out "  enter $%lu, $0" bottom)
+   (gln out "  enter $%ld, $0" bottom)
    (  o.va_area
   && 0 is d
      (!!o.params && o.params for o o.s ret (d = d + 1) as none)
      o.va_area.offset is off
-     (gen_ln out "  movl $%lu  , %lu(%%rbp)" (d * 8) off)
-     (gen_ln out "  movq %%rbp, %lu(%%rbp)" (off + 8))
-     (gen_ln out "  addq $16  , %lu(%%rbp)" (off + 8))
-     (gen_ln out "  movq %%rbp, %lu(%%rbp)" (off + 16))
-     (gen_ln out "  addq $%lu  , %lu(%%rbp)" (off + 24) (off + 16))
-     (off + 24) is b
-     (gen_ln out "  movq %%rdi, %lu(%%rbp)"                b)
-     (b = b + 8)    (gen_ln out "  movq %%rsi, %lu(%%rbp)" b)
-     (b = b + 8)    (gen_ln out "  movq %%rdx, %lu(%%rbp)" b)
-     (b = b + 8)    (gen_ln out "  movq %%rcx, %lu(%%rbp)" b)
-     (b = b + 8)    (gen_ln out "  movq %%r8 , %lu(%%rbp)" b)
-     (b = b + 8)    (gen_ln out "  movq %%r9 , %lu(%%rbp)" b) as none )
+     (gln out "  movl $%ld , %ld(%%rbp)" (d   *  8) (off     ))
+     (gln out "  movq %%rbp, %ld(%%rbp)" (off +  8)           )
+     (gln out "  addq $16  , %ld(%%rbp)" (off +  8)           )
+     (gln out "  movq %%rbp, %ld(%%rbp)" (off + 16)           )
+     (gln out "  addq $%ld , %ld(%%rbp)" (off + 24) (off + 16))
+     (gln out "  movq %%rdi, %ld(%%rbp)" (off + 24)           )
+     (gln out "  movq %%rsi, %ld(%%rbp)" (off + 32)           )
+     (gln out "  movq %%rdx, %ld(%%rbp)" (off + 40)           )
+     (gln out "  movq %%rcx, %ld(%%rbp)" (off + 48)           )
+     (gln out "  movq %%r8 , %ld(%%rbp)" (off + 56)           )
+     (gln out "  movq %%r9 , %ld(%%rbp)" (off + 64)           ) as none )
    (bottom / 8) is c
   (  0 is d
      o.params for o
@@ -1177,24 +1193,27 @@ emit_datum_text(out @FILE o O) none =
     && o.s
     ret(  (o.offset > (-1 >> 1))
       && o.t is t
-        store_gp out &c (d ret (d = d + 1)) o.offset t.size
+         ((t.size == 1)
+      ?  (gln out "  mov %s   , %ld(%%rsp)" argreg1 d (o.offset + 8 * c))
+      :  (gln out "  mov %%r%s, %ld(%%rsp)" argreg8 d (o.offset + 8 * c)))
+      ret (d = d + 1)
       as none ) )
   as none )
-   gen_rval out cast E o.body &c
-   (gen_ln out "  leave")
-   (gen_ln out "  ret") )
+   cast none /*gdiscard*/ grval out cast E o.body &c
+   (gln out "  leave")
+   (gln out "  ret") )
 
 emit_datum(out @FILE o O) none =
 (  !!o.is_definition
 && (  !o.is_export
-   ?  (gen_ln out "  .local %s" o.name)
-   :  (gen_ln out "  .globl %s" o.name) )
+   ?  (gln out "  .local %s" o.name)
+   :  (gln out "  .globl %s" o.name) )
    (o.t.q == TY_FUNC)
 ?  emit_datum_text out o
 :  emit_datum_data out o )
 
 codegen(o O out @FILE in S) none =
-(  (gen_ln out "  .file 0 \q%s\q" in)
+(  (gln out "  .file 0 \q%s\q" in)
    (!!o && o for o o.s ret emit_datum out o as none) )
 
 export main(argc N argv @S) N =
