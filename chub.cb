@@ -45,7 +45,7 @@ type
     ENEG       EMOD     EBAND  EBOR     EBXOR
     ESHL       ESHR     EEQ      ENE        ELT
     ELE        EGT      EGE      EASS    ECOND
-    ESEQ     EMEM  EADDR    EDEREF     ENOT
+    ESEQ     EMEM  EADDR    EDEREF     ELNOT
     EBNOT    ELAND  ELOR   ETHEN      ECALL
     EIS       EVAR     ELIT     ECAST      EZ
     EFOR    ESIZE    EALIGN   EELEM      ENEW
@@ -689,7 +689,7 @@ ncast       njtua = n1ary j u        ECAST  a
 ncall       njta  = n1ary j a.t.a    ECALL  a
 nneg        njta  = n1ary j nnat     ENEG   a
 naddressof  njta  = n1ary j nptr a.t EADDR  a
-nlognot     njta  = n1ary j nbit     ENOT   a
+nlognot     njta  = n1ary j nbit     ELNOT  a
 nbitnot     njta  = n1ary j nnat     EBNOT  a
 nderef      njta  = n1ary j a.t.a    EDEREF a
 nassign     njtab = n2ary j nnone    EASS   a b
@@ -717,16 +717,11 @@ nsub        njtab = n2ary j nnat     ESUB   a b
 
 /* oddballs */
 
-nreference  (j J t T                 o O ) E = (noary j o.t EVAR     o)
-nlit        (j J t T u T             l N ) E = (nlary j u   ELIT     l)
-nlet        (j J t T         a E b E o O ) E = (n2ary j b.t EIS    a b is e e ret (e.o = o))
-nrepeat     (j J t T         a E b E o O ) E = (n2ary j b.t EFOR a b is e e ret (e.o = o))
-nconditional(j J t T         a E b E c E ) E = (n3ary j b.t ECOND   a b c)
-
-earr ekta =
-(  jadv k is j
-   p3 k nnat is b
-   nsubscript j t a b )
+nreference  (j J t T                 o O ) E = (noary j o.t EVAR  o)
+nlit        (j J t T u T             l N ) E = (nlary j u   ELIT  l)
+nlet        (j J t T         a E b E o O ) E = (n2ary j b.t EIS   a b is e e ret (e.o = o))
+nrepeat     (j J t T         a E b E o O ) E = (n2ary j b.t EFOR  a b is e e ret (e.o = o))
+nconditional(j J t T         a E b E c E ) E = (n3ary j b.t ECOND a b c)
 
 get_struct_member(t T j J) T =
 (  nnull is r
@@ -738,8 +733,13 @@ get_struct_member(t T j J) T =
   as none )
    r )
 
+earr ekta =
+(  jadv k is j
+   p3 k nnat is b
+   nsubscript j t a b )
+
 esize  ekt  = (jadv k is j type_suffix k is u                                                        nsizeof      j   t   u)
-eaddr  ekt  = (jadv k is j                                                  p2 k t       is a naddressof   j   t     a)
+eaddr  ekt  = (jadv k is j                                                   p2 k t       is a naddressof   j   t     a)
 ethe   ekt  = (jadv k is j type_suffix k is u                                p3 k t       is a nthe         j   t   u a)
 ecast  ekt  = (jadv k is j type_suffix k is u                                p3 k t       is a ncast        j   t   u a)
 eneg   ekt  = (jadv k is j                                                   p3 k t       is a nneg         j   t     a)
@@ -828,8 +828,8 @@ ec ekta =
     as none )
      ncall k.j t a )
 
-el(k K t T     c S e@ ekt ) E = (jeq k c && e@ k t  )
-er(k K t T a E c S e@ ekta) E = (jeq k c && e@ k t a)
+pl(k K t T     c S e@ ekt ) E = (jeq k c && e@ k t  )
+pr(k K t T a E c S e@ ekta) E = (jeq k c && e@ k t a)
 
 p1 ekt =
 ( jeq k "new" ? enew k t :
@@ -848,43 +848,43 @@ p1 ekt =
     ( nlit k.j t cast T k.j.t k.j.l ret cast none jadv k ) :
   (jdiag k.j "expected an expression")    cast E 0)
 
-p2    ekt = (                      el k t   "cast"    &ecast  ||
-                                   el k t   "the"     &ethe   ||
-                                   el k t   "&"       &eaddr  ||
-                                   el k t   "sizeof"  &esize  ||
-             p1    k t     for a ( er k t a "^"       &earr   ||
-                                   er k t a "."       &emem   ||
-                                   er k t a "@"       &ederef    ) )
-p3    ekt = (                      el k t   "-"       &eneg   ||
-                                   el k t   "!"       &elnot  ||
-                                   el k t   "~"       &ebnot  ||
-             p2    k nnull for a   ec k t a                      )
-pseq  ekt = (p3    k nnull  is a ( er k t a "ret"     &ethen  ||
-                                   er k t a "is"      &eis    ||
-                                   er k t a "for"     &efor   ||
-                                   er k t a "&&"      &eland  ||
-                                   er k t a "||"      &elor   ||
-                                   er k t a "?"       &econd  ||
-                                   es k t a                      ) )
-pmul  ekt = (pseq  k t     for a ( er k t a "*"       &emul   ||
-                                   er k t a "/"       &ediv   ||
-                                   er k t a "%"       &emod      ) )
-padd  ekt = (pmul  k t     for a ( er k t a "+"       &eadd   ||
-                                   er k t a "-"       &esub      ) )
-psh   ekt = (padd  k t     for a ( er k t a "<<"      &eshl   ||
-                                   er k t a ">>"      &eshr      ) )
-pcmp  ekt = (psh   k nnull for a ( er k t a "<"       &elt    ||
-                                   er k t a ">"       &egt    ||
-                                   er k t a "<="      &ele    ||
-                                   er k t a ">="      &elt    ||
-                                   er k t a "=="      &eeq    ||
-                                   er k t a "!="      &ene       ) )
-pband ekt = (pcmp  k t     for a   er k t a "&"       &eband     )
-pbor  ekt = (pband k t     for a   er k t a "|"       &ebor      )
-pcast ekta= (                      er k t a "as"      &eas    ||
-                                   er k t a "from"    &efrom     )
+p2    ekt = (                      pl    k t   "cast"    &ecast  ||
+                                   pl    k t   "the"     &ethe   ||
+                                   pl    k t   "&"       &eaddr  ||
+                                   pl    k t   "sizeof"  &esize  ||
+             p1    k t     for a ( pr    k t a "^"       &earr   ||
+                                   pr    k t a "."       &emem   ||
+                                   pr    k t a "@"       &ederef    ) )
+p3    ekt = (                      pl    k t   "-"       &eneg   ||
+                                   pl    k t   "!"       &elnot  ||
+                                   pl    k t   "~"       &ebnot  ||
+             p2    k nnull for a   ec    k t a                      )
+pseq  ekt = (p3    k nnull  is a ( pr    k t a "ret"     &ethen  ||
+                                   pr    k t a "is"      &eis    ||
+                                   pr    k t a "for"     &efor   ||
+                                   pr    k t a "&&"      &eland  ||
+                                   pr    k t a "||"      &elor   ||
+                                   pr    k t a "?"       &econd  ||
+                                   es    k t a                      ) )
+pmul  ekt = (pseq  k t     for a ( pr    k t a "*"       &emul   ||
+                                   pr    k t a "/"       &ediv   ||
+                                   pr    k t a "%"       &emod      ) )
+padd  ekt = (pmul  k t     for a ( pr    k t a "+"       &eadd   ||
+                                   pr    k t a "-"       &esub      ) )
+psh   ekt = (padd  k t     for a ( pr    k t a "<<"      &eshl   ||
+                                   pr    k t a ">>"      &eshr      ) )
+pcmp  ekt = (psh   k nnull for a ( pr    k t a "<"       &elt    ||
+                                   pr    k t a ">"       &egt    ||
+                                   pr    k t a "<="      &ele    ||
+                                   pr    k t a ">="      &elt    ||
+                                   pr    k t a "=="      &eeq    ||
+                                   pr    k t a "!="      &ene       ) )
+pband ekt = (pcmp  k t     for a   pr    k t a "&"       &eband     )
+pbor  ekt = (pband k t     for a   pr    k t a "|"       &ebor      )
+pcast ekta= (                      pr    k t a "as"      &eas    ||
+                                   pr    k t a "from"    &efrom     )
 p4    ekt = (pbor  k t     for a   pcast k t a                   )
-p5    ekt = (p4    k nnull for a ( er k t a "="       &eass   ||
+p5    ekt = (p4    k nnull for a ( pr    k t a "="       &eass   ||
                                    pcast k t a                   ) )
 
 typedecl(k K) J =
@@ -983,14 +983,14 @@ gmod (y Y    ) none = ( gdiv y
 gshx (y Y x C) none = ( (gln y "  mov %%dil, %%cl"   )
                         (gln y "  sh%c %%cl, %%rax" x) )
 
-gadd (y Y    ) none = (gbin y "add")
-gsub (y Y    ) none = (gbin y "sub")
-gand (y Y    ) none = (gbin y "and")
-gor  (y Y    ) none = (gbin y "or ")
-gxor (y Y    ) none = (gbin y "xor")
-gcmp (y Y    ) none = (gbin y "cmp")
-gshr (y Y    ) none = (gshx y 'r')
-gshl (y Y    ) none = (gshx y 'l')
+gadd (y Y) none = (gbin y "add")
+gsub (y Y) none = (gbin y "sub")
+gand (y Y) none = (gbin y "and")
+gor  (y Y) none = (gbin y "or ")
+gxor (y Y) none = (gbin y "xor")
+gcmp (y Y) none = (gbin y "cmp")
+gshr (y Y) none = (gshx y 'r')
+gshl (y Y) none = (gshx y 'l')
 
 gpromote(y Y) none = (gln y "  movzbl %%al , %%eax")
 
@@ -1054,278 +1054,17 @@ ret (gln y "  mov %ld(%%rax), %%r8b    " i)
 :  (t.size == 1) ? (gln y "  mov %%al , (%%rdi)")
 :                  (gln y "  mov %%rax, (%%rdi)") )
 
-type gexpr    (y Y e E c @N            ) nat;
-type gexprexpr(y Y e E c @N            ) @gexpr;
-type gexprcat (y Y e E c @N gcat @gexpr) nat;
+type gexprcat (y Y e E c @N l N) N;
 
-grval gexpr;
-glval gexpr;
+gexpr gexprcat;
 
-gltor   (gcat @gexpr) nat = ((gcat == &grval) ? 1 : 0)
-
-gdrop (y Y e E c @N gcat @gexpr) none = (cast none gcat@ y e c is l (l && gln y "#elided loads: %ld" l))
-geval (y Y e E c @N gcat @gexpr) none = (
-  gcat@ y e c is l
-  ((l > 1) && gln y "#compacted loads: %ld" (l - 1))
-  !!l && l for l
-  gload y (((l == 1) && (gcat == &grval)) ? e.t.q : TY_PTR) 0 "ax" "ax"
-  (l - 1)
-)
-
-gelit   gexprcat = (glit  y e.l          0)
-gesize  gexprcat = (glit  y e.t.s.size   0)
-gderef  gexprcat = (grval y e.a c    + gltor gcat)
-geaddr  gexprcat = glval y e.a c
-gethe   gexprcat = gcat@ y e.a c
-
-geref   gexprcat = (
-  (e.o.is_local ? &gaddrl : &gaddrg) is gaddr
-  (e.o.is_local ? &gloadl : &gloadg) is gload
-  ((gcat == &grval) ? gload : gaddr)
-  @ y e.o c "ax"
-  0
-)
-
-geelem  gexprcat = (
-  geval y e.a   c &grval
-  gpush y       c
-  geval y e.a.s c &grval
-  gpop  y       c "dx"
-  (gln y "  lea (%%rdx, %%rax, %ld), %%rax" e.a.t.a.size)
-  gltor gcat
-)
-
-gemem   gexprcat = (
-  geval y e.a c &grval
-  ( e.a.t for t
-    ( (t.q == TY_PTR) &&
-      t.a ret
-      gload y t.a.q 0 "ax" "ax"
-    as none )
-  as none )
-  gindex y e.t.offset
-  gltor gcat
-)
-
-geseq gexprcat = (
-  gdrop y e.a   c &grval
-  geval y e.a.s c gcat
-  0
-)
-
-geret gexprcat = (
-  geval y e.a   c gcat
-  gpush y       c
-  gdrop y e.a.s c &grval
-  gpop  y       c "ax"
-  0
-)
-
-gecond gexprcat = (
-  geval  y e.a     c &grval
-  gcmpz  y
-  gje    y e         "a"
-  geval  y e.a.s   c gcat
-  gj     y e         "b"
-  glabel y e         "a"
-  geval  y e.a.s.s c gcat
-  glabel y e         "b"
-  0
-)
-
-geland  gexprcat = (
-  (e.a.s.t.q == TY_VOID) is keep
-  geval y e.a c &grval
-  gcmpz y
-  gje   y e         "a"
-  ( keep &&
-    gpush y       c      )
-  geval y e.a.s c &grval
-  ( keep &&
-    gpop  y       c "ax" )
-  glabel y e        "a"
-  0
-)
-
-gelor gexprcat = (
-  (e.a.s.t.q == TY_VOID) is keep
-  geval   y e.a   c &grval
-  gcmpz   y
-  gjne    y e       "a"
-  ( keep &&
-    gpush y       c      )
-  geval   y e.a.s c &grval
-  ( keep &&
-    gpop  y       c "ax" )
-  glabel  y e       "a"
-  0
-)
-
-geneg   gexprcat = (
-  geval y e.a c &grval
-  gneg  y
-  0
-)
-
-gecast  gexprcat =  (
-  geval y e.a c &grval
-  gcast y e.a.t e.t
-  0
-)
-
-gelnot  gexprcat =  (
-  geval      y e.a c &grval
-  gcmpz_setf y       "e"
-  0
-)
-
-gebnot  gexprcat =  (
-  geval y e.a c &grval
-  gnot  y
-  0
-)
-
-geass   gexprcat = (
-  geval  y e.a   c &glval
-  gpush  y       c
-  geval  y e.a.s c &grval
-  gstore y e.a.t c
-  gzero  y         "ax"
-  0
-)
-
-gelet   gexprcat = (
-  gaddrl y e.o   c "ax"
-  gpush  y       c
-  geval  y e.a   c &grval
-  gstore y e.a.t c
-  geval  y e.a.s c gcat
-  0
-)
-
-gefor   gexprcat = (
-  gaddrl y e.o   c "ax"
-  gpush  y       c
-  geval  y e.a   c &grval
-  glabel y e       "a"
-  gstore y e.a.t c
-  gaddrl y e.o   c "ax"
-  gpush  y       c
-  geval  y e.a.s c &grval
-  gcmpz  y
-  gjne   y e       "a"
-  gpop   y       c "ax"
-  gload  y e.a.t.q 0 "ax" "ax"
-  0
-)
-
-gargs(y Y e E c @N d N) none =
-(  !!e
-&&(  (d < 6)
-  && gargs y e.s c (d + 1) )
-   geval y e c &grval
-   gpush y c
-as none )
-
-gecall gexprcat = (
-  0 is stack
-  0 is d
-  ( ( (c@ + stack) % 16 != 0) &&
-    gfpush y c 1
-    (stack = stack + 8)
-  as none )
-  gargs y e.a.s c 0
-  geval y e.a   c &grval
-  0 is d
-  (!!e.a.s && e.a.s for e e.s ret ((d < 6) && gpop y c argreg8 d ret (d = d + 1)) as none)
-  (gln y "  call *%%rax")
-  gfpop y c (stack >> 3)
-  0
-)
-
-gez gexprcat = (
-  (gln y "  mov $%ld, %%rcx" e.o.t.size)
-  gaddrl y e.o   c "di"
-  (gln y "  mov $0, %%al")
-  (gln y "  rep stosb")
-  0
-)
-
-ge2arya (y Y e E c @N) @(y Y) none = (
-  (e.q == EDIV ) ? &gdiv :
-  (e.q == EMOD ) ? &gmod :
-  (e.q == EEQ  ) ? &ge   :
-  (e.q == ENE  ) ? &gne  :
-  (e.q == ELT  ) ? &gb   :
-  (e.q == ELE  ) ? &gbe  :
-  (e.q == EGT  ) ? &ga   :
-  (e.q == EGE  ) ? &gae  :
-  (e.q == EADD ) ? &gadd :
-  (e.q == ESUB ) ? &gsub :
-  (e.q == EMUL ) ? &gmul :
-  (e.q == EBAND) ? &gand :
-  (e.q == EBOR ) ? &gor  :
-  (e.q == EBXOR) ? &gxor :
-  (e.q == ESHL ) ? &gshl :
-                   &gshr
-)
-
-ge2ary  gexprcat = (
-  geval    y e.a.s c &grval
-  gpush    y       c
-  geval    y e.a   c &grval
-  gpop     y       c "di"
-  (ge2arya y e     c       )
-  @        y
-  0
-)
-
-glval(y Y e E c @N) nat = (
-  e.q     is q
-  &glval  is g
-
-  (q == EELEM  ) ? geelem y e c g :
-  (q == EMEM   ) ? gemem  y e c g :
-  (q == EDEREF ) ? gderef y e c g :
-  (q == EVAR   ) ? geref  y e c g :
-
-  (q == ESEQ   ) ? geseq  y e c g :
-  (q == ETHEN  ) ? geret  y e c g :
-  (q == ETHE   ) ? gethe  y e c g :
-  (q == ECOND  ) ? gecond y e c g :
-
-  (jdiag e.j "not an lvalue")
-)
-
-grval(y Y e E c @N) nat = (
-  e.q     is q
-  &grval  is g
-
-  (q == EVAR  ) ? geref  y e c g :
-  (q == EMEM  ) ? gemem  y e c g :
-  (q == EELEM ) ? geelem y e c g :
-  (q == EDEREF) ? gderef y e c g :
-  (q == ELIT  ) ? gelit  y e c g :
-  (q == ESIZE ) ? gesize y e c g :
-  (q == ECALL ) ? gecall y e c g :
-
-  (q == ESEQ  ) ? geseq  y e c g :
-  (q == ETHEN ) ? geret  y e c g :
-  (q == ETHE  ) ? gethe  y e c g :
-  (q == ECOND ) ? gecond y e c g :
-  (q == EADDR ) ? geaddr y e c g :
-  (q == ELAND ) ? geland y e c g :
-  (q == ELOR  ) ? gelor  y e c g :
-  (q == ENEG  ) ? geneg  y e c g :
-  (q == ECAST ) ? gecast y e c g :
-  (q == ENOT  ) ? gelnot y e c g :
-  (q == EBNOT ) ? gebnot y e c g :
-  (q == EASS  ) ? geass  y e c g :
-  (q == EIS   ) ? gelet  y e c g :
-  (q == EFOR  ) ? gefor  y e c g :
-  (q == EZ    ) ? gez    y e c g :
-
-                  ge2ary y e c g
+gdrop (y Y e E c @N    ) none = (cast none gexpr y e c 0 is l (l && gln y "#elided loads: %ld" l))
+geval (y Y e E c @N l N) none = (
+  gexpr y e c l is l1
+  ((l1 > 1) && gln y "#compacted loads: %ld" (l - 1))
+  !!l1 && l1 for l2
+  gload y (((l2 == 1) && (l == 0)) ? e.t.q : TY_PTR) 0 "ax" "ax"
+  (l2 - 1)
 )
 
 gdata(y Y o O) none = (
@@ -1392,7 +1131,7 @@ gtext(y Y o O) none =
       ret (d = d + 1)
       as none ) )
   as none )
-  gdrop y cast E o.body &c &grval
+  gdrop y cast E o.body &c
   (gln y "  leave")
   (gln y "  ret")
 )
@@ -1414,3 +1153,254 @@ export main(argc N argv @S) N =
 (  open_file argv^2 "w" is y
    (!y ? 1 : 0 ret codegen parse tokenize argv^1 y argv^1)
 ret cast none fclose y )
+
+
+
+
+
+/*
+
+vtables
+
+*/
+
+
+
+
+gelit   gexprcat = (glit  y e.l          0)
+gesize  gexprcat = (glit  y e.t.s.size   0)
+gderef  gexprcat = (gexpr y e.a c 0  + 1  - l)
+geaddr  gexprcat = (gexpr y e.a c (l + 1) - l)
+gethe   gexprcat = gexpr y e.a c l
+
+geref   gexprcat = (
+  (e.o.is_local ? &gaddrl : &gaddrg) is gaddr
+  (e.o.is_local ? &gloadl : &gloadg) is gload
+  (!l ? gload : gaddr)
+  @ y e.o c "ax"
+  (!l ? 0 : (1 - l))
+)
+
+geelem  gexprcat = (
+  geval y e.a   c 0
+  gpush y       c
+  geval y e.a.s c 0
+  gpop  y       c "dx"
+  (gln y "  lea (%%rdx, %%rax, %ld), %%rax" e.a.t.a.size)
+  (1 - l)
+)
+
+gemem   gexprcat = (
+  geval y e.a c 0
+  ( e.a.t for t
+    ( (t.q == TY_PTR) &&
+      t.a ret
+      gload y t.a.q 0 "ax" "ax"
+    as none )
+  as none )
+  gindex y e.t.offset
+  (1 - l)
+)
+
+geseq gexprcat = (
+  gdrop y e.a   c
+  geval y e.a.s c l
+  0
+)
+
+geret gexprcat = (
+  geval y e.a   c l
+  gpush y       c
+  gdrop y e.a.s c
+  gpop  y       c "ax"
+  0
+)
+
+gecond gexprcat = (
+  geval  y e.a     c 0
+  gcmpz  y
+  gje    y e         "a"
+  geval  y e.a.s   c l
+  gj     y e         "b"
+  glabel y e         "a"
+  geval  y e.a.s.s c l
+  glabel y e         "b"
+  0
+)
+
+geland  gexprcat = (
+  (e.a.s.t.q == TY_VOID) is keep
+  geval y e.a c 0
+  gcmpz y
+  gje   y e         "a"
+  ( keep &&
+    gpush y       c      )
+  geval y e.a.s c 0
+  ( keep &&
+    gpop  y       c "ax" )
+  glabel y e        "a"
+  0
+)
+
+gelor gexprcat = (
+  (e.a.s.t.q == TY_VOID) is keep
+  geval   y e.a   c 0
+  gcmpz   y
+  gjne    y e       "a"
+  ( keep &&
+    gpush y       c      )
+  geval   y e.a.s c 0
+  ( keep &&
+    gpop  y       c "ax" )
+  glabel  y e       "a"
+  0
+)
+
+geneg   gexprcat = (
+  geval y e.a c 0
+  gneg  y
+  0
+)
+
+gecast  gexprcat =  (
+  geval y e.a c 0
+  gcast y e.a.t e.t
+  0
+)
+
+gelnot  gexprcat =  (
+  geval      y e.a c 0
+  gcmpz_setf y       "e"
+  0
+)
+
+gebnot  gexprcat =  (
+  geval y e.a c 0
+  gnot  y
+  0
+)
+
+geass   gexprcat = (
+  geval  y e.a   c 1
+  gpush  y       c
+  geval  y e.a.s c 0
+  gstore y e.a.t c
+  gzero  y         "ax"
+  0
+)
+
+gelet   gexprcat = (
+  gaddrl y e.o   c "ax"
+  gpush  y       c
+  geval  y e.a   c 0
+  gstore y e.a.t c
+  geval  y e.a.s c l
+  0
+)
+
+gefor   gexprcat = (
+  gaddrl y e.o   c "ax"
+  gpush  y       c
+  geval  y e.a   c 0
+  glabel y e       "a"
+  gstore y e.a.t c
+  gaddrl y e.o   c "ax"
+  gpush  y       c
+  geval  y e.a.s c 0
+  gcmpz  y
+  gjne   y e       "a"
+  gpop   y       c "ax"
+  gload  y e.a.t.q 0 "ax" "ax"
+  0
+)
+
+gargs(y Y e E c @N d N) none =
+(  !!e
+&&(  (d < 6)
+  && gargs y e.s c (d + 1) )
+   geval y e c 0
+   gpush y c
+as none )
+
+gecall gexprcat = (
+  0 is stack
+  0 is d
+  ( ( (c@ + stack) % 16 != 0) &&
+    gfpush y c 1
+    (stack = stack + 8)
+  as none )
+  gargs y e.a.s c 0
+  geval y e.a   c 0
+  0 is d
+  (!!e.a.s && e.a.s for e e.s ret ((d < 6) && gpop y c argreg8 d ret (d = d + 1)) as none)
+  (gln y "  call *%%rax")
+  gfpop y c (stack >> 3)
+  0
+)
+
+gez gexprcat = (
+  (gln y "  mov $%ld, %%rcx" e.o.t.size)
+  gaddrl y e.o   c "di"
+  (gln y "  mov $0, %%al")
+  (gln y "  rep stosb")
+  0
+)
+
+
+ge2arya (y Y e E c @N) @(y Y) none = (
+  (e.q == EDIV ) ? &gdiv :
+  (e.q == EMOD ) ? &gmod :
+  (e.q == EEQ  ) ? &ge   :
+  (e.q == ENE  ) ? &gne  :
+  (e.q == ELT  ) ? &gb   :
+  (e.q == ELE  ) ? &gbe  :
+  (e.q == EGT  ) ? &ga   :
+  (e.q == EGE  ) ? &gae  :
+  (e.q == EADD ) ? &gadd :
+  (e.q == ESUB ) ? &gsub :
+  (e.q == EMUL ) ? &gmul :
+  (e.q == EBAND) ? &gand :
+  (e.q == EBOR ) ? &gor  :
+  (e.q == EBXOR) ? &gxor :
+  (e.q == ESHL ) ? &gshl :
+                   &gshr
+)
+
+ge2ary  gexprcat = (
+  geval    y e.a.s c 0
+  gpush    y       c
+  geval    y e.a   c 0
+  gpop     y       c "di"
+  (ge2arya y e     c       )
+  @        y
+  0
+)
+
+gexpr gexprcat = (
+  e.q     is q
+(
+  (q == EVAR  ) ? &geref  :
+  (q == EMEM  ) ? &gemem  :
+  (q == EELEM ) ? &geelem :
+  (q == EDEREF) ? &gderef :
+  (q == ESEQ  ) ? &geseq  :
+  (q == ETHEN ) ? &geret  :
+  (q == ETHE  ) ? &gethe  :
+  (q == ECOND ) ? &gecond :
+  (q == ELIT  ) ? &gelit  :
+  (q == ESIZE ) ? &gesize :
+  (q == ECALL ) ? &gecall :
+  (q == EADDR ) ? &geaddr :
+  (q == ENEG  ) ? &geneg  :
+  (q == ELAND ) ? &geland :
+  (q == ELOR  ) ? &gelor  :
+  (q == ECAST ) ? &gecast :
+  (q == ELNOT ) ? &gelnot :
+  (q == EBNOT ) ? &gebnot :
+  (q == EASS  ) ? &geass  :
+  (q == EIS   ) ? &gelet  :
+  (q == EFOR  ) ? &gefor  :
+  (q == EZ    ) ? &gez    :
+                  &ge2ary )
+  @ y e c l
+)
