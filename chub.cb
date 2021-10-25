@@ -450,7 +450,7 @@ tokenize(path S) J =
     ?  strstr &p^2 "*/" is q
        (!q && (diag p in "unclosed block comment") as none)
        (p = &q^2)
-    :  ((p@ == '\n') || isws p@) ? (p = &p^1)
+    :  (isws p@) ? (p = &p^1)
     :  (is09 p@ || ((p@ == '.') && is09 p^1))
     ?  (&p^1 for q ( isid q@ && &q^1 )) is q
        (j.s = ntoken TK_NUM p q in)
