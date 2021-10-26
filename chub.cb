@@ -443,9 +443,9 @@ tokenize(path S) J =
 :  cast @File calloc 1 sizeof File is in
    (in.name = path)
    (in.contents = p)
-   new Token is j
-   (in.contents is p &j is j
-   (1b for _ (p@ &&
+   cast J 0 is j
+   &j is k
+   (1b for _ p@ &&
     startswith p "/*"
     ?  strstr &p^2 "*/" is q
        (!q && (diag p in "unclosed block comment") as none)
@@ -453,52 +453,50 @@ tokenize(path S) J =
     :  (isws p@) ? (p = &p^1)
     :  (is09 p@ || ((p@ == '.') && is09 p^1))
     ?  (&p^1 for q ( isid q@ && &q^1 )) is q
-       (j.s = ntoken TK_NUM p q in)
-       (j.s.loc is p
-  10 is a
-  (  (!strncmp p "0x" 2 && is0f p^2)
-  && (p = &p^2)
-     (a = 16)
-  as none )
-   strtoul p &p a is v
-   ( (startswith p "b"  ) ? (p = &p^1)            nbit :
-                                                  nnat ) is t
-   (j.s.l = v as N )   
-   (j.s.t = t as @none   )   
-   1b)
-       (j = j.s)
+       (k@ = ntoken TK_NUM p q in)
+       (k.loc is p
+           10 is a
+           (  (!strncmp p "0x" 2 && is0f p^2)
+           && (p = &p^2)
+              (a = 16)
+           as none )
+            strtoul p &p a is v
+            ( (startswith p "b"  ) ? (p = &p^1)            nbit :
+                                                           nnat ) is t
+            (k.l = v as N )   
+            (k.t = t as @none   )   
+            1b)
+       (k = &k.s)
        (p = q)
     :  (p@ == '"')
-    ?  (j.s = string_literal in p p)
-       (j = j.s)
-       (p = &p^j.n)
+    ?  (k@ = string_literal in p p)
+       (p = &p^k.n)
+       (k = &k.s)
     :  (p@ == '\p')
-    ?  (j.s = byte_literal in p)
-       (j = j.s)
-       (j.l = j.l as C as N)
-       (p = &p^j.n)
+    ?  (k@ = byte_literal in p)
+       (k.l = k.l as C as N)
+       (p = &p^k.n)
+       (k = &k.s)
     :  0 is n
        (p for q ((isid q@ && &q^1) || cast S 0 ret (n = q - p as N)) as none)
        !!n
-    ?  (j.s = ntoken TK_ID p &p^n in)
-       (j = j.s)
-       (p = &p^j.n)
+    ?  (k@ = ntoken TK_ID p &p^n in)
+       (p = &p^k.n)
+       (k = &k.s)
     :  read_punct p is n
        !!n
-    ?  (j.s = ntoken TK_PCT p &p^n in)
-       (j = j.s)
-       (p = &p^j.n)
-    :  (diag p in "invalid token")) as none )  )
-   j.s is j2
+    ?  (k@ = ntoken TK_PCT p &p^n in)
+       (p = &p^k.n)
+       (k = &k.s)
+    :  (diag p in "invalid token"))
+   j ret
    1 is n
   ( in.contents for p
-    (  !!p@
-    && !!j2
-    && &p^1 ret
-       (j2 = (p == j2.loc) ? (j2.line_no = n)    j2.s : j2)
-       (n = n + ((p@ == '\n') ? 1 : 0)) )
-  as none )
-   j.s )
+    !!p@ &&
+    !!j &&
+    ((p == j.loc) && (j.line_no = n) (j = j.s))
+    ((p@ == '\n') && (n = n + 1))
+    &p^1 ) )
 
 push_scope  (k K c S    ) @Scope
 = (cast @Scope calloc 1 sizeof Scope is s s ret (s.c = c)    (s.s = k.s)    (k.s = s))
@@ -1097,12 +1095,12 @@ gulet(y Y o O c @N d S) none = (
   gfpop y c o.t.size
 )
 
-type gexprcat (y Y e E c @N l N) N;
+type gexprcat (y Y e E c N l N) N;
 
 gexpr gexprcat;
 
-gdrop (y Y e E c @N    ) none = (cast none gexpr y e c 0 is l (l && gln y "#elided loads: %ld" l))
-geval (y Y e E c @N l N) none = (
+gdrop (y Y e E c N    ) none = (cast none gexpr y e c 0 is l (l && gln y "#elided loads: %ld" l))
+geval (y Y e E c N l N) none = (
   gexpr y e c l is l1
   ((l1 > 1) && gln y "#compacted loads: %ld" (l - 1))
   !!l1 && l1 for l2
@@ -1160,8 +1158,7 @@ gtext(y Y o O) none =
   (gln y "  .type %s, @function" o.name)
   (gln y "%s:" o.name)
   (gln y "  enter $%ld, $0" bottom)
-  bottom is c
-  ( o.t.is_variadic && gstoreva y o c)
+  ( o.t.is_variadic && gstoreva y o bottom)
   (  0 is d
      o.params for o
     (  !!o
@@ -1169,12 +1166,12 @@ gtext(y Y o O) none =
     ret(  (o.offset > (-1 >> 1))
       && o.t is t
          ((t.size == 1)
-      ?  (gln y "  mov %s   , %ld(%%rsp)" argreg1 d (o.offset + c))
-      :  (gln y "  mov %%r%s, %ld(%%rsp)" argreg8 d (o.offset + c)))
+      ?  (gln y "  mov %s   , %ld(%%rsp)" argreg1 d (o.offset + bottom))
+      :  (gln y "  mov %%r%s, %ld(%%rsp)" argreg8 d (o.offset + bottom)))
       ret (d = d + 1)
       as none ) )
   as none )
-  gdrop y cast E o.body &c
+  gdrop y cast E o.body bottom
   (gln y "  leave")
   (gln y "  ret")
 )
@@ -1220,15 +1217,15 @@ geref   gexprcat = (
   (e.o.is_local ? &gaddrl : &gaddrg) is gaddr
   (e.o.is_local ? &gloadl : &gloadg) is gload
   (!l ? gload : gaddr)
-  @ y e c "ax"
+  @ y e &c "ax"
   (!l ? 0 : (1 - l))
 )
 
 geelem  gexprcat = (
-  geval y e.a   c 0
-  gpush y       c
-  geval y e.a.s c 0
-  gpop  y       c "dx"
+  geval y e.a    c 0
+  gpush y       &c
+  geval y e.a.s  c 0
+  gpop  y       &c "dx"
   (gln y "  lea (%%rdx, %%rax, %ld), %%rax" e.a.t.a.size)
   (1 - l)
 )
@@ -1252,10 +1249,10 @@ geseq gexprcat = (
 )
 
 geret gexprcat = (
-  geval y e.a   c l
-  gpush y       c
-  gdrop y e.a.s c
-  gpop  y       c "ax"
+  geval y e.a    c l
+  gpush y       &c
+  gdrop y e.a.s  c
+  gpop  y       &c "ax"
   0
 )
 
@@ -1277,10 +1274,10 @@ geland  gexprcat = (
   gcmpz y
   gje   y e         "a"
   ( keep &&
-    gpush y       c      )
+    gpush y       &c      )
   geval y e.a.s c 0
   ( keep &&
-    gpop  y       c "ax" )
+    gpop  y       &c "ax" )
   glabel y e        "a"
   0
 )
@@ -1291,10 +1288,10 @@ gelor gexprcat = (
   gcmpz   y
   gjne    y e       "a"
   ( keep &&
-    gpush y       c      )
+    gpush y       &c      )
   geval   y e.a.s c 0
   ( keep &&
-    gpop  y       c "ax" )
+    gpop  y       &c "ax" )
   glabel  y e       "a"
   0
 )
@@ -1324,33 +1321,33 @@ gebnot  gexprcat =  (
 )
 
 geass   gexprcat = (
-  geval  y e.a   c 1
-  gpush  y       c
-  geval  y e.a.s c 0
-  gstore y e.a.t c
+  geval  y e.a    c 1
+  gpush  y       &c
+  geval  y e.a.s  c 0
+  gstore y e.a.t &c
   gzero  y         "ax"
   0
 )
 
 gelet   gexprcat = (
-  geval  y e.a   c 0
-  glet   y e.o   c
-  geval  y e.a.s c l
-  gulet  y e.o   c "dx"
+  geval  y e.a    c 0
+  glet   y e.o   &c
+  geval  y e.a.s  c l
+  gulet  y e.o   &c "dx"
   0
 )
 
 gefor   gexprcat = (
-  geval    y e.a   c 0
-  glet     y e.o   c
-  gj       y e       "b"
-  glabel   y e       "a"
+  geval    y e.a    c 0
+  glet     y e.o   &c
+  gj       y e        "b"
+  glabel   y e        "a"
   gstoresp y e.a.t
-  glabel   y e       "b"
-  geval    y e.a.s c 0
+  glabel   y e        "b"
+  geval    y e.a.s  c 0
   gcmpz    y
-  gjne     y e       "a"
-  gulet    y e.o   c "ax"
+  gjne     y e        "a"
+  gulet    y e.o   &c "ax"
   0
 )
 
@@ -1358,36 +1355,36 @@ gargs(y Y e E c @N d N) none =
 (  !!e
 &&(  (d < 6)
   && gargs y e.s c (d + 1) )
-   geval y e c 0
+   geval y e c@ 0
    gpush y c
 as none )
 
 gecall gexprcat = (
   0 is stack
   0 is d
-  ( ( (c@ + stack) % 16 != 0) &&
-    gfpush y c 1
+  ( ( (c + stack) % 16 != 0) &&
+    gfpush y &c 1
     (stack = stack + 8)
   as none )
-  gargs y e.a.s c 0
+  gargs y e.a.s &c 0
   geval y e.a   c 0
   0 is d
-  (!!e.a.s && e.a.s for e e.s ret ((d < 6) && gpop y c argreg8 d ret (d = d + 1)) as none)
+  (!!e.a.s && e.a.s for e e.s ret ((d < 6) && gpop y &c argreg8 d ret (d = d + 1)) as none)
   (gln y "  call *%%rax")
-  gfpop y c (stack >> 3)
+  gfpop y &c (stack >> 3)
   0
 )
 
 gez gexprcat = (
   (gln y "  mov $%ld, %%rcx" e.o.t.size)
-  gaddrl y e   c "di"
+  gaddrl y e   &c "di"
   (gln y "  mov $0, %%al")
   (gln y "  rep stosb")
   0
 )
 
 
-ge2arya (y Y e E c @N) @(y Y) none = (
+ge2arya (y Y e E c N) @(y Y) none = (
   (e.q == EDIV ) ? &gdiv :
   (e.q == EMOD ) ? &gmod :
   (e.q == EEQ  ) ? &ge   :
@@ -1407,17 +1404,18 @@ ge2arya (y Y e E c @N) @(y Y) none = (
 )
 
 ge2ary  gexprcat = (
-  geval    y e.a.s c 0
-  gpush    y       c
-  geval    y e.a   c 0
-  gpop     y       c "di"
-  (ge2arya y e     c       )
+  geval    y e.a.s  c 0
+  gpush    y       &c
+  geval    y e.a    c 0
+  gpop     y       &c "di"
+  (ge2arya y e      c       )
   @        y
   0
 )
 
 gexpr gexprcat = (
-  e.q     is q
+  (gln y ".loc 0 %lu" e.j.line_no)
+  e.q is q
 (
   (q == EVAR  ) ? &geref  :
   (q == EMEM  ) ? &gemem  :
