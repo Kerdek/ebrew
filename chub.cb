@@ -39,15 +39,7 @@ export strerror            (errnum  nat) @byte ;
 /* end preamble */
 
 type
-  TypeKind enum
-    TVOID TBIT  TBYTE
-    TFUNC TSTCT TENUM
-    TARR  TPTR  TNAT
-  ;
-
-  TokenKind enum
-    JID JPCT JSTR JNUM
-  ;
+  TokenKind @()none
 
   File struct {
     name         @byte
@@ -67,7 +59,6 @@ type
   }
 
   Type struct  {
-    q          TypeKind
     size          nat
     align         nat
     offset        nat
@@ -140,6 +131,11 @@ type
   S @byte
   Y @FILE
 ;
+
+JID  () none = (0)
+JPCT () none = (0)
+JSTR () none = (0)
+JNUM () none = (0)
 
 type cis  (c C        ) bit;
 
@@ -257,9 +253,8 @@ jdiag(j J fmt S ...) none =
 (  vdiag j.in.name j.in.contents j.line_no j.loc fmt cast @va_list __va_area__
    exit 1 )
 
-ntype(q TypeKind size N align N format @(t T s S) none) T = (
+ntype(size N align N format @(t T s S) none) T = (
   cast T calloc 1 sizeof Type is t t ret
-  (t.q     = q     )
   (t.size  = size  )
   (t.align = align )
   (t.format = format)
@@ -280,10 +275,10 @@ ftnone ftfn ;
 ftbit  ftfn ;
 ftbyte ftfn ;
 ftnat  ftfn ;
-ftenum ftfn ;
 ftstct ftfn ;
 ftptr  ftfn ;
 ftfunc ftfn ;
+ftarr  ftfn ;
 
 
 gelit   gefn;
@@ -332,35 +327,35 @@ ret t.format@ t s )
 type_equal(t T u T) bit =
 (  !!t
 && !!u
-&& t.q is c
+&& t.format is c
   (  (t == u)
   ||(
       !!t.o ? type_equal t.o u
     : !!u.o ? type_equal t u.o
-    : (  (c == u.q)
-      &&(  (c == TVOID)
-        || (c == TBIT)
-        || (c == TBYTE)
-        || (c == TNAT)
-        || (c == TFUNC)
+    : (  (c == u.format)
+      &&(  (c == &ftnone)
+        || (c == &ftbit )
+        || (c == &ftbyte)
+        || (c == &ftnat )
+        || (c == &ftfunc)
           ?  !type_equal t.a u.a
           ?  0b
           :  u.a.s is p
              t.a.s is q (1b for _ (!!p && !!q && type_equal p q && (p = p.s)    (q = q.s) ) as none)
              (p == q)
-          :  (c == TPTR)
+          :  (c == &ftptr)
           ?  type_equal t.a u.a
           :  0b ) ) ) ) )
 
 nnull () T = cast T 0
-nnone () T = ntype TVOID 0 0 &ftnone
-nbit  () T = ntype TBIT  1 1 &ftbit 
-nbyte () T = ntype TBYTE 1 1 &ftbyte
-nnat  () T = ntype TNAT  8 8 &ftnat 
-nptr   (a T    ) T = (ntype TPTR    8            8       &ftptr is t t ret (t.a = a)             )
-nfunc  (a T    ) T = (ntype TFUNC   1            1       &ftfunc  is t t ret (t.a = a)             )
-array_of (a T n N) T = (ntype TARR  (a.size * n) a.align cast @(t T s S) none 0 is t t ret (t.a = a)    (t.n = n))
-struct_of(       ) T =  ntype TSTCT 0            1       &ftstct
+nnone () T = ntype 0 0 &ftnone
+nbit  () T = ntype 1 1 &ftbit 
+nbyte () T = ntype 1 1 &ftbyte
+nnat  () T = ntype 8 8 &ftnat 
+nptr   (a T    ) T = (ntype 8            8       &ftptr is t t ret (t.a = a)             )
+nfunc  (a T    ) T = (ntype 1            1       &ftfunc  is t t ret (t.a = a)             )
+array_of (a T n N) T = (ntype (a.size * n) a.align &ftarr is t t ret (t.a = a)    (t.n = n))
+struct_of(       ) T =  ntype 0            1       &ftstct
 
 copy_type(t T) T =
 (  cast T calloc 1 sizeof Type is u u
@@ -410,7 +405,7 @@ is end
     :  (buf^(n ret (n = n + 1)) = p@)
        &p^1 )
   as none )
-   ntoken JSTR start &end^1 in is j
+   ntoken &JSTR start &end^1 in is j
    (j.t = array_of nbyte cast nat (n + 1))
    (j.str = buf)
    j )
@@ -426,7 +421,7 @@ byte_literal(in @File p S) J =
 is c
    (q = &q^1)
    ((q@ != '\p') && (diag p in "unclosed literal byte") as none)
-   ntoken JNUM p &q^1 in is j
+   ntoken &JNUM p &q^1 in is j
    (j.l = c as N)
    (j.t = cast @none nbyte)
    j )
@@ -470,7 +465,7 @@ tokenize(path S) J =
     :  (isws p@) ? (p = &p^1)
     :  (is09 p@ || ((p@ == '.') && is09 p^1))
     ?  (&p^1 for q ( isid q@ && &q^1 )) is q
-       (k@ = ntoken JNUM p q in)
+       (k@ = ntoken &JNUM p q in)
        (k.loc is p
            10 is a
            (  (!strncmp p "0x" 2 && is0f p^2)
@@ -497,12 +492,12 @@ tokenize(path S) J =
     :  0 is n
        (p for q ((isid q@ && &q^1) || cast S 0 ret (n = q - p as N)) as none)
        !!n
-    ?  (k@ = ntoken JID p &p^n in)
+    ?  (k@ = ntoken &JID p &p^n in)
        (p = &p^k.n)
        (k = &k.s)
     :  read_punct p is n
        !!n
-    ?  (k@ = ntoken JPCT p &p^n in)
+    ?  (k@ = ntoken &JPCT p &p^n in)
        (p = &p^k.n)
        (k = &k.s)
     :  (diag p in "invalid token"))
@@ -572,13 +567,13 @@ nstr o_kst =
 
 id(j J) S = (
   ( !!j &&
-    (j.q != JID) &&
+    (j.q != &JID) &&
     (jdiag j "expected <id>") )
   strndup j.loc cast N j.n
 )
 
 find_type(k K c S n N) T = (
-  (!!k.j && (k.j.q != JID)) ? nnull :
+  (!!k.j && (k.j.q != &JID)) ? nnull :
   search_scope k c n is s
   (!!s && s.t)
 )
@@ -598,21 +593,6 @@ jeq    (k K c S) bit  = (!!k.j && (!memcmp cast @none k.j.loc cast @none c cast 
 expect (k K c S) none = ((!jeq k c && (jdiag k.j "expected '%s'" c) as none)    (k.j = k.j.s))
 consume(k K c S) bit  = (jeq k c is r r ret (r && (k.j = k.j.s) as none) )
 
-enumerators_a tktn =
-( (  1b for _
-    (  !consume k ";"
-    && id k.j is c
-       jadv k
-       push_scope k c is s
-       (s.t = t)
-       (s.v = n)
-       (n = n + 1) )
-  as none )
-   t )
-
-enumerators    tkt = enumerators_a k t 0
-enum_specifier tk  = enumerators k ntype TENUM 1 1 &ftenum
-
 declarator tk =
 (  jadv k is j
    copy_type ptype k is t t
@@ -631,7 +611,7 @@ struct_decl tk =
        (u = &u.s) )
   as none )
    (k.t = 0 as T)
-   (t.q = TSTCT)
+   (t.format = &ftstct)
    (t.size < 0) ? t
 :  0 is bits
   (  !!t.a && t.a for g g.s
@@ -669,7 +649,6 @@ ptype tk = (
   consume k "@"      ? nptr        ptype k :
   consume k "("      ? func_params       k :
   consume k "struct" ? struct_decl       k :
-  consume k "enum"   ? enum_specifier    k :
   search_scope k k.j.loc k.j.n is s
   !!s &&
   jadv k
@@ -798,8 +777,8 @@ estr   efn  = ( jadv k is j
 emem  efna =
 (  jadv k is j
    cast none jadv k
-   (a.t for t ((t.q == TPTR) && t.a)) is t
-   ((t.q != TSTCT) && (jdiag j "%s is not a struct" format_type t) as none)
+   (a.t for t ((t.format == &ftptr) && t.a)) is t
+   ((t.format != &ftstct) && (jdiag j "%s is not a struct" format_type t) as none)
    get_struct_member t j.s is g
   (  !g
   &&(  jdiag j.s "(%s . %.*s) no such member" format_type t j.s.n j.s.loc ) as none )
@@ -856,9 +835,9 @@ p2 efn = ( (
       p7    k nnull for a
       pr    k t a "=" &eass ||
       pcast k t a ) ret expect k ")" :
-    pj k t JID  &eid  ||
-    pj k t JSTR &estr ||
-    pj k t JNUM &elit ||
+    pj k t &JID  &eid  ||
+    pj k t &JSTR &estr ||
+    pj k t &JNUM &elit ||
     (jdiag k.j "expected an expression")
   ) for a
   pr    k t     a "^"       &eelem   ||
@@ -876,7 +855,7 @@ p4 efn = (
     pl k t     "sizeof"  &esize  ||
     p2 k nnull
   ) for a
-  (a.t.q == TFUNC) &&
+  (a.t.format == &ftfunc) &&
   ecall k t a
 )
 
@@ -923,13 +902,13 @@ as none )
 
 find_func(k K c S n N) O =
 (  try_search_scope k c n is s
-   (!!s && !!s.o && (s.o.t.q == TFUNC) && s.o) )
+   (!!s && !!s.o && (s.o.t.format == &ftfunc) && s.o) )
 
 function(k K v @VarAttr) none =
 (  declarator k is t
   find_func k t.name.loc cast N t.name.n is o
   (  !!o
-  ?  ((o.t.q != TFUNC)             && (jdiag k.j "redeclared as a different q of symbol") as none)
+  ?  ((o.t.format != &ftfunc)             && (jdiag k.j "redeclared as a different q of symbol") as none)
      (o.is_definition && jeq k "=" && (jdiag k.j "redefinition of %s" o.name) as none)
      ((o.is_export != v.is_export )  && (jdiag k.j "mismatched visibility") as none)
      (o.is_definition = o.is_definition || jeq k "=")
@@ -1035,8 +1014,8 @@ ga  (y Y) none = gcmp_setf y "a "
 gae (y Y) none = gcmp_setf y "ae"
 
 gcast(y Y a T b T) none =
-(  (b.q == TVOID) ?  gzero    y "ax"
-:  (b.q == TBYTE) && gpromote y)
+(  (b.format == &ftnone) ?  gzero    y "ax"
+:  (b.format == &ftbyte) && gpromote y)
 
 gfpush(y Y c @N  l N ) none = (!!l && (8 * l) is l1 (gln y "  sub $%ld, %%rsp" l1) (c@ = c@ + l1))
 gfpop (y Y c @N  l N ) none = (!!l && (8 * l) is l1 (gln y "  add $%ld, %%rsp" l1) (c@ = c@ - l1))
@@ -1044,38 +1023,38 @@ gpush (y Y c @N      ) none = ((gln y "  push %%rax")    (c@ = c@ + 8))
 gpop  (y Y c @N  s S ) none = ((gln y "  pop %%r%s" s  )    (c@ = c@ - 8))
 gindex(y Y       l N ) none = (!!l && (gln y "  add $%ld, %%rax" l))
 
-gaddr(y Y q TypeKind n N s S d S) none = (gln y "  lea    %lu(%%r%s), %%r%s" n s d)
-gload(y Y q TypeKind n N s S d S) none =
-( ((q == TARR)|| (q == TSTCT)|| (q == TFUNC))
+gaddr(y Y q @ftfn n N s S d S) none = (gln y "  lea    %lu(%%r%s), %%r%s" n s d)
+gload(y Y q @ftfn n N s S d S) none =
+( ((q == &ftarr)|| (q == &ftstct)|| (q == &ftfunc))
 ? gaddr y q n s d
-: ((q == TBYTE) || (q == TBIT) || (q == TENUM))
+: ((q == &ftbyte) || (q == &ftbit))
 ? (gln y "  movzbl %lu(%%r%s), %%e%s" n s d)
 : (gln y "  mov    %lu(%%r%s), %%r%s" n s d)
 as none )
 
 gaddrg(y Y e E c @N d S) none = (gln y "  lea    %s, %%r%s" e.o.name d)
 gloadg(y Y e E c @N d S) none =
-( ((e.o.t.q == TARR)|| (e.o.t.q == TSTCT)|| (e.o.t.q == TFUNC))
+( ((e.o.t.format == &ftarr)|| (e.o.t.format == &ftstct)|| (e.o.t.format == &ftfunc))
 ? gaddrg y e c d
-: ((e.o.t.q == TBYTE) || (e.o.t.q == TBIT) || (e.o.t.q == TENUM))
+: ((e.o.t.format == &ftbyte) || (e.o.t.format == &ftbit))
 ? (gln y "  movzbl %s, %%e%s" e.o.name d)
 : (gln y "  mov    %s, %%r%s" e.o.name d)
 as none )
 
-gaddrl(y Y e E c @N d S) none = (gaddr y e.o.t.q (e.o.sp ? (gln y "#let from %lu at %lu" e.o.sp c@) (c@ - e.o.sp) : (e.o.offset + c@)) "sp" d)
-gloadl(y Y e E c @N d S) none = (gload y e.o.t.q (e.o.sp ? (gln y "#let from %lu at %lu" e.o.sp c@) (c@ - e.o.sp) : (e.o.offset + c@)) "sp" d)
+gaddrl(y Y e E c @N d S) none = (gaddr y e.o.t.format (e.o.sp ? (gln y "#let from %lu at %lu" e.o.sp c@) (c@ - e.o.sp) : (e.o.offset + c@)) "sp" d)
+gloadl(y Y e E c @N d S) none = (gload y e.o.t.format (e.o.sp ? (gln y "#let from %lu at %lu" e.o.sp c@) (c@ - e.o.sp) : (e.o.offset + c@)) "sp" d)
 
 
-gloadsp(y Y q TypeKind d S) none =
-(  ((q == TARR)|| (q == TSTCT)|| (q == TFUNC))
+gloadsp(y Y q @ftfn d S) none =
+(  ((q == &ftarr)|| (q == &ftstct)|| (q == &ftfunc))
 ? (gln y "  mov     %%rsp, %%r%s" d)
-: ((q == TBYTE) || (q == TBIT) || (q == TENUM))
+: ((q == &ftbyte) || (q == &ftbit))
 ? (gln y "  movzbl (%%rsp), %%e%s" d)
 : (gln y "  mov    (%%rsp), %%r%s" d) )
 
 gstoresp(y Y t T) none =
 (  (gln y " mov %%rsp, %%rdi")
-   ((t.q == TSTCT) || (t.q == TARR)) ? (0 for i ((i < t.size) && (i + 1)
+   ((t.format == &ftstct) || (t.format == &ftarr)) ? (0 for i ((i < t.size) && (i + 1)
 ret (gln y "  mov %ld(%%rax), %%r8b    " i)
     (gln y "  mov %%r8b    , %ld(%%rdi)" i)) as none)
 :  (t.size == 1) ? (gln y "  mov %%al , (%%rdi)")
@@ -1083,7 +1062,7 @@ ret (gln y "  mov %ld(%%rax), %%r8b    " i)
 
 gstore(y Y t T c @N) none =
 (  gpop y c "di"
-   ((t.q == TSTCT) || (t.q == TARR)) ? (0 for i ((i < t.size) && (i + 1)
+   ((t.format == &ftstct) || (t.format == &ftarr)) ? (0 for i ((i < t.size) && (i + 1)
 ret (gln y "  mov %ld(%%rax), %%r8b    " i)
     (gln y "  mov %%r8b    , %ld(%%rdi)" i)) as none)
 :  (t.size == 1) ? (gln y "  mov %%al , (%%rdi)")
@@ -1096,7 +1075,7 @@ glet(y Y o O c @N) none = (
 )
 
 gulet(y Y o O c @N d S) none = (
-  gloadsp y o.t.q d
+  gloadsp y o.t.format d
   (o.sp = 0)
   gfpop y c 8
 )
@@ -1111,7 +1090,7 @@ geval (y Y e E c N l N) none = (
   gexpr y e c l is l1
   ((l1 > 1) && gln y "#compacted loads: %ld" (l - 1))
   !!l1 && l1 for l2
-  gload y (((l2 == 1) && (l == 0)) ? e.t.q : TPTR) 0 "ax" "ax"
+  gload y (((l2 == 1) && (l == 0)) ? e.t.format : &ftptr) 0 "ax" "ax"
   (l2 - 1)
 )
 
@@ -1186,7 +1165,7 @@ gtext(y Y o O) none =
 gsym(y Y o O) none = (
   !!o.is_definition &&
   (gln y "  .%s %s" (!o.is_export ? "local" : "globl" ) o.name)
-  ((o.t.q == TFUNC) ? &gtext : &gdata)@ y o
+  ((o.t.format == &ftfunc) ? &gtext : &gdata)@ y o
 )
 
 codegen(o O y Y in S) none = (
@@ -1282,9 +1261,9 @@ geelem  gefn = (
 gemem   gefn = (
   geval y e.a c 0
   ( e.a.t for t
-    ( (t.q == TPTR) &&
+    ( (t.format == &ftptr) &&
       t.a ret
-      gload y t.a.q 0 "ax" "ax"
+      gload y t.a.format 0 "ax" "ax"
     as none )
   as none )
   gindex y e.t.offset
@@ -1320,7 +1299,7 @@ gecond gefn = (
 )
 
 geland  gefn = (
-  (e.a.s.t.q == TVOID) is keep
+  (e.a.s.t.format == &ftnone) is keep
   geval y e.a c 0
   gcmpz y
   gje   y e         "a"
@@ -1334,7 +1313,7 @@ geland  gefn = (
 )
 
 gelor gefn = (
-  (e.a.s.t.q == TVOID) is keep
+  (e.a.s.t.format == &ftnone) is keep
   geval   y e.a   c 0
   gcmpz   y
   gjne    y e       "a"
@@ -1408,8 +1387,8 @@ ftnone ftfn = strcat s "none"
 ftbit  ftfn = strcat s "bit"
 ftbyte ftfn = strcat s "byte"
 ftnat  ftfn = strcat s "nat"
-ftenum ftfn = strcat s "enum"
 ftstct ftfn = strcat s "struct"
+ftarr  ftfn = strcat s "array"
 ftptr  ftfn = (strcat s "@"  ret t.a.format@ t.a s)
 ftfunc ftfn = (strcat s "("  ret
               (t.a.s for p (!!p && p.s ret p.format@ p s ) as none)
