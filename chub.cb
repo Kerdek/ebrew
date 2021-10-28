@@ -1118,24 +1118,25 @@ gstoreva(y Y o O c N) none = (
   (gln y "  movq %%r9 , 88(%%rsp)"         )
 )
 
-gtext(y Y o O) none =
-( (  !!o.params
-  && 16 is t
-      0 is g
-     o.params for o o.s
-  ret (!((g ret (g = g + 1)) < 6)
-  && (t        = align_to t 8)
-     (o.offset = t           )
-     (t        = t + o.t.size) ) )
-   0 is c
-  (  !!o.locals
-  && o.locals for o o.s
-  ret(  !o.offset
-    && (c = c + o.t.size)
-       (c = align_to c o.t.align)
-       (o.offset = -c)
-    as none )
-  as none )
+gtext(y Y o O) none = (
+  ( !!o.params &&
+    16 is t
+     0 is g
+    o.params for o
+    ( (g > 6) &&
+      (t        = align_to t 8)
+      (o.offset = t           )
+      (t        = t + o.t.size)
+      (g = g + 1) ) 
+    o.s )
+  0 is c
+  ( !!o.locals &&
+    o.locals for o
+    ( !o.offset &&
+      (c = c + o.t.size)
+      (c = align_to c o.t.align)
+      (o.offset = -c) )
+    o.s )
   (c = align_to c 16) /* abi says c of frame is aligned to 16 */
   (gln y "  .text")
   (gln y "  .type %s, @function" o.name)
