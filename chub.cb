@@ -104,21 +104,14 @@ type
     c @byte
     o @Obj
     t @Type
-    v  nat
-  }
-
-  VarAttr struct {
-    is_type    bit
-    is_export  bit
   }
 
   Ctx struct {
     j @Token
-    locals         @Obj
-    globals        @Obj
+    locals   @Obj
+    globals  @Obj
     s @Scope
     t @Type
-    n  nat
   }
 
   J @Token
@@ -548,22 +541,23 @@ nlvar o_kst =
    (k.locals = o)
    o )
 
-ngvar o_kst =
-(  nvar k s t is o
-   (o.s = k.globals)
-   (o.is_definition = 1b)
-   (k.globals = o)
-   o )
+ngvar o_kst = (
+  nvar k s t is o
+  (o.s = k.globals)
+  (o.is_definition = 1b)
+  (k.globals = o)
+  o
+)
 
-nstr o_kst =
-(  cast S 0 is s2
-   cast N 0 is n
-   open_memstream &s2 &n is y
-   (fprintf y ".L.%ld" k.n)
-   fclose y
-   (k.n = k.n + 1)
-   ngvar k s2 t is o (o.init_data = s)
-   o )
+nstr o_kst = (
+  cast S 0 is s2
+  cast N 0 is n
+  open_memstream &s2 &n is y
+  (fprintf y ".s%ld" k.j)
+  fclose y
+  ngvar k s2 t is o (o.init_data = s)
+  o
+)
 
 id(j J) S = (
   ( !!j &&
@@ -763,9 +757,7 @@ efor   efna = (jadv k is j k.s is s nbetvar k id jadv k a.t is o       p5 k t   
 
 eid    efn  = (jadv k is j
   search_scope k j.loc j.n is s
-  !!s.o ?
-    nreference j t s.o :
-  nlit j t s.t cast N s.v
+  nreference j t s.o
 )
 
 estr   efn  = ( jadv k is j
@@ -903,6 +895,11 @@ as none )
 find_func(k K c S n N) O =
 (  try_search_scope k c n is s
    (!!s && !!s.o && (s.o.t.format == &ftfunc) && s.o) )
+
+type  VarAttr struct {
+    is_type    bit
+    is_export  bit
+  };
 
 function(k K v @VarAttr) none =
 (  declarator k is t
@@ -1130,21 +1127,21 @@ gtext(y Y o O) none =
   && (t        = align_to t 8)
      (o.offset = t           )
      (t        = t + o.t.size) ) )
-   0 is bottom
+   0 is c
   (  !!o.locals
   && o.locals for o o.s
   ret(  !o.offset
-    && (bottom = bottom + o.t.size)
-       (bottom = align_to bottom o.t.align)
-       (o.offset = -bottom)
+    && (c = c + o.t.size)
+       (c = align_to c o.t.align)
+       (o.offset = -c)
     as none )
   as none )
-  (bottom = align_to bottom 16) /* abi says bottom of frame is aligned to 16 */
+  (c = align_to c 16) /* abi says c of frame is aligned to 16 */
   (gln y "  .text")
   (gln y "  .type %s, @function" o.name)
   (gln y "%s:" o.name)
-  (gln y "  enter $%ld, $0" bottom)
-  ( o.t.is_variadic && gstoreva y o bottom)
+  (gln y "  enter $%ld, $0" c)
+  ( o.t.is_variadic && gstoreva y o c)
   (  0 is d
      o.params for o
     (  !!o
@@ -1152,12 +1149,12 @@ gtext(y Y o O) none =
     ret(  (o.offset > (-1 >> 1))
       && o.t is t
          ((t.size == 1)
-      ?  (gln y "  mov %s   , %ld(%%rsp)" argreg1 d (o.offset + bottom))
-      :  (gln y "  mov %%r%s, %ld(%%rsp)" argreg8 d (o.offset + bottom)))
+      ?  (gln y "  mov %s   , %ld(%%rsp)" argreg1 d (o.offset + c))
+      :  (gln y "  mov %%r%s, %ld(%%rsp)" argreg8 d (o.offset + c)))
       ret (d = d + 1)
       as none ) )
   as none )
-  gdrop y cast E o.body bottom
+  gdrop y cast E o.body c
   (gln y "  leave")
   (gln y "  ret")
 )
