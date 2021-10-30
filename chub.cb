@@ -14,9 +14,7 @@ export fflush              (io @FILE) nat
 export fread               (ptr @none m nat n nat io @FILE) nat
 export fwrite              (ptr @none m nat n nat io @FILE) nat
 export fputc               (c nat io @FILE) nat
-export putc                (c nat) nat
 export fputs               (s @byte io @FILE) nat
-export puts                (s @byte) nat
 
 export exit                (status nat) none
 
@@ -332,8 +330,10 @@ glf(y Y) none = gc y '\n'
 gn1(y Y n nat) none = (n && gn1 y (n / 10) gc y cast byte ('0' + n % 10))
 gn (y Y n nat) none = (n ? gn1 y n : gc y '0')
 
-oc (c byte) none = putc cast N c
-os (s @byte) none = puts s
+export stdout ()none
+
+oc (c byte) none = fputc cast N c (cast @@FILE &stdout)@
+os (s @byte) none = fputs s (cast @@FILE &stdout)@
 olf() none = oc '\n'
 on1(n nat) none = (n && on1 (n / 10) oc cast byte ('0' + n % 10))
 on (n nat) none = (n ? on1 n : oc '0')
@@ -342,9 +342,7 @@ align_to(n N a N) N = ((n + a - 1) / a * a)
 
 vdiag(in S c S line_n N p S s S) none = (
   (p for q ((c < q) && (q^-1 != '\n') && &q^-1)) is line
-  (p for q (!!q@  && (q@ != '\n') && &q^1)) is end
-  os "./" os in os ":(" on line_n oc ',' on (p - line + 1) os "): " olf
-  os s olf
+  os "./" os in os ":(" on line_n oc ',' on (p - line + 1) os "): " os s olf
 )
 
 diag(p S in @File s S) none = (
@@ -381,7 +379,7 @@ type_equal(t T u T) bit =
   (  (t == u)
   ||(
       !!t.o ? type_equal t.o u
-    : !!u.o ? type_equal t u.o
+    : (!!u.o ? type_equal t u.o
     : (  (c == u.format)
       &&(  (c == &ftnone)
         || (c == &ftbit )
@@ -390,12 +388,12 @@ type_equal(t T u T) bit =
         || (c == &ftfunc)
           ?  !type_equal t.a u.a
           ?  0b
-          :  u.a.s is p
+          :  (u.a.s is p
              t.a.s is q (1b for _ (!!p && !!q && type_equal p q && (p = p.s)    (q = q.s) ) as none)
-             (p == q)
+             (p == q) )
           :  (c == &ftptr)
           ?  type_equal t.a u.a
-          :  0b ) ) ) ) )
+          :  0b ) ) ) ) ) )
 
 nnull () T = cast T 0
 nnone () T = ntype 0 0 &ftnone
@@ -458,9 +456,9 @@ byte_literal(in @File p S) J = (
   &p^1 is q
   ((q@ == '\0') && diag p in "unclosed literal byte")
   ( (q@ == '\s') ?
-      (q = &q^1)
+      ((q = &q^1)
       ((q@ == '\0') && diag p in "unclosed literal byte")
-      escape q in :
+      escape q in) :
     q@
   ) is c
   (q = &q^1)
@@ -507,12 +505,12 @@ tokenize(path S in @File) J = (
    &j is k
    (1b for _ p@ &&
     ((p^0 == '/') && (p^1 == '*'))
-    ?  strstr &p^2 "*/" is q
+    ?  (strstr &p^2 "*/" is q
        (!q && diag p in "unclosed block comment")
-       (p = &q^2)
+       (p = &q^2))
     :  (isws p@) ? (p = &p^1)
     :  (is09 p@ || ((p@ == '.') && is09 p^1))
-    ?  (&p^1 for q ( isid q@ && &q^1 )) is q
+    ?  ((&p^1 for q ( isid q@ && &q^1 )) is q
        (k@ = ntoken &JNUM p q)
        (k.p is p
            10 is a
@@ -521,34 +519,33 @@ tokenize(path S in @File) J = (
               (a = 16)
            as none )
             strtoul p &p a is v
-            ( (p^0 == 'b') ? (p = &p^1)            nbit :
-                                                           nnat ) is t
+            ( (p^0 == 'b') ? ((p = &p^1) nbit) : nnat ) is t
             (k.l = v as N )   
             (k.t = t as @none   )   
             1b)
        (k = &k.s)
-       (p = q)
+       (p = q))
     :  (p@ == '"')
-    ?  (k@ = string_literal in p p)
+    ?  ((k@ = string_literal in p p)
        (p = &p^k.n)
-       (k = &k.s)
+       (k = &k.s))
     :  (p@ == '\p')
-    ?  (k@ = byte_literal in p)
+    ?  ((k@ = byte_literal in p)
        (k.l = k.l as C as N)
        (p = &p^k.n)
-       (k = &k.s)
-    :  0 is n
+       (k = &k.s))
+    :  (0 is n
        (p for q ((isid q@ && &q^1) || cast S 0 ret (n = q - p as N)) as none)
        !!n
-    ?  (k@ = ntoken &JID p &p^n)
+    ?  ((k@ = ntoken &JID p &p^n)
        (p = &p^k.n)
-       (k = &k.s)
-    :  read_punct p is n
+       (k = &k.s))
+    :  (read_punct p is n
        !!n
-    ?  (k@ = ntoken &JPCT p &p^n)
+    ?  ((k@ = ntoken &JPCT p &p^n)
        (p = &p^k.n)
-       (k = &k.s)
-    :  diag p in "invalid token" )
+       (k = &k.s))
+    :  diag p in "invalid token" )))
   1 is n
   j ret
   in.contents for p
@@ -576,8 +573,8 @@ try_search_scope(k K c S n N) @Scope = (
     k.s for s
     ((n != strlen s.c ) || !!strncmp s.c c n) ?
       s.s :
-    (r = s)
-    cast @Scope 0 )
+    ((r = s)
+    cast @Scope 0 ))
   r
 )
 
@@ -633,13 +630,6 @@ id(k K) S = (
     (k.j.q != &JID) &&
     jdiag k "expected <id>" )
   strndup k.j.p k.j.n
-)
-
-find_type(k K c S n N) T = (
-  (!!k.j && (k.j.q != &JID)) ?
-    nnull :
-  search_scope k c n is s
-  (!!s && s.t)
 )
 
 get_struct_member(t T j J) T = (
@@ -710,10 +700,9 @@ ptype tfn = (
   consume k "@"      ? nptr        ptype k :
   consume k "("      ? func_params       k :
   consume k "struct" ? struct_decl       k :
-  search_scope k k.j.p k.j.n is s
-  !!s &&
+  (search_scope k k.j.p k.j.n is s
   jadv k
-  s.t
+  s.t)
 )
 
 tree(j J t T gen @gefn            ) E = (cast E calloc 1 sizeof Node is e e ret (e.j = j)  (e.t = t) (e.gen = gen))
@@ -799,14 +788,14 @@ pcast efna = (
 )
 
 p2 efn = ( (
-    consume k "(" ? (
+    consume k "(" ? ((
       p7    k nnull for a
       pr    k t a "=" &eass ||
-      pcast k t a ) ret expect k ")" :
-    pj k t &JID  &eid  ||
+      pcast k t a ) ret expect k ")") :
+    (pj k t &JID  &eid  ||
     pj k t &JSTR &estr ||
     pj k t &JNUM &elit ||
-    (jdiag k "expected an expression")
+    (jdiag k "expected an expression"))
   ) for a
   pr    k t     a "^"       &eelem   ||
   pr    k t     a "."       &emem   ||
@@ -884,9 +873,9 @@ function(k K) none =
   declarator k t
   find_func k t.name.p cast N t.name.n is o
   (  !!o
-  ?  ((o.t.format != &ftfunc)      && (jdiag k "redeclared as a different type of symbol") as none)
+  ?  (((o.t.format != &ftfunc)      && (jdiag k "redeclared as a different type of symbol") as none)
      (o.is_definition && jeq k "=" && (jdiag k "redefinition") as none)
-     ((o.is_export != is_export )  && (jdiag k "mismatched visibility") as none)
+     ((o.is_export != is_export )  && (jdiag k "mismatched visibility") as none))
   :  ( k.j is j
        (k.j = t.name)
        (o = ngvar k id k t)
@@ -987,7 +976,7 @@ gae (y Y) none = gcmp_setf y "ae" "rdi" "rax" "eax"
 
 gcast(y Y a T b T) none =
 (  (b.format == &ftnone) ?  gtz    y "eax"
-:  (b.format == &ftbyte) && gpromote y "eax")
+:  ((b.format == &ftbyte) && gpromote y "eax"))
 
 gfpush(y Y c @N  l N ) none = (!!l && (8 * l) is l1 gs y "  sub $" gn y l1  gs y ", " gtreg y "rsp" glf y (c@ = c@ + l1))
 gfpop (y Y c @N  l N ) none = (!!l && (8 * l) is l1 gs y "  add $" gn y l1  gs y ", " gtreg y "rsp" glf y (c@ = c@ - l1))
@@ -1000,8 +989,8 @@ gload(y Y q @ftfn n N s S d S) none = (
   ((q == &ftstct) || (q == &ftfunc)) ?
     gaddr y q n s d :
   ((q == &ftbyte) || (q == &ftbit)) ?
-    gs y "  movzbl " gn y n gs y "(%r" gs y s gs y "), %e" gs y d glf y :
-  gs y "  mov    " gn y n gs y "(%r" gs y s gs y "), %r" gs y d glf y
+    (gs y "  movzbl " gn y n gs y "(%r" gs y s gs y "), %e" gs y d glf y) :
+  (gs y "  mov    " gn y n gs y "(%r" gs y s gs y "), %r" gs y d glf y)
 )
 
 gaddrg(y Y e E c @N d S) none = (gs y "  lea    " gs y e.o.name gs y ", %r" gs y d glf y)
@@ -1011,16 +1000,16 @@ gloadl(y Y e E c @N d S) none = (gload y e.o.t.format (e.o.sp ? (c@ - e.o.sp) : 
 
 gloadsp(y Y q @ftfn d S) none = (
   (q == &ftstct) ?
-    gs y "  mov     %rsp,  %r" gs y d glf y :
+    (gs y "  mov     %rsp,  %r" gs y d glf y) :
   ((q == &ftbyte) || (q == &ftbit)) ?
-    gs y "  movzbl (%rsp), %e" gs y d glf y :
-  gs y "  mov    (%rsp), %r" gs y d glf y
+    (gs y "  movzbl (%rsp), %e" gs y d glf y) :
+  (gs y "  mov    (%rsp), %r" gs y d glf y)
 )
 
 gstoresp(y Y t T) none = (
   ((t.format == &ftbyte) || (t.format == &ftbit)) ?
-    gs y "  mov %al , (%rsp)" glf y :
-  gs y "  mov %rax, (%rsp)" glf y
+    (gs y "  mov %al , (%rsp)" glf y) :
+  (gs y "  mov %rax, (%rsp)" glf y)
 )
 
 gstore(y Y t T c @N) none = (
@@ -1032,8 +1021,8 @@ gstore(y Y t T c @N) none = (
       gs y "  mov " gn y i gs y "(%rax), %r8b    " glf y
       gs y "  mov %r8b    , " gn y i gs y "(%rdi)" glf y ) :
   ((t.format == &ftbyte) || (t.format == &ftbit)) ?
-    gs y "  mov %al , (%rdi)" glf y :
-  gs y "  mov %rax, (%rdi)" glf y
+    (gs y "  mov %al , (%rdi)" glf y) :
+  (gs y "  mov %rax, (%rdi)" glf y)
 )
 
 glet(y Y o O c @N) none = (
@@ -1057,12 +1046,12 @@ geval (y Y e E c N l N) none = (
 
 gescape(y Y s @byte) @byte = (
   (s^0 == '\s') ?
-    gc y '\s'
-    (s^1 == 'p') ? gc y '\p' &s^2 :
-    (s^1 == 'q') ? gc y '\q' &s^2 :
-                   gc y s^1  &s^2 :
-  gc y s@
-  &s^1
+    (gc y '\s'
+    (s^1 == 'p') ? (gc y '\p' &s^2) :
+    (s^1 == 'q') ? (gc y '\q' &s^2) :
+                   (gc y s^1  &s^2)) :
+  (gc y s@
+  &s^1)
 )
 
 gdata(y Y o O) none = (
@@ -1111,8 +1100,8 @@ gtext(y Y o O) none = (
     (o.offset > (-1 >> 1)) &&
     o.t is t
     ( (t.size == 1) ?
-        gs y "  mov " gs y argreg1 d gs y ", " gn y (o.offset + c) gs y "(%rsp)" glf y :
-      gs y "  mov %" gs y argreg8 d gs y ", " gn y (o.offset + c) gs y "(%rsp)" glf y )
+        (gs y "  mov " gs y argreg1 d gs y ", " gn y (o.offset + c) gs y "(%rsp)" glf y) :
+      (gs y "  mov %" gs y argreg8 d gs y ", " gn y (o.offset + c) gs y "(%rsp)" glf y) )
     (d = d + 1) )
   gdrop y cast E o.body c
   gt0 y "leave"
@@ -1129,7 +1118,7 @@ export main(argc N argv @S) N = (
   open_file argv^2 "w" is y
   cast @File calloc 1 sizeof File is in
   !y ? 1 :
-  parse tokenize argv^1 in in is o
+  (parse tokenize argv^1 in in is o
   argv^1 is in
   (gs y "  .file 0 \q" gs y in gc y '\q' glf y)
   ( !!o &&
@@ -1137,7 +1126,7 @@ export main(argc N argv @S) N = (
     gsym y o
     o.s )
   fclose y
-  0
+  0)
 )
 
 elit   efn  = (jadv k is j              nlit   j t       cast T j.t j.l)
@@ -1268,7 +1257,7 @@ gecast  gefn =  (
 )
 
 geref   gefn = (
-  (e.o.is_local ? !l ? &gloadl : &gaddrl : &gaddrg)
+  (e.o.is_local ? (!l ? &gloadl : &gaddrl) : &gaddrg)
   @ y e &c "ax"
   0
 )
