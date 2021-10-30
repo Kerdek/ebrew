@@ -118,156 +118,25 @@ type
   C byte
   S @byte
   Y @FILE
+
+  ftfn (t T s S) none
+  gefn (y Y e E c N l N) N
+  tfn  (k K                ) T
+  efn  (k K t T            ) E
+  efna (k K t T     a E    ) E
+  njtu (j J t T u T        ) E
+  njtua(j J t T u T a E    ) E
+  njta (j J t T     a E    ) E
+  njtab(j J t T     a E b E) E
+  cis  (c C    ) bit
+  cisd (c C d C) bit
+
+  o_kst (k K s S t T) O
+
+  gelfn (y Y v N) N
+  gegfn (y Y e E c N l N gop @(y Y) none) N
+
 ;
-
-JID  () none = (0)
-JPCT () none = (0)
-JSTR () none = (0)
-JNUM () none = (0)
-
-type cis  (c C        ) bit;
-
-issp cis = (' '  == c)
-istb cis = ('\t' == c)
-islf cis = ('\n' == c)
-iscr cis = ('\r' == c)
-is_  cis = ('_'  == c)
-
-isin(c C a C b C) bit =
-((a <= c) && (c <= b))
-
-isAZ cis = isin c 'A' 'Z'
-isaz cis = isin c 'a' 'z'
-is09 cis = isin c '0' '9'
-isaf cis = isin c 'a' 'f'
-
-isws cis =
-(  issp c
-|| istb c
-|| islf c
-|| iscr c )
-is0f cis =
-(  is09 c
-|| isaf c )
-isid cis =
-(  isAZ c
-|| isaz c
-|| is09 c
-|| is_  c )
-
-
-read_ident(p S) N =
-(  0 is r
-   cast none (p for q ((isid q@ && &q^1) || '\0' ret (r = q - p as N)))
-   r )
-
-startswith(p S q S) bit =
-(  1b is r
-  cast none (  1b for _
-    (  !q@
-    ?  0b
-    :  (p@ != q@)
-    ?  (r = 0b)
-       0b
-    :  (p = &p^1)
-       (q = &q^1)
-       1b ) )
-   r )
-
-read_punct(p S) N =
-(  &startswith is f
-  (  f@ p "=="
-  || f@ p "!="
-  || f@ p "<="
-  || f@ p ">="
-  || f@ p "&&"
-  || f@ p "||"
-  || f@ p "<<"
-  || f@ p ">>" ) ? 2 :
-  (  f@ p "=" 
-  || f@ p "<"
-  || f@ p ">"
-  || f@ p "+"
-  || f@ p "-"
-  || f@ p "*"
-  || f@ p "/"
-  || f@ p "&"
-  || f@ p "|"
-  || f@ p "@"
-  || f@ p "#"
-  || f@ p "{"
-  || f@ p "}"
-  || f@ p "("
-  || f@ p ")"
-  || f@ p "["
-  || f@ p "]"
-  || f@ p "!"
-  || f@ p "?"
-  || f@ p ":"
-  || f@ p ";"
-  || f@ p ","
-  || f@ p "."
-  || f@ p "~"
-  || f@ p "^"
-  || f@ p "$"
-  || f@ p "`"
-  || f@ p "%" ) ? 1 : 0 )
-
-gc (y Y c byte) none = fputc cast N c y
-gs (y Y s @byte) none = fputs s y
-glf(y Y) none = gc y '\n'
-
-gn1 (y Y n nat) none = (n && gn1 y (n / 10) gc y cast byte ('0' + n % 10))
-gn (y Y n nat) none = (n ? gn1 y n : gc y '0')
-
-oc (c byte) none = putc cast N c
-os (s @byte) none = puts s
-olf() none = oc '\n'
-on1 (n nat) none = (n && on1 (n / 10) oc cast byte ('0' + n % 10))
-on (n nat) none = (n ? on1 n : oc '0')
-
-ptype(k K) T
-
-maxl (a N b N) N = ((a > b) ? a : b)
-minl (a N b N) N = ((a < b) ? a : b)
-maxul(a N b N) N = ((a > b) ? a : b)
-minul(a N b N) N = ((a < b) ? a : b)
-
-align_to(n N a N) N = ((n + a - 1) / a * a)
-
-vdiag(in S c S line_n N p S s S) none =
-(  (p for q ((c < q) && (q^-1 != '\n') && &q^-1)) is line
-   (p for q (!!q@  && (q@ != '\n') && &q^1)) is end
-   os "./" os in os ":(" on line_n oc ',' on (p - line + 1) os "): " olf
-   os s olf )
-
-diag(p S in @File s S) none =
-(  1 is line
-   (in.contents for p (&p^1 ret ((p@ == '\n') && (line = line + 1) as none)) as none)
-   vdiag in.name in.contents line p s
-   exit 1 )
-
-jdiag(k K s S) none =
-(  vdiag k.in.name k.in.contents k.j.line k.j.p s
-   exit 1 )
-
-ntype(size N align N format @(t T s S) none) T = (
-  cast T calloc 1 sizeof Type is t t ret
-  (t.size  = size  )
-  (t.align = align )
-  (t.format = format)
-)
-
-type ftfn (t T s S) none ;
-type gefn (y Y e E c N l N) N;
-type tk   (k K        ) T;
-type tke  (k K e E    ) T;
-type tkt  (k K t T    ) T;
-type tktn (k K t T n N) T;
-type tkst (k K s S t T) T;
-type pfn  (k K t T    ) E;
-type efn  (k K t T  ) E;
-type efna (k K t T a E) E;
 
 ftnone ftfn
 ftbit  ftfn
@@ -276,8 +145,6 @@ ftnat  ftfn
 ftstct ftfn
 ftptr  ftfn
 ftfunc ftfn
-ftarr  ftfn
-
 
 gelit   gefn
 gesize  gefn
@@ -317,9 +184,195 @@ gefor   gefn
 gecall  gefn
 geass   gefn
 
-format_type(t T) S =
-(  cast S calloc 1 1 is s s
-ret t.format@ t s )
+p1     efn
+p2     efn
+p4     efn
+p5     efn
+p7     efn
+pmul   efn
+padd   efn
+psh    efn
+pcmp   efn
+pband  efn
+pbor   efn
+pland  efn
+plor   efn
+
+ptype  tfn
+
+esize  efn
+ethe   efn
+ecast  efn
+elit   efn
+eaddr  efn
+eneg   efn
+elnot  efn
+ebnot  efn
+eid    efn
+estr   efn
+eas    efna
+efrom  efna
+eelem  efna
+ederef efna
+eseq   efna
+ethen  efna
+emul   efna
+ediv   efna
+emod   efna
+eland  efna
+elor   efna
+econd  efna
+eadd   efna
+esub   efna
+eshl   efna
+eshr   efna
+elt    efna
+egt    efna
+ele    efna
+ege    efna
+eeq    efna
+ene    efna
+eband  efna
+ebor   efna
+eass   efna
+eis    efna
+efor   efna
+emem   efna
+ecall  efna
+
+JID  () none = (0)
+JPCT () none = (0)
+JSTR () none = (0)
+JNUM () none = (0)
+
+is cisd = (c == d)
+
+issp cis = is c ' '
+istb cis = is c '\t'
+islf cis = is c '\n'
+iscr cis = is c '\r'
+is_  cis = is c '_'
+
+isin(c C a C b C) bit = ((a <= c) && (c <= b))
+
+isAZ cis = isin c 'A' 'Z'
+isaz cis = isin c 'a' 'z'
+is09 cis = isin c '0' '9'
+isaf cis = isin c 'a' 'f'
+
+isws cis = (
+   issp c ||
+   istb c ||
+   islf c ||
+   iscr c
+)
+is0f cis = (
+   is09 c ||
+   isaf c
+)
+isid cis = (
+   isAZ c ||
+   isaz c ||
+   is09 c ||
+   is_  c
+)
+
+read_ident(p S) N = (
+  0 is r
+  (p for q (isid q@ && &q^1) || (r = q - p as N) '\0')
+  r
+)
+
+sw1(p S a C    ) bit = ((p^0 == a) && 1)
+sw2(p S a C b C) bit = ((p^0 == a) && (p^1 == b) && 2)
+
+read_punct(p S) N = (
+  sw2 p '=' '=' ||
+  sw2 p '!' '=' ||
+  sw2 p '<' '=' ||
+  sw2 p '>' '=' ||
+  sw2 p '&' '&' ||
+  sw2 p '|' '|' ||
+  sw2 p '<' '<' ||
+  sw2 p '>' '>' ||
+  sw1 p '='     ||
+  sw1 p '<'     ||
+  sw1 p '>'     ||
+  sw1 p '+'     ||
+  sw1 p '-'     ||
+  sw1 p '*'     ||
+  sw1 p '/'     ||
+  sw1 p '&'     ||
+  sw1 p '|'     ||
+  sw1 p '@'     ||
+  sw1 p '#'     ||
+  sw1 p '{'     ||
+  sw1 p '}'     ||
+  sw1 p '('     ||
+  sw1 p ')'     ||
+  sw1 p '['     ||
+  sw1 p ']'     ||
+  sw1 p '!'     ||
+  sw1 p '?'     ||
+  sw1 p ':'     ||
+  sw1 p ';'     ||
+  sw1 p ','     ||
+  sw1 p '.'     ||
+  sw1 p '~'     ||
+  sw1 p '^'     ||
+  sw1 p '$'     ||
+  sw1 p '`'     ||
+  sw1 p '%'
+)
+
+gc (y Y c byte) none = fputc cast N c y
+gs (y Y s @byte) none = fputs s y
+glf(y Y) none = gc y '\n'
+
+gn1(y Y n nat) none = (n && gn1 y (n / 10) gc y cast byte ('0' + n % 10))
+gn (y Y n nat) none = (n ? gn1 y n : gc y '0')
+
+oc (c byte) none = putc cast N c
+os (s @byte) none = puts s
+olf() none = oc '\n'
+on1(n nat) none = (n && on1 (n / 10) oc cast byte ('0' + n % 10))
+on (n nat) none = (n ? on1 n : oc '0')
+
+align_to(n N a N) N = ((n + a - 1) / a * a)
+
+vdiag(in S c S line_n N p S s S) none = (
+  (p for q ((c < q) && (q^-1 != '\n') && &q^-1)) is line
+  (p for q (!!q@  && (q@ != '\n') && &q^1)) is end
+  os "./" os in os ":(" on line_n oc ',' on (p - line + 1) os "): " olf
+  os s olf
+)
+
+diag(p S in @File s S) none = (
+  1 is line
+  (in.contents for p (&p^1 ret ((p@ == '\n') && (line = line + 1) as none)) as none)
+  vdiag in.name in.contents line p s
+  exit 1
+)
+
+jdiag(k K s S) none = (
+  vdiag k.in.name k.in.contents k.j.line k.j.p s
+  exit 1
+)
+
+ntype(size N align N format @(t T s S) none) T = (
+  cast T calloc 1 sizeof Type is t t ret
+  (t.size  = size  )
+  (t.align = align )
+  (t.format = format)
+)
+
+format_type(t T) S = (
+  cast S calloc 1 1 is s
+  t.format@ t s
+  s
+)
+
+gexpr gefn = e.gen@ y e c l
 
 type_equal(t T u T) bit =
 (  !!t
@@ -351,98 +404,100 @@ nbyte () T = ntype 1 1 &ftbyte
 nnat  () T = ntype 8 8 &ftnat 
 nptr   (a T    ) T = (ntype 8            8       &ftptr is t t ret (t.a = a)             )
 nfunc  (a T    ) T = (ntype 1            1       &ftfunc  is t t ret (t.a = a)             )
-array_of (a T n N) T = (ntype (a.size * n) a.align &ftarr is t t ret (t.a = a)    (t.n = n))
 struct_of(       ) T =  ntype 0            1       &ftstct
 
-copy_type(t T) T =
-(  cast T calloc 1 sizeof Type is u u
-ret (u@ = t@)
-   (u.o = t) )
+copy_type(t T) T = (
+  cast T calloc 1 sizeof Type is u
+  (u@ = t@)
+  (u.o = t)
+  u
+)
 
-ntoken(q TokenKind a S b S) J =
-(  cast J calloc 1 sizeof Token is j j
-ret (j.q   = q    )
-   (j.p = a    )
-   (j.n   = b - a) )
+ntoken(q TokenKind a S b S) J = (
+  cast J calloc 1 sizeof Token is j
+  (j.q = q    )
+  (j.p = a    )
+  (j.n = b - a)
+  j
+)
 
-escape_one(c C ca C cb C) C =
-((c == ca) && cb)
+escape_one(c C ca C cb C) C = ((c == ca) && cb)
 
-escape(c S in @File) C =
-(  &escape_one is f
-  (  f@ c@ 'a' '\a'
-  || f@ c@ 'b' '\b'
-  || f@ c@ 'f' '\f'
-  || f@ c@ 'n' '\n'
-  || f@ c@ 'r' '\r'
-  || f@ c@ 't' '\t'
-  || f@ c@ 'v' '\v'
-  || f@ c@ 'p' '\p'
-  || f@ c@ 'q' '\q'
-  || f@ c@ 's' '\s'
-  || '\0'
-  ret ((c@ != '0') && (diag c in "invalid escape sequence") as none) ) )
+escape(c S in @File) C = (
+  &escape_one is f
+  f@ c@ 'a' '\a' ||
+  f@ c@ 'b' '\b' ||
+  f@ c@ 'f' '\f' ||
+  f@ c@ 'n' '\n' ||
+  f@ c@ 'r' '\r' ||
+  f@ c@ 't' '\t' ||
+  f@ c@ 'v' '\v' ||
+  f@ c@ 'p' '\p' ||
+  f@ c@ 'q' '\q' ||
+  f@ c@ 's' '\s' ||
+  '\0' ret
+  (c@ != '0') &&
+  diag c in "invalid escape sequence"
+)
 
-string_literal(in @File start S quote S) J =
-( (  &quote^1 for q
-    (  (q@ != '"')
-    && &q^1
-    ret ((q@ == '\0') && (diag quote in "unclosed string literal") as none) ) )
-is end
-   cast S calloc 1 (end - quote) is buf
-   0 is n
-  (  &quote^1 for p
-    (  (p < end)
-    && (p@ == '\s')
-    ? (  buf^(n ret (n = n + 1)) = (p = &p^1)
-         escape p in
-      ret (p = &p^1) )
-       p
-    :  (buf^(n ret (n = n + 1)) = p@)
-       &p^1 )
-  as none )
-   ntoken &JSTR start &end^1 is j
-   (j.t = array_of nbyte (n + 1))
-   (j.str = buf)
-   j )
+string_literal(in @File start S quote S) J = (
+  ( &quote^1 for q
+    ( (q@ != '"') &&
+      ( (q@ == '\0') &&
+        diag quote in "unclosed string literal" )
+      &q^1 )
+  ) is end
+  cast S calloc 1 (end - quote) is buf
+  ntoken &JSTR start &end^1 is j
+  (j.t = nptr nbyte)
+  (j.str = buf)
+  j
+)
 
-byte_literal(in @File p S) J =
-(  &p^1 is q
-   ((q@ == '\0') && (diag p in "unclosed literal byte") as none)
-  (  (q@ == '\s')
-  ?  (q = &q^1)
-     ((q@ == '\0') && (diag p in "unclosed literal byte") as none)
-     escape q in
-  :  q@ )
-is c
-   (q = &q^1)
-   ((q@ != '\p') && (diag p in "unclosed literal byte") as none)
-   ntoken &JNUM p &q^1 is j
-   (j.l = c as N)
-   (j.t = cast @none nbyte)
-   j )
+byte_literal(in @File p S) J = (
+  &p^1 is q
+  ((q@ == '\0') && diag p in "unclosed literal byte")
+  ( (q@ == '\s') ?
+      (q = &q^1)
+      ((q@ == '\0') && diag p in "unclosed literal byte")
+      escape q in :
+    q@
+  ) is c
+  (q = &q^1)
+  ((q@ != '\p') && diag p in "unclosed literal byte")
+  ntoken &JNUM p &q^1 is j
+  (j.l = c as N)
+  (j.t = cast @none nbyte)
+  j
+)
 
-open_file(path S mode S) Y =
-(fopen path mode || cast none (os "cannot open file '" os path os "' with mode '" os mode os "': " os strerror (__errno_location)@) olf)
+open_file(path S mode S) Y = (
+  fopen path mode ||
+  os "cannot open file '" os path os "' with mode '" os mode os "': " os strerror (__errno_location)@ olf
+)
 
-read_file(path S) S =
-(  cast S calloc 1 4096 is rfbuf2
-   open_file path "r" is fp
-   cast S 0 is buf
-   0 is buflen
-   &buflen is b
-   open_memstream &buf b is y
-   (1b for k
-    fread cast @none rfbuf2 1 4096 fp is n
-    ((n == 0) ? (k = 0b) : cast none fwrite cast @none rfbuf2 1 n y)
-       k as none)
-   free cast @none rfbuf2
-   (fclose fp as none)
-   fflush y
-   (((buflen == 0) || (buf^(buflen - 1) != '\n')) && fputc cast N '\n' y as none)
-   fputc 0 y
-   fclose y
-   buf )
+read_file(path S) S = (
+  calloc 1 4096 is rfbuf2
+  open_file path "r" is fp
+  cast S 0 is buf
+  0 is buflen
+  &buflen is b
+  open_memstream &buf b is y
+  ( 1b for k
+    fread rfbuf2 1 4096 fp is n
+    ( (n == 0) ?
+        (k = 0b) :
+      fwrite rfbuf2 1 n y )
+    k )
+  free rfbuf2
+  fclose fp
+  fflush y
+  ( ((buflen == 0) || (buf^(buflen - 1) != '\n')) &&
+    fputc cast N '\n' y )
+  fputc 0 y
+  fclose y
+  buf
+)
 
 tokenize(path S in @File) J = (
   read_file path is p
@@ -451,9 +506,9 @@ tokenize(path S in @File) J = (
    cast J 0 is j
    &j is k
    (1b for _ p@ &&
-    startswith p "/*"
+    ((p^0 == '/') && (p^1 == '*'))
     ?  strstr &p^2 "*/" is q
-       (!q && (diag p in "unclosed block comment"))
+       (!q && diag p in "unclosed block comment")
        (p = &q^2)
     :  (isws p@) ? (p = &p^1)
     :  (is09 p@ || ((p@ == '.') && is09 p^1))
@@ -466,7 +521,7 @@ tokenize(path S in @File) J = (
               (a = 16)
            as none )
             strtoul p &p a is v
-            ( (startswith p "b"  ) ? (p = &p^1)            nbit :
+            ( (p^0 == 'b') ? (p = &p^1)            nbit :
                                                            nnat ) is t
             (k.l = v as N )   
             (k.t = t as @none   )   
@@ -493,15 +548,18 @@ tokenize(path S in @File) J = (
     ?  (k@ = ntoken &JPCT p &p^n)
        (p = &p^k.n)
        (k = &k.s)
-    :  (diag p in "invalid token"))
-   j ret
-   1 is n
-  ( in.contents for p
-    !!p@ &&
-    !!j &&
-    ((p == j.p) && (j.line = n) (j = j.s))
-    ((p@ == '\n') && (n = n + 1))
-    &p^1 )
+    :  diag p in "invalid token" )
+  1 is n
+  j ret
+  in.contents for p
+  !!p@ &&
+  !!j &&
+  ( (p == j.p) &&
+    (j.line = n)
+    (j = j.s) )
+  ( (p@ == '\n') &&
+    (n = n + 1) )
+  &p^1
 )
 
 push_scope  (k K c S    ) @Scope = (
@@ -514,38 +572,41 @@ push_scope  (k K c S    ) @Scope = (
 
 try_search_scope(k K c S n N) @Scope = (
   cast @Scope 0 is r
-  (!!k.s && k.s for s ((n != strlen s.c )|| !!strncmp s.c c n) ?
-    s.s :
-  (r = s)
-  cast @Scope 0 as none )
+  ( !!k.s &&
+    k.s for s
+    ((n != strlen s.c ) || !!strncmp s.c c n) ?
+      s.s :
+    (r = s)
+    cast @Scope 0 )
   r
 )
 
 search_scope(k K c S n N) @Scope = (
   try_search_scope k c n ||
-  (jdiag k "lookup failed")
+  jdiag k "lookup failed"
 )
 
-type o_kst (k K s S t T) O;
+nvar o_kst = (
+  cast O calloc 1 sizeof Obj is o
+  (o.name = s) 
+  (o.t = t) 
+  ((push_scope k s).o = o) 
+  o
+)
 
-nvar o_kst =
-(  cast O calloc 1 sizeof Obj is o
-   (o.name = s) 
-   (o.t = t) 
-   ((push_scope k s).o = o) 
-   o )
+nbetvar o_kst = (
+  nvar k s t is o
+  (o.is_local = 1b)
+  o
+)
 
-nbetvar o_kst =
-(  nvar k s t is o
-   (o.is_local = 1b)
-   o )
-
-nlvar o_kst =
-(  nvar k s t is o
-   (o.is_local = 1b)
-   (o.s = k.locals)
-   (k.locals = o)
-   o )
+nlvar o_kst = (
+  nvar k s t is o
+  (o.is_local = 1b)
+  (o.s = k.locals)
+  (k.locals = o)
+  o
+)
 
 ngvar o_kst = (
   nvar k s t is o
@@ -559,7 +620,7 @@ nstr (k K t T) O = (
   cast S 0 is s2
   cast N 0 is n
   open_memstream &s2 &n is y
-  (gs y ".s" gn y cast nat k.j)
+  gs y ".s" gn y cast nat k.j
   fclose y
   ngvar k s2 t is o
   (o.j = k.j)
@@ -570,7 +631,7 @@ nstr (k K t T) O = (
 id(k K) S = (
   ( !!k.j &&
     (k.j.q != &JID) &&
-    (jdiag k "expected <id>") )
+    jdiag k "expected <id>" )
   strndup k.j.p k.j.n
 )
 
@@ -593,8 +654,8 @@ get_struct_member(t T j J) T = (
 
 jadv   (k K    ) J    = (k.j ret (k.j = k.j.s))
 jeq    (k K c S) bit  = (!!k.j && (!memcmp cast @none k.j.p cast @none c cast N k.j.n && !c^k.j.n))
-expect (k K c S) none = ((!jeq k c && (jdiag k "unexpected") as none)    (k.j = k.j.s))
-consume(k K c S) bit  = (jeq k c is r r ret (r && (k.j = k.j.s) as none) )
+expect (k K c S) none = ((!jeq k c && (jdiag k "unexpected")) jadv k)
+consume(k K c S) bit  = (jeq k c is r (r && jadv k) r)
 
 declarator (k K t T) none = (
   jadv k is j
@@ -604,7 +665,7 @@ declarator (k K t T) none = (
   (t.name = j)
 )
 
-struct_decl tk = (
+struct_decl tfn = (
   struct_of is t
   expect k "{"
   &t.a is u
@@ -626,7 +687,7 @@ struct_decl tk = (
   t
 )
 
-func_params tk = (
+func_params tfn = (
   cast T 0 is params
   &params is u
   ( 1b for _
@@ -641,7 +702,7 @@ func_params tk = (
   t
 )
 
-ptype tk = (
+ptype tfn = (
   consume k "none"   ? nnone               :
   consume k "bit"    ? nbit                :
   consume k "byte"   ? nbyte               :
@@ -663,11 +724,6 @@ t3  (j J t T gen @gefn a E b E c E) E = (tree j t gen is e e ret (e.a   = a)  (e
 tt  (j J t T gen @gefn u T        ) E = (t0   j t gen is e e ret (e.t.s = u))
 to  (j J t T gen @gefn o O        ) E = (t0   j t gen is e e ret (e.o   = o))
 tl  (j J t T gen @gefn l N        ) E = (t0   j t gen is e e ret (e.l   = l))
-
-type njtu  (j J t T u T        ) E;
-type njtua (j J t T u T a E    ) E;
-type njta  (j J t T     a E    ) E;
-type njtab (j J t T     a E b E) E;
 
 nsize       njtu  = tt j nnat     &gesize    u
 nthe        njtua = t1 j a.t      &gethe     a
@@ -702,86 +758,11 @@ nsub        njtab = t2 j nnat     &gesub     a b
 
 /* oddballs */
 
-nreference  (j J t T         o O ) E = (to j o.t &geref o                        )
-nlit        (j J t T u T     l N ) E = (tl j u   &gelit l                        )
-nbet        (j J t T a E b E o O ) E = (t2 j b.t &geis   a b is e e ret (e.o = o))
-nrepeat     (j J t T a E b E o O ) E = (t2 j b.t &gefor  a b is e e ret (e.o = o))
-ncond       (j J t T a E b E c E ) E = (t3 j b.t &gecond a b c                   )
-
-p1    pfn
-p2    pfn
-p4    pfn
-p5    pfn
-p7    pfn
-pmul  pfn
-padd  pfn
-psh   pfn
-pcmp  pfn
-pband pfn
-pbor  pfn
-pland pfn
-plor  pfn
-
-esize  efn  = (jadv k is j ptype k is u nsize j t u       )
-ethe   efn  = (jadv k is j ptype k is u nthe  j t u p4 k t)
-ecast  efn  = (jadv k is j ptype k is u ncast j t u p4 k t)
-eas    efna = (jadv k is j ptype k is u ncast j t u a     )
-efrom  efna = (jadv k is j ptype k is u nthe  j t u a     )
-
-elit   efn  = (jadv k is j nlit    j t cast T j.t j.l    )
-eaddr  efn  = (jadv k is j naddr   j t     p2 k t        )
-eelem  efna = (jadv k is j nelem   j t a   p4 k nnat )
-eneg   efn  = (jadv k is j nneg    j t     p4 k t        )
-elnot  efn  = (jadv k is j nlnot   j t     p4 k t        )
-ebnot  efn  = (jadv k is j nbnot   j t     p4 k t        )
-ederef efna = (jadv k is j nderef  j t a                 )
-eseq   efna = (k.j    is j nseq    j t a   p5 k t        )
-ethen  efna = (jadv k is j nret    j t a   p5 k nnone    )
-emul   efna = (jadv k is j nmul    j t a   p5 k a.t      )
-ediv   efna = (jadv k is j ndiv    j t a   p5 k a.t      )
-emod   efna = (jadv k is j nmod    j t a   p5 k a.t      )
-eland  efna = (jadv k is j nland   j t a   p5 k a.t      )
-elor   efna = (jadv k is j nlor    j t a   p5 k a.t      )
-econd  efna = (jadv k is j                 p5 k t is b expect k ":"
-                           ncond   j t a b p5 k t        )
-eadd   efna = (jadv k is j nadd    j t a   pmul  k a.t   )
-esub   efna = (jadv k is j nsub    j t a   pmul  k a.t   )
-eshl   efna = (jadv k is j nshl    j t a   padd  k a.t   )
-eshr   efna = (jadv k is j nshr    j t a   padd  k a.t   )
-elt    efna = (jadv k is j nb      j t a   psh   k nnull )
-egt    efna = (jadv k is j na      j t a   psh   k nnull )
-ele    efna = (jadv k is j nbe     j t a   psh   k nnull )
-ege    efna = (jadv k is j nae     j t a   psh   k nnull )
-eeq    efna = (jadv k is j ne      j t a   psh   k nnull )
-ene    efna = (jadv k is j nne     j t a   psh   k nnull )
-eband  efna = (jadv k is j nband   j t a   pcmp  k a.t   )
-ebor   efna = (jadv k is j nbor    j t a   pband k a.t   )
-eass   efna = (jadv k is j nass    j t a   p7    k a.t   )
-
-eis    efna = (jadv k is j k.s is s nbetvar k id k a.t is o jadv k      p5 k t       is b nbet         j   t     a b   o ret (k.s = s))
-efor   efna = (jadv k is j k.s is s nbetvar k id k a.t is o jadv k      p5 k t       is b nrepeat      j   t     a b   o ret (k.s = s))
-
-eid    efn  = (jadv k is j
-  search_scope k j.p j.n is s
-  nreference j t s.o
-)
-
-estr   efn  = ( 
-  cast T k.j.t is u
-  nstr k u is o
-  jadv k is j
-  ncast j t nptr u.a nthe j u o.t nreference j u o
-)
-
-emem  efna =
-(  jadv k is j
-   cast none jadv k
-   (a.t for t ((t.format == &ftptr) && t.a)) is t
-   ((t.format != &ftstct) && (jdiag k "not a struct") as none)
-   get_struct_member t j.s is g
-  (  !g
-  &&(  jdiag k "no such member" ) as none )
-   t1 j.s g &gemem a )
+nreference  (j J t T         o O) E = (to j o.t &geref o                        )
+nlit        (j J t T u T     l N) E = (tl j u   &gelit l                        )
+nbet        (j J t T a E b E o O) E = (t2 j b.t &geis   a b is e e ret (e.o = o))
+nrepeat     (j J t T a E b E o O) E = (t2 j b.t &gefor  a b is e e ret (e.o = o))
+ncond       (j J t T a E b E c E) E = (t3 j b.t &gecond a b c                   )
 
 end_seq(k @Ctx) bit = (
    jeq k ")"
@@ -806,18 +787,6 @@ end_seq(k @Ctx) bit = (
 || jeq k "="
 || jeq k "as"
 || jeq k "from"
-)
-
-ecall efna = (
-  a.t.params is u
-  (  a for b
-    ( !!u &&
-      (b.s = p4 k u)
-      ( !!u &&
-        (!type_equal b.s.t u && (jdiag k "asymmetric argument") )
-        (u = u.s) )
-      b.s ) )
-  ncall k.j t a
 )
 
 pj(k K t T     q TokenKind e @efn ) E = ((k.j.q == q) && e@ k t)
@@ -940,8 +909,9 @@ parse(j J in @File) O = (
   ( !!k.j &&
     k.j for j
     ( consume k "type" ?
-        typedecl k :
-      function k )
+        &typedecl :
+      &function
+    )@ k
     k.j )
   k.globals
 )
@@ -963,6 +933,7 @@ argreg8(d N) S =
              "r9"  )
 
 gtreg(y Y s S) none = (gc y '%' gs y s)
+gt0  (y Y s S) none = (gs y s glf y)
 gt1  (y Y s S a S) none = (gs y s gc y ' ' gtreg y a glf y)
 gt2  (y Y s S a S b S) none = (gs y s gc y ' ' gtreg y a gs y ", " gtreg y b glf y)
 
@@ -1018,15 +989,15 @@ gcast(y Y a T b T) none =
 (  (b.format == &ftnone) ?  gtz    y "eax"
 :  (b.format == &ftbyte) && gpromote y "eax")
 
-gfpush(y Y c @N  l N ) none = (!!l && (8 * l) is l1 (gs y "  sub $" gn y l1  gs y ", " gtreg y "rsp" glf y) (c@ = c@ + l1))
-gfpop (y Y c @N  l N ) none = (!!l && (8 * l) is l1 (gs y "  add $" gn y l1  gs y ", " gtreg y "rsp" glf y) (c@ = c@ - l1))
+gfpush(y Y c @N  l N ) none = (!!l && (8 * l) is l1 gs y "  sub $" gn y l1  gs y ", " gtreg y "rsp" glf y (c@ = c@ + l1))
+gfpop (y Y c @N  l N ) none = (!!l && (8 * l) is l1 gs y "  add $" gn y l1  gs y ", " gtreg y "rsp" glf y (c@ = c@ - l1))
 gpush (y Y c @N      ) none = (gs y "  push " gtreg y "rax" glf y    (c@ = c@ + 8))
 gpop  (y Y c @N  s S ) none = (gs y "  pop  " gtreg y s     glf y    (c@ = c@ - 8))
 gindex(y Y       l N ) none = (!!l && gs y "  add $" gn y l gs y ", " gtreg y "rax" glf y)
 
 gaddr(y Y q @ftfn n N s S d S) none = (gs y "  lea    " gn y n gs y "(%r" gs y s gs y "), %r" gs y d glf y)
 gload(y Y q @ftfn n N s S d S) none = (
-  ((q == &ftarr)|| (q == &ftstct)|| (q == &ftfunc)) ?
+  ((q == &ftstct) || (q == &ftfunc)) ?
     gaddr y q n s d :
   ((q == &ftbyte) || (q == &ftbit)) ?
     gs y "  movzbl " gn y n gs y "(%r" gs y s gs y "), %e" gs y d glf y :
@@ -1034,40 +1005,36 @@ gload(y Y q @ftfn n N s S d S) none = (
 )
 
 gaddrg(y Y e E c @N d S) none = (gs y "  lea    " gs y e.o.name gs y ", %r" gs y d glf y)
-gloadg(y Y e E c @N d S) none =
-( ((e.o.t.format == &ftarr)|| (e.o.t.format == &ftstct)|| (e.o.t.format == &ftfunc))
-? gaddrg y e c d
-: ((e.o.t.format == &ftbyte) || (e.o.t.format == &ftbit))
-? (gs y "  movzbl " gs y e.o.name gs y ", %e" gs y d glf y)
-: (gs y "  mov    " gs y e.o.name gs y ", %r" gs y d glf y)
-as none )
 
 gaddrl(y Y e E c @N d S) none = (gaddr y e.o.t.format (e.o.sp ? (c@ - e.o.sp) : (e.o.offset + c@)) "sp" d)
 gloadl(y Y e E c @N d S) none = (gload y e.o.t.format (e.o.sp ? (c@ - e.o.sp) : (e.o.offset + c@)) "sp" d)
 
+gloadsp(y Y q @ftfn d S) none = (
+  (q == &ftstct) ?
+    gs y "  mov     %rsp,  %r" gs y d glf y :
+  ((q == &ftbyte) || (q == &ftbit)) ?
+    gs y "  movzbl (%rsp), %e" gs y d glf y :
+  gs y "  mov    (%rsp), %r" gs y d glf y
+)
 
-gloadsp(y Y q @ftfn d S) none =
-(  ((q == &ftarr)|| (q == &ftstct)|| (q == &ftfunc))
-? (gs y "  mov     %rsp,  %r" gs y d glf y)
-: ((q == &ftbyte) || (q == &ftbit))
-? (gs y "  movzbl (%rsp), %e" gs y d glf y)
-: (gs y "  mov    (%rsp), %r" gs y d glf y) )
+gstoresp(y Y t T) none = (
+  ((t.format == &ftbyte) || (t.format == &ftbit)) ?
+    gs y "  mov %al , (%rsp)" glf y :
+  gs y "  mov %rax, (%rsp)" glf y
+)
 
-gstoresp(y Y t T) none =
-(  (gs y " mov %rsp, %rdi" glf y)
-   ((t.format == &ftstct) || (t.format == &ftarr)) ? (0 for i ((i < t.size) && (i + 1)
-ret (gs y "  mov "gn y i"(%rax), %r8b    ")
-    (gs y "  mov %r8b    , "gn y i"(%rdi)")) as none)
-:  (t.size == 1) ? (gs y "  mov %al , (%rdi)" glf y)
-:                  (gs y "  mov %rax, (%rdi)" glf y) )
-
-gstore(y Y t T c @N) none =
-(  gpop y c "rdi"
-   ((t.format == &ftstct)) ? (0 for i ((i < t.size) && (i + 1)
-ret (gs y "  mov " gn y i gs y "(%rax), %r8b    " glf y)
-    (gs y "  mov %r8b    , " gn y i gs y "(%rdi)" glf y)) as none)
-:  (t.size == 1) ? (gs y "  mov %al , (%rdi)" glf y)
-:                  (gs y "  mov %rax, (%rdi)" glf y) )
+gstore(y Y t T c @N) none = (
+  gpop y c "rdi"
+  (t.format == &ftstct) ?
+    ( 0 for i
+      (i < t.size) &&
+      (i + 1) ret
+      gs y "  mov " gn y i gs y "(%rax), %r8b    " glf y
+      gs y "  mov %r8b    , " gn y i gs y "(%rdi)" glf y ) :
+  ((t.format == &ftbyte) || (t.format == &ftbit)) ?
+    gs y "  mov %al , (%rdi)" glf y :
+  gs y "  mov %rax, (%rdi)" glf y
+)
 
 glet(y Y o O c @N) none = (
   gfpush y c 8
@@ -1077,13 +1044,7 @@ glet(y Y o O c @N) none = (
 
 gulet(y Y o O c @N d S) none = (
   gloadsp y o.t.format d
-  (o.sp = 0)
   gfpop y c 8
-)
-
-gexpr gefn = (
-  (gs y ".loc 0 " gn y e.j.line glf y)
-  e.gen@ y e c l
 )
 
 gdrop (y Y e E c N    ) none = (cast none gexpr y e c 0)
@@ -1105,11 +1066,11 @@ gescape(y Y s @byte) @byte = (
 )
 
 gdata(y Y o O) none = (
-  (gs y "  .data" glf y                             )
-  (gs y "  .type " gs y o.name gs y ", @object" glf y)
-  (gs y "  .size " gs y o.name gs y ", " gn y o.t.size glf y)
-  (gs y "  .align " gn y o.t.align glf y)
-  (gs y o.name gc y ':' glf y                          )
+  gs y "  .data" glf y
+  gs y "  .type " gs y o.name gs y ", @object" glf y
+  gs y "  .size " gs y o.name gs y ", " gn y o.t.size glf y
+  gs y "  .align " gn y o.t.align glf y
+  gs y o.name gc y ':' glf y
   gs y "  .string \q"
   &o.j.p^1 is a
   &o.j.p^(o.j.n - 1) is b
@@ -1128,7 +1089,7 @@ gtext(y Y o O) none = (
       (t        = align_to t 8)
       (o.offset = t           )
       (t        = t + o.t.size)
-      (g = g + 1) ) 
+      (g        = g + 1       ) )
     o.s )
   0 is c
   ( !!o.locals &&
@@ -1139,25 +1100,23 @@ gtext(y Y o O) none = (
       (o.offset = -c) )
     o.s )
   (c = align_to c 16) /* abi says c of frame is aligned to 16 */
-  (gs y "  .text" glf y)
-  (gs y "  .type " gs y o.name gs y ", @function" glf y)
-  (gs y o.name gc y ':' glf y)
-  (gs y "  enter $" gn y c gs y ", $0" glf y)
-  (  0 is d
-     o.params for o
-    (  !!o
-    && o.s
-    ret(  (o.offset > (-1 >> 1))
-      && o.t is t
-         ((t.size == 1)
-      ?  (gs y "  mov " gs y argreg1 d gs y ", " gn y (o.offset + c) gs y "(%rsp)" glf y)
-      :  (gs y "  mov %" gs y argreg8 d gs y ", " gn y (o.offset + c) gs y "(%rsp)" glf y  ))
-      ret (d = d + 1)
-      as none ) )
-  as none )
+  gs y "  .text" glf y
+  gs y "  .type " gs y o.name gs y ", @function" glf y
+  gs y o.name gc y ':' glf y
+  gs y "  enter $" gn y c gs y ", $0" glf y
+  ( 0 is d
+    o.params for o
+    !!o &&
+    o.s ret
+    (o.offset > (-1 >> 1)) &&
+    o.t is t
+    ( (t.size == 1) ?
+        gs y "  mov " gs y argreg1 d gs y ", " gn y (o.offset + c) gs y "(%rsp)" glf y :
+      gs y "  mov %" gs y argreg8 d gs y ", " gn y (o.offset + c) gs y "(%rsp)" glf y )
+    (d = d + 1) )
   gdrop y cast E o.body c
-  (gs y "  leave" glf y)
-  (gs y "  ret" glf y)
+  gt0 y "leave"
+  gt0 y "ret"
 )
 
 gsym(y Y o O) none = (
@@ -1166,23 +1125,92 @@ gsym(y Y o O) none = (
   ((o.t.format == &ftfunc) ? &gtext : &gdata)@ y o
 )
 
-codegen(o O y Y in S) none = (
+export main(argc N argv @S) N = (
+  open_file argv^2 "w" is y
+  cast @File calloc 1 sizeof File is in
+  !y ? 1 :
+  parse tokenize argv^1 in in is o
+  argv^1 is in
   (gs y "  .file 0 \q" gs y in gc y '\q' glf y)
-  !!o &&
-  o for o
-  o.s ret gsym y o
+  ( !!o &&
+    o for o
+    gsym y o
+    o.s )
+  fclose y
+  0
 )
 
-export main(argc N argv @S) N =
-( open_file argv^2 "w" is y
-  cast @File calloc 1 sizeof File is in
-  (!y ? 1 : 0 ret codegen parse tokenize argv^1 in in y argv^1)
-ret cast none fclose y )
+elit   efn  = (jadv k is j              nlit   j t       cast T j.t j.l)
+eaddr  efn  = (jadv k is j              naddr  j t       p2    k t        )
+eneg   efn  = (jadv k is j              nneg   j t       p4    k t        )
+elnot  efn  = (jadv k is j              nlnot  j t       p4    k t        )
+ebnot  efn  = (jadv k is j              nbnot  j t       p4    k t        )
+esize  efn  = (jadv k is j ptype k is u nsize  j t u                      )
+ethe   efn  = (jadv k is j ptype k is u nthe   j t u     p4    k t        )
+ecast  efn  = (jadv k is j ptype k is u ncast  j t u     p4    k t        )
+efrom  efna = (jadv k is j ptype k is u nthe   j t u a                    )
+eas    efna = (jadv k is j ptype k is u ncast  j t u a                    )
+eelem  efna = (jadv k is j              nelem  j t   a   p4    k nnat     )
+ederef efna = (jadv k is j              nderef j t   a                    )
+eseq   efna = (k.j    is j              nseq   j t   a   p5    k t        )
+ethen  efna = (jadv k is j              nret   j t   a   p5    k nnone    )
+emul   efna = (jadv k is j              nmul   j t   a   p5    k a.t      )
+ediv   efna = (jadv k is j              ndiv   j t   a   p5    k a.t      )
+emod   efna = (jadv k is j              nmod   j t   a   p5    k a.t      )
+eland  efna = (jadv k is j              nland  j t   a   p5    k a.t      )
+elor   efna = (jadv k is j              nlor   j t   a   p5    k a.t      )
+econd  efna = (jadv k is j                               p5    k t is b
+             expect k ":"               ncond  j t   a b p5    k t        )
+eadd   efna = (jadv k is j              nadd   j t   a   pmul  k a.t      )
+esub   efna = (jadv k is j              nsub   j t   a   pmul  k a.t      )
+eshl   efna = (jadv k is j              nshl   j t   a   padd  k a.t      )
+eshr   efna = (jadv k is j              nshr   j t   a   padd  k a.t      )
+elt    efna = (jadv k is j              nb     j t   a   psh   k nnull    )
+egt    efna = (jadv k is j              na     j t   a   psh   k nnull    )
+ele    efna = (jadv k is j              nbe    j t   a   psh   k nnull    )
+ege    efna = (jadv k is j              nae    j t   a   psh   k nnull    )
+eeq    efna = (jadv k is j              ne     j t   a   psh   k nnull    )
+ene    efna = (jadv k is j              nne    j t   a   psh   k nnull    )
+eband  efna = (jadv k is j              nband  j t   a   pcmp  k a.t      )
+ebor   efna = (jadv k is j              nbor   j t   a   pband k a.t      )
+eass   efna = (jadv k is j              nass   j t   a   p7    k a.t      )
 
+eis    efna = (jadv k is j k.s is s nbetvar k id k a.t is o jadv k      p5 k t       is b nbet         j   t     a b   o ret (k.s = s))
+efor   efna = (jadv k is j k.s is s nbetvar k id k a.t is o jadv k      p5 k t       is b nrepeat      j   t     a b   o ret (k.s = s))
 
+eid    efn  = (jadv k is j
+  search_scope k j.p j.n is s
+  nreference j t s.o
+)
 
-type gelfn (y Y v N) N;
-type gegfn (y Y e E c N l N gop @(y Y) none) N;
+estr   efn  = ( 
+  cast T k.j.t is u
+  nstr k u is o
+  jadv k is j
+  ncast j t nptr u.a nthe j u o.t nreference j u o
+)
+
+emem  efna =
+(  jadv k is j
+   cast none jadv k
+   (a.t for t ((t.format == &ftptr) && t.a)) is t
+   ((t.format != &ftstct) && (jdiag k "not a struct") as none)
+   get_struct_member t j.s is g
+  (  !g
+  &&(  jdiag k "no such member" ) as none )
+   t1 j.s g &gemem a )
+
+ecall efna = (
+  a.t.params is u
+  (  a for b
+    ( !!u &&
+      (b.s = p4 k u)
+      ( !!u &&
+        (!type_equal b.s.t u && (jdiag k "asymmetric argument") )
+        (u = u.s) )
+      b.s ) )
+  ncall k.j t a
+)
 
 ge0     gelfn = (
   gtlit  y v "rax"
@@ -1198,23 +1226,23 @@ ge1     gegfn = (
 gegadd (y Y) none = (gadd y "rdi" "rax")
 gegsub (y Y) none = (gsub y "rdi" "rax")
 gegand (y Y) none = (gand y "rdi" "rax")
-gegor  (y Y) none = (gor  y "rdi" "rax")
-gegxor (y Y) none = (gxor y "rdi" "rax")
-gegcmp (y Y) none = (gcmp y "rdi" "rax")
+gegor  (y Y) none = (gor   y "rdi" "rax")
+gegxor (y Y) none = (gxor  y "rdi" "rax")
+gegcmp (y Y) none = (gcmp  y "rdi" "rax")
 gegbnot(y Y) none = (gtnot y "rax")
 gegneg (y Y) none = (gtneg y "rax")
 geglnot(y Y) none = (glnot y "rax" "eax")
-gegmul (y Y) none = (gmul y "rdi")
-gegdiv (y Y) none = (gdiv y)
-gegmod (y Y) none = (gmod y)
-gegshr (y Y) none = (gshr y)
-gegshl (y Y) none = (gshl y)
-gege   (y Y) none = (ge  y)
-gegne  (y Y) none = (gne y)
-gegb   (y Y) none = (gb  y)
-gegbe  (y Y) none = (gbe y)
-gega   (y Y) none = (ga  y)
-gegae  (y Y) none = (gae y)
+gegmul (y Y) none = (gmul  y "rdi")
+gegdiv (y Y) none = (gdiv  y)
+gegmod (y Y) none = (gmod  y)
+gegshr (y Y) none = (gshr  y)
+gegshl (y Y) none = (gshl  y)
+gege   (y Y) none = (ge    y)
+gegne  (y Y) none = (gne   y)
+gegb   (y Y) none = (gb    y)
+gegbe  (y Y) none = (gbe   y)
+gega   (y Y) none = (ga    y)
+gegae  (y Y) none = (gae   y)
 
 ge2     gegfn = (
   geval y e.a.s  c 0
@@ -1240,9 +1268,7 @@ gecast  gefn =  (
 )
 
 geref   gefn = (
-  (e.o.is_local ? &gaddrl : &gaddrg) is gaddr
-  (e.o.is_local ? &gloadl : &gloadg) is gload
-  (!l ? gload : gaddr)
+  (e.o.is_local ? !l ? &gloadl : &gaddrl : &gaddrg)
   @ y e &c "ax"
   0
 )
@@ -1309,7 +1335,7 @@ geret gefn = (
 
 gecond gefn = (
   geval  y e.a     c 0
-  gtcz  y            "eax"
+  gtcz   y           "eax"
   gje    y e         "a"
   geval  y e.a.s   c l
   gj     y e         "b"
@@ -1409,7 +1435,6 @@ ftbit  ftfn = strcat s "bit"
 ftbyte ftfn = strcat s "byte"
 ftnat  ftfn = strcat s "nat"
 ftstct ftfn = strcat s "struct"
-ftarr  ftfn = strcat s "array"
 ftptr  ftfn = (strcat s "@"  ret t.a.format@ t.a s)
 ftfunc ftfn = (strcat s "("  ret
               (t.a.s for p (!!p && p.s ret p.format@ p s ) as none)
