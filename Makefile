@@ -12,12 +12,12 @@ bin/stage3/ebrew: bin/stage3/ebrew.o
 	as -f -o $@ -c $^
 
 bin/stage1/%.a: %.eb
-	$(CC) $^ $@
+	$(CC) $^ > $@
 bin/stage2/%.a: %.eb | bin/stage1/ebrew
-	bin/stage1/ebrew $^ $@
+	bin/stage1/ebrew $^ > $@
 #diff bin/stage2/$*.a bin/stage1/$*.a
 bin/stage3/%.a: %.eb | bin/stage2/ebrew
-	bin/stage2/ebrew $^ $@
+	bin/stage2/ebrew $^ > $@
 
 clean:
 	rm -f bin/stage*/*

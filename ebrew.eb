@@ -332,6 +332,10 @@ read_punct(p S) N = {
   sw1 p '%'
 }
 
+export stdout () none
+export stderr () none
+export stdin  () none
+
 gc (y Y c C) none = fputc cast N c y
 gs (y Y s S) none = fputs s y
 glf(y Y) none = gc y '\n'
@@ -339,11 +343,8 @@ glf(y Y) none = gc y '\n'
 gn1(y Y n N) none = { n then gn1 y (n / 10) gc y cast byte ('0' + n % 10) }
 gn (y Y n N) none = { n ? (gn1 y n) (gc y '0') }
 
-export stdout () none
-cout () @FILE = (cast @@FILE &stdout)@
-
-oc (c C) none = fputc cast N c cout
-os (s S) none = fputs s cout
+oc (c C) none = fputc cast N c (cast @@FILE &stderr)@
+os (s S) none = fputs s (cast @@FILE &stderr)@
 olf(   ) none = oc '\n'
 on1(n N) none = { n then on1 (n / 10) oc cast byte ('0' + n % 10) }
 on (n N) none = { n ? on1 n  oc '0' }
@@ -613,13 +614,13 @@ nvar o_kst = {
   cast O calloc 1 sizeof Obj is o
   (o.name = s) 
   (o.t = t) 
-  ((push_scope k s).o = o) 
   o
 }
 
-nbetvar o_kst = {
+nletvar o_kst = {
   nvar k s t is o
   (o.is_local = 1b)
+  ((push_scope k s).o = o) 
   o
 }
 
@@ -628,26 +629,39 @@ nlvar o_kst = {
   (o.is_local = 1b)
   (o.s = k.locals)
   (k.locals = o)
+  ((push_scope k s).o = o) 
+  o
+}
+
+ngetvar o_kst = {
+  nvar k s t is o
   o
 }
 
 ngvar o_kst = {
   nvar k s t is o
   (o.s = k.globals)
-  (o.is_definition = 0b)
   (k.globals = o)
+  ((push_scope k s).o = o) 
   o
 }
 
 nstr (k K j J t T) O = {
-  cast S 0 is s2
-  cast N 0 is n
-  open_memstream &s2 &n is y
-  gs y ".s" gn y cast nat j
-  fclose y
-  ngvar k s2 t is o
+  gs (cast @@FILE &stdout)@ ".data" glf (cast @@FILE &stdout)@
+  gs (cast @@FILE &stdout)@ ".s" gn (cast @@FILE &stdout)@ cast nat j gc (cast @@FILE &stdout)@ ':' glf (cast @@FILE &stdout)@
+  gs (cast @@FILE &stdout)@ ".string \""
+  &j.p^1 is a
+  &j.p^(j.n - 1) is b
+  { a for i
+    (i < b) then
+    gc (cast @@FILE &stdout)@ i@
+    &i^1 }
+  gs (cast @@FILE &stdout)@ "\""
+  glf (cast @@FILE &stdout)@
+  ngetvar k cast S 0 t is o
   (o.j = j)
   (o.is_definition = 1b)
+  fflush (cast @@FILE &stdout)@
   o
 }
 
@@ -959,7 +973,7 @@ gload(y Y q @ftfn n N s S d S) none = (
   {gs y "mov " gn y n gs y "(%r" gs y s gs y "),%r" gs y d glf y}
 )
 
-gaddrg(y Y e E c @N d S) none = { gs y "lea " gs y e.o.name gs y ",%r" gs y d glf y }
+gaddrg(y Y e E c @N d S) none = { gs y "lea " { !!e.o.name ? gs y e.o.name { gs y ".s" gn y cast nat e.o.j } } gs y ",%r" gs y d glf y }
 
 gaddrl(y Y e E c @N d S) none = { gaddr y e.o.t.format (e.o.sp ? ((c@ - e.o.sp) << 3)  (e.o.offset + (c@ << 3))) "sp" d }
 gloadl(y Y e E c @N d S) none = { gload y e.o.t.format (e.o.sp ? ((c@ - e.o.sp) << 3)  (e.o.offset + (c@ << 3))) "sp" d }
@@ -1011,20 +1025,6 @@ geval (y Y e E c N l N) none = {
   (l2 - 1)
 }
 
-gdata(y Y o O) none = {
-  gs y ".data" glf y
-  gs y o.name gc y ':' glf y
-  gs y ".string \""
-  &o.j.p^1 is a
-  &o.j.p^(o.j.n - 1) is b
-  { a for i
-    (i < b) then
-    gc y i@
-    &i^1 }
-  gs y "\""
-  glf y
-}
-
 gtext(y Y o O) none = {
   { !!o.params then
     16 is t
@@ -1065,11 +1065,14 @@ gtext(y Y o O) none = {
 }
 
 export main(argc N argv @S) N = {
-  open_file argv^2 "w" is y cast @File calloc 1 sizeof File is in !y ? 1 
+  (cast @@FILE &stdout)@ is y
+  cast @File calloc 1 sizeof File is in
+  !y ? 1 
   {parse tokenize argv^1 in in for o
     { !!o.is_definition then
+      (o.t.format == &ftfunc) then 
       gs y "." gs y (!o.is_export ? "local"  "globl") gc y ' ' gs y o.name glf y
-      ((o.t.format == &ftfunc) ? &gtext  &gdata)@ y o }
+      gtext y o }
     o.s }
   fclose y
   0
@@ -1304,7 +1307,7 @@ gelor  nyecl = {
   0
 }
 
-eis    ekja = {k.s is s nbetvar k id k a.t is o jadv k p5 k is b { t2 j b.t &geis a b is e (e.o = o) e } ret (k.s = s)}
+eis    ekja = {k.s is s nletvar k id k a.t is o jadv k p5 k is b { t2 j b.t &geis a b is e (e.o = o) e } ret (k.s = s)}
 geis    nyecl = {
   geval  y e.a    c 0
   glet   y e.o   &c
@@ -1313,7 +1316,7 @@ geis    nyecl = {
   0
 }
 
-efor   ekja = {k.s is s nbetvar k id k a.t is o jadv k p5 k is b { t2 j b.t &gefor  a b is e (e.o = o) e } ret (k.s = s)}
+efor   ekja = {k.s is s nletvar k id k a.t is o jadv k p5 k is b { t2 j b.t &gefor  a b is e (e.o = o) e } ret (k.s = s)}
 gefor  nyecl  = {
   geval    y e.a    c 0
   glet     y e.o   &c
