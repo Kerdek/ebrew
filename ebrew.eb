@@ -384,116 +384,6 @@ read_file() S = {
   buf
 }
 
-tokenize(in @@byte) J = {
-  read_file is p
-  (in@ = p)
-  cast J 0 is j
-  &j is k
-  { 1b for _
-    p@ then
-    ( p^0 == '/' and p^1 == '*') ? {
-      strstr &p^2 "*/" is q
-      (!q and diag p in@ "unclosed block comment")
-      (p = &q^2) }
-    isws p@ ?
-      (p = &p^1)
-    is09 p@ ? {
-      { &p^1 for q isid q@ then &q^1 } is q
-      (k@ = ntoken &JNUM p q)
-      { k.p is p
-        10 is a
-        { !strncmp p "0x" 2 then
-          is0f p^2 then
-          (p = &p^2)
-          (a = 16) }
-        strtoul p &p a is v
-        ( (p^0 == 'b') ?
-            { (p = &p^1)
-              nbit }
-            nnat
-        ) is t
-        (k.l = v as N)
-        (k.t = t as @none)
-      1b }
-    (k = &k.s)
-    (p = q) }
-  (p@ == '"') ? {
-    ( k@ = {
-      { &p^1 for q
-        (q@ == '\\') ?
-          &q^2
-          { (q@ != '"') then
-            (q@ == '\0' and diag p in@ "unclosed string literal")
-            &q^1 }
-      } is end
-      cast S calloc 1 (end - p) is buf
-      ntoken &JSTR p &end^1 is j
-      gs ".s" gn cast nat j gc ':' gs ".string \""
-      { &j.p^1 for i (i < &j.p^(j.n - 1)) then gc i@ &i^1 }
-      gc '\"' glf
-      (j.t = nptr nbyte)
-      (j.str = buf)
-      j } )
-    (p = &p^k.n)
-    (k = &k.s) }
-  (p@ == '\'') ?
-    { (k@ = {
-      &p^1 is q
-      (q@ == '\0' and diag p in@ "unclosed literal byte")
-      ( (q@ == '\\') ?
-        { (q = &q^1)
-          (q@ == '\0' and diag p in@ "unclosed literal byte")
-          { (q@ == 'a' ) ?'\a'
-            (q@ == 'b' ) ?'\b'
-            (q@ == 'f' ) ?'\f'
-            (q@ == 'n' ) ?'\n'
-            (q@ == 'r' ) ?'\r'
-            (q@ == 't' ) ?'\t'
-            (q@ == 'v' ) ?'\v'
-            (q@ == '\'') ? '\''
-            (q@ == '\"') ? '\"'
-            (q@ == '\\') ? '\\'
-              { '\0' ret
-                (q@ != '0' and diag q in@ "invalid escape sequence") } } }
-      q@
-    ) is c
-    (q = &q^1)
-    (q@ != '\'' and diag p in@ "unclosed literal byte")
-    ntoken &JNUM p &q^1 is j
-    (j.l = c as N)
-    (j.t = cast @none nbyte)
-    j } )
-  (k.l = k.l as C as N)
-  (p = &p^k.n)
-  (k = &k.s) }
-  { 0 is n
-    { p for q { { isid q@ then &q^1 } else cast S 0 ret (n = q - p as N) } }
-    !!n ?
-      { (k@ = ntoken &JID p &p^n)
-        (p = &p^k.n)
-        (k = &k.s) }
-      { read_punct p is n
-        !!n ?
-          { (k@ = ntoken &JPCT p &p^n)
-            (p = &p^k.n)
-            (k = &k.s) }
-          diag p in@ "invalid token" } } }
-
-  /* assign line numbers afterward like a complete lunatic */
-
-  1 is n
-  j ret
-  in@ for p
-  !!p@ then
-  !!j then
-  { (p == j.p) then
-    (j.line = n)
-    (j = j.s) }
-  { (p@ == '\n') then
-    (n = n + 1) }
-  &p^1
-}
-
 push_scope  (k K c S    ) @Scope = {
   cast @Scope calloc 1 sizeof Scope is s
   (s.c = c)
@@ -608,13 +498,13 @@ func_params tk = {
 }
 
 ptype tk = (
-  consume k "none"   ? nnone               
-  consume k "bit"    ? nbit                
-  consume k "byte"   ? nbyte               
-  consume k "nat"    ? nnat                
-  consume k "@"      ? nptr        ptype k 
-  consume k "("      ? func_params       k 
-  consume k "struct" ? struct_decl       k 
+  consume k "none"   ? nnone
+  consume k "bit"    ? nbit
+  consume k "byte"   ? nbyte
+  consume k "nat"    ? nnat
+  consume k "@"      ? nptr        ptype k
+  consume k "("      ? func_params       k
+  consume k "struct" ? struct_decl       k
   { search_scope k k.j.p k.j.n is s
     jadv k
     s.t }
@@ -902,6 +792,7 @@ gtparr(e E o O c N g N) N = {
       (((g == 5) ? &gtpars &gtparr)@ e o.s c (g + 1) + 1) }
 }
 gtfunc(o O) none = {
+  !!o.is_definition then
   gs ".section .text." gs o.name glf
   { o.is_export then gs ".globl" gc ' ' gs o.name glf }
   gs ".type " gs o.name gs ",%function" glf
@@ -911,26 +802,123 @@ gtfunc(o O) none = {
   gt0 "ret"
 }
 
-parse(j J s S) O = {
-  cast @Ctx calloc 1ul sizeof Ctx is k
-  (k.j = j)
-  (k.c = s)
-  { !!k.j then
-    k.j for j
-    ( consume k "type" ?
-        &typedecl 
-      &function
-    )@ k
-    k.j }
-  k.globals
-}
-
 export main(argc N argv @S) N = {
   cast @byte 0 is c
-  { {gs ".data" glf parse tokenize &c c } for o
-    { !!o.is_definition then
-      (o.t.format == &ftfunc) then gtfunc o }
-    o.s }
+  gt0 ".data"
+  read_file is p
+  (c = p)
+  cast J 0 is j
+  &j is k
+  { 1b for _
+    p@ then
+    ( p^0 == '/' and p^1 == '*') ? {
+      strstr &p^2 "*/" is q
+      (!q and diag p c "unclosed block comment")
+      (p = &q^2) }
+    isws p@ ?
+      (p = &p^1)
+    is09 p@ ? {
+      { &p^1 for q isid q@ then &q^1 } is q
+      (k@ = ntoken &JNUM p q)
+      { k.p is p
+        10 is a
+        { !strncmp p "0x" 2 then
+          is0f p^2 then
+          (p = &p^2)
+          (a = 16) }
+        strtoul p &p a is v
+        ( (p^0 == 'b') ?
+            { (p = &p^1)
+              nbit }
+            nnat
+        ) is t
+        (k.l = v as N)
+        (k.t = t as @none)
+      1b }
+    (k = &k.s)
+    (p = q) }
+  (p@ == '"') ? {
+    ( k@ = {
+      { &p^1 for q
+        (q@ == '\\') ?
+          &q^2
+          { (q@ != '"') then
+            (q@ == '\0' and diag p c "unclosed string literal")
+            &q^1 }
+      } is end
+      cast S calloc 1 (end - p) is buf
+      ntoken &JSTR p &end^1 is j
+      gs ".s" gn cast nat j gc ':' gs ".string \""
+      { &j.p^1 for i (i < &j.p^(j.n - 1)) then gc i@ &i^1 }
+      gc '\"' glf
+      (j.t = nptr nbyte)
+      (j.str = buf)
+      j } )
+    (p = &p^k.n)
+    (k = &k.s) }
+  (p@ == '\'') ?
+    { (k@ = {
+      &p^1 is q
+      (q@ == '\0' and diag p c "unclosed literal byte")
+      ( (q@ == '\\') ?
+        { (q = &q^1)
+          (q@ == '\0' and diag p c "unclosed literal byte")
+          { (q@ == 'a' ) ?'\a'
+            (q@ == 'b' ) ?'\b'
+            (q@ == 'f' ) ?'\f'
+            (q@ == 'n' ) ?'\n'
+            (q@ == 'r' ) ?'\r'
+            (q@ == 't' ) ?'\t'
+            (q@ == 'v' ) ?'\v'
+            (q@ == '\'') ? '\''
+            (q@ == '\"') ? '\"'
+            (q@ == '\\') ? '\\'
+              { '\0' ret
+                (q@ != '0' and diag q c "invalid escape sequence") } } }
+      q@
+    ) is l
+    (q = &q^1)
+    (q@ != '\'' and diag p c "unclosed literal byte")
+    ntoken &JNUM p &q^1 is j
+    (j.l = l as N)
+    (j.t = cast @none nbyte)
+    j } )
+  (k.l = k.l as C as N)
+  (p = &p^k.n)
+  (k = &k.s) }
+  { 0 is n
+    { p for q { { isid q@ then &q^1 } else cast S 0 ret (n = q - p as N) } }
+    !!n ?
+      { (k@ = ntoken &JID p &p^n)
+        (p = &p^k.n)
+        (k = &k.s) }
+      { read_punct p is n
+        !!n ?
+          { (k@ = ntoken &JPCT p &p^n)
+            (p = &p^k.n)
+            (k = &k.s) }
+          diag p c "invalid token" } } }
+
+  /* assign line numbers afterward like a complete lunatic */
+  { j is j1
+    1 is n
+    c for p
+    !!p@ then
+    !!j1 then
+    { (p == j1.p) then
+      (j1.line = n)
+      (j1 = j1.s) }
+    { (p@ == '\n') then
+      (n = n + 1) }
+    &p^1 }
+  cast @Ctx calloc 1ul sizeof Ctx is k
+  (k.j = j)
+  (k.c = c)
+  { !!k.j then
+    k.j for j
+    ( consume k "type" ? &typedecl &function)@ k
+    k.j }
+  { k.globals for o gtfunc o o.s }
   0
 }
 
