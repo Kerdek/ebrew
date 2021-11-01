@@ -1,7 +1,4 @@
-type
-  va_list struct {}
-  FILE    struct {}
-;
+type FILE struct {};
 
 export __errno_location    ( ) @nat
 
@@ -20,12 +17,11 @@ export exit                (status nat) none
 export calloc              (m nat  n nat) @none
 export free                (p @none) none
 
-
 export memcmp              (p @none q @none n nat) nat
 
 export strtoul             (p @byte q @@byte  b nat) nat
-export strcat              (p @byte q  @byte       ) @byte
 export strstr              (p @byte q  @byte       ) @byte
+export strcmp              (p @byte q  @byte       ) nat
 export strncmp             (p @byte q  @byte  n nat)  nat
 export strndup             (p @byte           n nat) @byte
 export strlen              (p @byte                ) nat
@@ -36,26 +32,26 @@ type
   TokenKind @()none
 
   Token struct {
-    q        TokenKind
-    s       @Token
-    l        nat
-    p     @byte
-    n        nat
-    t       @none
-    str     @byte
+    q     TokenKind
+    s    @Token
+    l     nat
+    p    @byte
+    n     nat
+    t    @none
+    str  @byte
     line  nat
   }
 
   Type struct  {
-    size          nat
-    align         nat
-    offset        nat
-    n             nat
-    s            @Type
-    o            @Type
-    a            @Type
-    params       @Type
-    name         @Token
+    size    nat
+    align   nat
+    offset  nat
+    n       nat
+    s      @Type
+    o      @Type
+    a      @Type
+    params @Type
+    name   @Token
     format @(t @Type s @byte) none
   }
 
@@ -694,7 +690,7 @@ gpop  (c @N  s S ) none = { gt1 "pop"  s (c@ = c@ - 1) }
 
 gindex(      l N ) none = { !!l then gs  "add $" gn  l gc  ',' gtreg  "rax" glf  }
 
-gaddr(q @ftfn n N s S d S) none = {gs  "lea " gn  n gs  "(%r" gs  s gs  "),%r" gs  d glf }
+gaddr(q @ftfn n N s S d S) none = {(strcmp s d or n) then gs  "lea " gn  n gs  "(%r" gs  s gs  "),%r" gs  d glf }
 gload(q @ftfn n N s S d S) none = (
   {(q == &ftstct) else (q == &ftfunc)} ?
     gaddr  q n s d 
@@ -1174,12 +1170,10 @@ geass  necl  = {
   0
 }
 
-ftnone ftfn = strcat s "none"
-ftbit  ftfn = strcat s "bit"
-ftbyte ftfn = strcat s "byte"
-ftnat  ftfn = strcat s "nat"
-ftstct ftfn = strcat s "struct"
-ftptr  ftfn = { strcat s "@"  ret t.a.format@ t.a s }
-ftfunc ftfn = { strcat s "("  ret
-              { t.a.s for p !!p then p.s ret p.format@ p s }
-                          strcat s ")"  ret t.a.format@ t.a s }
+ftnone ftfn = 0
+ftbit  ftfn = 0
+ftbyte ftfn = 0
+ftnat  ftfn = 0
+ftstct ftfn = 0
+ftptr  ftfn = 0
+ftfunc ftfn = 0
