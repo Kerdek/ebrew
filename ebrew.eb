@@ -864,21 +864,6 @@ geval (e E c N l N) none = {
   (l2 - 1)
 }
 
-gparamss(o O a O c N g N) none = {
-  !a ? gdrop cast E o.body c
-    { (a.sp = -g)
-      gparamss o a.s c (g + 1) }
-}
-
-gparamsr(o O a O c N g N) none = {
-  !a ? gdrop cast E o.body c
-    (g == 6) ? gparamss o a c 1
-      { gpush &c argreg8 g
-        (a.sp = c)
-        gparamsr o a.s c (g + 1)
-        gfpop &c 1 }
-}
-
 function(k K) none = {
   cast T calloc 1u sizeof Type is t
   consume k "export" is is_export
@@ -905,12 +890,24 @@ function(k K) none = {
     (o.body = cast @none p4 k)
     (k.s = s) }
 }
-gtext(o O) none = {
+gtpars(e E o O c N g N) N = {
+  !o ? { gdrop e c 0 }
+    { (o.sp = -g)
+      gtpars e o.s c (g + 1) }
+}
+gtparr(e E o O c N g N) N = {
+  !o ? { gdrop e c 0 }
+    { gpush &c argreg8 g
+      (o.sp = c)
+      (((g == 5) ? &gtpars &gtparr)@ e o.s c (g + 1) + 1) }
+}
+gtfunc(o O) none = {
   gs ".section .text." gs o.name glf
   { o.is_export then gs ".globl" gc ' ' gs o.name glf }
   gs ".type " gs o.name gs ",%function" glf
   gs o.name gc ':' glf
-  gparamsr o o.params 0 0
+  0 is c
+  gfpop &c gtparr cast E o.body o.params c 0
   gt0 "ret"
 }
 
@@ -932,7 +929,7 @@ export main(argc N argv @S) N = {
   cast @byte 0 is c
   { {gs ".data" glf parse tokenize &c c } for o
     { !!o.is_definition then
-      (o.t.format == &ftfunc) then gtext o }
+      (o.t.format == &ftfunc) then gtfunc o }
     o.s }
   0
 }
@@ -1178,7 +1175,6 @@ gecall necl  = {
     gpop &c argreg8 d
     (d = d + 1) }
   gs "call *%rax" glf
-  gfpop &c (c - c1)
   0
 }
 
