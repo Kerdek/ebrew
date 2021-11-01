@@ -734,24 +734,23 @@ gstore(t T c @N) none = {
     { gs "mov %rax,(%rdi)" glf }
 }
 
-glet(o O c @N) none = {
-  gfpush  c 1
-  (o.sp = c@)
-  gstoresp o.t
-}
-
-gulet(o O c @N d S) none = {
-  gloadsp  o.t.format d
-  gfpop  c 1
-}
-
 gdrop (e E c N    ) none = { cast none gexpr  e c 0 }
 geval (e E c N l N) none = {
-  gexpr  e c l is l1
+  gexpr e c l is l1
   !!l1 then
   l1 for l2
   gload ((l2 == 1 and l == 0) ? e.t.format &ftptr) 0 "ax" "ax"
   (l2 - 1)
+}
+
+glet(e E c N l N d S gen @necl) N = {
+  geval e.a c 0
+  gfpush &c 1
+  (e.o.sp = c)
+  gstoresp e.o.t
+  gen@ e c l ret
+  gloadsp e.o.t.format d
+  gfpop &c 1
 }
 
 function(k K) none = {
@@ -1113,18 +1112,16 @@ gelor  necl  = {
 }
 
 eis    ekja = { k.s is s nletvar k id k a.t is o jadv k p5 k is b { t2 j b.t &geis a b is e (e.o = o) e } ret (k.s = s) }
-geis   necl = {
-  geval   e.a    c 0
-  glet    e.o   &c
+geisa  necl = {
   geval   e.a.s  c l
-  gulet   e.o   &c "rdx"
   0
+}
+geis   necl = {
+  glet    e      c l "rdx" &geisa
 }
 
 efor   ekja = { k.s is s nletvar k id k a.t is o jadv k p5 k is b { t2 j b.t &gefor  a b is e (e.o = o) e } ret (k.s = s) }
-gefor  necl = {
-  geval     e.a    c 0
-  glet      e.o   &c
+gefora necl = {
   gj        e        "b"
   glabel    e        "a"
   gstoresp  e.a.t
@@ -1132,8 +1129,10 @@ gefor  necl = {
   geval     e.a.s  c 0
   gtcz               "eax"
   gjne      e        "a"
-  gulet     e.o   &c "rax"
   0
+}
+gefor  necl = {
+  glet      e      c l "rax" &gefora
 }
 
 gargs(e E c @N) none = {
@@ -1154,7 +1153,6 @@ ecall ekja = {
   t1 k.j a.t.a &gecall a
 }
 gecall necl  = {
-  c is c1
   gargs  e.a.s &c
   geval  e.a    c 0
   0 is d
