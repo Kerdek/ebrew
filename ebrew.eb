@@ -64,7 +64,6 @@ type
     name            @byte
     t               @Type
     j               @Token
-    offset           nat
     is_local         bit
     is_definition    bit
     is_export        bit
@@ -800,8 +799,8 @@ gcast(a T b T) none = (
 
 gfpush(c @N  l N ) none = { !!l then gs "sub $" gn (l << 3) gc ',' gtreg "rsp" glf (c@ = c@ + l) }
 gfpop (c @N  l N ) none = { !!l then gs "add $" gn (l << 3) gc ',' gtreg "rsp" glf (c@ = c@ - l) }
-gpush (c @N      ) none = { gt1 "push" "rax" (c@ = c@ + 1) }
-gpop  (c @N  s S ) none = { gt1 "pop"  s     (c@ = c@ - 1) }
+gpush (c @N  d S ) none = { gt1 "push" d (c@ = c@ + 1) }
+gpop  (c @N  s S ) none = { gt1 "pop"  s (c@ = c@ - 1) }
 
 gindex(      l N ) none = { !!l then gs  "add $" gn  l gc  ',' gtreg  "rax" glf  }
 
@@ -815,15 +814,15 @@ gload(q @ftfn n N s S d S) none = (
 )
 
 gaddrg(e E c @N d S) none = { gs "mov " gs e.o.name gs "@GOTPCREL(%rip),%r" gs d glf }
-gaddrl(e E c @N d S) none = { gaddr e.o.t.format (e.o.sp ? ((c@ - e.o.sp) << 3) (e.o.offset + (c@ << 3))) "sp" d }
-gloadl(e E c @N d S) none = { gload e.o.t.format (e.o.sp ? ((c@ - e.o.sp) << 3) (e.o.offset + (c@ << 3))) "sp" d }
+gaddrl(e E c @N d S) none = { gaddr e.o.t.format (c@ - e.o.sp << 3) "sp" d }
+gloadl(e E c @N d S) none = { gload e.o.t.format (c@ - e.o.sp << 3) "sp" d }
 
 gloadsp(q @ftfn d S) none = (
   (q == &ftstct) ?
-    { gs  "mov %rsp,%r" gs  d glf }
+    { gs  "mov %rsp,%" gs  d glf }
   {(q == &ftbyte) else (q == &ftbit)} ?
-    { gs  "movzbl (%rsp), %e" gs  d glf }
-  { gs  "mov (%rsp),%r" gs  d glf }
+    { gs  "movzbq (%rsp), %" gs  d glf }
+  { gs  "mov (%rsp),%" gs  d glf }
 )
 
 gstoresp(t T) none = {
@@ -843,16 +842,12 @@ gstore(t T c @N) none = {
   (t.format == &ftbyte || t.format == &ftbit) ?
     { gs "mov %al,(%rdi)"  glf }
     { gs "mov %rax,(%rdi)" glf }
-  on c@ oc ':'
-}
-gstore2(a1 N a2 N a3 N a4 N a5 N a6 N c N) none = {
-  on c olf
 }
 
 glet(o O c @N) none = {
   gfpush  c 1
   (o.sp = c@)
-  gstoresp  o.t
+  gstoresp o.t
 }
 
 gulet(o O c @N d S) none = {
@@ -867,6 +862,21 @@ geval (e E c N l N) none = {
   l1 for l2
   gload ((l2 == 1 and l == 0) ? e.t.format &ftptr) 0 "ax" "ax"
   (l2 - 1)
+}
+
+gparamss(o O a O c N g N) none = {
+  !a ? gdrop cast E o.body c
+    { (a.sp = -g)
+      gparamss o a.s c (g + 1) }
+}
+
+gparamsr(o O a O c N g N) none = {
+  !a ? gdrop cast E o.body c
+    (g == 6) ? gparamss o a c 1
+      { gpush &c argreg8 g
+        (a.sp = c)
+        gparamsr o a.s c (g + 1)
+        gfpop &c 1 }
 }
 
 function(k K) none = {
@@ -896,40 +906,11 @@ function(k K) none = {
     (k.s = s) }
 }
 gtext(o O) none = {
-  { !!o.params then
-    16 is t
-     0 is g
-    o.params for o
-    { (g > 6) then
-      (t        = align t 8   )
-      (o.offset = t           )
-      (t        = t + o.t.size)
-      (g        = g + 1       ) }
-    o.s }
-  0 is c
-  { !!o.params then
-    o.params for a
-    { !a.offset then
-      (c = c + a.t.size)
-      (c = align c a.t.align)
-      (a.offset = -c) }
-    a.s }
-  (c = align c 16)
   gs ".section .text." gs o.name glf
   { o.is_export then gs ".globl" gc ' ' gs o.name glf }
   gs ".type " gs o.name gs ",%function" glf
   gs o.name gc ':' glf
-  { not c else gs "sub $" gn c gs ",%rsp" glf }
-  { 0 is d
-    not o.params else
-    o.params for o
-    (o.offset > -1 >> 1) then
-    gs "mov %" gs ((o.t.size == 1) ? &argreg1 &argreg8)@ d gc ','
-    gn (o.offset + c) gs "(%rsp)" glf
-    (d = d + 1)
-    o.s }
-  gdrop cast E o.body (c >> 3)
-  { not c else gs "add $" gn c gs ",%rsp" glf }
+  gparamsr o o.params 0 0
   gt0 "ret"
 }
 
@@ -969,7 +950,7 @@ ge1     geefn = {
 
 ge2     geefn = {
   geval  e.a.s  c 0
-  gpush        &c
+  gpush        &c "rax"
   geval  e.a    c 0
   gpop         &c "rdi"
   gop@
@@ -1056,7 +1037,7 @@ eshr  ekja = t2 j nnat &geshr  a padd  k geshr  necl  = ge2 e c l &gegshr
 eelem  ekja = t2 j a.t.a &geelem a p3 k
 geelem necl   = {
   geval  e.a    c 0
-  gpush        &c
+  gpush        &c "rax"
   geval  e.a.s  c 0
   gpop         &c "rdx"
   gs  "lea (%rdx,%rax," gn  e.a.t.a.size gs  "),%rax" glf 
@@ -1095,7 +1076,7 @@ geseq  necl  = {
 eret  ekja  = t2 j a.t &geret a p5 k
 geret necl  = {
   geval  e.a    c l
-  gpush        &c
+  gpush        &c "rax"
   gdrop  e.a.s  c
   gpop         &c "rax"
   0
@@ -1122,7 +1103,7 @@ geland necl  = {
   gtcz  "eax"
   gje    e         "a"
   { keep then
-    gpush        &c      }
+    gpush        &c "rax" }
   geval  e.a.s c 0
   { keep then
     gpop         &c "rax" }
@@ -1138,7 +1119,7 @@ gelor  necl  = {
   gtcz    "eax"
   gjne     e       "a"
   { keep then
-    gpush        &c      }
+    gpush        &c "rax" }
   geval    e.a.s c 0
   { keep then
     gpop         &c "rax" }
@@ -1151,7 +1132,7 @@ geis   necl = {
   geval   e.a    c 0
   glet    e.o   &c
   geval   e.a.s  c l
-  gulet   e.o   &c "dx"
+  gulet   e.o   &c "rdx"
   0
 }
 
@@ -1166,16 +1147,15 @@ gefor  necl = {
   geval     e.a.s  c 0
   gtcz               "eax"
   gjne      e        "a"
-  gulet     e.o   &c "ax"
+  gulet     e.o   &c "rax"
   0
 }
 
-gargs(e E c @N d N) none = {
+gargs(e E c @N) none = {
   !!e then
-  { (d < 6) then
-    gargs  e.s c (d + 1) }
+  gargs  e.s c
   geval  e c@ 0
-  gpush  c
+  gpush  c "rax"
 }
 
 ecall ekja = {
@@ -1190,27 +1170,24 @@ ecall ekja = {
 }
 gecall necl  = {
   c is c1
-  gargs  e.a.s &c 0
+  gargs  e.a.s &c
   geval  e.a    c 0
   0 is d
   { !!e.a.s then
-    e.a.s for e
-    (d < 6) then
+    e.a.s for e (d < 6) then e.s ret
     gpop &c argreg8 d
-    (d = d + 1)
-    e.s }
-  gs  "call *%rax" glf 
-  gfpop  &c (c - c1)
+    (d = d + 1) }
+  gs "call *%rax" glf
+  gfpop &c (c - c1)
   0
 }
 
 eass   ekja  = t2 j nnone &geass a p7 k
 geass  necl  = {
   geval   e.a    c 1
-  gpush         &c
+  gpush         &c "rax"
   geval   e.a.s  c 0
   gstore  e.a.t &c
-  gstore2  1 2 3 4 5 6 c
   gtz             "eax"
   0
 }
