@@ -15,6 +15,7 @@ export fputs               (s @byte io @FILE) nat
 export exit                (status nat) none
 
 export calloc              (m nat  n nat) @none
+export malloc              (m nat) @none
 export free                (p @none) none
 
 export memcmp              (p @none q @none n nat) nat
@@ -279,14 +280,6 @@ jdiag(k K s S) none = {
   exit 1
 }
 
-format_type(t T) S = {
-  cast S calloc 1 1 is s
-  t.format@ t s
-  s
-}
-
-gexpr necl  = e.gen@  e c l
-
 type_equal(t T u T) bit = {
   !t else
   !u else
@@ -351,11 +344,12 @@ copy_type(t T) T = {
   u
 }
 
-ntoken(q TokenKind a S b S) J = {
+ntoken(q TokenKind a S b S line N) J = {
   cast J calloc 1 sizeof Token is j
   (j.q = q    )
   (j.p = a    )
   (j.n = b - a)
+  (j.line = line)
   j
 }
 
@@ -447,10 +441,11 @@ jeq    (k K c S) bit  = {!!k.j then !memcmp cast @none k.j.p cast @none c cast N
 expect (k K c S) none = {{!jeq k c then jdiag k "unexpected"} jadv k}
 consume(k K c S) bit  = {jeq k c is r {r then jadv k} r}
 
-declarator (k K t T) none = {
+declarator (k K t @T) none = {
+  (t@ = cast T calloc 1u sizeof Type)
   jadv k is j
   ptype k is u
-  (t@ = u@)
+  (t@@ = u@)
   (t.o = u)
   (t.name = j)
 }
@@ -461,9 +456,7 @@ struct_decl tk = {
   &t.a is u
   { 1b for _ 
      !consume k "}" then
-      cast T calloc 1 sizeof Type is g
-      declarator k g
-      (u@ = g)
+      (declarator k u)
       (u = &u.s) }
   0 is bits
   { !!t.a then
@@ -483,8 +476,7 @@ func_params tk = {
   { 1b for _
     !jeq k ")" then
     !jeq k "}" then
-    (u@ = cast T calloc 1 sizeof Type)
-    declarator k u@
+    (declarator k u)
     (u = &u.s)
     1b }
   jadv k
@@ -590,8 +582,7 @@ typedecl(k K) J = {
   k.j for j
   !consume k ";" then
   push_scope k id k is s
-  (s.t = cast T calloc 1u sizeof Type)
-  declarator k s.t
+  (declarator k &s.t)
   k.j
 }
 
@@ -730,6 +721,8 @@ gstore(t T c @N) none = {
     { gs "mov %rax,(%rdi)" glf }
 }
 
+gexpr necl  = e.gen@  e c l
+
 gdrop (e E c N    ) none = { cast none gexpr  e c 0 }
 geval (e E c N l N) none = {
   gexpr e c l is l1
@@ -749,10 +742,21 @@ glet(e E c N l N d S gen @necl) N = {
   gfpop &c 1
 }
 
+gtpars(e E o O c N g N) N = {
+  !o ? { gdrop e c 0 }
+    { (o.sp = -g)
+      gtpars e o.s c (g + 1) }
+}
+gtparr(e E o O c N g N) N = {
+  !o ? { gdrop e c 0 }
+    { gpush &c argreg8 g
+      (o.sp = c)
+      (((g == 5) ? &gtpars &gtparr)@ e o.s c (g + 1) + 1) }
+}
 function(k K) none = {
-  cast T calloc 1u sizeof Type is t
   consume k "export" is is_export
-  declarator k t
+  cast T 0 is t
+  declarator k &t
   {
     try_search_scope k t.name.p cast N t.name.n is s
     (!!s and !!s.o and (s.o.t.format == &ftfunc) and s.o)
@@ -772,29 +776,16 @@ function(k K) none = {
     k.s is s
     create_lvars k t.params
     (o.params = k.locals)
-    (o.body = cast @none p4 k)
-    (k.s = s) }
-}
-gtpars(e E o O c N g N) N = {
-  !o ? { gdrop e c 0 }
-    { (o.sp = -g)
-      gtpars e o.s c (g + 1) }
-}
-gtparr(e E o O c N g N) N = {
-  !o ? { gdrop e c 0 }
-    { gpush &c argreg8 g
-      (o.sp = c)
-      (((g == 5) ? &gtpars &gtparr)@ e o.s c (g + 1) + 1) }
-}
-gtfunc(o O) none = {
   !!o.is_definition then
   gs ".section .text." gs o.name glf
   { o.is_export then gs ".globl" gc ' ' gs o.name glf }
   gs ".type " gs o.name gs ",%function" glf
   gs o.name gc ':' glf
   0 is c
+    (o.body = cast @none p4 k)
   gfpop &c gtparr cast E o.body o.params c 0
   gt0 "ret"
+    (k.s = s) }
 }
 
 export main(argc N argv @S) N = {
@@ -803,6 +794,7 @@ export main(argc N argv @S) N = {
   read_file is p
   (c = p)
   cast J 0 is j
+  1 is n
   &j is k
   { 1b for _
     p@ then
@@ -812,9 +804,9 @@ export main(argc N argv @S) N = {
       (p = &q^2) }
     isws p@ ?
       (p = &p^1)
-    is09 p@ ? {
+    { is09 p@ ? {
       { &p^1 for q isid q@ then &q^1 } is q
-      (k@ = ntoken &JNUM p q)
+      (k@ = ntoken &JNUM p q n)
       { k.p is p
         10 is a
         { !strncmp p "0x" 2 then
@@ -830,35 +822,32 @@ export main(argc N argv @S) N = {
         (k.l = v as N)
         (k.t = t as @none)
       1b }
-    (k = &k.s)
     (p = q) }
   (p@ == '"') ? {
-    ( k@ = {
       { &p^1 for q
         (q@ == '\\') ?
-          &q^2
-          { (q@ != '"') then
-            (q@ == '\0' and diag p c "unclosed string literal")
+        { (q^2 == '\0' and diag p c "unclosed string literal")
+          &q^2 }
+        { (q^1 == '\0' and diag p c "unclosed string literal")
+          (q@ != '"') then
             &q^1 }
       } is end
       cast S calloc 1 (end - p) is buf
-      ntoken &JSTR p &end^1 is j
+    ntoken &JSTR p &end^1 n is j
       gs ".s" gn cast nat j gc ':' gs ".string \""
       { &j.p^1 for i (i < &j.p^(j.n - 1)) then gc i@ &i^1 }
       gc '\"' glf
       (j.t = nptr nbyte)
       (j.str = buf)
-      j } )
-    (p = &p^k.n)
-    (k = &k.s) }
+    (k@ = j)
+    (p = &p^k.n) }
   (p@ == '\'') ?
-    { (k@ = {
-      &p^1 is q
+    { &p^1 is q
       (q@ == '\0' and diag p c "unclosed literal byte")
-      ( (q@ == '\\') ?
+      (q@ == '\\') ?
         { (q = &q^1)
           (q@ == '\0' and diag p c "unclosed literal byte")
-          { (q@ == 'a' ) ?'\a'
+          (q@ == 'a' ) ?'\a'
             (q@ == 'b' ) ?'\b'
             (q@ == 'f' ) ?'\f'
             (q@ == 'n' ) ?'\n'
@@ -869,51 +858,38 @@ export main(argc N argv @S) N = {
             (q@ == '\"') ? '\"'
             (q@ == '\\') ? '\\'
               { '\0' ret
-                (q@ != '0' and diag q c "invalid escape sequence") } } }
+              (q@ != '0' and diag q c "invalid escape sequence") } }
       q@
-    ) is l
+      is l
     (q = &q^1)
     (q@ != '\'' and diag p c "unclosed literal byte")
-    ntoken &JNUM p &q^1 is j
+      ntoken &JNUM p &q^1 n is j
     (j.l = l as N)
     (j.t = cast @none nbyte)
-    j } )
+      (k@ = j)
   (k.l = k.l as C as N)
-  (p = &p^k.n)
-  (k = &k.s) }
+    (p = &p^k.n) }
   { 0 is n
     { p for q { { isid q@ then &q^1 } else cast S 0 ret (n = q - p as N) } }
     !!n ?
-      { (k@ = ntoken &JID p &p^n)
-        (p = &p^k.n)
-        (k = &k.s) }
+        { (k@ = ntoken &JID p &p^n n)
+          (p = &p^k.n) }
       { read_punct p is n
         !!n ?
-          { (k@ = ntoken &JPCT p &p^n)
-            (p = &p^k.n)
-            (k = &k.s) }
-          diag p c "invalid token" } } }
-
-  /* assign line numbers afterward like a complete lunatic */
-  { j is j1
-    1 is n
-    c for p
-    !!p@ then
-    !!j1 then
-    { (p == j1.p) then
-      (j1.line = n)
-      (j1 = j1.s) }
-    { (p@ == '\n') then
-      (n = n + 1) }
-    &p^1 }
-  cast @Ctx calloc 1ul sizeof Ctx is k
+            { (k@ = ntoken &JPCT p &p^n n)
+              (p = &p^k.n) }
+            diag p c "invalid token" } }
+    (k = &k.s) } }
+  cast @Ctx malloc sizeof Ctx is k
   (k.j = j)
   (k.c = c)
+  (k.globals = 0)
+  (k.locals = 0)
+  (k.s = 0)
   { !!k.j then
     k.j for j
     ( consume k "type" ? &typedecl &function)@ k
     k.j }
-  { k.globals for o gtfunc o o.s }
   0
 }
 
@@ -1131,13 +1107,6 @@ gefor  necl = {
   glet      e      c l "rax" &gefora
 }
 
-gargs(e E c @N) none = {
-  !!e then
-  gargs  e.s c
-  geval  e c@ 0
-  gpush  c "rax"
-}
-
 ecall ekja = {
   a.t.params is u
   { a for b
@@ -1148,9 +1117,15 @@ ecall ekja = {
     b.s }
   t1 k.j a.t.a &gecall a
 }
+gargs(e E c @N) none = {
+  !!e then
+  gargs e.s c
+  geval e c@ 0
+  gpush c "rax"
+}
 gecall necl  = {
-  gargs  e.a.s &c
-  geval  e.a    c 0
+  gargs e.a.s &c
+  geval e.a    c 0
   0 is d
   { !!e.a.s then
     e.a.s for e (d < 6) then e.s ret
