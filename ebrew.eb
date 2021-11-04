@@ -43,22 +43,23 @@ type
     sp         nat
   }
 
+  Scope {
+    s @Scope
+    k @Token
+    o @Obj
+    t @Type
+    sp nat
+  }
+
   Node {
     s @Node
     a @Node
     k @Token
     t @Type
     u @Type
-    o @Obj
+    scope @Scope
     l  nat
     gen @(e @Node c nat l nat) nat
-  }
-
-  Scope {
-    s @Scope
-    k @Token
-    o @Obj
-    t @Type
   }
 
   Ctx {
@@ -320,7 +321,7 @@ t1  (k K t T gen @necl         a E) E = {tree k t gen is e e ret (e.a = a)}
 t2  (k K t T gen @necl     b E a E) E = {tree k t gen is e e ret (e.a = a)  (e.a.s = b)}
 t3  (k K t T gen @necl c E b E a E) E = {tree k t gen is e e ret (e.a = a)  (e.a.s = b)  (e.a.s.s = c)}
 tt  (k K t T gen @necl u T        ) E = {t0   k t gen is e e ret (e.u = u)}
-to  (k K t T gen @necl o O        ) E = {t0   k t gen is e e ret (e.o = o)}
+ts  (k K t T gen @necl s @Scope   ) E = {t0   k t gen is e e ret (e.scope = s)}
 tl  (k K t T gen @necl l N        ) E = {t0   k t gen is e e ret (e.l = l)}
 
 ntoken(q TokenKind a S b S line N col N) K = {
@@ -378,23 +379,6 @@ nvar (x X t T) O = {
 nletvar (x X t T) O = {
   nvar x t is o
   (o.is_local = 1)
-  ((push_scope x).o = o) 
-  o
-}
-
-nlvar (x X t T o_prev @O) O = {
-  nvar x t is o
-  (o.is_local = 1)
-  (o.s = o_prev@)
-  (o_prev@ = o)
-  ((push_scope x).o = o) 
-  o
-}
-
-ngvar (x X t T) O = {
-  nvar x t is o
-  (o.is_local = 0)
-  ((push_scope x).o = o) 
   o
 }
 
@@ -533,18 +517,8 @@ p7    ex = { plor  x for a pa7    x a }
 typedecl(x X) K = {
   x.k for k
   !consume x ";" then
-  push_scope x is s
-  declarator x &s.t
+  declarator x &(push_scope x).t
   x.k
-}
-
-create_lvars(x X t T o_prev @O) none = {
-  !!t then
-  create_lvars x t.s o_prev
-  x.k is k
-  (x.k = t.name)
-  nlvar x t o_prev
-  (x.k = k)
 }
 
 argreg1(d N) S = {
@@ -641,9 +615,9 @@ gload(q @ftfn n N s S d S) none = (
   {gs  "mov " gn  n gs  "(%r" gs  s gs  "),%r" gs  d glf }
 )
 
-gaddrg(e E c @N d S) none = { gs "mov " gsn e.o.name.p e.o.name.n gs "@GOTPCREL(%rip),%r" gs d glf }
-gaddrl(e E c @N d S) none = { gaddr e.o.t.format (c@ - e.o.sp << 3) "sp" d }
-gloadl(e E c @N d S) none = { gload e.o.t.format (c@ - e.o.sp << 3) "sp" d }
+gaddrg(e E c @N d S) none = { gs "mov " gsn e.scope.o.name.p e.scope.o.name.n gs "@GOTPCREL(%rip),%r" gs d glf }
+gaddrl(e E c @N d S) none = { gaddr e.scope.t.format (c@ - e.scope.sp << 3) "sp" d }
+gloadl(e E c @N d S) none = { gload e.scope.t.format (c@ - e.scope.sp << 3) "sp" d }
 
 gloadsp(q @ftfn d S) none = (
   (q == &ftstct) ?
@@ -686,23 +660,45 @@ geval (e E c N l N) none = {
 glet(e E c N l N d S gen @necl) N = {
   geval e.a c 0
   gfpush &c 1
-  (e.o.sp = c)
-  gstoresp e.o.t
+  (e.scope.sp = c)
+  gstoresp e.a.t
   gen@ e c l ret
-  gloadsp e.o.t.format d
+  gloadsp e.a.t.format d
   gfpop &c 1
 }
 
-gtpars(e E o O c N g N) N = {
-  !o ? { gdrop e c 0 }
-    { (o.sp = -g)
-      gtpars e o.s c (g + 1) }
+create_lvars(x X t T o_prev @O) none = {
+  !!t then
+  create_lvars x t.s o_prev
+  x.k is k
+  (x.k = t.name)
+  nvar x t is o
+  (o.is_local = 1)
+  (o.s = o_prev@)
+  (o_prev@ = o)
+  ((push_scope x).o = o)
+  (x.k = k)
 }
-gtparr(e E o O c N g N) N = {
-  !o ? { gdrop e c 0 }
-    { gpush &c argreg8 g
-      (o.sp = c)
-      (((g == 5) ? &gtpars &gtparr)@ e o.s c (g + 1) + 1) }
+gtpars(x X t T c N g N) N = {
+  !t ? { gdrop p4 x c 0 }
+    { x.k is k
+      (x.k = t.name)
+      push_scope x is s
+      (s.sp = -g)
+      (s.t = t)
+      (x.k = k)
+      gtpars x t.s c (g + 1) }
+}
+gtparr(x X t T c N g N) N = {
+  !t ? { gdrop p4 x c 0 }
+    { x.k is k
+      (x.k = t.name)
+      gpush &c argreg8 g
+      push_scope x is s
+      (s.sp = c)
+      (s.t = t)
+      (x.k = k)
+      (((g == 5) ? &gtpars &gtparr)@ x t.s c (g + 1) + 1) }
 }
 function(x X) none = {
   consume x "export" is is_export
@@ -718,19 +714,19 @@ function(x X) none = {
       (o.is_export != is_export and kdiag x.k "mismatched visibility") }
     { x.k is k
       (x.k = t.name)
-      (o = ngvar x t)
+      (o = nvar x t)
+      (o.is_local = 0)
+      ((push_scope x).o = o)
       (x.k = k)
       (o.is_export = is_export) } )
   (o.isdef = consume x "=")
   { o.isdef then
     x.s is s
-    create_lvars x t.params &o.params
     gs ".section .text." gsn o.name.p o.name.n glf
     { o.is_export then gs ".globl" gc ' ' gsn o.name.p o.name.n glf }
     gsn o.name.p o.name.n gc ':' glf
     0 is c
-    (o.body = cast @none p4 x)
-    gfpop &c gtparr cast E o.body o.params c 0
+    gfpop &c gtparr x t.params c 0
     gt0 "ret"
     (x.s = s) }
 }
@@ -932,9 +928,9 @@ gestr necl  = {
   gs "mov .s" gn cast nat e.k gs "@GOTPCREL(%rip),%rax" glf
   0
 }
-eid    exk  = { (search_scope x k.p k.n).o is o to k o.t &geid o }
+eid    exk  = { (search_scope x k.p k.n) is s ts k (s.o ? s.o.t s.t) &geid s }
 geid   necl  = {
-  (e.o.is_local ? !l ? &gloadl &gaddrl &gaddrg)@ e &c "ax"
+  (!e.scope.o ? !l ? &gloadl &gaddrl &gaddrg)@ e &c "ax"
   0
 }
 
@@ -1032,14 +1028,14 @@ eland  exka  = {
 geland necl  = {
   (e.a.s.t.format == &ftnone) is keep
   geval  e.a c 0
-  gtcz  "eax"
-  gje    e         "a"
+  gtcz              "eax"
+  gje    e          "a"
   { keep then
     gpush        &c "rax" }
   geval  e.a.s c 0
   { keep then
     gpop         &c "rax" }
-  glabel  e        "a"
+  glabel  e         "a"
   0
 }
 
@@ -1061,10 +1057,11 @@ gelor  necl  = {
 
 eis    exka = {
   x.s is s
-  nletvar x a.t is o
+  push_scope x is s1
+  (s1.t = a.t)
   jadv x p5 x is b
   t2 k b.t &geis b a is e
-  (e.o = o)
+  (e.scope = s1)
   (x.s = s)
   e
 }
@@ -1077,10 +1074,12 @@ geis   necl = glet e c l "rdx" &geisa
 efor   exka = {
   x.s is s
   nletvar x a.t is o
+  push_scope x is s1
+  (s1.t = a.t)
   jadv x
   p5 x is b
   t2 k b.t &gefor b a is e
-  (e.o = o)
+  (e.scope = s1)
   (x.s = s)
   e
 }
