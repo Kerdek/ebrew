@@ -108,18 +108,17 @@ pmul   ex padd   ex psh    ex pcmp   ex
 
 ptype  tx
 
-gelit   necl gesize  necl gederef necl geaddr  necl gethe   necl gecast  necl
+gelit   necl gesize  necl gederef necl geaddr  necl gecast  necl
 geid    necl gelnot  necl geneg   necl gediv   necl gemod   necl geexit  necl
 gee     necl gene    necl geb     necl gebe    necl gea     necl geae    necl
 geadd   necl gesub   necl gemul   necl gexor   necl geass   necl gestr   necl
 geshl   necl geshr   necl geelem  necl gemem   necl geseq   necl geret   necl
 gecond  necl geland  necl gelor   necl geis    necl gefor   necl gecall  necl
 
-esize  exk ethe   exk ecast  exk enat   exk eaddr  exk
-eneg   exk elnot  exk eid    exk estr   exk
-ebrace exk eparen exk eexit  exk ebyte  exk
+esize  exk ecast  exk enat   exk eaddr  exk
+eneg   exk elnot  exk eid    exk estr   exk ebrace exk eparen exk eexit  exk ebyte  exk
 
-eas    exka efrom  exka eelem  exka ederef exka eseq   exka
+eas    exka eelem  exka ederef exka eseq   exka
 eret   exka emul   exka ediv   exka emod   exka ethen  exka
 eelse  exka econd  exka eadd   exka esub   exka eshl   exka
 eshr   exka eb     exka ea     exka ebe    exka eae    exka
@@ -140,7 +139,7 @@ islf (c C    ) nat = is c '\n'
 iscr (c C    ) nat = is c '\r'
 is_  (c C    ) nat = is c '_'
 
-isin(c C a C b C) nat = {(a <= c) then (c <= b)}
+isin(c C a C b C) nat = (a <= c and c <= b)
 
 isAZ (c C    ) nat = isin c 'A' 'Z'
 isaz (c C    ) nat = isin c 'a' 'z'
@@ -526,8 +525,7 @@ pacmp  exa = { pr    x a "<"    &eb    else
                pr    x a "!="   &ene        }
 paland exa = { pr    x a "and"  &eland      }
 palor  exa = { pr    x a "or"   &elor       }
-pa7    exa = { pr    x a "as"   &eas   else
-               pr    x a "from" &efrom      }
+pa7    exa = { pr    x a "as"   &eas        }
 
 p2 ex = {
   pl x "&"      &eaddr else
@@ -535,7 +533,6 @@ p2 ex = {
   pl x "!"      &elnot else
   pl x "not"    &elnot else
   pl x "cast"   &ecast else
-  pl x "the"    &ethe  else
   pl x "sizeof" &esize else
   pl x "exit"   &eexit else
   { consume x "(" ?
@@ -943,14 +940,6 @@ eaddr   exk   = {
   t1 k nptr a.t &geaddr a
 }
 geaddr  necl  = gexpr e.a c 1
-
-efrom   exka  = t1 k ptype x &gethe a
-ethe    exk   = {
-  ptype x is u
-  p4 x is a
-  t1 k a.t &gethe a
-}
-gethe   necl  = gexpr e.a c l
 
 eas     exka  = t1 k ptype x &gecast a
 ecast   exk   = {
