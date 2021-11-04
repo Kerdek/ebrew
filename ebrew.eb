@@ -1,15 +1,11 @@
 type FILE {};
 
-export open_memstream      (p    @@byte n    @nat) @FILE
-export fclose              (io @FILE) nat
-export fflush              (io @FILE) nat
 export fread               (ptr @none m nat n nat io @FILE) nat
 export fwrite              (ptr @none m nat n nat io @FILE) nat
 export fputc               (c nat io @FILE) nat
 export fputs               (s @byte io @FILE) nat
 export malloc              (m nat) @none
-export free                (p @none) none
-export strtoul             (p @byte q @@byte  b nat) nat
+export strtoul             (p @byte q @@byte b nat) nat
 
 /* end preamble */
 
@@ -71,8 +67,6 @@ type
 
   Ctx {
     k @Token
-    c @byte
-    locals   @Obj
     s @Scope
   }
 
@@ -250,7 +244,7 @@ export stdin  () none
 gc (c C) none = fputc cast N c (cast @@FILE &stdout)@
 gs (s S) none = fputs s (cast @@FILE &stdout)@
 gsn(s S n N) none = fwrite cast @none s 1 n (cast @@FILE &stdout)@
-glf() none = gc  '\n'
+glf() none = gc '\n'
 gn1(n N) none = { n then gn1  (n / 10) gc  cast byte ('0' + n % 10) }
 gn (n N) none = { n ? (gn1  n) (gc  '0') }
 
@@ -262,26 +256,7 @@ on (n N) none = { n ? on1 n  oc '0' }
 
 align(n N a N) N = ((n + a - 1) / a * a)
 
-vdiag(c S line_n N p S s S) none = {
-  {p for q {(c < q) then (q^-1 != '\n') then &q^-1}} is line
-  os ":(" on line_n oc ',' on (p - line + 1) os "): " os s olf
-}
-
-diag(p S c @byte s S) none = {
-  1 is line
-  { c for p
-    (p@ == '\n') then
-    (line = line + 1)
-    &p^1 }
-  vdiag c line p s
-  exit 1
-}
-
-jdiag(x X s S) none = {
-  vdiag x.c x.k.line x.k.p s
-  exit 1
-}
-
+diag(s S) none = { os s olf exit 1 }
 type_equal(t T u T) nat = {
   !t else
   !u else
@@ -355,23 +330,9 @@ ntoken(q TokenKind a S b S line N) K = {
 }
 
 read_file() S = {
-  malloc 4096 is rfbuf2
-  cast S 0 is buf
-  0 is buflen
-  &buflen is b
-  open_memstream &buf b is y
-  { 1 for x
-    fread rfbuf2 1 4096 (cast @@FILE &stdin)@ is n
-    (n == 0) ?
-      (x = 0)
-      fwrite rfbuf2 1 n y
-    x }
-  free rfbuf2
-  fflush y
-  { {(buflen == 0) else (buf^(buflen - 1) != '\n')} then
-    fputc cast N '\n' y }
-  fputc 0 y
-  fclose y
+  (1 << 20) is big
+  cast @byte malloc big is buf
+  fread cast @none buf 1 big (cast @@FILE &stdin)@
   buf
 }
 
@@ -398,7 +359,7 @@ try_search_scope(x X c S n N) @Scope = {
 
 search_scope(x X c S n N) @Scope = {
   try_search_scope x c n else
-  jdiag x "lookup failed"
+  diag "lookup failed"
 }
 
 nvar (x X t T) O = {
@@ -416,11 +377,11 @@ nletvar (x X t T) O = {
   o
 }
 
-nlvar (x X t T) O = {
+nlvar (x X t T o_prev @O) O = {
   nvar x t is o
   (o.is_local = 1)
-  (o.s = x.locals)
-  (x.locals = o)
+  (o.s = o_prev@)
+  (o_prev@ = o)
   ((push_scope x).o = o) 
   o
 }
@@ -434,7 +395,7 @@ ngvar (x X t T) O = {
 
 jadv   (x X    ) K    = { x.k ret (x.k = x.k.s) }
 jeq    (x X c S) nat  = { !!x.k then memcmp2 x.k.p c x.k.n then !c^x.k.n }
-expect (x X c S) none = { { !jeq x c then jdiag x "unexpected" } jadv x }
+expect (x X c S) none = { { !jeq x c then diag "unexpected" } jadv x }
 consume(x X c S) nat  = { jeq x c is r { r then jadv x } r }
 
 declarator (x X t @T) none = {
@@ -543,7 +504,7 @@ p2 ex = {
         expect x ")"                     }
     pl  x "{"  &ebrace else
     pa1 x else
-    jdiag x "expected an expression"
+    diag "expected an expression"
   } for a
   pr    x     a "^"       &eelem   else
   pr    x     a "."       &emem   else
@@ -569,12 +530,12 @@ typedecl(x X) K = {
   x.k
 }
 
-create_lvars(x X t T) none = {
+create_lvars(x X t T o_prev @O) none = {
   !!t then
-  create_lvars x t.s
+  create_lvars x t.s o_prev
   x.k is k
   (x.k = t.name)
-  nlvar x t
+  nlvar x t o_prev
   (x.k = k)
 }
 
@@ -745,9 +706,9 @@ function(x X) none = {
     (!!s and !!s.o and (s.o.t.format == &ftfunc) and s.o)
   } is o
   ( !!o ?
-    { (o.t.format != &ftfunc and jdiag x "redeclared as a different type of symbol")
-      (o.isdef and jeq x "=" and jdiag x "redefinition")
-      (o.is_export != is_export and jdiag x "mismatched visibility") }
+    { (o.t.format != &ftfunc and diag "redeclared as a different type of symbol")
+      (o.isdef and jeq x "=" and diag "redefinition")
+      (o.is_export != is_export and diag "mismatched visibility") }
     { x.k is k
       (x.k = t.name)
       (o = ngvar x t)
@@ -756,10 +717,8 @@ function(x X) none = {
   not consume x "=" ?
     (o.isdef = 0)
     { (o.isdef = 1)
-      (x.locals = cast O 0)
       x.s is s
-      create_lvars x t.params
-      (o.params = x.locals)
+      create_lvars x t.params &o.params
       gs ".section .text." gsn o.name.p o.name.n glf
       { o.is_export then gs ".globl" gc ' ' gsn o.name.p o.name.n glf }
       gsn o.name.p o.name.n gc ':' glf
@@ -775,7 +734,7 @@ ecall exka = {
   { a for b
     !!u then
     (b.s = p3 x)
-    { !type_equal b.s.t u then jdiag x "asymmetric argument" }
+    { !type_equal b.s.t u then diag "asymmetric argument" }
     (u = u.s)
     b.s }
   t1 x.k a.t.a &gecall a
@@ -815,7 +774,7 @@ export main(argc N argv @S) N = {
         ( r^0 != '*' or r^1 != '/' ) ?
           &r^1
           { (p = &r^2) cast S 0} }
-      (p == q and diag p c "unclosed block comment") }
+      (p == q and diag "unclosed block comment") }
     isws p@ ?
       (p = &p^1)
     { is09 p@ ? {
@@ -826,9 +785,9 @@ export main(argc N argv @S) N = {
   (p@ == '"') ? {
       { &p^1 for q
         (q@ == '\\') ?
-        { (q^2 or diag p c "unclosed string literal")
+        { (q^2 or diag "unclosed string literal")
           &q^2 }
-        { (q^1 or diag p c "unclosed string literal")
+        { (q^1 or diag "unclosed string literal")
           (q@ != '"') then
           &q^1 }
       } is end
@@ -840,10 +799,10 @@ export main(argc N argv @S) N = {
     (p = &p^x.n) }
   (p@ == '\'') ?
     { &p^1 is q
-      (q@ == '\0' and diag p c "unclosed literal byte")
+      (q@ == '\0' and diag "unclosed literal byte")
       (q@ == '\\') ?
         { (q = &q^1)
-          (q@ == '\0' and diag p c "unclosed literal byte")
+          (q@ == '\0' and diag "unclosed literal byte")
           (q@ == 'a' ) ?'\a'
             (q@ == 'b' ) ?'\b'
             (q@ == 'f' ) ?'\f'
@@ -855,10 +814,10 @@ export main(argc N argv @S) N = {
             (q@ == '\"') ? '\"'
             (q@ == '\\') ? '\\'
               { '\0' ret
-              (q@ != '0' and diag q c "invalid escape sequence") } }
+              (q@ != '0' and diag "invalid escape sequence") } }
     q@ is l
     (q = &q^1)
-    (q@ != '\'' and diag p c "unclosed byte literal")
+    (q@ != '\'' and diag "unclosed byte literal")
     ntoken &JCHR p &q^1 n is k
     (k.l = cast N l)
     (x@ = k)
@@ -872,12 +831,10 @@ export main(argc N argv @S) N = {
           !!n ?
               { (x@ = ntoken &JPCT p &p^n n)
                 (p = &p^x.n) }
-              diag p c "invalid token" } }
+              diag "invalid token" } }
     (x = &x.s) } }
   cast @Ctx malloc sizeof Ctx is x
   (x.k = k)
-  (x.c = c)
-  (x.locals = 0)
   (x.s = 0)
   { !!x.k then
     x.k for k
@@ -993,13 +950,13 @@ geelem necl   = {
 emem  exka  = {
   jadv x
   { a.t for t (t.format == &ftptr) then t.a } is t
-  (t.format != &ftstct and jdiag x "not a struct")
+  (t.format != &ftstct and diag "not a struct")
   cast T 0 is g
   { t.a for a
     { (a.name.n == k.s.n) then strncmp2 a.name.p k.s.p k.s.n }
     ? { (g = a) cast T 0 }
       a.s }
-  { !g then jdiag x "no such member" }
+  { !g then diag "no such member" }
   t1 k.s g &gemem a
 }
 gemem   necl  = {
