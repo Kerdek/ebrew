@@ -1,5 +1,5 @@
-export malloc              (m nat) @none
-export strtoul             (p @byte q @@byte b nat) nat
+export malloc  (m nat) @none
+export strtoul (p @byte q @@byte b nat) nat
 
 /* end preamble */
 
@@ -43,23 +43,24 @@ type
     sp         nat
   }
 
-  Scope {
-    s @Scope
-    k @Token
-    o @Obj
-    t @Type
-    sp nat
-  }
-
   Node {
     s @Node
     a @Node
     k @Token
     t @Type
     u @Type
-    scope @Scope
+    o @Obj
+    sp nat
     l  nat
     gen @(e @Node c nat l nat) nat
+  }
+
+  Scope {
+    s @Scope
+    k @Token
+    t @Type
+    o @Obj
+    e @Node
   }
 
   Ctx {
@@ -100,13 +101,13 @@ pmul   ex padd   ex psh    ex pcmp   ex
 ptype  tx
 
 gelit   necl gesize  necl gederef necl geaddr  necl gecast  necl geread  necl gewrite  necl geerr  necl
-geid    necl gelnot  necl geneg   necl gediv   necl gemod   necl geexit  necl
+geid    necl gelnot  necl geneg   necl gediv   necl gemod   necl geexit  necl gescratch necl
 gee     necl gene    necl geb     necl gebe    necl gea     necl geae    necl
 geadd   necl gesub   necl gemul   necl gexor   necl geass   necl gestr   necl
 geshl   necl geshr   necl geelem  necl gemem   necl geseq   necl geret   necl
 gecond  necl geland  necl gelor   necl geis    necl gefor   necl gecall  necl
 
-esize  exk ecast  exk enat   exk eaddr  exk
+esize  exk ecast  exk enat   exk eaddr  exk escratch exk
 eneg   exk elnot  exk eid    exk estr   exk ebrace exk eparen exk eexit  exk ebyte  exk eread exk ewrite exk eerr exk
 
 eas    exka eelem  exka ederef exka eseq   exka
@@ -122,13 +123,13 @@ JCHR () none = 0
 JSTR () none = 0
 JNUM () none = 0
 
-is (c C d C) nat = (c == d)
+isc (c C d C) nat = (c == d)
 
-issp (c C    ) nat = is c ' '
-istb (c C    ) nat = is c '\t'
-islf (c C    ) nat = is c '\n'
-iscr (c C    ) nat = is c '\r'
-is_  (c C    ) nat = is c '_'
+issp (c C    ) nat = isc c ' '
+istb (c C    ) nat = isc c '\t'
+islf (c C    ) nat = isc c '\n'
+iscr (c C    ) nat = isc c '\r'
+is_  (c C    ) nat = isc c '_'
 
 isin(c C a C b C) nat = (a <= c and c <= b)
 
@@ -321,11 +322,11 @@ t1  (k K t T gen @necl         a E) E = {tree k t gen is e e ret (e.a = a)}
 t2  (k K t T gen @necl     b E a E) E = {tree k t gen is e e ret (e.a = a)  (e.a.s = b)}
 t3  (k K t T gen @necl c E b E a E) E = {tree k t gen is e e ret (e.a = a)  (e.a.s = b)  (e.a.s.s = c)}
 tt  (k K t T gen @necl u T        ) E = {t0   k t gen is e e ret (e.u = u)}
-ts  (k K t T gen @necl s @Scope   ) E = {t0   k t gen is e e ret (e.scope = s)}
 tl  (k K t T gen @necl l N        ) E = {t0   k t gen is e e ret (e.l = l)}
 
 ntoken(q TokenKind a S b S line N col N) K = {
   cast K malloc sizeof Token is k
+  (k.s    = 0    )
   (k.q    = q    )
   (k.p    = a    )
   (k.n    = b - a)
@@ -340,16 +341,6 @@ read_file() S = {
   read buf big is n
   (buf^n = '\0')
   buf
-}
-
-push_scope  (x X) @Scope = {
-  cast @Scope malloc sizeof Scope is s
-  (s.s = x.s)
-  (s.k = x.k)
-  (s.o = 0)
-  (s.t = 0)
-  (x.s = s)
-  s
 }
 
 try_search_scope(x X c S n N) @Scope = {
@@ -368,22 +359,8 @@ search_scope(x X c S n N) @Scope = {
   kdiag x.k "lookup failed"
 }
 
-nvar (x X t T) O = {
-  cast O malloc sizeof Obj is o
-  (o.name  = x.k)
-  (o.t     = t  )
-  (o.isdef = 0  )
-  o
-}
-
-nletvar (x X t T) O = {
-  nvar x t is o
-  (o.is_local = 1)
-  o
-}
-
 jadv   (x X    ) K    = { x.k ret (x.k = x.k.s) }
-jeq    (x X c S) nat  = { !!x.k then memcmp2 x.k.p c x.k.n then !c^x.k.n }
+jeq    (x X c S) nat  = { x.k then memcmp2 x.k.p c x.k.n then !c^x.k.n }
 expect (x X c S) none = { { !jeq x c then kdiag x.k "unexpected" } jadv x }
 consume(x X c S) nat  = { jeq x c is r { r then jadv x } r }
 
@@ -430,7 +407,7 @@ func_params tx = {
   t
 }
 
-ptype tx = (
+ptype tx = {
   consume x "none"   ? nnone
   consume x "byte"   ? nbyte
   consume x "nat"    ? nnat
@@ -440,13 +417,12 @@ ptype tx = (
   { search_scope x x.k.p x.k.n is s
     jadv x
     s.t }
-)
+}
 
-pj(x X     q TokenKind e @exk ) E = {(x.k.q == q) then jadv x is k e@ x k}
-pl(x X     c S         e @exk ) E = {jeq x c then jadv x is k e@ x k  }
-pr(x X a E c S         e @exka) E = {jeq x c then jadv x is k e@ x k a}
-pu(x X a E c S         e @exka) E = (consume x c ? a e@ x x.k a)
-
+pj(x X     q TokenKind e @exk ) E = {x.k then (x.k.q == q) then jadv x is k e@ x k}
+pl(x X     c S         e @exk ) E = {x.k then jeq x c then jadv x is k e@ x k  }
+pr(x X a E c S         e @exka) E = {x.k then jeq x c then jadv x is k e@ x k a}
+pu(x X a E c S         e @exka) E = {x.k then consume x c ? a e@ x x.k a}
 
 pa1    ex  = { pj    x   &JID   &eid   else
                pj    x   &JSTR  &estr  else
@@ -478,16 +454,16 @@ palor  exa = { pr    x a "or"   &elor       }
 pa7    exa = { pr    x a "as"   &eas        }
 
 p2 ex = {
-  pl x "&"      &eaddr  else
-  pl x "-"      &eneg   else
-  pl x "!"      &elnot  else
-  pl x "not"    &elnot  else
-  pl x "cast"   &ecast  else
-  pl x "sizeof" &esize  else
-  pl x "exit"   &eexit  else
-  pl x "read"   &eread  else
-  pl x "write"  &ewrite else
-  pl x "err"    &eerr   else
+  pl x "&"       &eaddr    else
+  pl x "-"       &eneg     else
+  pl x "!"       &elnot    else
+  pl x "not"     &elnot    else
+  pl x "cast"    &ecast    else
+  pl x "sizeof"  &esize    else
+  pl x "exit"    &eexit    else
+  pl x "read"    &eread    else
+  pl x "write"   &ewrite   else
+  pl x "err"     &eerr     else
   { consume x "(" ?
       { { p7    x for a
           pr    x a "=" &eass else
@@ -505,7 +481,8 @@ p2 ex = {
 
 p3    ex = { p2    x for a pa3    x a }
 p4    ex = { p3    x for a pa4    x a }
-p5    ex = { p4    x is  a pa5    x a }
+p5    ex = { pl    x "scratch" &escratch else
+             p4    x is  a pa5    x a }
 pmul  ex = { p4    x for a pamul  x a }
 padd  ex = { pmul  x for a paadd  x a }
 psh   ex = { padd  x for a pash   x a }
@@ -514,11 +491,27 @@ pland ex = { pcmp  x for a paland x a }
 plor  ex = { pland x for a palor  x a }
 p7    ex = { plor  x for a pa7    x a }
 
-typedecl(x X) K = {
-  x.k for k
-  !consume x ";" then
-  declarator x &(push_scope x).t
-  x.k
+typedecl(x X) none
+function(x X) none
+
+decls(x X) none = {
+  x.k then
+  (consume x "type" ? &typedecl &function)@ x
+}
+
+typedecl(x X) none = {
+  consume x ";" ?
+    decls x
+    { x.s is s
+      scratch Scope sc
+      (x.s = &sc)
+      (sc.s = s)
+      (sc.k = x.k)
+      declarator x &sc.t
+      (sc.o = 0)
+      (sc.e = 0)
+      typedecl x
+      (x.s = s) }
 }
 
 argreg1(d N) S = {
@@ -615,22 +608,28 @@ gload(q @ftfn n N s S d S) none = (
   {gs  "mov " gn  n gs  "(%r" gs  s gs  "),%r" gs  d glf }
 )
 
-gaddrg(e E c @N d S) none = { gs "mov " gsn e.scope.o.name.p e.scope.o.name.n gs "@GOTPCREL(%rip),%r" gs d glf }
-gaddrl(e E c @N d S) none = { gaddr e.scope.t.format (c@ - e.scope.sp << 3) "sp" d }
-gloadl(e E c @N d S) none = { gload e.scope.t.format (c@ - e.scope.sp << 3) "sp" d }
+gaddrg(e E c @N d S) none = { gs "mov " gsn e.o.name.p e.o.name.n gs "@GOTPCREL(%rip),%r" gs d glf }
+gaddrl(e E c @N d S) none = { gaddr e.a.u.format (c@ - e.a.sp << 3) "sp" d }
+gloadl(e E c @N d S) none = { gload e.a.u.format (c@ - e.a.sp << 3) "sp" d }
 
-gloadsp(q @ftfn d S) none = (
-  (q == &ftstct) ?
+gloadsp(t T d S) none = (
+  (t.format == &ftstct) ?
     { gs "mov %rsp,%" gs d glf }
-  (q == &ftbyte) ?
+  (t.format == &ftbyte) ?
     { gs "movzbq (%rsp), %" gs d glf }
     { gs "mov (%rsp),%" gs d glf }
 )
 
 gstoresp(t T) none = {
+  (t.format == &ftstct) ?
+    { 0 for i
+      (i < t.size) then
+      (i + 1) ret
+      gs "mov " gn i gs "(%rax),%r8b" glf
+      gs "mov %r8b," gn i gs "(%rsp)" glf }
   (t.format == &ftbyte) ?
-    {gs "mov %al,(%rsp)" glf }
-    {gs "mov %rax,(%rsp)" glf }
+    { gs "mov %al,(%rsp)"  glf }
+    { gs "mov %rax,(%rsp)" glf }
 }
 
 gstore(t T c @N) none = {
@@ -646,7 +645,7 @@ gstore(t T c @N) none = {
     { gs "mov %rax,(%rdi)" glf }
 }
 
-gexpr necl  = e.gen@  e c l
+gexpr necl  = {gc '#' gsn e.k.p e.k.n glf e.gen@ e c l }
 
 gdrop (e E c N    ) none = { cast none gexpr  e c 0 }
 geval (e E c N l N) none = {
@@ -657,78 +656,81 @@ geval (e E c N l N) none = {
   (l2 - 1)
 }
 
-glet(e E c N l N d S gen @necl) N = {
-  geval e.a c 0
-  gfpush &c 1
-  (e.scope.sp = c)
-  gstoresp e.a.t
-  gen@ e c l ret
-  gloadsp e.a.t.format d
-  gfpop &c 1
-}
-
-create_lvars(x X t T o_prev @O) none = {
-  !!t then
-  create_lvars x t.s o_prev
-  x.k is k
-  (x.k = t.name)
-  nvar x t is o
-  (o.is_local = 1)
-  (o.s = o_prev@)
-  (o_prev@ = o)
-  ((push_scope x).o = o)
-  (x.k = k)
-}
 gtpars(x X t T c N g N) N = {
   !t ? { gdrop p4 x c 0 }
-    { x.k is k
-      (x.k = t.name)
-      push_scope x is s
-      (s.sp = -g)
-      (s.t = t)
-      (x.k = k)
-      gtpars x t.s c (g + 1) }
+    { x.s is s
+      scratch Node nd
+      scratch Scope sc
+      (x.s = &sc)
+      (sc.s = s)
+      (sc.k = t.name)
+      (sc.t = 0)
+      (sc.o = 0)
+      (sc.e = &nd)
+      (nd.s   = 0)
+      (nd.a   = 0)
+      (nd.o   = 0)
+      (nd.sp  = -g)
+      (nd.u   = t)
+      gtpars x t.s c (g + 1) ret
+      (x.s = s) }
 }
 gtparr(x X t T c N g N) N = {
   !t ? { gdrop p4 x c 0 }
-    { x.k is k
-      (x.k = t.name)
-      gpush &c argreg8 g
-      push_scope x is s
-      (s.sp = c)
-      (s.t = t)
-      (x.k = k)
-      (((g == 5) ? &gtpars &gtparr)@ x t.s c (g + 1) + 1) }
+    { gpush &c argreg8 g
+      x.s is s
+      scratch Node nd
+      scratch Scope sc
+      (x.s = &sc)
+      (sc.s = s)
+      (sc.k = t.name)
+      (sc.t = 0)
+      (sc.o = 0)
+      (sc.e = &nd)
+      (nd.s  = 0)
+      (nd.a  = 0)
+      (nd.o  = 0)
+      (nd.sp = c)
+      (nd.u  = t)
+      (((g == 5) ? &gtpars &gtparr)@ x t.s c (g + 1) + 1) ret
+      (x.s = s) }
 }
 function(x X) none = {
+  x.s is s
   consume x "export" is is_export
-  cast T 0 is t
+  scratch T t
   declarator x &t
   {
     try_search_scope x t.name.p t.name.n is s
     (!!s and !!s.o and (s.o.t.format == &ftfunc) and s.o)
   } is o
-  ( !!o ?
+  { !!o ?
     { (o.t.format != &ftfunc and kdiag x.k "redeclared as a different type of symbol")
       (o.isdef and jeq x "=" and kdiag x.k "redefinition")
       (o.is_export != is_export and kdiag x.k "mismatched visibility") }
-    { x.k is k
-      (x.k = t.name)
-      (o = nvar x t)
+    { (o = cast O malloc sizeof Obj)
+      (o.name  = t.name)
+      (o.t     = t  )
+      (o.isdef = 0  )
       (o.is_local = 0)
-      ((push_scope x).o = o)
-      (x.k = k)
-      (o.is_export = is_export) } )
-  (o.isdef = consume x "=")
+      (x.s = cast @Scope malloc sizeof Scope)
+      (x.s.s = s)
+      (x.s.k = t.name)
+      (x.s.t = 0)
+      (x.s.o = o)
+      (x.s.e = 0)
+      (o.is_export = is_export) } }
+  (o.isdef = jeq x "=")
   { o.isdef then
-    x.s is s
+    jadv x
     gs ".section .text." gsn o.name.p o.name.n glf
     { o.is_export then gs ".globl" gc ' ' gsn o.name.p o.name.n glf }
     gsn o.name.p o.name.n gc ':' glf
     0 is c
     gfpop &c gtparr x t.params c 0
-    gt0 "ret"
-    (x.s = s) }
+    gt0 "ret" }
+  decls x
+  (x.s = s)
 }
 
 ecall exka = {
@@ -760,10 +762,8 @@ gecall necl  = {
 }
 
 export main(argc N argv @S) N = {
-  cast @byte 0 is c
   gt0 ".data"
   read_file is p
-  (c = p)
   cast K 0 is k
   1 is line
   1 is col
@@ -850,10 +850,7 @@ export main(argc N argv @S) N = {
   cast @Ctx malloc sizeof Ctx is x
   (x.k = k)
   (x.s = 0)
-  { !!x.k then
-    x.k for k
-    ( consume x "type" ? &typedecl &function)@ x
-    x.k }
+  decls x
   0
 }
 
@@ -893,27 +890,27 @@ gegbe   gegfn = gbe
 gega    gegfn = ga
 gegae   gegfn = gae
 
-ebrace  exk  = p5 x
-eparen  exk  = p7 x
+ebrace   exk  = p5 x
+eparen   exk  = p7 x
 
-enat    exk   = tl k nnat  &gelit k.l
-ebyte   exk   = tl k nbyte &gelit k.l
-gelit   necl  = ge0 e.l
+enat     exk   = tl k nnat  &gelit k.l
+ebyte    exk   = tl k nbyte &gelit k.l
+gelit    necl  = ge0 e.l
 
-esize   exk   = tt k nnat &gesize ptype x
-gesize  necl  = ge0 e.u.size
+esize    exk   = tt k nnat &gesize ptype x
+gesize   necl  = ge0 e.u.size
 
-ederef  exka  = t1 k a.t.a &gederef a
-gederef necl  = (gexpr e.a c 0 + 1 - l)
+ederef   exka  = t1 k a.t.a &gederef a
+gederef  necl  = (gexpr e.a c 0 + 1 - l)
 
-eaddr   exk   = {
+eaddr    exk   = {
   p2 x is a
   t1 k nptr a.t &geaddr a
 }
-geaddr  necl  = gexpr e.a c 1
+geaddr   necl  = gexpr e.a c 1
 
-eas     exka  = t1 k ptype x &gecast a
-ecast   exk   = {
+eas      exka  = t1 k ptype x &gecast a
+ecast    exk   = {
   ptype x is u
   t1 k u &gecast p4 x
 }
@@ -928,9 +925,23 @@ gestr necl  = {
   gs "mov .s" gn cast nat e.k gs "@GOTPCREL(%rip),%rax" glf
   0
 }
-eid    exk  = { (search_scope x k.p k.n) is s ts k (s.o ? s.o.t s.t) &geid s }
+eid    exk  = {
+  (search_scope x k.p k.n) is s
+  cast E malloc sizeof Node is e
+  (e.s   = 0      )
+  (e.gen = &geid  )
+  (e.k   = k      )
+  s.o ? {
+    (e.o = s.o    )
+    (e.a = 0      )
+    (e.t = s.o.t  )
+  }{(e.o = 0      )
+    (e.a = s.e    )
+    (e.t = s.e.u  ) }
+  e
+}
 geid   necl  = {
-  (!e.scope.o ? !l ? &gloadl &gaddrl &gaddrg)@ e &c "ax"
+  (!e.o ? !l ? &gloadl &gaddrl &gaddrg)@ e &c "ax"
   0
 }
 
@@ -1055,45 +1066,106 @@ gelor  necl  = {
   0
 }
 
-eis    exka = {
+escratch  exk   = {
+  cast E malloc sizeof Node is e
   x.s is s
-  push_scope x is s1
-  (s1.t = a.t)
-  jadv x p5 x is b
-  t2 k b.t &geis b a is e
-  (e.scope = s1)
-  (x.s = s)
+  ptype x is u
+  scratch Scope sc
+  (x.s   = &sc       )
+  (sc.s  = s         )
+  (sc.k  = x.k       )
+  (sc.t  = 0         )
+  (sc.o  = 0         )
+  (sc.e  = e         )
+  jadv x
+  (e.s   = 0         )
+  (e.gen = &gescratch)
+  (e.k   = k         )
+  (e.u   = u         )
+  (e.a   = p5 x      )
+  (e.t   = e.a.t     )
+  (x.s   = s         )
   e
 }
-geisa  necl = {
-  geval e.a.s c l
+gescratch necl  = {
+  (e.u.size + 7 << 3) is stack
+  gfpush    &c stack
+  (e.sp = c)
+  geval e.a  c l
+  gfpop     &c stack
   0
 }
-geis   necl = glet e c l "rdx" &geisa
 
-efor   exka = {
+eis    exka = {
+  cast E malloc sizeof Node is e
   x.s is s
-  nletvar x a.t is o
-  push_scope x is s1
-  (s1.t = a.t)
+  scratch Scope sc
+  (x.s   = &sc    )
+  (sc.s  = s      )
+  (sc.k  = x.k    )
+  (sc.t  = 0      )
+  (sc.o  = 0      )
+  (sc.e  = e      )
   jadv x
-  p5 x is b
-  t2 k b.t &gefor b a is e
-  (e.scope = s1)
-  (x.s = s)
+  (e.s   = 0      )
+  (e.gen = &geis  )
+  (e.k   = k      )
+  (e.a   = a      )
+  (e.u   = a.t    )
+  (e.a.s = p5 x   )
+  (e.t   = e.a.s.t)
+  (x.s   = s      )
   e
 }
-gefora necl = {
+geis   necl = {
+  (e.u.size + 7 << 3) is stack
+  geval    e.a    c 0
+  gfpush         &c stack
+  (e.sp  = c)
+  gstoresp e.u
+  geval    e.a.s  c l
+  gfpop          &c stack
+  0
+}
+
+efor   exka = {
+  cast E malloc sizeof Node is e
+  x.s is s
+  scratch Scope sc
+  (x.s   = &sc    )
+  (sc.s  = s      )
+  (sc.k  = x.k    )
+  (sc.t  = 0      )
+  (sc.o  = 0      )
+  (sc.e  = e      )
+  jadv x
+  (e.s   = 0      )
+  (e.gen = &gefor )
+  (e.k   = k      )
+  (e.a   = a      )
+  (e.u   = a.t    )
+  (e.a.s = p5 x   )
+  (e.t   = e.a.s.t)
+  (x.s   = s      )
+  e
+}
+gefor  necl = {
+  (e.u.size + 7 << 3) is stack
+  geval     e.a    c 0
+  gfpush          &c stack
+  (e.sp = c)
+  gstoresp  e.u
   gj        e        "b"
   glabel    e        "a"
-  gstoresp  e.a.t
+  gstoresp  e.u
   glabel    e        "b"
   geval     e.a.s  c 0
   gtcz               "eax"
   gjne      e        "a"
+  gloadsp   e.u      "rax"
+  gfpop           &c stack
   0
 }
-gefor  necl = glet e c l "rax" &gefora
 
 eass   exka  = t2 k nnone &geass p7 x a
 geass  necl  = {
@@ -1138,5 +1210,5 @@ ftnone ftfn = 0
 ftbyte ftfn = 0
 ftnat  ftfn = 0
 ftstct ftfn = 0
-ftptr  ftfn = 0
 ftfunc ftfn = 0
+ftptr  ftfn = 0
