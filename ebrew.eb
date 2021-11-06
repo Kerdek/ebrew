@@ -650,11 +650,8 @@ gtpars(x X t T c N g N) N = {
       (x.s = &sc)
       (sc.s = s)
       (sc.k = t.name)
-      (sc.t = 0)
       (sc.e = &nd)
       (sc.is_type = 0)
-      (nd.s   = 0)
-      (nd.a   = 0)
       (nd.sp  = -g)
       (nd.u   = t)
       gtpars x t.s c (g + 1) ret
@@ -669,11 +666,8 @@ gtparr(x X t T c N g N) N = {
       (x.s = &sc)
       (sc.s = s)
       (sc.k = t.name)
-      (sc.t = 0)
       (sc.is_type = 0)
       (sc.e = &nd)
-      (nd.s  = 0)
-      (nd.a  = 0)
       (nd.sp = c)
       (nd.u  = t)
       (((g == 5) ? &gtpars &gtparr)@ x t.s c (g + 1) + 1) ret
@@ -822,10 +816,10 @@ export main(argc N argv @S) N = {
                 diag line col "invalid token" } }
       (x = &x.s) }
     1 }
-  cast @Ctx malloc sizeof Ctx is x
+  scratch Ctx x
   (x.k = k)
   (x.s = 0)
-  decls x
+  decls &x
   0
 }
 
@@ -1048,7 +1042,6 @@ escratch  exk   = {
   (x.s   = &sc       )
   (sc.s  = s         )
   (sc.k  = x.k       )
-  (sc.t  = 0         )
   (sc.e  = e         )
   (sc.is_type = 0    )
   jadv x
@@ -1077,7 +1070,6 @@ eis    exka = {
   (x.s   = &sc    )
   (sc.s  = s      )
   (sc.k  = x.k    )
-  (sc.t  = 0      )
   (sc.e  = e      )
   (sc.is_type = 0 )
   jadv x
@@ -1109,7 +1101,6 @@ efor   exka = {
   (x.s   = &sc    )
   (sc.s  = s      )
   (sc.k  = x.k    )
-  (sc.t  = 0      )
   (sc.e  = e      )
   (sc.is_type = 0 )
   jadv x
