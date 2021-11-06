@@ -1,5 +1,16 @@
 alloc (n nat) @none = cast @none brk n
 
+strlen(a @byte) nat = { 0 for i a^i then (i + 1) }
+
+memcpy (a @byte b @byte n nat) none = {
+  n then
+  n for m
+  (a@ = b@)
+  (a = &a^1)
+  (b = &b^1)
+  (m - 1)
+}
+
 memcmp(a @byte b @byte n nat) nat = {
   1 is r
   { n then n for m
@@ -161,8 +172,8 @@ isid (c C    ) nat = {
    is_  c
 }
 
-sw1(p S a C    ) nat = {(p^0 == a) then 1}
-sw2(p S a C b C) nat = {(p^0 == a) then (p^1 == b) then 2}
+sw1(p S a C    ) nat = { (p^0 == a) then 1 }
+sw2(p S a C b C) nat = { (p^0 == a) then (p^1 == b) then 2 }
 
 read_punct(p S) N = {
   sw2 p '=' '=' else
@@ -202,47 +213,31 @@ read_punct(p S) N = {
   sw1 p '%'
 }
 
-strlen2(a S) N = {
-  0 for i a^i then (i + 1)
-}
-
 gc (c C) none = write &c 1
-gs (s S) none = write s strlen2 s
+gs (s S) none = write s strlen s
 gsn(s S n N) none = write s n
 glf() none = gc '\n'
 gn1(n N) none = { n then gn1 (n / 10) gc cast byte ('0' + n % 10) }
 gn (n N) none = { n ? gn1 n gc '0' }
 
 oc (c C) none = err &c 1
-os (s S) none = err s strlen2 s
+os (s S) none = err s strlen s
 osn(s S n N) none = err s n
 olf(   ) none = oc '\n'
 on1(n N) none = { n then on1 (n / 10) oc cast byte ('0' + n % 10) }
 on (n N) none = { n ? on1 n oc '0' }
 
-align(n N a N) N = ((n + a - 1) / a * a)
-
 diag (line N col N s S) none = { oc '(' on line oc ',' on col os "): " os s olf exit 1 }
-kdiag(k K s S) none = { diag k.line k.col s }
 
-type_equal(t T u T) nat = {
-  t then
-  u then
-  (t == u) else
-  { (t.q == u.q) then
-    (t.q == &TNONE ) else
-    (t.q == &TBYTE ) else
-    (t.q == &TNAT  ) else
-    (t.q == &TPTR  ) ? type_equal t.a u.a
-      { (t.q == &TFUNC ) then
-        t.a is p
-        u.a is q
-        { 1 for _
-          type_equal p q then
-          (p = p.s)
-          (q = q.s)
-          1 }
-        (p == q) } }
+ntoken(q TokenKind a S b S line N col N) K = {
+  cast K alloc sizeof Token is k
+  (k.s    = 0    )
+  (k.q    = q    )
+  (k.p    = a    )
+  (k.n    = b - a)
+  (k.line = line )
+  (k.col  = col  )
+  k
 }
 
 ntype(size N align N q TypeKind) T = {
@@ -267,6 +262,26 @@ nstct (   ) T = ntype  0 1 &TSTCT
 nptr  (a T) T = ntypea 8 8 &TPTR  a
 nfunc (a T) T = ntypea 1 1 &TFUNC a
 
+type_equal(t T u T) nat = {
+  t then
+  u then
+  (t == u) else
+  { (t.q == u.q) then
+    (t.q == &TNONE ) else
+    (t.q == &TBYTE ) else
+    (t.q == &TNAT  ) else
+    (t.q == &TPTR  ) ? type_equal t.a u.a
+      { (t.q == &TFUNC ) then
+        t.a is p
+        u.a is q
+        { 1 for _
+          type_equal p q then
+          (p = p.s)
+          (q = q.s)
+          1 }
+        (p == q) } }
+}
+
 tree(k K t T q @necl) E = {
   cast E alloc sizeof Expr is e
   (e.k = k)
@@ -281,25 +296,6 @@ t2  (k K t T q @necl     b E a E) E = {tree k t q is e e ret (e.a = a)  (e.a.s =
 t3  (k K t T q @necl c E b E a E) E = {tree k t q is e e ret (e.a = a)  (e.a.s = b)  (e.a.s.s = c)}
 tt  (k K t T q @necl u T        ) E = {t0   k t q is e e ret (e.u = u)}
 
-ntoken(q TokenKind a S b S line N col N) K = {
-  cast K alloc sizeof Token is k
-  (k.s    = 0    )
-  (k.q    = q    )
-  (k.p    = a    )
-  (k.n    = b - a)
-  (k.line = line )
-  (k.col  = col  )
-  k
-}
-
-read_file() S = {
-  (1 << 20) is big
-  cast @byte alloc big is buf
-  read buf big is n
-  (buf^n = cast byte 0)
-  buf
-}
-
 try_search_scope(o O c S n N) O = {
   cast O 0 is r
   { o then
@@ -311,6 +307,8 @@ try_search_scope(o O c S n N) O = {
   r
 }
 
+kdiag(k K s S) none = { diag k.line k.col s }
+
 search_scope(k @K o O c S n N) @Scope = {
   try_search_scope o c n else
   kdiag k@ "lookup failed"
@@ -321,22 +319,15 @@ jeq    (k @K c S) nat  = { k@ then memcmp k.p c k.n then !c^k.n }
 expect (k @K c S) none = { { !jeq k c then kdiag k@ "unexpected" } jadv k }
 consume(k @K c S) nat  = { jeq k c is r { r then jadv k } r }
 
-memcpy2 (a S b S n N) none = {
-  n then
-  n for m
-  (a@ = b@)
-  (a = &a^1)
-  (b = &b^1)
-  (m - 1)
-}
-
 declarator (k @K o O t @T) none = {
   (t@ = cast T alloc sizeof Type)
   jadv k is k1
   ptype k o is u
-  memcpy2 cast S t@ cast S u sizeof Type
+  memcpy cast S t@ cast S u sizeof Type
   (t.k = k1)
 }
+
+align(n N a N) N = ((n + a - 1) / a * a)
 
 struct_decl tko = {
   nstct is t
@@ -368,7 +359,7 @@ func_params tko = {
   jadv k
   ptype k o is ret
   nfunc cast T alloc sizeof Type is t
-  memcpy2 cast S t.a cast S ret sizeof Type
+  memcpy cast S t.a cast S ret sizeof Type
   (t.a.s = params)
   t
 }
@@ -460,24 +451,6 @@ pland eko = { pcmp  k o for a paland k o a }
 plor  eko = { pland k o for a palor  k o a }
 p7    eko = { plor  k o for a pa7    k o a }
 
-typedecl(k @K o O) none
-function(k @K o O) none
-
-decls(k @K o O) none = {
-  k@ then
-  (consume k "type" ? &typedecl &function)@ k o
-}
-
-typedecl(k @K o O) none = {
-  consume k ";" ?
-    decls k o
-    { scratch Scope o1
-      (o1.s = o)
-      (o1.k = k@)
-      (o1.is_type = 1)
-      declarator k &o1 &o1.t
-      typedecl k &o1 }
-}
 
 argreg1(d N) S = {
   (d == 0) ? "dil"
@@ -617,6 +590,20 @@ gtparr(k @K o O t T c N g N) N = {
       (nd.u  = t)
       (((g == 5) ? &gtpars &gtparr)@ k &o1 t.s c (g + 1) + 1) }
 }
+
+decls(k @K o O) none
+
+typedecl(k @K o O) none = {
+  consume k ";" ?
+    decls k o
+    { scratch Scope o1
+      (o1.s = o)
+      (o1.k = k@)
+      (o1.is_type = 1)
+      declarator k &o1 &o1.t
+      typedecl k &o1 }
+}
+
 function(k @K o O) none = {
   consume k "export" is globl
   scratch T t
@@ -643,39 +630,19 @@ function(k @K o O) none = {
   decls k &o2
 }
 
-gargs(e E c @N) none = {
-  !!e then
-  gargs e.s c
-  geval e c@ 0
-  gpush c "rax"
-}
-gecall necl  = {
-  gargs e.a.s &c
-  geval e.a    c 0
-  0 is d
-  { !!e.a.s then
-    e.a.s for e (d < 6) then e.s ret
-    gpop &c argreg8 d
-    (d = d + 1) }
-  gs "call *%rax" glf
-  0
-}
-ecall ekoka = {
-  a.t.a.s is u
-  { a for b
-    u then
-    (b.s = p3 k o)
-    { !type_equal b.s.t u then kdiag k@ "asymmetric argument" }
-    (u = u.s)
-    b.s }
-  t1 k@ a.t.a &gecall a
+decls(k @K o O) none = {
+  k@ then
+  (consume k "type" ? &typedecl &function)@ k o
 }
 
 export _start(argc N argv @S) N = {
   ibrk 0
   gt0 ".data"
   gt0 ".scurbrk:.quad 0"
-  read_file is p
+  (1 << 20) is big
+  cast @byte alloc big is p
+  read p big is n
+  (p^n = cast byte 0)
   cast K 0 is k
   1 is line
   1 is col
@@ -1050,6 +1017,35 @@ geass  necl  = {
   0
 }
 eass   ekoka  = t2 k1 nnone &geass p7 k o a
+
+
+gargs(e E c @N) none = {
+  !!e then
+  gargs e.s c
+  geval e c@ 0
+  gpush c "rax"
+}
+gecall necl  = {
+  gargs e.a.s &c
+  geval e.a    c 0
+  0 is d
+  { !!e.a.s then
+    e.a.s for e (d < 6) then e.s ret
+    gpop &c argreg8 d
+    (d = d + 1) }
+  gs "call *%rax" glf
+  0
+}
+ecall ekoka = {
+  a.t.a.s is u
+  { a for b
+    u then
+    (b.s = p3 k o)
+    { !type_equal b.s.t u then kdiag k@ "asymmetric argument" }
+    (u = u.s)
+    b.s }
+  t1 k@ a.t.a &gecall a
+}
 
 geexit necl = {
   geval e.a c 0
