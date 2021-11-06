@@ -9,9 +9,9 @@ type
   Token {
     s    @Token
     q     TokenKind
-    l     nat
     p    @byte
     n     nat
+    l     nat
     line  nat
     col   nat
   }
@@ -24,36 +24,36 @@ type
     o      @Type
     a      @Type
     params @Type
-    name   @Token
+    k   @Token
     format @(t @Type s @byte) none
   }
 
-  Node {
-    s @Node
-    a @Node
+  Expr {
+    s @Expr
+    a @Expr
     k @Token
     t @Type
     u @Type
     sp nat
-    gen @(e @Node c nat l nat) nat
+    gen @(e @Expr c nat l nat) nat
   }
 
   Scope {
     s @Scope
     k @Token
     t @Type
-    e @Node
+    e @Expr
     is_type  nat
     is_def   nat
   }
 
-  K @Token
-  O @Scope
-  E @Node
-  S @byte
-  T @Type
-  N nat
   C byte
+  T @Type
+  O @Scope
+  K @Token
+  E @Expr
+  N nat
+  S @byte
 
   ftfn (t T s S) none
 
@@ -226,14 +226,14 @@ gs (s S) none = write s strlen2 s
 gsn(s S n N) none = write s n
 glf() none = gc '\n'
 gn1(n N) none = { n then gn1 (n / 10) gc cast byte ('0' + n % 10) }
-gn (n N) none = { n ? (gn1  n) (gc  '0') }
+gn (n N) none = { n ? gn1 n gc '0' }
 
 oc (c C) none = err &c 1
 os (s S) none = err s strlen2 s
 osn(s S n N) none = err s n
 olf(   ) none = oc '\n'
 on1(n N) none = { n then on1 (n / 10) oc cast byte ('0' + n % 10) }
-on (n N) none = { n ? on1 n  oc '0' }
+on (n N) none = { n ? on1 n oc '0' }
 
 align(n N a N) N = ((n + a - 1) / a * a)
 
@@ -243,21 +243,18 @@ kdiag(k K s S) none = { diag k.line k.col s }
 type_equal(t T u T) nat = {
   t then
   u then
-  t.format is c
   (t == u) else
   t.o ? type_equal t.o u
   u.o ? type_equal t u.o
-  { (c == u.format) then
-    (c == &ftnone ) else
-    (c == &ftbyte ) else
-    (c == &ftnat  ) else
-    (c == &ftptr  ) ? type_equal t.a u.a
-      { (c == &ftfunc ) then
-        u.a is p
-        t.a is q
+  { (t.format == u.format) then
+    (t.format == &ftnone ) else
+    (t.format == &ftbyte ) else
+    (t.format == &ftnat  ) else
+    (t.format == &ftptr  ) ? type_equal t.a u.a
+      { (t.format == &ftfunc ) then
+        t.a is p
+        u.a is q
         { 1 for _
-          p then
-          q then
           type_equal p q then
           (p = p.s)
           (q = q.s)
@@ -288,7 +285,7 @@ nptr  (a T) T = ntypea 8 8 &ftptr  a
 nfunc (a T) T = ntypea 1 1 &ftfunc a
 
 tree(k K t T gen @necl) E = {
-  cast E malloc sizeof Node is e
+  cast E malloc sizeof Expr is e
   (e.k = k)
   (e.t = t)
   (e.gen = gen)
@@ -341,13 +338,22 @@ jeq    (k @K c S) nat  = { k@ then memcmp2 k.p c k.n then !c^k.n }
 expect (k @K c S) none = { { !jeq k c then kdiag k@ "unexpected" } jadv k }
 consume(k @K c S) nat  = { jeq k c is r { r then jadv k } r }
 
+memcpy2 (a S b S n N) none = {
+  n then
+  n for m
+  (a@ = b@)
+  (a = &a^1)
+  (b = &b^1)
+  (m - 1)
+}
+
 declarator (k @K o O t @T) none = {
   (t@ = cast T malloc sizeof Type)
-  jadv k is name
+  jadv k is k1
   ptype k o is u
-  (t@@ = u@)
+  memcpy2 cast S t@ cast S u sizeof Type
   (t.o = u)
-  (t.name = name)
+  (t.k = k1)
 }
 
 struct_decl tx = {
@@ -374,13 +380,14 @@ func_params tx = {
   &params is u
   { 1 for _
     !jeq k ")" then
-    !jeq k "}" then
     declarator k o u
     (u = &u.s)
     1 }
   jadv k
-  nfunc ptype k o is t
-  (t.params = params)
+  ptype k o is ret
+  nfunc cast T malloc sizeof Type is t
+  memcpy2 cast S t.a cast S ret sizeof Type
+  (t.a.s = params)
   t
 }
 
@@ -582,7 +589,7 @@ gload(q @ftfn n N s S d S) none = (
   {gs  "mov " gn  n gs  "(%r" gs  s gs  "),%r" gs  d glf }
 )
 
-gaddrg(e E c @N d S) none = { gs "mov " gsn e.t.name.p e.t.name.n gs "@GOTPCREL(%rip),%r" gs d glf }
+gaddrg(e E c @N d S) none = { gs "mov " gsn e.t.k.p e.t.k.n gs "@GOTPCREL(%rip),%r" gs d glf }
 gaddrl(e E c @N d S) none = { gaddr e.a.u.format (c@ - e.a.sp << 3) "sp" d }
 gloadl(e E c @N d S) none = { gload e.a.u.format (c@ - e.a.sp << 3) "sp" d }
 
@@ -608,12 +615,6 @@ gstoresp(t T) none = {
 
 gstore(t T c @N) none = {
   gpop c "rdi"
-  (t.format == &ftstct) ?
-    { 0 for i
-      (i < t.size) then
-      (i + 1) ret
-      gs "mov " gn i gs "(%rax),%r8b" glf
-      gs "mov %r8b," gn i gs "(%rdi)" glf }
   (t.format == &ftbyte) ?
     { gs "mov %al,(%rdi)"  glf }
     { gs "mov %rax,(%rdi)" glf }
@@ -632,10 +633,10 @@ geval (e E c N l N) none = {
 
 gtpars(k @K o O t T c N g N) N = {
   !t ? { gdrop p4 k o c 0 }
-    { scratch Node nd
+    { scratch Expr nd
       scratch Scope o1
       (o1.s = o)
-      (o1.k = t.name)
+      (o1.k = t.k)
       (o1.e = &nd)
       (o1.is_type = 0)
       (nd.sp  = -g)
@@ -645,10 +646,10 @@ gtpars(k @K o O t T c N g N) N = {
 gtparr(k @K o O t T c N g N) N = {
   !t ? { gdrop p4 k o c 0 }
     { gpush &c argreg8 g
-      scratch Node nd
+      scratch Expr nd
       scratch Scope o1
       (o1.s = o)
-      (o1.k = t.name)
+      (o1.k = t.k)
       (o1.is_type = 0)
       (o1.e = &nd)
       (nd.sp = c)
@@ -659,32 +660,32 @@ function(k @K o O) none = {
   consume k "export" is globl
   scratch T t
   declarator k o &t
-  try_search_scope o t.name.p t.name.n is o1
+  try_search_scope o t.k.p t.k.n is o1
   { o1 then
     (o1.is_type and kdiag k@ "redeclared as a different type of symbol")
     (o1.is_def >= jeq k "=" and kdiag k@ "remention") }
   scratch Scope o2
   (o2.s = o)
-  (o2.k = t.name)
+  (o2.k = t.k)
   (o2.t = t)
   (o2.e = 0)
   (o2.is_type = 0)
   (o2.is_def = jeq k "=")
   { o2.is_def then
     jadv k
-    gs ".section .text." gsn t.name.p t.name.n glf
-    { globl then gs ".globl" gc ' ' gsn t.name.p t.name.n glf }
-    gsn t.name.p t.name.n gc ':' glf
+    gs ".section .text." gsn t.k.p t.k.n glf
+    { globl then gs ".globl" gc ' ' gsn t.k.p t.k.n glf }
+    gsn t.k.p t.k.n gc ':' glf
     0 is c
-    gfpop &c gtparr k &o2 t.params c 0
+    gfpop &c gtparr k &o2 t.a.s c 0
     gt0 "ret" }
   decls k &o2
 }
 
 ecall exka = {
-  a.t.params is u
+  a.t.a.s is u
   { a for b
-    !!u then
+    u then
     (b.s = p3 k o)
     { !type_equal b.s.t u then kdiag k@ "asymmetric argument" }
     (u = u.s)
@@ -873,7 +874,7 @@ gestr necl  = {
 eid    exk  = {
   (search_scope k o k1.p k1.n) is s
   (s.is_type and kdiag k@ "not a variable")
-  cast E malloc sizeof Node is e
+  cast E malloc sizeof Expr is e
   (e.s   = 0      )
   (e.gen = &geid  )
   (e.k   = k      )
@@ -921,7 +922,7 @@ emem  exka  = {
   (t.format != &ftstct and kdiag k@ "not a struct")
   cast T 0 is g
   { t.a for a
-    { (a.name.n == k1.s.n) then strncmp2 a.name.p k1.s.p k1.s.n }
+    { (a.k.n == k1.s.n) then strncmp2 a.k.p k1.s.p k1.s.n }
     ? { (g = a) cast T 0 }
       a.s }
   { !g then kdiag k@ "no such member" }
@@ -1011,7 +1012,7 @@ gelor  necl  = {
 }
 
 escratch  exk   = {
-  cast E malloc sizeof Node is e
+  cast E malloc sizeof Expr is e
   ptype k o is u
   scratch Scope o1
   (o1.s  = o         )
@@ -1037,7 +1038,7 @@ gescratch necl  = {
 }
 
 eis    exka = {
-  cast E malloc sizeof Node is e
+  cast E malloc sizeof Expr is e
   scratch Scope o1
   (o1.s  = o      )
   (o1.k  = k@    )
@@ -1065,7 +1066,7 @@ geis   necl = {
 }
 
 efor   exka = {
-  cast E malloc sizeof Node is e
+  cast E malloc sizeof Expr is e
   scratch Scope o1
   (o1.s  = o      )
   (o1.k  = k@    )
