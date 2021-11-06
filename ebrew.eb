@@ -30,26 +30,12 @@ type
     format @(t @Type s @byte) none
   }
 
-  Obj {
-    s         @Obj
-    name      @Token
-    t         @Type
-    k         @Token
-    is_local   nat
-    isdef      nat
-    is_export  nat
-    params    @Obj
-    body      @none
-    sp         nat
-  }
-
   Node {
     s @Node
     a @Node
     k @Token
     t @Type
     u @Type
-    o @Obj
     sp nat
     l  nat
     gen @(e @Node c nat l nat) nat
@@ -59,8 +45,9 @@ type
     s @Scope
     k @Token
     t @Type
-    o @Obj
     e @Node
+    is_type  nat
+    is_def   nat
   }
 
   Ctx {
@@ -69,7 +56,6 @@ type
   }
 
   K @Token
-  O @Obj
   X @Ctx
   E @Node
   S @byte
@@ -415,6 +401,7 @@ ptype tx = {
   consume x "("      ? func_params       x
   consume x "{"      ? struct_decl       x
   { search_scope x x.k.p x.k.n is s
+    (s.is_type or kdiag x.k "not a type")
     jadv x
     s.t }
 }
@@ -507,9 +494,8 @@ typedecl(x X) none = {
       (x.s = &sc)
       (sc.s = s)
       (sc.k = x.k)
+      (sc.is_type = 1)
       declarator x &sc.t
-      (sc.o = 0)
-      (sc.e = 0)
       typedecl x
       (x.s = s) }
 }
@@ -608,7 +594,7 @@ gload(q @ftfn n N s S d S) none = (
   {gs  "mov " gn  n gs  "(%r" gs  s gs  "),%r" gs  d glf }
 )
 
-gaddrg(e E c @N d S) none = { gs "mov " gsn e.o.name.p e.o.name.n gs "@GOTPCREL(%rip),%r" gs d glf }
+gaddrg(e E c @N d S) none = { gs "mov " gsn e.t.name.p e.t.name.n gs "@GOTPCREL(%rip),%r" gs d glf }
 gaddrl(e E c @N d S) none = { gaddr e.a.u.format (c@ - e.a.sp << 3) "sp" d }
 gloadl(e E c @N d S) none = { gload e.a.u.format (c@ - e.a.sp << 3) "sp" d }
 
@@ -665,11 +651,10 @@ gtpars(x X t T c N g N) N = {
       (sc.s = s)
       (sc.k = t.name)
       (sc.t = 0)
-      (sc.o = 0)
       (sc.e = &nd)
+      (sc.is_type = 0)
       (nd.s   = 0)
       (nd.a   = 0)
-      (nd.o   = 0)
       (nd.sp  = -g)
       (nd.u   = t)
       gtpars x t.s c (g + 1) ret
@@ -685,47 +670,37 @@ gtparr(x X t T c N g N) N = {
       (sc.s = s)
       (sc.k = t.name)
       (sc.t = 0)
-      (sc.o = 0)
+      (sc.is_type = 0)
       (sc.e = &nd)
       (nd.s  = 0)
       (nd.a  = 0)
-      (nd.o  = 0)
       (nd.sp = c)
       (nd.u  = t)
       (((g == 5) ? &gtpars &gtparr)@ x t.s c (g + 1) + 1) ret
       (x.s = s) }
 }
 function(x X) none = {
-  x.s is s
-  consume x "export" is is_export
+  consume x "export" is globl
   scratch T t
   declarator x &t
-  {
-    try_search_scope x t.name.p t.name.n is s
-    (!!s and !!s.o and (s.o.t.format == &ftfunc) and s.o)
-  } is o
-  { !!o ?
-    { (o.t.format != &ftfunc and kdiag x.k "redeclared as a different type of symbol")
-      (o.isdef and jeq x "=" and kdiag x.k "redefinition")
-      (o.is_export != is_export and kdiag x.k "mismatched visibility") }
-    { (o = cast O malloc sizeof Obj)
-      (o.name  = t.name)
-      (o.t     = t  )
-      (o.isdef = 0  )
-      (o.is_local = 0)
-      (x.s = cast @Scope malloc sizeof Scope)
-      (x.s.s = s)
-      (x.s.k = t.name)
-      (x.s.t = 0)
-      (x.s.o = o)
-      (x.s.e = 0)
-      (o.is_export = is_export) } }
-  (o.isdef = jeq x "=")
-  { o.isdef then
+  try_search_scope x t.name.p t.name.n is s
+  { s then
+    (s.is_type and kdiag x.k "redeclared as a different type of symbol")
+    (s.is_def >= jeq x "=" and kdiag x.k "remention") }
+  x.s is s
+  scratch Scope s1
+  (x.s = &s1)
+  (s1.s = s)
+  (s1.k = t.name)
+  (s1.t = t)
+  (s1.e = 0)
+  (s1.is_type = 0)
+  (s1.is_def = jeq x "=")
+  { s1.is_def then
     jadv x
-    gs ".section .text." gsn o.name.p o.name.n glf
-    { o.is_export then gs ".globl" gc ' ' gsn o.name.p o.name.n glf }
-    gsn o.name.p o.name.n gc ':' glf
+    gs ".section .text." gsn t.name.p t.name.n glf
+    { globl then gs ".globl" gc ' ' gsn t.name.p t.name.n glf }
+    gsn t.name.p t.name.n gc ':' glf
     0 is c
     gfpop &c gtparr x t.params c 0
     gt0 "ret" }
@@ -927,21 +902,20 @@ gestr necl  = {
 }
 eid    exk  = {
   (search_scope x k.p k.n) is s
+  (s.is_type and kdiag x.k "not a variable")
   cast E malloc sizeof Node is e
   (e.s   = 0      )
   (e.gen = &geid  )
   (e.k   = k      )
-  s.o ? {
-    (e.o = s.o    )
-    (e.a = 0      )
-    (e.t = s.o.t  )
-  }{(e.o = 0      )
+  s.e ? {
     (e.a = s.e    )
-    (e.t = s.e.u  ) }
+    (e.t = s.e.u  )
+  }{(e.a = 0      )
+    (e.t = s.t    ) }
   e
 }
 geid   necl  = {
-  (!e.o ? !l ? &gloadl &gaddrl &gaddrg)@ e &c "ax"
+  (e.a ? !l ? &gloadl &gaddrl &gaddrg)@ e &c "ax"
   0
 }
 
@@ -1068,15 +1042,15 @@ gelor  necl  = {
 
 escratch  exk   = {
   cast E malloc sizeof Node is e
-  x.s is s
   ptype x is u
+  x.s is s
   scratch Scope sc
   (x.s   = &sc       )
   (sc.s  = s         )
   (sc.k  = x.k       )
   (sc.t  = 0         )
-  (sc.o  = 0         )
   (sc.e  = e         )
+  (sc.is_type = 0    )
   jadv x
   (e.s   = 0         )
   (e.gen = &gescratch)
@@ -1104,8 +1078,8 @@ eis    exka = {
   (sc.s  = s      )
   (sc.k  = x.k    )
   (sc.t  = 0      )
-  (sc.o  = 0      )
   (sc.e  = e      )
+  (sc.is_type = 0 )
   jadv x
   (e.s   = 0      )
   (e.gen = &geis  )
@@ -1136,8 +1110,8 @@ efor   exka = {
   (sc.s  = s      )
   (sc.k  = x.k    )
   (sc.t  = 0      )
-  (sc.o  = 0      )
   (sc.e  = e      )
+  (sc.is_type = 0 )
   jadv x
   (e.s   = 0      )
   (e.gen = &gefor )
