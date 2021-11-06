@@ -64,8 +64,6 @@ type
     q     TokenKind
     p     S
     n     N
-    line  N
-    col   N
   }
 
   K @Token
@@ -227,16 +225,14 @@ olf(   ) none = oc '\n'
 on1(n N) none = { n then on1 (n / 10) oc cast byte ('0' + n % 10) }
 on (n N) none = { n ? on1 n oc '0' }
 
-diag (line N col N s S) none = { oc '(' on line oc ',' on col os "): " os s olf exit 1 }
+diag (s S) none = { os s olf exit 1 }
 
-ntoken(q TokenKind a S b S line N col N) K = {
+ntoken(q TokenKind a S b S) K = {
   cast K alloc sizeof Token is k
   (k.s    = 0    )
   (k.q    = q    )
   (k.p    = a    )
   (k.n    = b - a)
-  (k.line = line )
-  (k.col  = col  )
   k
 }
 
@@ -307,16 +303,14 @@ try_search_scope(o O c S n N) O = {
   r
 }
 
-kdiag(k K s S) none = { diag k.line k.col s }
-
 search_scope(k @K o O c S n N) @Scope = {
   try_search_scope o c n else
-  kdiag k@ "lookup failed"
+  diag "lookup failed"
 }
 
 jadv   (k @K    ) K    = { k@ ret (k@ = k.s) }
 jeq    (k @K c S) nat  = { k@ then memcmp k.p c k.n then !c^k.n }
-expect (k @K c S) none = { { !jeq k c then kdiag k@ "unexpected" } jadv k }
+expect (k @K c S) none = { { !jeq k c then diag "unexpected" } jadv k }
 consume(k @K c S) nat  = { jeq k c is r { r then jadv k } r }
 
 declarator (k @K o O t @T) none = {
@@ -372,7 +366,7 @@ ptype tko = {
   consume k "("      ? func_params       k o
   consume k "{"      ? struct_decl       k o
   { search_scope k o k.p k.n is s
-    (s.is_type or kdiag k@ "not a type")
+    (s.is_type or diag "not a type")
     jadv k
     s.t }
 }
@@ -432,7 +426,7 @@ p2 eko = {
         expect k ")"                     }
     pl  k o "{"  &ebrace else
     pa1 k o else
-    kdiag k@ "expected an expression"
+    diag "expected an expression"
   } for a
   pr    k o     a "^"       &eelem   else
   pr    k o     a "."       &emem   else
@@ -610,8 +604,8 @@ function(k @K o O) none = {
   declarator k o &t
   try_search_scope o t.k.p t.k.n is o1
   { o1 then
-    (o1.is_type and kdiag k@ "redeclared as a different type of symbol")
-    (o1.is_def >= jeq k "=" and kdiag k@ "remention") }
+    (o1.is_type and diag "redeclared as a different type of symbol")
+    (o1.is_def >= jeq k "=" and diag "remention") }
   scratch Scope o2
   (o2.s = o)
   (o2.k = t.k)
@@ -644,42 +638,35 @@ export _start(argc N argv @S) N = {
   read p big is n
   (p^n = cast byte 0)
   cast K 0 is k
-  1 is line
-  1 is col
   &k is x
   { 1 for _
     p@ then
     (p^0 == '/' and p^1 == '*') ? {
       (p = &p^2)
       { 1 for _
-        (p@ or diag line col "unclosed block comment")
+        (p@ or diag "unclosed block comment")
         (p^0 == '*' and p^1 == '/') ?
           { (p = &p^2) 0 }
-          { ((p@ == '\n') ? { (line = line + 1) (col = 1) } (col = col + 1))
-            (p = &p^1) 
+          { (p = &p^1)
             1 } } }
     isws p@ ? {
-      (col = col + 1)
-      { (p@ == '\n') then (line = line + 1) (col = 1) }
       (p = &p^1) }
     { is09 p@ ? {
-        { &p^1 for q is09 q@ then (col = col + 1) &q^1 } is q
-        (x@ = ntoken &JNUM p q line col)
+        { &p^1 for q is09 q@ then &q^1 } is q
+        (x@ = ntoken &JNUM p q)
         (p = q) }
       (p@ == '"') ? {
         { &p^1 for q
-          (q^0 or diag line col "unclosed string literal")
-          (q^0 == '\n' and diag line col "newline in string literal")
+          (q^0 or diag "unclosed string literal")
+          (q^0 == '\n' and diag "newline in string literal")
           (q^0 == '\\') ?
-          { (q^1 or diag line col "unclosed string literal")
-            (q^1 == '\n' and diag line col "newline in string literal")
-            (col = col + 2)
+          { (q^1 or diag "unclosed string literal")
+            (q^1 == '\n' and diag "newline in string literal")
             &q^2 }
           { (q^0 != '"') then
-            (col = col + 1)
             &q^1 }
         } is end
-        ntoken &JSTR p &end^1 line col is k
+        ntoken &JSTR p &end^1 is k
         gs ".s" gn cast nat k gc ':' gs ".string \""
         { &k.p^1 for i (i < &k.p^(k.n - 1)) then gc i@ &i^1 }
         gc '\"' glf
@@ -687,29 +674,24 @@ export _start(argc N argv @S) N = {
         (p = &p^x.n) }
       (p@ == '\'') ? {
         p is p1
-        (p^1 or diag line col "unclosed literal byte")
+        (p^1 or diag "unclosed literal byte")
         { (p^1 == '\\') then
-          (col = col + 1)
           (p = &p^1)
-          (p^1 or diag line col "unclosed escape") }
-        (col = col + 2)
+          (p^1 or diag "unclosed escape") }
         (p = &p^2)
-        (p@ != '\'' and diag line col "expected '")
-        (col = col + 1)
+        (p@ != '\'' and diag "expected '")
         (p = &p^1)
-        (x@ = ntoken &JCHR p1 p line col) }
+        (x@ = ntoken &JCHR p1 p) }
       { 0 is n
-        { p for q { { isid q@ then (col = col + 1) &q^1 } else cast S 0 ret (n = q - p as N) } }
+        { p for q { { isid q@ then &q^1 } else cast S 0 ret (n = q - p as N) } }
         !!n ?
-            { (x@ = ntoken &JID p &p^n line col)
-              (col = col + n)
+            { (x@ = ntoken &JID p &p^n)
               (p = &p^n) }
           { read_punct p is n
             !!n ?
-                { (x@ = ntoken &JPCT p &p^n line col)
-                  (col = col + n)
+                { (x@ = ntoken &JPCT p &p^n)
                   (p = &p^n) }
-                diag line col "invalid token" } }
+                diag "invalid token" } }
       (x = &x.s) }
     1 }
   decls &k cast O 0
@@ -786,7 +768,7 @@ geid   necl  = {
 }
 eid    ekok  = {
   (search_scope k o k1.p k1.n) is s
-  (s.is_type and kdiag k@ "not a variable")
+  (s.is_type and diag "not a variable")
   cast E alloc sizeof Expr is e
   (e.s   = 0      )
   (e.q = &geid  )
@@ -839,13 +821,13 @@ gemem   necl  = {
 emem  ekoka  = {
   jadv k
   { a.t for t (t.q == &TPTR) then t.a } is t
-  (t.q != &TSTCT and kdiag k@ "not a struct")
+  (t.q != &TSTCT and diag "not a struct")
   cast T 0 is g
   { t.a for a
     { (a.k.n == k1.s.n) then strncmp a.k.p k1.s.p k1.s.n }
     ? { (g = a) cast T 0 }
       a.s }
-  { !g then kdiag k@ "no such member" }
+  { !g then diag "no such member" }
   t1 k1.s g &gemem a
 }
 
@@ -1041,7 +1023,7 @@ ecall ekoka = {
   { a for b
     u then
     (b.s = p3 k o)
-    { !type_equal b.s.t u then kdiag k@ "asymmetric argument" }
+    { !type_equal b.s.t u then diag "asymmetric argument" }
     (u = u.s)
     b.s }
   t1 k@ a.t.a &gecall a
