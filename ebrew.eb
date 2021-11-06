@@ -1010,17 +1010,15 @@ gelor  necl  = {
 
 escratch  exk   = {
   cast E malloc sizeof Expr is e
-  ptype k o is u
+  (e.s   = 0         )
+  (e.q   = &gescratch)
+  (e.k   = k1        )
+  (e.u   = ptype k o )
   scratch Scope o1
   (o1.s  = o         )
-  (o1.k  = k@        )
+  (o1.k  = jadv k    )
   (o1.e  = e         )
   (o1.is_type = 0    )
-  jadv k
-  (e.s   = 0         )
-  (e.q = &gescratch)
-  (e.k   = k1        )
-  (e.u   = u         )
   (e.a   = p5 k &o1  )
   (e.t   = e.a.t     )
   e
@@ -1036,17 +1034,16 @@ gescratch necl  = {
 
 eis    exka = {
   cast E malloc sizeof Expr is e
-  scratch Scope o1
-  (o1.s  = o      )
-  (o1.k  = k@    )
-  (o1.e  = e      )
-  (o1.is_type = 0 )
-  jadv k
   (e.s   = 0      )
-  (e.q = &geis  )
+  (e.q   = &geis  )
   (e.k   = k1     )
   (e.a   = a      )
   (e.u   = a.t    )
+  scratch Scope o1
+  (o1.s  = o      )
+  (o1.k  = jadv k )
+  (o1.e  = e      )
+  (o1.is_type = 0 )
   (e.a.s = p5 k &o1)
   (e.t   = e.a.s.t)
   e
@@ -1064,17 +1061,16 @@ geis   necl = {
 
 efor   exka = {
   cast E malloc sizeof Expr is e
-  scratch Scope o1
-  (o1.s  = o      )
-  (o1.k  = k@    )
-  (o1.e  = e      )
-  (o1.is_type = 0 )
-  jadv k
   (e.s   = 0      )
-  (e.q = &gefor )
+  (e.q   = &gefor )
   (e.k   = k1     )
   (e.a   = a      )
   (e.u   = a.t    )
+  scratch Scope o1
+  (o1.s  = o      )
+  (o1.k  = jadv k )
+  (o1.e  = e      )
+  (o1.is_type = 0 )
   (e.a.s = p5 k &o1)
   (e.t   = e.a.s.t)
   e
