@@ -5,6 +5,7 @@ export strtoul (p @byte q @@byte b nat) nat
 
 type
   TokenKind @()none
+  TypeKind  @()none
 
   Token {
     s    @Token
@@ -18,24 +19,22 @@ type
 
   Type {
     s      @Type
+    a      @Type
+    q       TypeKind
+    k      @Token
     size    nat
     align   nat
     offset  nat
-    o      @Type
-    a      @Type
-    params @Type
-    k   @Token
-    format @(t @Type s @byte) none
   }
 
   Expr {
     s @Expr
     a @Expr
+    q @(e @Expr c nat l nat) nat
     k @Token
     t @Type
     u @Type
-    sp nat
-    gen @(e @Expr c nat l nat) nat
+    c nat
   }
 
   Scope {
@@ -55,8 +54,6 @@ type
   N nat
   S @byte
 
-  ftfn (t T s S) none
-
   tx   (k @K o O        ) T
   ex   (k @K o O        ) E
   exa  (k @K o O     a E) E
@@ -68,10 +65,6 @@ type
   geefn (e E c N l N gop @() none) N
   gegfn () none
 ;
-
-ftnone ftfn ftbyte ftfn
-ftnat  ftfn ftstct ftfn ftptr  ftfn
-ftfunc ftfn
 
 p2     ex p3     ex p5     ex p7     ex
 pmul   ex padd   ex psh    ex pcmp   ex
@@ -94,6 +87,13 @@ eelse  exka econd  exka eadd   exka esub   exka eshl   exka
 eshr   exka eb     exka ea     exka ebe    exka eae    exka
 ee     exka ene    exka eland  exka ecall  exka emem   exka
 elor   exka eass   exka eis    exka efor   exka
+
+TNONE () none = 0 
+TBYTE () none = 0
+TNAT  () none = 0
+TSTCT () none = 0
+TPTR  () none = 0
+TFUNC () none = 0
 
 JID  () none = 0
 JPCT () none = 0
@@ -244,14 +244,12 @@ type_equal(t T u T) nat = {
   t then
   u then
   (t == u) else
-  t.o ? type_equal t.o u
-  u.o ? type_equal t u.o
-  { (t.format == u.format) then
-    (t.format == &ftnone ) else
-    (t.format == &ftbyte ) else
-    (t.format == &ftnat  ) else
-    (t.format == &ftptr  ) ? type_equal t.a u.a
-      { (t.format == &ftfunc ) then
+  { (t.q == u.q) then
+    (t.q == &TNONE ) else
+    (t.q == &TBYTE ) else
+    (t.q == &TNAT  ) else
+    (t.q == &TPTR  ) ? type_equal t.a u.a
+      { (t.q == &TFUNC ) then
         t.a is p
         u.a is q
         { 1 for _
@@ -262,41 +260,41 @@ type_equal(t T u T) nat = {
         (p == q) } }
 }
 
-ntype(size N align N format @ftfn) T = {
+ntype(size N align N q TypeKind) T = {
   cast T malloc sizeof Type is t
   (t.size  = size  )
   (t.align = align )
-  (t.format = format)
+  (t.q = q)
   (t.s = 0)
   t
 }
 
-ntypea(size N align N format @ftfn a T) T = {
-  ntype size align format is t
+ntypea(size N align N q TypeKind a T) T = {
+  ntype size align q is t
   (t.a = a)
   t
 }
 
-nnone (   ) T = ntype  0 0 &ftnone
-nbyte (   ) T = ntype  1 1 &ftbyte
-nnat  (   ) T = ntype  8 8 &ftnat
-nstct (   ) T = ntype  0 1 &ftstct
-nptr  (a T) T = ntypea 8 8 &ftptr  a
-nfunc (a T) T = ntypea 1 1 &ftfunc a
+nnone (   ) T = ntype  0 0 &TNONE
+nbyte (   ) T = ntype  1 1 &TBYTE
+nnat  (   ) T = ntype  8 8 &TNAT
+nstct (   ) T = ntype  0 1 &TSTCT
+nptr  (a T) T = ntypea 8 8 &TPTR  a
+nfunc (a T) T = ntypea 1 1 &TFUNC a
 
-tree(k K t T gen @necl) E = {
+tree(k K t T q @necl) E = {
   cast E malloc sizeof Expr is e
   (e.k = k)
   (e.t = t)
-  (e.gen = gen)
+  (e.q = q)
   e
 }
 
-t0  (k K t T gen @necl            ) E = {tree k t gen}
-t1  (k K t T gen @necl         a E) E = {tree k t gen is e e ret (e.a = a)}
-t2  (k K t T gen @necl     b E a E) E = {tree k t gen is e e ret (e.a = a)  (e.a.s = b)}
-t3  (k K t T gen @necl c E b E a E) E = {tree k t gen is e e ret (e.a = a)  (e.a.s = b)  (e.a.s.s = c)}
-tt  (k K t T gen @necl u T        ) E = {t0   k t gen is e e ret (e.u = u)}
+t0  (k K t T q @necl            ) E = {tree k t q}
+t1  (k K t T q @necl         a E) E = {tree k t q is e e ret (e.a = a)}
+t2  (k K t T q @necl     b E a E) E = {tree k t q is e e ret (e.a = a)  (e.a.s = b)}
+t3  (k K t T q @necl c E b E a E) E = {tree k t q is e e ret (e.a = a)  (e.a.s = b)  (e.a.s.s = c)}
+tt  (k K t T q @necl u T        ) E = {t0   k t q is e e ret (e.u = u)}
 
 ntoken(q TokenKind a S b S line N col N) K = {
   cast K malloc sizeof Token is k
@@ -352,7 +350,6 @@ declarator (k @K o O t @T) none = {
   jadv k is k1
   ptype k o is u
   memcpy2 cast S t@ cast S u sizeof Type
-  (t.o = u)
   (t.k = k1)
 }
 
@@ -413,7 +410,7 @@ pa1    ex  = { pj    k o   &JID   &eid   else
                pj    k o   &JSTR  &estr  else
                pj    k o   &JNUM  &enat  else
                pj    k o   &JCHR  &ebyte      }
-pa3    exa = { (a.t.format == &ftfunc) then ecall k o k@ a }
+pa3    exa = { (a.t.q == &TFUNC) then ecall k o k@ a }
 pa4    exa = { pr    k o a "?"    &econd      }
 pa5    exa = { pr    k o a "ret"  &eret  else
                pr    k o a "is"   &eis   else
@@ -568,8 +565,8 @@ ga  () none = gegcmp "a"
 gae () none = gegcmp "ae"
 
 gcast(a T b T) none = (
-  (b.format == &ftnone) ?  gtz     "eax"
-  { (b.format == &ftbyte) then
+  (b.q == &TNONE) ?  gtz     "eax"
+  { (b.q == &TBYTE) then
     gpromote  "eax" }
 )
 
@@ -580,54 +577,54 @@ gpop  (c @N  s S ) none = { gt1 "pop"  s (c@ = c@ - 1) }
 
 gindex(      l N ) none = { !!l then gs  "add $" gn  l gc  ',' gtreg  "rax" glf  }
 
-gaddr(q @ftfn n N s S d S) none = {(!strcmp2 s d or n) then gs  "lea " gn  n gs  "(%r" gs  s gs  "),%r" gs  d glf }
-gload(q @ftfn n N s S d S) none = (
-  (q == &ftstct or q == &ftfunc) ?
+gaddr(q TypeKind n N s S d S) none = {(!strcmp2 s d or n) then gs  "lea " gn  n gs  "(%r" gs  s gs  "),%r" gs  d glf }
+gload(q TypeKind n N s S d S) none = (
+  (q == &TSTCT or q == &TFUNC) ?
     gaddr  q n s d 
-  (q == &ftbyte) ?
+  (q == &TBYTE) ?
     {gs  "movzbl " gn  n gs  "(%r" gs  s gs  "),%e" gs  d glf }
   {gs  "mov " gn  n gs  "(%r" gs  s gs  "),%r" gs  d glf }
 )
 
 gaddrg(e E c @N d S) none = { gs "mov " gsn e.t.k.p e.t.k.n gs "@GOTPCREL(%rip),%r" gs d glf }
-gaddrl(e E c @N d S) none = { gaddr e.a.u.format (c@ - e.a.sp << 3) "sp" d }
-gloadl(e E c @N d S) none = { gload e.a.u.format (c@ - e.a.sp << 3) "sp" d }
+gaddrl(e E c @N d S) none = { gaddr e.a.u.q (c@ - e.a.c << 3) "sp" d }
+gloadl(e E c @N d S) none = { gload e.a.u.q (c@ - e.a.c << 3) "sp" d }
 
 gloadsp(t T d S) none = (
-  (t.format == &ftstct) ?
+  (t.q == &TSTCT) ?
     { gs "mov %rsp,%" gs d glf }
-  (t.format == &ftbyte) ?
+  (t.q == &TBYTE) ?
     { gs "movzbq (%rsp), %" gs d glf }
     { gs "mov (%rsp),%" gs d glf }
 )
 
 gstoresp(t T) none = {
-  (t.format == &ftstct) ?
+  (t.q == &TSTCT) ?
     { 0 for i
       (i < t.size) then
       (i + 1) ret
       gs "mov " gn i gs "(%rax),%r8b" glf
       gs "mov %r8b," gn i gs "(%rsp)" glf }
-  (t.format == &ftbyte) ?
+  (t.q == &TBYTE) ?
     { gs "mov %al,(%rsp)"  glf }
     { gs "mov %rax,(%rsp)" glf }
 }
 
 gstore(t T c @N) none = {
   gpop c "rdi"
-  (t.format == &ftbyte) ?
+  (t.q == &TBYTE) ?
     { gs "mov %al,(%rdi)"  glf }
     { gs "mov %rax,(%rdi)" glf }
 }
 
-gexpr necl  = {gc '#' gsn e.k.p e.k.n glf e.gen@ e c l }
+gexpr necl  = { e.q@ e c l }
 
 gdrop (e E c N    ) none = { cast none gexpr  e c 0 }
 geval (e E c N l N) none = {
   gexpr e c l is l1
   !!l1 then
   l1 for l2
-  gload ((l2 == 1 and l == 0) ? e.t.format &ftptr) 0 "ax" "ax"
+  gload ((l2 == 1 and l == 0) ? e.t.q &TPTR) 0 "ax" "ax"
   (l2 - 1)
 }
 
@@ -639,7 +636,7 @@ gtpars(k @K o O t T c N g N) N = {
       (o1.k = t.k)
       (o1.e = &nd)
       (o1.is_type = 0)
-      (nd.sp  = -g)
+      (nd.c  = -g)
       (nd.u   = t)
       gtpars k &o1 t.s c (g + 1) }
 }
@@ -652,7 +649,7 @@ gtparr(k @K o O t T c N g N) N = {
       (o1.k = t.k)
       (o1.is_type = 0)
       (o1.e = &nd)
-      (nd.sp = c)
+      (nd.c = c)
       (nd.u  = t)
       (((g == 5) ? &gtpars &gtparr)@ k &o1 t.s c (g + 1) + 1) }
 }
@@ -876,7 +873,7 @@ eid    exk  = {
   (s.is_type and kdiag k@ "not a variable")
   cast E malloc sizeof Expr is e
   (e.s   = 0      )
-  (e.gen = &geid  )
+  (e.q = &geid  )
   (e.k   = k      )
   s.e ? {
     (e.a = s.e    )
@@ -918,8 +915,8 @@ geelem necl   = {
 
 emem  exka  = {
   jadv k
-  { a.t for t (t.format == &ftptr) then t.a } is t
-  (t.format != &ftstct and kdiag k@ "not a struct")
+  { a.t for t (t.q == &TPTR) then t.a } is t
+  (t.q != &TSTCT and kdiag k@ "not a struct")
   cast T 0 is g
   { t.a for a
     { (a.k.n == k1.s.n) then strncmp2 a.k.p k1.s.p k1.s.n }
@@ -931,9 +928,9 @@ emem  exka  = {
 gemem   necl  = {
   geval  e.a c 0
   { e.a.t for t
-    (t.format == &ftptr) then
+    (t.q == &TPTR) then
     t.a ret
-    gload  t.a.format 0 "ax" "ax" }
+    gload  t.a.q 0 "ax" "ax" }
   gindex  e.t.offset
   (1 - l)
 }
@@ -982,7 +979,7 @@ eland  exka  = {
   t2 k1 b.t &geland b a
 }
 geland necl  = {
-  (e.a.s.t.format == &ftnone) is keep
+  (e.a.s.t.q == &TNONE) is keep
   geval  e.a c 0
   gtcz              "eax"
   gje    e          "a"
@@ -998,7 +995,7 @@ geland necl  = {
 eelse  exka  = t2 k1 a.t &gelor p5    k o a
 elor   exka  = t2 k1 a.t &gelor pland k o a
 gelor  necl  = {
-  (e.a.s.t.format == &ftnone) is keep
+  (e.a.s.t.q == &TNONE) is keep
   geval    e.a   c  0
   gtcz              "eax"
   gjne     e        "a"
@@ -1021,7 +1018,7 @@ escratch  exk   = {
   (o1.is_type = 0    )
   jadv k
   (e.s   = 0         )
-  (e.gen = &gescratch)
+  (e.q = &gescratch)
   (e.k   = k1        )
   (e.u   = u         )
   (e.a   = p5 k &o1  )
@@ -1031,7 +1028,7 @@ escratch  exk   = {
 gescratch necl  = {
   (e.u.size + 7 << 3) is stack
   gfpush    &c stack
-  (e.sp = c)
+  (e.c = c)
   geval e.a  c l
   gfpop     &c stack
   0
@@ -1046,7 +1043,7 @@ eis    exka = {
   (o1.is_type = 0 )
   jadv k
   (e.s   = 0      )
-  (e.gen = &geis  )
+  (e.q = &geis  )
   (e.k   = k1     )
   (e.a   = a      )
   (e.u   = a.t    )
@@ -1058,7 +1055,7 @@ geis   necl = {
   (e.u.size + 7 << 3) is stack
   geval    e.a    c 0
   gfpush         &c stack
-  (e.sp  = c)
+  (e.c  = c)
   gstoresp e.u
   geval    e.a.s  c l
   gfpop          &c stack
@@ -1074,7 +1071,7 @@ efor   exka = {
   (o1.is_type = 0 )
   jadv k
   (e.s   = 0      )
-  (e.gen = &gefor )
+  (e.q = &gefor )
   (e.k   = k1     )
   (e.a   = a      )
   (e.u   = a.t    )
@@ -1086,7 +1083,7 @@ gefor  necl = {
   (e.u.size + 7 << 3) is stack
   geval     e.a    c 0
   gfpush          &c stack
-  (e.sp = c)
+  (e.c = c)
   gstoresp  e.u
   gj        e        "b"
   glabel    e        "a"
@@ -1138,10 +1135,3 @@ gewrite necl = gegsys3 1 1 e c
 
 eerr    exk  = t2 k1 nnone &geerr p3 k o p3 k o
 geerr   necl = gegsys3 1 2 e c
-
-ftnone ftfn = 0
-ftbyte ftfn = 0
-ftnat  ftfn = 0
-ftstct ftfn = 0
-ftfunc ftfn = 0
-ftptr  ftfn = 0
