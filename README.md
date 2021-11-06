@@ -1,8 +1,13 @@
 # ebrew
 
 current goals:
-- modules
+- drive tokenizer from parser
+- generate code during parsing (eliminate AST entirely)
+- eliminate all other structs
 - generics
-- type inference
 - closures
+- lib
+- fast
 - tidy
+- modules
+- type inference

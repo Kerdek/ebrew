@@ -1,3 +1,47 @@
+malloc2 (n nat) @none = {
+  brk n is m
+  cast @none m
+}
+
+memcmp2(a @byte b @byte n nat) nat = {
+  1 is r
+  { n then n for m
+    (a@ == b@) ?
+      { (a = &a^1)
+        (b = &b^1)
+        (m - 1) }
+      { (r = 0)
+        0 } }
+  r
+}
+
+strncmp2(a @byte b @byte n nat) nat = {
+  1 is r
+  { n then
+    n for m
+    (a@ == b@) ?
+      { a@ then
+        (a = &a^1)
+        (b = &b^1)
+        (m - 1) }
+      { (r = 0)
+        0 } }
+  r
+}
+
+strcmp2(a @byte b @byte) nat = {
+  1 is r
+  { 1 for _
+    (a@ == b@) ?
+      { a@ then
+        (a = &a^1)
+        (b = &b^1)
+        1 }
+      { (r = 0)
+        0 } }
+  r
+}
+
 type
   TokenKind @()none
   TypeKind  @()none
@@ -53,17 +97,17 @@ type
   exa  (k @K o O     a E) E
   exk  (k @K o O k1 K    ) E
   exka (k @K o O k1 K a E) E
+
   necl (e E c N l N) N
 
-  gelfn (v N) N
   geefn (e E c N l N gop @() none) N
   gegfn () none
 ;
 
+ptype  tx
+
 p2     ex p3     ex p5     ex p7     ex
 pmul   ex padd   ex psh    ex pcmp   ex
-
-ptype  tx
 
 esize  exk ecast  exk enat   exk eaddr  exk escratch exk ebrk exk eibrk exk
 eneg   exk elnot  exk eid    exk estr   exk ebrace exk eparen exk eexit  exk ebyte  exk eread exk ewrite exk eerr exk
@@ -118,45 +162,6 @@ isid (c C    ) nat = {
    isaz c else
    is09 c else
    is_  c
-}
-
-memcmp2(a S b S n N) nat = {
-  1 is r
-  { n then n for m
-    (a@ == b@) ?
-      { (a = &a^1)
-        (b = &b^1)
-        (m - 1) }
-      { (r = 0)
-        0 } }
-  r
-}
-
-strncmp2(a S b S n N) nat = {
-  1 is r
-  { n then
-    n for m
-    (a@ == b@) ?
-      { a@ then
-        (a = &a^1)
-        (b = &b^1)
-        (m - 1) }
-      { (r = 0)
-        0 } }
-  r
-}
-
-strcmp2(a S b S) nat = {
-  1 is r
-  { 1 for _
-    (a@ == b@) ?
-      { a@ then
-        (a = &a^1)
-        (b = &b^1)
-        1 }
-      { (r = 0)
-        0 } }
-  r
 }
 
 sw1(p S a C    ) nat = {(p^0 == a) then 1}
@@ -217,11 +222,6 @@ osn(s S n N) none = err s n
 olf(   ) none = oc '\n'
 on1(n N) none = { n then on1 (n / 10) oc cast byte ('0' + n % 10) }
 on (n N) none = { n ? on1 n oc '0' }
-
-malloc2 (n nat) @none = {
-  brk n is m
-  cast @none m
-}
 
 align(n N a N) N = ((n + a - 1) / a * a)
 
@@ -677,8 +677,7 @@ ecall exka = {
 export _start(argc N argv @S) N = {
   ibrk 0
   gt0 ".data"
-  gt0 ".scurbrk:"
-  gt0 ".quad 0"
+  gt0 ".scurbrk:.quad 0"
   read_file is p
   cast K 0 is k
   1 is line
@@ -753,10 +752,6 @@ export _start(argc N argv @S) N = {
   exit 0
 }
 
-ge0     gelfn = {
-  gtlit   v "rax"
-  0
-}
 
 ge1     geefn = {
   geval  e.a c 0
@@ -788,7 +783,7 @@ enat     exk   = t0 k1 nnat  &genat
 gebyte   necl  = { gs "mov $" gsn e.k.p ((e.k.p^1 == '\\') ? 3 2) gs ",%rax" glf 0 }
 ebyte    exk   = t0 k1 nbyte &gebyte
 
-gesize   necl  = ge0 e.u.size
+gesize   necl  = { gtlit e.u.size "rax" 0 }
 esize    exk   = tt k1 nnat &gesize ptype k o
 
 gederef  necl  = (gexpr e.a c 0 + 1 - l)
