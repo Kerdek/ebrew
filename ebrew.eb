@@ -1,9 +1,6 @@
-malloc2 (n nat) @none = {
-  brk n is m
-  cast @none m
-}
+alloc (n nat) @none = cast @none brk n
 
-memcmp2(a @byte b @byte n nat) nat = {
+memcmp(a @byte b @byte n nat) nat = {
   1 is r
   { n then n for m
     (a@ == b@) ?
@@ -15,7 +12,7 @@ memcmp2(a @byte b @byte n nat) nat = {
   r
 }
 
-strncmp2(a @byte b @byte n nat) nat = {
+strncmp(a @byte b @byte n nat) nat = {
   1 is r
   { n then
     n for m
@@ -29,7 +26,7 @@ strncmp2(a @byte b @byte n nat) nat = {
   r
 }
 
-strcmp2(a @byte b @byte) nat = {
+strcmp(a @byte b @byte) nat = {
   1 is r
   { 1 for _
     (a@ == b@) ?
@@ -43,81 +40,83 @@ strcmp2(a @byte b @byte) nat = {
 }
 
 type
+
   TokenKind @()none
   TypeKind  @()none
+
+  C byte
+  N nat
+  S @C
 
   Token {
     s    @Token
     q     TokenKind
-    p    @byte
-    n     nat
-    line  nat
-    col   nat
+    p     S
+    n     N
+    line  N
+    col   N
   }
+
+  K @Token
 
   Type {
     s      @Type
     a      @Type
     q       TypeKind
-    k      @Token
-    size    nat
-    align   nat
-    offset  nat
+    k       K
+    size    N
+    align   N
+    offset  N
   }
+
+  T @Type
 
   Expr {
     s @Expr
     a @Expr
-    q @(e @Expr c nat l nat) nat
-    k @Token
-    t @Type
-    u @Type
-    c nat
+    q @(e @Expr c N l N) N
+    k  K
+    t  T
+    u  T
+    c  N
   }
+
+  E @Expr
 
   Scope {
-    s @Scope
-    k @Token
-    t @Type
-    e @Expr
-    is_type  nat
-    is_def   nat
+    s        @Scope
+    k        K
+    t        T
+    e        E
+    is_type  N
+    is_def   N
   }
 
-  C byte
-  T @Type
   O @Scope
-  K @Token
-  E @Expr
-  N nat
-  S @byte
 
-  tx   (k @K o O        ) T
-  ex   (k @K o O        ) E
-  exa  (k @K o O     a E) E
-  exk  (k @K o O k1 K    ) E
-  exka (k @K o O k1 K a E) E
+  tko   (k @K o O         ) T
+  eko   (k @K o O         ) E
+  ekoa  (k @K o O      a E) E
+  ekok  (k @K o O k1 K    ) E
+  ekoka (k @K o O k1 K a E) E
 
   necl (e E c N l N) N
-
-  geefn (e E c N l N gop @() none) N
-  gegfn () none
 ;
 
-ptype  tx
+ptype  tko
 
-p2     ex p3     ex p5     ex p7     ex
-pmul   ex padd   ex psh    ex pcmp   ex
+p2     eko p3     eko p5     eko p7     eko
+pmul   eko padd   eko psh    eko pcmp   eko
 
-esize  exk ecast  exk enat   exk eaddr  exk escratch exk ebrk exk eibrk exk
-eneg   exk elnot  exk eid    exk estr   exk ebrace exk eparen exk eexit  exk ebyte  exk eread exk ewrite exk eerr exk
+esize  ekok ecast  ekok enat   ekok eaddr  ekok escratch ekok ebrk ekok eibrk ekok
+eneg   ekok elnot  ekok eid    ekok estr   ekok ebrace ekok eparen ekok eexit  ekok ebyte  ekok eread ekok ewrite ekok eerr ekok
 
-eas    exka eelem  exka ederef exka eseq   exka
-eret   exka emul   exka ediv   exka emod   exka ethen  exka
-eelse  exka econd  exka eadd   exka esub   exka eshl   exka
-eshr   exka eb     exka ea     exka ebe    exka eae    exka
-ee     exka ene    exka eland  exka ecall  exka emem   exka
-elor   exka eass   exka eis    exka efor   exka
+eas    ekoka eelem  ekoka ederef ekoka eseq   ekoka
+eret   ekoka emul   ekoka ediv   ekoka emod   ekoka ethen  ekoka
+eelse  ekoka econd  ekoka eadd   ekoka esub   ekoka eshl   ekoka
+eshr   ekoka eb     ekoka ea     ekoka ebe    ekoka eae    ekoka
+ee     ekoka ene    ekoka eland  ekoka ecall  ekoka emem   ekoka
+elor   ekoka eass   ekoka eis    ekoka efor   ekoka
 
 TNONE () none = 0 
 TBYTE () none = 0
@@ -132,13 +131,11 @@ JCHR () none = 0
 JSTR () none = 0
 JNUM () none = 0
 
-isc (c C d C) nat = (c == d)
-
-issp (c C    ) nat = isc c ' '
-istb (c C    ) nat = isc c '\t'
-islf (c C    ) nat = isc c '\n'
-iscr (c C    ) nat = isc c '\r'
-is_  (c C    ) nat = isc c '_'
+issp (c C    ) nat = (c == ' ' )
+istb (c C    ) nat = (c == '\t')
+islf (c C    ) nat = (c == '\n')
+iscr (c C    ) nat = (c == '\r')
+is_  (c C    ) nat = (c == '_' )
 
 isin(c C a C b C) nat = (a <= c and c <= b)
 
@@ -249,7 +246,7 @@ type_equal(t T u T) nat = {
 }
 
 ntype(size N align N q TypeKind) T = {
-  cast T malloc2 sizeof Type is t
+  cast T alloc sizeof Type is t
   (t.size  = size  )
   (t.align = align )
   (t.q = q)
@@ -271,7 +268,7 @@ nptr  (a T) T = ntypea 8 8 &TPTR  a
 nfunc (a T) T = ntypea 1 1 &TFUNC a
 
 tree(k K t T q @necl) E = {
-  cast E malloc2 sizeof Expr is e
+  cast E alloc sizeof Expr is e
   (e.k = k)
   (e.t = t)
   (e.q = q)
@@ -285,7 +282,7 @@ t3  (k K t T q @necl c E b E a E) E = {tree k t q is e e ret (e.a = a)  (e.a.s =
 tt  (k K t T q @necl u T        ) E = {t0   k t q is e e ret (e.u = u)}
 
 ntoken(q TokenKind a S b S line N col N) K = {
-  cast K malloc2 sizeof Token is k
+  cast K alloc sizeof Token is k
   (k.s    = 0    )
   (k.q    = q    )
   (k.p    = a    )
@@ -297,7 +294,7 @@ ntoken(q TokenKind a S b S line N col N) K = {
 
 read_file() S = {
   (1 << 20) is big
-  cast @byte malloc2 big is buf
+  cast @byte alloc big is buf
   read buf big is n
   (buf^n = cast byte 0)
   buf
@@ -307,7 +304,7 @@ try_search_scope(o O c S n N) O = {
   cast O 0 is r
   { o then
     o for oi
-    (n != oi.k.n or !strncmp2 oi.k.p c n) ?
+    (n != oi.k.n or !strncmp oi.k.p c n) ?
       oi.s
       { (r = oi)
         cast O 0 } }
@@ -320,7 +317,7 @@ search_scope(k @K o O c S n N) @Scope = {
 }
 
 jadv   (k @K    ) K    = { k@ ret (k@ = k.s) }
-jeq    (k @K c S) nat  = { k@ then memcmp2 k.p c k.n then !c^k.n }
+jeq    (k @K c S) nat  = { k@ then memcmp k.p c k.n then !c^k.n }
 expect (k @K c S) none = { { !jeq k c then kdiag k@ "unexpected" } jadv k }
 consume(k @K c S) nat  = { jeq k c is r { r then jadv k } r }
 
@@ -334,14 +331,14 @@ memcpy2 (a S b S n N) none = {
 }
 
 declarator (k @K o O t @T) none = {
-  (t@ = cast T malloc2 sizeof Type)
+  (t@ = cast T alloc sizeof Type)
   jadv k is k1
   ptype k o is u
   memcpy2 cast S t@ cast S u sizeof Type
   (t.k = k1)
 }
 
-struct_decl tx = {
+struct_decl tko = {
   nstct is t
   &t.a is u
   { 1 for _ 
@@ -360,7 +357,7 @@ struct_decl tx = {
   t
 }
 
-func_params tx = {
+func_params tko = {
   cast T 0 is params
   &params is u
   { 1 for _
@@ -370,13 +367,13 @@ func_params tx = {
     1 }
   jadv k
   ptype k o is ret
-  nfunc cast T malloc2 sizeof Type is t
+  nfunc cast T alloc sizeof Type is t
   memcpy2 cast S t.a cast S ret sizeof Type
   (t.a.s = params)
   t
 }
 
-ptype tx = {
+ptype tko = {
   consume k "none"   ? nnone
   consume k "byte"   ? nbyte
   consume k "nat"    ? nnat
@@ -389,41 +386,41 @@ ptype tx = {
     s.t }
 }
 
-pj(k @K o O     q TokenKind e @exk ) E = {k@ then (k.q == q) then jadv k is k1 e@ k o k1}
-pl(k @K o O     c S         e @exk ) E = {k@ then jeq k c then jadv k is k1 e@ k o k1  }
-pr(k @K o O a E c S         e @exka) E = {k@ then jeq k c then jadv k is k1 e@ k o k1 a}
-pu(k @K o O a E c S         e @exka) E = {k@ then consume k c ? a e@ k o k@ a}
+pj(k @K o O     q TokenKind e @ekok ) E = {k@ then (k.q == q) then jadv k is k1 e@ k o k1}
+pl(k @K o O     c S         e @ekok ) E = {k@ then jeq k c then jadv k is k1 e@ k o k1  }
+pr(k @K o O a E c S         e @ekoka) E = {k@ then jeq k c then jadv k is k1 e@ k o k1 a}
+pu(k @K o O a E c S         e @ekoka) E = {k@ then consume k c ? a e@ k o k@ a}
 
-pa1    ex  = { pj    k o   &JID   &eid   else
+pa1    eko  = { pj    k o   &JID   &eid   else
                pj    k o   &JSTR  &estr  else
                pj    k o   &JNUM  &enat  else
                pj    k o   &JCHR  &ebyte      }
-pa3    exa = { (a.t.q == &TFUNC) then ecall k o k@ a }
-pa4    exa = { pr    k o a "?"    &econd      }
-pa5    exa = { pr    k o a "ret"  &eret  else
+pa3    ekoa = { (a.t.q == &TFUNC) then ecall k o k@ a }
+pa4    ekoa = { pr    k o a "?"    &econd      }
+pa5    ekoa = { pr    k o a "ret"  &eret  else
                pr    k o a "is"   &eis   else
                pr    k o a "for"  &efor  else
                pr    k o a "then" &ethen else
                pr    k o a "else" &eelse else
                pu    k o a "}"    &eseq       }
-pamul  exa = { pr    k o a "*"    &emul  else
+pamul  ekoa = { pr    k o a "*"    &emul  else
                pr    k o a "/"    &ediv  else
                pr    k o a "%"    &emod       }
-paadd  exa = { pr    k o a "+"    &eadd  else
+paadd  ekoa = { pr    k o a "+"    &eadd  else
                pr    k o a "-"    &esub       }
-pash   exa = { pr    k o a "<<"   &eshl  else
+pash   ekoa = { pr    k o a "<<"   &eshl  else
                pr    k o a ">>"   &eshr       }
-pacmp  exa = { pr    k o a "<"    &eb    else
+pacmp  ekoa = { pr    k o a "<"    &eb    else
                pr    k o a ">"    &ea    else
                pr    k o a "<="   &ebe   else
                pr    k o a ">="   &eae   else
                pr    k o a "=="   &ee    else
                pr    k o a "!="   &ene        }
-paland exa = { pr    k o a "and"  &eland      }
-palor  exa = { pr    k o a "or"   &elor       }
-pa7    exa = { pr    k o a "as"   &eas        }
+paland ekoa = { pr    k o a "and"  &eland      }
+palor  ekoa = { pr    k o a "or"   &elor       }
+pa7    ekoa = { pr    k o a "as"   &eas        }
 
-p2 ex = {
+p2 eko = {
   pl k o "&"       &eaddr    else
   pl k o "-"       &eneg     else
   pl k o "!"       &elnot    else
@@ -451,17 +448,17 @@ p2 ex = {
   pr    k o     a "@"       &ederef
 }
 
-p3    ex = { p2    k o for a pa3    k o a }
-p4    ex = { p3    k o for a pa4    k o a }
-p5    ex = { pl    k o "scratch" &escratch else
+p3    eko = { p2    k o for a pa3    k o a }
+p4    eko = { p3    k o for a pa4    k o a }
+p5    eko = { pl    k o "scratch" &escratch else
              p4    k o is  a pa5    k o a }
-pmul  ex = { p4    k o for a pamul  k o a }
-padd  ex = { pmul  k o for a paadd  k o a }
-psh   ex = { padd  k o for a pash   k o a }
-pcmp  ex = { psh   k o for a pacmp  k o a }
-pland ex = { pcmp  k o for a paland k o a }
-plor  ex = { pland k o for a palor  k o a }
-p7    ex = { plor  k o for a pa7    k o a }
+pmul  eko = { p4    k o for a pamul  k o a }
+padd  eko = { pmul  k o for a paadd  k o a }
+psh   eko = { padd  k o for a pash   k o a }
+pcmp  eko = { psh   k o for a pacmp  k o a }
+pland eko = { pcmp  k o for a paland k o a }
+plor  eko = { pland k o for a palor  k o a }
+p7    eko = { plor  k o for a pa7    k o a }
 
 typedecl(k @K o O) none
 function(k @K o O) none
@@ -568,7 +565,7 @@ gpop  (c @N  s S ) none = { gt1 "pop"  s (c@ = c@ - 1) }
 gindex(      l N ) none = { !!l then gs  "add $" gn  l gc  ',' gtreg  "rax" glf  }
 
 gaddr(t T n N s S d S) none = {
-  (n or !strcmp2 s d) then
+  (n or !strcmp s d) then
   gs "lea " { n then gn n } gs "(%" gs s gs "),%" gs d glf
 }
 gload(t T n N s S d S) none = {
@@ -663,7 +660,7 @@ gecall necl  = {
   gs "call *%rax" glf
   0
 }
-ecall exka = {
+ecall ekoka = {
   a.t.a.s is u
   { a for b
     u then
@@ -753,13 +750,13 @@ export _start(argc N argv @S) N = {
 }
 
 
-ge1     geefn = {
+ge1     (e E c N l N gop @() none) N = {
   geval  e.a c 0
   gop@
   0
 }
 
-ge2     geefn = {
+ge2     (e E c N l N gop @() none) N = {
   geval  e.a.s  c 0
   gpush        &c "rax"
   geval  e.a    c 0
@@ -768,29 +765,29 @@ ge2     geefn = {
   0
 }
 
-gegneg  gegfn = gtneg  "rax"
-geglnot gegfn = glnot  "rax" "eax"
-gegadd  gegfn = gadd   "rdi" "rax"
-gegsub  gegfn = gsub   "rdi" "rax"
-gegmul  gegfn = gmul   "rdi"
+gegneg  () none = gtneg  "rax"
+geglnot () none = glnot  "rax" "eax"
+gegadd  () none = gadd   "rdi" "rax"
+gegsub  () none = gsub   "rdi" "rax"
+gegmul  () none = gmul   "rdi"
 
-ebrace   exk  = p5 k o
-eparen   exk  = p7 k o
+ebrace   ekok  = p5 k o
+eparen   ekok  = p7 k o
 
 genat    necl  = { gs "mov $" gsn e.k.p e.k.n gs ",%rax" glf 0 }
-enat     exk   = t0 k1 nnat  &genat
+enat     ekok   = t0 k1 nnat  &genat
 
 gebyte   necl  = { gs "mov $" gsn e.k.p ((e.k.p^1 == '\\') ? 3 2) gs ",%rax" glf 0 }
-ebyte    exk   = t0 k1 nbyte &gebyte
+ebyte    ekok   = t0 k1 nbyte &gebyte
 
 gesize   necl  = { gtlit e.u.size "rax" 0 }
-esize    exk   = tt k1 nnat &gesize ptype k o
+esize    ekok   = tt k1 nnat &gesize ptype k o
 
 gederef  necl  = (gexpr e.a c 0 + 1 - l)
-ederef   exka  = t1 k1 a.t.a &gederef a
+ederef   ekoka  = t1 k1 a.t.a &gederef a
 
 geaddr   necl  = gexpr e.a c 1
-eaddr    exk   = {
+eaddr    ekok   = {
   p2 k o is a
   t1 k1 nptr a.t &geaddr a
 }
@@ -800,8 +797,8 @@ gecast  necl  = {
   gcast  e.a.t e.t
   0
 }
-eas      exka  = t1 k1 ptype k o &gecast a
-ecast    exk   = {
+eas      ekoka  = t1 k1 ptype k o &gecast a
+ecast    ekok   = {
   ptype k o is u
   t1 k1 u &gecast p4 k o
 }
@@ -810,7 +807,7 @@ gestr necl  = {
   gs "mov .s" gn cast nat e.k gs "@GOTPCREL(%rip),%rax" glf
   0
 }
-estr   exk  = t0 k1 nptr nbyte &gestr
+estr   ekok  = t0 k1 nptr nbyte &gestr
 
 geid   necl  = {
   e.a ?
@@ -820,10 +817,10 @@ geid   necl  = {
     { gs "mov " gsn e.t.k.p e.t.k.n gs "@GOTPCREL(%rip),%r" gs "ax" glf }
   0
 }
-eid    exk  = {
+eid    ekok  = {
   (search_scope k o k1.p k1.n) is s
   (s.is_type and kdiag k@ "not a variable")
-  cast E malloc2 sizeof Expr is e
+  cast E alloc sizeof Expr is e
   (e.s   = 0      )
   (e.q = &geid  )
   (e.k   = k      )
@@ -835,21 +832,21 @@ eid    exk  = {
   e
 }
 
-gelnot necl  = ge1 e c l &geglnot elnot exk  = t1 k1 nnat &gelnot p3    k o   
-geneg  necl  = ge1 e c l &gegneg  eneg  exk  = t1 k1 nnat &geneg  p3    k o   
-gediv  necl  = ge2 e c l &gdiv  ediv  exka = t2 k1 nnat &gediv  p4    k o a 
-gemod  necl  = ge2 e c l &gmod  emod  exka = t2 k1 nnat &gemod  p4    k o a 
-gee    necl  = ge2 e c l &ge    ee    exka = t2 k1 nnat &gee    psh   k o a 
-gene   necl  = ge2 e c l &gne   ene   exka = t2 k1 nnat &gene   psh   k o a 
-geae   necl  = ge2 e c l &gae   eae   exka = t2 k1 nnat &geae   psh   k o a 
-gea    necl  = ge2 e c l &ga    ea    exka = t2 k1 nnat &gea    psh   k o a 
-geb    necl  = ge2 e c l &gb    eb    exka = t2 k1 nnat &geb    psh   k o a 
-gebe   necl  = ge2 e c l &gbe   ebe   exka = t2 k1 nnat &gebe   psh   k o a 
-geadd  necl  = ge2 e c l &gegadd  eadd  exka = t2 k1 nnat &geadd  pmul  k o a 
-gesub  necl  = ge2 e c l &gegsub  esub  exka = t2 k1 nnat &gesub  pmul  k o a 
-gemul  necl  = ge2 e c l &gegmul  emul  exka = t2 k1 nnat &gemul  p4    k o a 
-geshl  necl  = ge2 e c l &gshl  eshl  exka = t2 k1 nnat &geshl  padd  k o a 
-geshr  necl  = ge2 e c l &gshr  eshr  exka = t2 k1 nnat &geshr  padd  k o a 
+gelnot necl  = ge1 e c l &geglnot elnot ekok  = t1 k1 nnat &gelnot p3    k o   
+geneg  necl  = ge1 e c l &gegneg  eneg  ekok  = t1 k1 nnat &geneg  p3    k o   
+gediv  necl  = ge2 e c l &gdiv  ediv  ekoka = t2 k1 nnat &gediv  p4    k o a 
+gemod  necl  = ge2 e c l &gmod  emod  ekoka = t2 k1 nnat &gemod  p4    k o a 
+gee    necl  = ge2 e c l &ge    ee    ekoka = t2 k1 nnat &gee    psh   k o a 
+gene   necl  = ge2 e c l &gne   ene   ekoka = t2 k1 nnat &gene   psh   k o a 
+geae   necl  = ge2 e c l &gae   eae   ekoka = t2 k1 nnat &geae   psh   k o a 
+gea    necl  = ge2 e c l &ga    ea    ekoka = t2 k1 nnat &gea    psh   k o a 
+geb    necl  = ge2 e c l &gb    eb    ekoka = t2 k1 nnat &geb    psh   k o a 
+gebe   necl  = ge2 e c l &gbe   ebe   ekoka = t2 k1 nnat &gebe   psh   k o a 
+geadd  necl  = ge2 e c l &gegadd  eadd  ekoka = t2 k1 nnat &geadd  pmul  k o a 
+gesub  necl  = ge2 e c l &gegsub  esub  ekoka = t2 k1 nnat &gesub  pmul  k o a 
+gemul  necl  = ge2 e c l &gegmul  emul  ekoka = t2 k1 nnat &gemul  p4    k o a 
+geshl  necl  = ge2 e c l &gshl  eshl  ekoka = t2 k1 nnat &geshl  padd  k o a 
+geshr  necl  = ge2 e c l &gshr  eshr  ekoka = t2 k1 nnat &geshr  padd  k o a 
 
 geelem necl   = {
   geval  e.a    c 0
@@ -859,7 +856,7 @@ geelem necl   = {
   gs  "lea (%rdx,%rax," gn  e.a.t.a.size gs  "),%rax" glf 
   (1 - l)
 }
-eelem  exka = t2 k1 a.t.a &geelem p3 k o a
+eelem  ekoka = t2 k1 a.t.a &geelem p3 k o a
 
 gemem   necl  = {
   geval  e.a c 0
@@ -872,13 +869,13 @@ gemem   necl  = {
   gindex e.t.offset
   (1 - l)
 }
-emem  exka  = {
+emem  ekoka  = {
   jadv k
   { a.t for t (t.q == &TPTR) then t.a } is t
   (t.q != &TSTCT and kdiag k@ "not a struct")
   cast T 0 is g
   { t.a for a
-    { (a.k.n == k1.s.n) then strncmp2 a.k.p k1.s.p k1.s.n }
+    { (a.k.n == k1.s.n) then strncmp a.k.p k1.s.p k1.s.n }
     ? { (g = a) cast T 0 }
       a.s }
   { !g then kdiag k@ "no such member" }
@@ -890,7 +887,7 @@ geseq  necl  = {
   geval  e.a.s c l
   0
 }
-eseq   exka  = {
+eseq   ekoka  = {
   p5 k o is b
   t2 k1 b.t &geseq b a
 }
@@ -902,7 +899,7 @@ geret necl  = {
   gpop         &c "rax"
   0
 }
-eret  exka  = t2 k1 a.t &geret p5 k o a
+eret  ekoka  = t2 k1 a.t &geret p5 k o a
 
 gecond necl   = {
   geval   e.a     c 0
@@ -915,7 +912,7 @@ gecond necl   = {
   glabel  e         "b"
   0
 }
-econd  exka = {
+econd  ekoka = {
   p4 k o is b
   t3 k1 b.t &gecond p4 k o b a
 }
@@ -933,11 +930,11 @@ geland necl  = {
   glabel  e         "a"
   0
 }
-ethen  exka  = {
+ethen  ekoka  = {
   p5 k o is b
   t2 k1 b.t &geland b a
 }
-eland  exka  = {
+eland  ekoka  = {
   pcmp k o is b
   t2 k1 b.t &geland b a
 }
@@ -955,8 +952,8 @@ gelor  necl  = {
   glabel   e        "a"
   0
 }
-eelse  exka  = t2 k1 a.t &gelor p5    k o a
-elor   exka  = t2 k1 a.t &gelor pland k o a
+eelse  ekoka  = t2 k1 a.t &gelor p5    k o a
+elor   ekoka  = t2 k1 a.t &gelor pland k o a
 
 gescratch necl = {
   (e.u.size + 7 >> 3) is d
@@ -966,8 +963,8 @@ gescratch necl = {
   gfpop     &c d
   0
 }
-escratch  exk   = {
-  cast E malloc2 sizeof Expr is e
+escratch  ekok   = {
+  cast E alloc sizeof Expr is e
   (e.s   = 0         )
   (e.q   = &gescratch)
   (e.k   = k1        )
@@ -992,8 +989,8 @@ geis   necl = {
   gfpop          &c d
   0
 }
-eis    exka = {
-  cast E malloc2 sizeof Expr is e
+eis    ekoka = {
+  cast E alloc sizeof Expr is e
   (e.s   = 0      )
   (e.q   = &geis  )
   (e.k   = k1     )
@@ -1026,8 +1023,8 @@ gefor  necl = {
   gfpop           &c d
   0
 }
-efor   exka = {
-  cast E malloc2 sizeof Expr is e
+efor   ekoka = {
+  cast E alloc sizeof Expr is e
   (e.s   = 0      )
   (e.q   = &gefor )
   (e.k   = k1     )
@@ -1052,7 +1049,7 @@ geass  necl  = {
   gtz                "eax"
   0
 }
-eass   exka  = t2 k1 nnone &geass p7 k o a
+eass   ekoka  = t2 k1 nnone &geass p7 k o a
 
 geexit necl = {
   geval e.a c 0
@@ -1061,7 +1058,7 @@ geexit necl = {
   gt0 "syscall"
   0
 }
-eexit  exk  = t1 k1 nnone &geexit p3 k o
+eexit  ekok  = t1 k1 nnone &geexit p3 k o
 
 geibrk  necl = {
   geval e.a c 0
@@ -1071,7 +1068,7 @@ geibrk  necl = {
   gt0 "mov %rax,.scurbrk"
   0
 }
-eibrk   exk  = t1 k1 nnone &geibrk p3 k o
+eibrk   ekok  = t1 k1 nnone &geibrk p3 k o
 
 gebrk  necl = {
   geval e.a c 0
@@ -1083,7 +1080,7 @@ gebrk  necl = {
   gt0 "mov %rdi,.scurbrk"
   0
 }
-ebrk   exk  = t1 k1 nnat &gebrk p3 k o
+ebrk   ekok  = t1 k1 nnat &gebrk p3 k o
 
 gegsys3 (n N a0 N e E c N) none = {
   geval e.a    c 0
@@ -1098,10 +1095,10 @@ gegsys3 (n N a0 N e E c N) none = {
 }
 
 geread  necl = gegsys3 0 0 e c
-eread   exk  = t2 k1 nnat &geread p3 k o p3 k o
+eread   ekok  = t2 k1 nnat &geread p3 k o p3 k o
 
 gewrite necl = gegsys3 1 1 e c
-ewrite  exk  = t2 k1 nnat &gewrite p3 k o p3 k o
+ewrite  ekok  = t2 k1 nnat &gewrite p3 k o p3 k o
 
 geerr   necl = gegsys3 1 2 e c
-eerr    exk  = t2 k1 nnat &geerr p3 k o p3 k o
+eerr    ekok  = t2 k1 nnat &geerr p3 k o p3 k o
