@@ -7,22 +7,20 @@ type
   TokenKind @()none
 
   Token {
-    q     TokenKind
     s    @Token
+    q     TokenKind
     l     nat
     p    @byte
     n     nat
-    t    @none
     line  nat
     col   nat
   }
 
   Type {
+    s      @Type
     size    nat
     align   nat
     offset  nat
-    n       nat
-    s      @Type
     o      @Type
     a      @Type
     params @Type
@@ -37,7 +35,6 @@ type
     t @Type
     u @Type
     sp nat
-    l  nat
     gen @(e @Node c nat l nat) nat
   }
 
@@ -303,7 +300,6 @@ t1  (k K t T gen @necl         a E) E = {tree k t gen is e e ret (e.a = a)}
 t2  (k K t T gen @necl     b E a E) E = {tree k t gen is e e ret (e.a = a)  (e.a.s = b)}
 t3  (k K t T gen @necl c E b E a E) E = {tree k t gen is e e ret (e.a = a)  (e.a.s = b)  (e.a.s.s = c)}
 tt  (k K t T gen @necl u T        ) E = {t0   k t gen is e e ret (e.u = u)}
-tl  (k K t T gen @necl l N        ) E = {t0   k t gen is e e ret (e.l = l)}
 
 ntoken(q TokenKind a S b S line N col N) K = {
   cast K malloc sizeof Token is k
@@ -842,9 +838,9 @@ gegae   gegfn = gae
 ebrace   exk  = p5 k o
 eparen   exk  = p7 k o
 
-enat     exk   = tl k1 nnat  &gelit k1.l
-ebyte    exk   = tl k1 nbyte &gelit k1.l
-gelit    necl  = ge0 e.l
+enat     exk   = t0 k1 nnat  &gelit
+ebyte    exk   = t0 k1 nbyte &gelit
+gelit    necl  = ge0 e.k.l
 
 esize    exk   = tt k1 nnat &gesize ptype k o
 gesize   necl  = ge0 e.u.size
