@@ -1,0 +1,48 @@
+ntype(size N align N q TypeKind) T = {
+  cast T alloc sizeof Type is t
+  (t.size  = size  )
+  (t.align = align )
+  (t.q = q)
+  (t.s = 0)
+  t
+}
+
+ntypea(size N align N q TypeKind a T) T = {
+  ntype size align q is t
+  (t.a = a)
+  t
+}
+
+export nnone (   ) T = ntype  0 0 &TNONE
+export nbyte (   ) T = ntype  1 1 &TBYTE
+export nnat  (   ) T = ntype  8 8 &TNAT
+export nstct (   ) T = ntype  0 1 &TSTCT
+export nptr  (a T) T = ntypea 8 8 &TPTR  a
+export nfunc (a T) T = ntypea 1 1 &TFUNC a
+
+export type_equal(t T u T) nat = {
+  t then
+  u then
+  (t == u) else
+  { (t.q == u.q) then
+    (t.q == &TNONE ) else
+    (t.q == &TBYTE ) else
+    (t.q == &TNAT  ) else
+    (t.q == &TPTR  ) ? type_equal t.a u.a
+      { (t.q == &TFUNC ) then
+        t.a is p
+        u.a is q
+        { 1 for _
+          type_equal p q then
+          (p = p.s)
+          (q = q.s)
+          1 }
+        (p == q) } }
+}
+
+export TNONE () none = 0
+export TBYTE () none = 0
+export TNAT  () none = 0
+export TSTCT () none = 0
+export TPTR  () none = 0
+export TFUNC () none = 0

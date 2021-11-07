@@ -1,0 +1,5 @@
+export JID  () none = 0
+export JPCT () none = 0
+export JCHR () none = 0
+export JSTR () none = 0
+export JNUM () none = 0
