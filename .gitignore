@@ -1,5 +1,2 @@
 .vscode
-bin/stage1
-bin/stage2
-bin/stage3
-bin/chub
+stage*/

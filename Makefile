@@ -1,50 +1,42 @@
-bin/ebrew: bin/stage3/ebrew
+bin/ebrew: bin/stageaaa/ebrew
 	cp $^ $@
 
-bin/stage1/ebrew: bin/stage1/ebrew.o bin/stage1/nodes.o bin/stage1/tokens.o bin/stage1/parsers.o bin/stage1/types.o
-	ld -o $@ -m elf_x86_64 $^
-bin/stage2/ebrew: bin/stage2/ebrew.o bin/stage2/nodes.o bin/stage2/tokens.o bin/stage2/parsers.o bin/stage2/types.o
-	ld -o $@ -m elf_x86_64 $^
-bin/stage3/ebrew: bin/stage3/ebrew.o bin/stage3/nodes.o bin/stage3/tokens.o bin/stage3/parsers.o bin/stage3/types.o
+%/ebrew: %/ebrew.o %/nodes.o %/tokens.o %/parsers.o %/types.o
 	ld -o $@ -m elf_x86_64 $^
 
 %.o: %.a
 	as -g -o $@ -c $^
 
-bin/stage1/ebrew.a: lib.eh ebrew.eh tokens.eh io.eh gnugas.eh parsers.eh ebrew.eb
-	cat $^ | $(CC) > $@
-bin/stage2/ebrew.a: lib.eh ebrew.eh tokens.eh io.eh gnugas.eh parsers.eh ebrew.eb | bin/stage1/ebrew
-	cat $^ | bin/stage1/ebrew > $@
-bin/stage3/ebrew.a: lib.eh ebrew.eh tokens.eh io.eh gnugas.eh parsers.eh ebrew.eb | bin/stage2/ebrew
-	cat $^ | bin/stage2/ebrew > $@
+  EBREW_UNIT = lib.eh ebrew.eh tokens.eh io.eh gnugas.eh types.eh nodes.eh parsers.eh ebrew.eb
+ TOKENS_UNIT = lib.eh ebrew.eh tokens.eh tokens.eb
+  NODES_UNIT = lib.eh ebrew.eh tokens.eh io.eh gnugas.eh types.eh nodes.eh parsers.eh nodes.eb
+PARSERS_UNIT = lib.eh ebrew.eh tokens.eh io.eh gnugas.eh types.eh nodes.eh parsers.eh parsers.eb
+  TYPES_UNIT = lib.eh ebrew.eh types.eh types.eb
 
-bin/stage1/tokens.a: lib.eh ebrew.eh tokens.eh tokens.eb
+stage/ebrew.a: $(EBREW_UNIT)
 	cat $^ | $(CC) > $@
-bin/stage2/tokens.a: lib.eh ebrew.eh tokens.eh tokens.eb | bin/stage1/ebrew
-	cat $^ | bin/stage1/ebrew > $@
-bin/stage3/tokens.a: lib.eh ebrew.eh tokens.eh tokens.eb | bin/stage2/ebrew
-	cat $^ | bin/stage2/ebrew > $@
+%a/ebrew.a: $(EBREW_UNIT) | %/ebrew
+	cat $^ | $*/ebrew > $@
 
-bin/stage1/nodes.a: lib.eh ebrew.eh tokens.eh io.eh gnugas.eh parsers.eh types.eh nodes.eh nodes.eb
+stage/tokens.a: $(TOKENS_UNIT)
 	cat $^ | $(CC) > $@
-bin/stage2/nodes.a: lib.eh ebrew.eh tokens.eh io.eh gnugas.eh parsers.eh types.eh nodes.eh nodes.eb | bin/stage1/ebrew
-	cat $^ | bin/stage1/ebrew > $@
-bin/stage3/nodes.a: lib.eh ebrew.eh tokens.eh io.eh gnugas.eh parsers.eh types.eh nodes.eh nodes.eb | bin/stage2/ebrew
-	cat $^ | bin/stage2/ebrew > $@
+%a/tokens.a: $(TOKENS_UNIT) | %/ebrew
+	cat $^ | $*/ebrew > $@
 
-bin/stage1/parsers.a: lib.eh ebrew.eh tokens.eh io.eh gnugas.eh parsers.eh types.eh nodes.eh parsers.eb
+stage/nodes.a: $(NODES_UNIT)
 	cat $^ | $(CC) > $@
-bin/stage2/parsers.a: lib.eh ebrew.eh tokens.eh io.eh gnugas.eh parsers.eh types.eh nodes.eh parsers.eb | bin/stage1/ebrew
-	cat $^ | bin/stage1/ebrew > $@
-bin/stage3/parsers.a: lib.eh ebrew.eh tokens.eh io.eh gnugas.eh parsers.eh types.eh nodes.eh parsers.eb | bin/stage2/ebrew
-	cat $^ | bin/stage2/ebrew > $@
+%a/nodes.a: $(NODES_UNIT) | %/ebrew
+	cat $^ | $*/ebrew > $@
 
-bin/stage1/types.a: lib.eh ebrew.eh types.eh types.eb
+stage/parsers.a: $(PARSERS_UNIT)
 	cat $^ | $(CC) > $@
-bin/stage2/types.a: lib.eh ebrew.eh types.eh types.eb | bin/stage1/ebrew
-	cat $^ | bin/stage1/ebrew > $@
-bin/stage3/types.a: lib.eh ebrew.eh types.eh types.eb | bin/stage2/ebrew
-	cat $^ | bin/stage2/ebrew > $@
+%a/parsers.a: $(PARSERS_UNIT) | %/ebrew
+	cat $^ | $*/ebrew > $@
+
+stage/types.a: $(TYPES_UNIT)
+	cat $^ | $(CC) > $@
+%a/types.a: $(TYPES_UNIT) | %/ebrew
+	cat $^ | $*/ebrew > $@
 
 clean:
-	rm -f bin/stage*/*
+	rm -f stage*/*
