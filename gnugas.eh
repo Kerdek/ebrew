@@ -51,16 +51,16 @@ gcmp_setf (s S a S b S c S) none = { gcmp a b gsetf s c }
 gcmpz_setf(s S a S b S    ) none = { gtcz a   gsetf s b }
 glnot     (    a S b S    ) none = { gcmpz_setf "e" a b }
 
-gj        (e E l S    ) none = { gs "jmp " gs l gn cast nat e gc '$' glf }
-gjc       (e E l S s S) none = { gs "j" gs s gc ' ' gs l gn cast nat e gc '$' glf }
-glabel    (e E l S    ) none = { gs l gn cast nat e gs "$:" glf }
+gj        (k K l S    ) none = { gs "jmp " gs l gn cast nat k gc '$' glf }
+gjc       (k K l S s S) none = { gs "j" gs s gc ' ' gs l gn cast nat k gc '$' glf }
+glabel    (k K l S    ) none = { gs l gn cast nat k gs "$:" glf }
 
-gje  (e E l S) none = gjc e l "e"
-gjne (e E l S) none = gjc e l "ne"
-gjb  (e E l S) none = gjc e l "b"
-gjbe (e E l S) none = gjc e l "be"
-gja  (e E l S) none = gjc e l "a"
-gjae (e E l S) none = gjc e l "ae"
+gje  (k K l S) none = gjc k l "e"
+gjne (k K l S) none = gjc k l "ne"
+gjb  (k K l S) none = gjc k l "b"
+gjbe (k K l S) none = gjc k l "be"
+gja  (k K l S) none = gjc k l "a"
+gjae (k K l S) none = gjc k l "ae"
 
 gegcmp(s S) none = gcmp_setf s "rdi" "rax" "eax"
 

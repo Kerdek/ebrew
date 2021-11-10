@@ -1,17 +1,48 @@
-export ptype  tko
+type
+  Expr {
+    s @Expr
+    a @Expr
+    q @(e @Expr c N l N) N
+    k  K
+    t  T
+    u  T
+    c  N
+  }
 
-export p2     eko
-export p3     eko
-export p4     eko
-export p5     eko
-export p7     eko
-export pmul   eko
-export padd   eko
-export psh    eko
-export pcmp   eko
-export pland  eko
+  E @Expr
 
-export decls(x X o O) none
+  X @K
+
+  Scope {
+    s        @Scope
+    k        K
+    t        T
+    e        E
+    is_type  N
+    is_def   N
+  }
+
+  O @Scope
+
+  txo   (x X o O        ) T
+  exo   (x X o O        ) E
+  exoa  (x X o O     a E) E
+;
+
+export ptype  txo
+
+export p2     exo
+export p3     exo
+export p4     exo
+export p5     exo
+export p7     exo
+export pmul   exo
+export padd   exo
+export psh    exo
+export pcmp   exo
+export pland  exo
+
+export decls      (x X o O     ) none
 export declarator (x X o O t @T) none
 
 jadv   (x X    ) K    = { x@ ret (x@ = x.s) }

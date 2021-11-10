@@ -7,10 +7,10 @@ bin/ebrew: bin/stageaaa/ebrew
 %.o: %.a
 	as -g -o $@ -c $^
 
-  EBREW_UNIT = lib.eh ebrew.eh tokens.eh io.eh gnugas.eh types.eh nodes.eh parsers.eh ebrew.eb
+  EBREW_UNIT = lib.eh ebrew.eh tokens.eh io.eh gnugas.eh types.eh parsers.eh nodes.eh ebrew.eb
  TOKENS_UNIT = lib.eh ebrew.eh tokens.eh tokens.eb
-  NODES_UNIT = lib.eh ebrew.eh tokens.eh io.eh gnugas.eh types.eh nodes.eh parsers.eh nodes.eb
-PARSERS_UNIT = lib.eh ebrew.eh tokens.eh io.eh gnugas.eh types.eh nodes.eh parsers.eh parsers.eb
+  NODES_UNIT = lib.eh ebrew.eh tokens.eh io.eh gnugas.eh types.eh parsers.eh nodes.eh nodes.eb
+PARSERS_UNIT = lib.eh ebrew.eh tokens.eh io.eh gnugas.eh types.eh parsers.eh nodes.eh parsers.eb
   TYPES_UNIT = lib.eh ebrew.eh types.eh types.eb
 
 stage/ebrew.a: $(EBREW_UNIT)

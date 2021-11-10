@@ -1,4 +1,3 @@
-
 export declarator (x X o O t @T) none = {
   (t@ = cast T alloc sizeof Type)
   jadv x is k
@@ -9,7 +8,7 @@ export declarator (x X o O t @T) none = {
 
 align(n N a N) N = ((n + a - 1) / a * a)
 
-struct_decl tko = {
+struct_decl txo = {
   nstct is t
   &t.a is u
   { 1 for _ 
@@ -28,7 +27,7 @@ struct_decl tko = {
   t
 }
 
-func_params tko = {
+func_params txo = {
   cast T 0 is params
   &params is u
   { 1 for _
@@ -44,7 +43,7 @@ func_params tko = {
   t
 }
 
-export ptype tko = {
+export ptype txo = {
   consume x "none"   ? nnone
   consume x "byte"   ? nbyte
   consume x "nat"    ? nnat
@@ -57,41 +56,41 @@ export ptype tko = {
     s.t }
 }
 
-pj(x X o O     q TokenKind e @ekok ) E = {x@ then (x.q == q) then jadv x is k e@ x o k}
-pl(x X o O     c S         e @ekok ) E = {x@ then jeq x c then jadv x is k e@ x o k  }
-pr(x X o O a E c S         e @ekoka) E = {x@ then jeq x c then jadv x is k e@ x o k a}
-pu(x X o O a E c S         e @ekoka) E = {x@ then consume x c ? a e@ x o x@ a}
+pj(x X o O     q TokenKind e @exok ) E = {x@ then (x.q == q) then jadv x is k e@ x o k}
+pl(x X o O     c S         e @exok ) E = {x@ then jeq x c then jadv x is k e@ x o k  }
+pr(x X o O a E c S         e @exoka) E = {x@ then jeq x c then jadv x is k e@ x o k a}
+pu(x X o O a E c S         e @exoka) E = {x@ then consume x c ? a e@ x o x@ a}
 
-pa1    eko  = { pj    x o   &JID   &eid   else
-               pj    x o   &JSTR  &estr  else
-               pj    x o   &JNUM  &enat  else
-               pj    x o   &JCHR  &ebyte      }
-pa3    ekoa = { (a.t.q == &TFUNC) then ecall x o x@ a }
-pa4    ekoa = { pr    x o a "?"    &econd      }
-pa5    ekoa = { pr    x o a "ret"  &eret  else
-               pr    x o a "is"   &eis   else
-               pr    x o a "for"  &efor  else
-               pr    x o a "then" &ethen else
-               pr    x o a "else" &eelse else
-               pu    x o a "}"    &eseq       }
-pamul  ekoa = { pr    x o a "*"    &emul  else
-               pr    x o a "/"    &ediv  else
-               pr    x o a "%"    &emod       }
-paadd  ekoa = { pr    x o a "+"    &eadd  else
-               pr    x o a "-"    &esub       }
-pash   ekoa = { pr    x o a "<<"   &eshl  else
-               pr    x o a ">>"   &eshr       }
-pacmp  ekoa = { pr    x o a "<"    &eb    else
-               pr    x o a ">"    &ea    else
-               pr    x o a "<="   &ebe   else
-               pr    x o a ">="   &eae   else
-               pr    x o a "=="   &ee    else
-               pr    x o a "!="   &ene        }
-paland ekoa = { pr    x o a "and"  &eland      }
-palor  ekoa = { pr    x o a "or"   &elor       }
-pa7    ekoa = { pr    x o a "as"   &eas        }
+pa1    exo  = { pj    x o   &JID   &eid   else
+                pj    x o   &JSTR  &estr  else
+                pj    x o   &JNUM  &enat  else
+                pj    x o   &JCHR  &ebyte      }
+pa3    exoa = { (a.t.q == &TFUNC) then ecall x o x@ a }
+pa4    exoa = { pr    x o a "?"    &econd      }
+pa5    exoa = { pr    x o a "ret"  &eret  else
+                pr    x o a "is"   &eis   else
+                pr    x o a "for"  &efor  else
+                pr    x o a "then" &ethen else
+                pr    x o a "else" &eelse else
+                pu    x o a "}"    &eseq       }
+pamul  exoa = { pr    x o a "*"    &emul  else
+                pr    x o a "/"    &ediv  else
+                pr    x o a "%"    &emod       }
+paadd  exoa = { pr    x o a "+"    &eadd  else
+                pr    x o a "-"    &esub       }
+pash   exoa = { pr    x o a "<<"   &eshl  else
+                pr    x o a ">>"   &eshr       }
+pacmp  exoa = { pr    x o a "<"    &eb    else
+                pr    x o a ">"    &ea    else
+                pr    x o a "<="   &ebe   else
+                pr    x o a ">="   &eae   else
+                pr    x o a "=="   &ee    else
+                pr    x o a "!="   &ene        }
+paland exoa = { pr    x o a "and"  &eland      }
+palor  exoa = { pr    x o a "or"   &elor       }
+pa7    exoa = { pr    x o a "as"   &eas        }
 
-export p2 eko = {
+export p2 exo = {
   pl x o "&"       &eaddr    else
   pl x o "-"       &eneg     else
   pl x o "!"       &elnot    else
@@ -119,17 +118,17 @@ export p2 eko = {
   pr    x o     a "@"       &ederef
 }
 
-export p3    eko = { p2    x o for a pa3    x o a }
-export p4    eko = { p3    x o for a pa4    x o a }
-export p5    eko = { pl    x o "scratch" &escratch else
+export p3    exo = { p2    x o for a pa3    x o a }
+export p4    exo = { p3    x o for a pa4    x o a }
+export p5    exo = { pl    x o "scratch" &escratch else
                      p4    x o is  a pa5    x o a }
-export pmul  eko = { p4    x o for a pamul  x o a }
-export padd  eko = { pmul  x o for a paadd  x o a }
-export psh   eko = { padd  x o for a pash   x o a }
-export pcmp  eko = { psh   x o for a pacmp  x o a }
-export pland eko = { pcmp  x o for a paland x o a }
-export plor  eko = { pland x o for a palor  x o a }
-export p7    eko = { plor  x o for a pa7    x o a }
+export pmul  exo = { p4    x o for a pamul  x o a }
+export padd  exo = { pmul  x o for a paadd  x o a }
+export psh   exo = { padd  x o for a pash   x o a }
+export pcmp  exo = { psh   x o for a pacmp  x o a }
+export pland exo = { pcmp  x o for a paland x o a }
+export plor  exo = { pland x o for a palor  x o a }
+export p7    exo = { plor  x o for a pa7    x o a }
 
 
 gtpars(x X o O t T c N g N) N = {

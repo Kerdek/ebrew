@@ -1,52 +1,57 @@
-export esize    ekok
-export ecast    ekok
-export enat     ekok
-export ewrite   ekok
-export eaddr    ekok
-export escratch ekok
-export ebrk     ekok
-export eibrk    ekok
-export eneg     ekok
-export elnot    ekok
-export eid      ekok
-export eerr     ekok
-export eread    ekok
-export estr     ekok
-export ebrace   ekok
-export eparen   ekok
-export eexit    ekok
-export ebyte    ekok
+type
+  exok  (x X o O k K    ) E
+  exoka (x X o O k K a E) E
+;
 
-export eas      ekoka
-export eelem    ekoka
-export ederef   ekoka
-export eseq     ekoka
-export elor     ekoka
-export eass     ekoka
-export eis      ekoka
-export efor     ekoka
-export eret     ekoka
-export emul     ekoka
-export ediv     ekoka
-export emod     ekoka
-export ethen    ekoka
-export eelse    ekoka
-export econd    ekoka
-export eadd     ekoka
-export esub     ekoka
-export eshl     ekoka
-export eshr     ekoka
-export eb       ekoka
-export ea       ekoka
-export ebe      ekoka
-export eae      ekoka
-export ee       ekoka
-export ene      ekoka
-export eland    ekoka
-export ecall    ekoka
-export emem     ekoka
+export esize    exok
+export ecast    exok
+export enat     exok
+export ewrite   exok
+export eaddr    exok
+export escratch exok
+export ebrk     exok
+export eibrk    exok
+export eneg     exok
+export elnot    exok
+export eid      exok
+export eerr     exok
+export eread    exok
+export estr     exok
+export ebrace   exok
+export eparen   exok
+export eexit    exok
+export ebyte    exok
 
-export gexpr necl
+export eas      exoka
+export eelem    exoka
+export ederef   exoka
+export eseq     exoka
+export elor     exoka
+export eass     exoka
+export eis      exoka
+export efor     exoka
+export eret     exoka
+export emul     exoka
+export ediv     exoka
+export emod     exoka
+export ethen    exoka
+export eelse    exoka
+export econd    exoka
+export eadd     exoka
+export esub     exoka
+export eshl     exoka
+export eshr     exoka
+export eb       exoka
+export ea       exoka
+export ebe      exoka
+export eae      exoka
+export ee       exoka
+export ene      exoka
+export eland    exoka
+export ecall    exoka
+export emem     exoka
+
+export gexpr (e E c N l N) N
 
 export gdrop (e E c N    ) none
 export geval (e E c N l N) none
