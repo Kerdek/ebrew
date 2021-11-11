@@ -1,12 +1,33 @@
+export jadv   (x X    ) K    = { x@ ret (x@ = x.s) }
+export jeq    (x X c @byte) nat  = { x@ then memcmp x.p c x.n then !c^x.n }
+export expect (x X c @byte) none = { { !jeq x c then kdiag x@ "unexpected" } jadv x }
+export consume(x X c @byte) nat  = { jeq x c is r { r then jadv x } r }
+
+export try_search_scope(o O c @byte n nat) O = {
+  cast O 0 is r
+  { o then
+    o for oi
+    (n != oi.k.n or !strncmp oi.k.p c n) ?
+      oi.s
+      { (r = oi)
+        cast O 0 } }
+  r
+}
+
+export search_scope(x X o O c @byte n nat) @Scope = {
+  try_search_scope o c n else
+  kdiag x@ "lookup failed"
+}
+
 export declarator (x X o O t @T) none = {
   (t@ = cast T alloc sizeof Type)
   jadv x is k
   ptype x o is u
-  memcpy cast S t@ cast S u sizeof Type
+  memcpy cast @byte t@ cast @byte u sizeof Type
   (t.k = k)
 }
 
-align(n N a N) N = ((n + a - 1) / a * a)
+align(n nat a nat) nat = ((n + a - 1) / a * a)
 
 struct_decl txo = {
   nstct is t
@@ -38,7 +59,7 @@ func_params txo = {
   jadv x
   ptype x o is ret
   nfunc cast T alloc sizeof Type is t
-  memcpy cast S t.a cast S ret sizeof Type
+  memcpy cast @byte t.a cast @byte ret sizeof Type
   (t.a.s = params)
   t
 }
@@ -51,46 +72,46 @@ export ptype txo = {
   consume x "("      ? func_params       x o
   consume x "{"      ? struct_decl       x o
   { search_scope x o x.p x.n is s
-    (s.is_type or diag "not a type")
+    (s.is_type or kdiag x@ "not a type")
     jadv x
     s.t }
 }
 
 pj(x X o O     q TokenKind e @exok ) E = {x@ then (x.q == q) then jadv x is k e@ x o k}
-pl(x X o O     c S         e @exok ) E = {x@ then jeq x c then jadv x is k e@ x o k  }
-pr(x X o O a E c S         e @exoka) E = {x@ then jeq x c then jadv x is k e@ x o k a}
-pu(x X o O a E c S         e @exoka) E = {x@ then consume x c ? a e@ x o x@ a}
+pl(x X o O     c @byte         e @exok ) E = {x@ then jeq x c then jadv x is k e@ x o k  }
+pr(x X o O a E c @byte         e @exoka) E = {x@ then jeq x c then jadv x is k e@ x o k a}
+pu(x X o O a E c @byte         e @exoka) E = {x@ then consume x c ? a e@ x o x@ a}
 
-pa1    exo  = { pj    x o   &JID   &eid   else
+pa1    lhs  = { pj    x o   &JID   &eid   else
                 pj    x o   &JSTR  &estr  else
                 pj    x o   &JNUM  &enat  else
                 pj    x o   &JCHR  &ebyte      }
-pa3    exoa = { (a.t.q == &TFUNC) then ecall x o x@ a }
-pa4    exoa = { pr    x o a "?"    &econd      }
-pa5    exoa = { pr    x o a "ret"  &eret  else
+pa3    rhs = { (a.t.q == &TFUNC) then ecall x o x@ a }
+pa4    rhs = { pr    x o a "?"    &econd      }
+pa5    rhs = { pr    x o a "ret"  &eret  else
                 pr    x o a "is"   &eis   else
                 pr    x o a "for"  &efor  else
                 pr    x o a "then" &ethen else
                 pr    x o a "else" &eelse else
                 pu    x o a "}"    &eseq       }
-pamul  exoa = { pr    x o a "*"    &emul  else
+pamul  rhs = { pr    x o a "*"    &emul  else
                 pr    x o a "/"    &ediv  else
                 pr    x o a "%"    &emod       }
-paadd  exoa = { pr    x o a "+"    &eadd  else
+paadd  rhs = { pr    x o a "+"    &eadd  else
                 pr    x o a "-"    &esub       }
-pash   exoa = { pr    x o a "<<"   &eshl  else
+pash   rhs = { pr    x o a "<<"   &eshl  else
                 pr    x o a ">>"   &eshr       }
-pacmp  exoa = { pr    x o a "<"    &eb    else
+pacmp  rhs = { pr    x o a "<"    &eb    else
                 pr    x o a ">"    &ea    else
                 pr    x o a "<="   &ebe   else
                 pr    x o a ">="   &eae   else
                 pr    x o a "=="   &ee    else
                 pr    x o a "!="   &ene        }
-paland exoa = { pr    x o a "and"  &eland      }
-palor  exoa = { pr    x o a "or"   &elor       }
-pa7    exoa = { pr    x o a "as"   &eas        }
+paland rhs = { pr    x o a "and"  &eland      }
+palor  rhs = { pr    x o a "or"   &elor       }
+pa7    rhs = { pr    x o a "as"   &eas        }
 
-export p2 exo = {
+export p2 lhs = {
   pl x o "&"       &eaddr    else
   pl x o "-"       &eneg     else
   pl x o "!"       &elnot    else
@@ -111,27 +132,27 @@ export p2 exo = {
         expect x ")"                     }
     pl  x o "{"  &ebrace else
     pa1 x o else
-    diag "expected an expression"
+    kdiag x@ "expected an expression"
   } for a
   pr    x o     a "^"       &eelem   else
   pr    x o     a "."       &emem   else
   pr    x o     a "@"       &ederef
 }
 
-export p3    exo = { p2    x o for a pa3    x o a }
-export p4    exo = { p3    x o for a pa4    x o a }
-export p5    exo = { pl    x o "scratch" &escratch else
+export p3    lhs = { p2    x o for a pa3    x o a }
+export p4    lhs = { p3    x o for a pa4    x o a }
+export p5    lhs = { pl    x o "scratch" &escratch else
                      p4    x o is  a pa5    x o a }
-export pmul  exo = { p4    x o for a pamul  x o a }
-export padd  exo = { pmul  x o for a paadd  x o a }
-export psh   exo = { padd  x o for a pash   x o a }
-export pcmp  exo = { psh   x o for a pacmp  x o a }
-export pland exo = { pcmp  x o for a paland x o a }
-export plor  exo = { pland x o for a palor  x o a }
-export p7    exo = { plor  x o for a pa7    x o a }
+export pmul  lhs = { p4    x o for a pamul  x o a }
+export padd  lhs = { pmul  x o for a paadd  x o a }
+export psh   lhs = { padd  x o for a pash   x o a }
+export pcmp  lhs = { psh   x o for a pacmp  x o a }
+export pland lhs = { pcmp  x o for a paland x o a }
+export plor  lhs = { pland x o for a palor  x o a }
+export p7    lhs = { plor  x o for a pa7    x o a }
 
 
-gtpars(x X o O t T c N g N) N = {
+gtpars(x X o O t T c nat g nat) nat = {
   !t ? { gdrop p4 x o c 0 }
     { scratch Expr nd
       scratch Scope o1
@@ -143,7 +164,7 @@ gtpars(x X o O t T c N g N) N = {
       (nd.u   = t)
       gtpars x &o1 t.s c (g + 1) }
 }
-gtparr(x X o O t T c N g N) N = {
+gtparr(x X o O t T c nat g nat) nat = {
   !t ? { gdrop p4 x o c 0 }
     { gpush &c argreg g
       scratch Expr nd
@@ -174,8 +195,8 @@ function(x X o O) none = {
   declarator x o &t
   try_search_scope o t.k.p t.k.n is o1
   { o1 then
-    (o1.is_type and diag "redeclared as a different type of symbol")
-    (o1.is_def >= jeq x "=" and diag "remention") }
+    (o1.is_type and kdiag x@ "redeclared as a different type of symbol")
+    (o1.is_def >= jeq x "=" and kdiag x@ "remention") }
   scratch Scope o2
   (o2.s = o)
   (o2.k = t.k)

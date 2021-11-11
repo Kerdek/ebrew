@@ -1,5 +1,5 @@
 type
-  N nat
-  C byte
-  S @C
+  nat nat
+  byte byte
+  @byte @byte
 ;

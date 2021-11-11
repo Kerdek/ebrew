@@ -5,14 +5,18 @@ export JSTR () none
 export JNUM () none
 
 type
-  TokenKind @()none
+  TokenKind @() none
 
   Token {
     s @Token
     q TokenKind
-    p S
-    n N
+    p @byte
+    n nat
+    line nat
+    col nat
   }
 
   K @Token
 ;
+
+export tokens (k @K p @byte) none

@@ -13,9 +13,9 @@ type
     a      @Type
     q       TypeKind
     k       K
-    size    N
-    align   N
-    offset  N
+    size    nat
+    align   nat
+    offset  nat
   }
 
   T @Type

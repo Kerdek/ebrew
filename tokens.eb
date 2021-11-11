@@ -3,3 +3,169 @@ export JPCT () none = 0
 export JCHR () none = 0
 export JSTR () none = 0
 export JNUM () none = 0
+
+type
+    Ctx {
+        c     byte
+        k    @K
+        p    @byte
+        line  nat
+        col   nat
+    }
+
+    X @Ctx
+;
+
+xeq  (x X c byte) nat  = (x.p^0 == c)
+xseq (x X c byte) nat  = (x.p^1 == c)
+xadv (x X       ) none = { (x.p@ or diag "unexpected end of file") (x.col = x.col + 1) { xeq x '\n' then (x.col = 1) (x.line = x.line + 1) } (x.p = &x.p^1) }
+
+ntoken(q TokenKind a @byte x X) K = {
+  cast K alloc sizeof Token is k
+  (k.s    = 0    )
+  (k.q    = q    )
+  (k.p    = a  )
+  (k.n    = x.p - a)
+  (k.line = x.line)
+  (k.col = x.col)
+  k
+}
+
+comment(x X) nat = {
+  (xeq x '/' and xseq x '*') then
+  xadv x
+  xadv x
+  { 1 for _
+    (xeq x '*' and xseq x '/') ?
+      { xadv x xadv x 0 }
+      { xadv x        1 } }
+  1
+}
+
+ws(x X) nat = {
+  isws x.p@ then
+  xadv x
+  1
+}
+
+number(x X) nat = {
+  x.p is q
+  { 1 for _ is09 x.p@ then xadv x 1 }
+  (x.p != q) then
+  (x.k@ = ntoken &JNUM q x)
+  1
+}
+
+string(x X) nat = {
+  xeq x '"' then
+  x.p is q
+  xadv x
+  { 1 for _
+    { 1 for _ xeq x '\\' then xadv x xadv x 1}
+    (xeq x '\n' and diag "newline in string literal")
+    not xeq x '"' then
+    xadv x
+    1
+  }
+  xadv x
+  ntoken &JSTR q x is k
+  gs ".s" gn cast nat k gc ':' gs ".string \""
+  { &k.p^1 for i (i < &k.p^(k.n - 1)) then gc i@ &i^1 }
+  gc '\"' glf
+  (x.k@ = k)
+  1
+}
+
+char(x X) nat = {
+  xeq x '\'' then
+  x.p is q
+  xadv x
+  { xeq x '\\' then
+    xadv x }
+  xadv x
+  (xeq x '\'' or diag "expected '")
+  xadv x
+  (x.k@ = ntoken &JCHR q x)
+  1
+}
+
+id(x X) nat = {
+  x.p is q
+  { 1 for _ isid x.p@ then xadv x 1 }
+  (x.p != q) then
+  (x.k@ = ntoken &JID q x)
+  1
+}
+
+sw1(x X a byte       ) nat = { xeq x a then xadv x 1 }
+sw2(x X a byte b byte) nat = { xeq x a then xseq x b then xadv x xadv x 1 }
+
+punct(x X) nat = {
+  x.p is q
+  { sw2 x '=' '=' else
+    sw2 x '!' '=' else
+    sw2 x '<' '=' else
+    sw2 x '>' '=' else
+    sw2 x '<' '<' else
+    sw2 x '>' '>' else
+    sw2 x '/' '/' else
+    sw1 x '='     else
+    sw1 x '<'     else
+    sw1 x '>'     else
+    sw1 x '+'     else
+    sw1 x '-'     else
+    sw1 x '*'     else
+    sw1 x '/'     else
+    sw1 x '&'     else
+    sw1 x '|'     else
+    sw1 x '@'     else
+    sw1 x '#'     else
+    sw1 x '{'     else
+    sw1 x '}'     else
+    sw1 x '('     else
+    sw1 x ')'     else
+    sw1 x '['     else
+    sw1 x ']'     else
+    sw1 x '!'     else
+    sw1 x '?'     else
+    sw1 x ':'     else
+    sw1 x ';'     else
+    sw1 x ','     else
+    sw1 x '.'     else
+    sw1 x '~'     else
+    sw1 x '^'     else
+    sw1 x '$'     else
+    sw1 x '`'     else
+    sw1 x '%'
+  }
+  (x.k@ = ntoken &JPCT q x)
+  1
+}
+
+token(x X) none = {
+  number x else
+  string x else
+  char   x else
+  id     x else
+  punct  x else
+  diag "invalid token"
+}
+
+export tokens(k @K p @byte) none = {
+  gt0 ".data"
+  gt0 ".globl .scurbrk"
+  gt0 ".weak .scurbrk"
+  gt0 ".scurbrk:.quad 0"
+  scratch Ctx ctx
+  (ctx.k = k)
+  (ctx.p = p)
+  (ctx.line = 1)
+  (ctx.col = 1)
+  { 1 for _
+    ctx.p@ then
+    comment &ctx else
+    ws &ctx else
+    token &ctx
+    (ctx.k = &ctx.k.s)
+    1 }
+}

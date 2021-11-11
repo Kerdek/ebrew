@@ -1,4 +1,4 @@
-ntype(size N align N q TypeKind) T = {
+ntype(size nat align nat q TypeKind) T = {
   cast T alloc sizeof Type is t
   (t.size  = size  )
   (t.align = align )
@@ -7,7 +7,7 @@ ntype(size N align N q TypeKind) T = {
   t
 }
 
-ntypea(size N align N q TypeKind a T) T = {
+ntypea(size nat align nat q TypeKind a T) T = {
   ntype size align q is t
   (t.a = a)
   t

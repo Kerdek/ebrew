@@ -51,7 +51,7 @@ export eland    exoka
 export ecall    exoka
 export emem     exoka
 
-export gexpr (e E c N l N) N
+export gexpr (e E c nat l nat) nat
 
-export gdrop (e E c N    ) none
-export geval (e E c N l N) none
+export gdrop (e E c nat    ) none
+export geval (e E c nat l nat) none

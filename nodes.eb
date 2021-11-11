@@ -1,5 +1,11 @@
 type
-  necl (e E c N l N) N
+
+  Crumb {
+    s @Crumb
+    d nat
+  }
+
+  necl (e E c nat l nat) @Crumb
 ;
 
 tree(k K t T q @necl) E = {
@@ -17,16 +23,16 @@ gcast(a T b T) none = {
       gpromote  "eax" }
 }
 
-gaddr(t T n N s S d S) none = {
+gaddr(t T n nat s @byte d @byte) none = {
   (n or !strcmp s d) then
   gs "lea " { n then gn n } gs "(%" gs s gs "),%" gs d glf
 }
-gload(t T n N s S d S) none = {
+gload(t T n nat s @byte d @byte) none = {
   (t.q == &TBYTE) ?
     { gs  "movzbq " gn n gs "(%" gs s gs "),%" gs  d glf }
     { gs  "mov "    gn n gs "(%" gs s gs "),%" gs  d glf }
 }
-gstore(t T d S) none = {
+gstore(t T d @byte) none = {
   (t.q == &TBYTE) ?
     { gs "mov %al,(%"  gs d gc ')' glf }
     { gs "mov %rax,(%" gs d gc ')' glf }
@@ -34,8 +40,8 @@ gstore(t T d S) none = {
 
 export gexpr necl  = { e.q@ e c l }
 
-export gdrop (e E c N    ) none = { cast none gexpr e c 0 }
-export geval (e E c N l N) none = {
+export gdrop (e E c nat    ) none = { cast none gexpr e c 0 }
+export geval (e E c nat l nat) none = {
   gexpr e c l is l1
   l1 then
   l1 for l2
@@ -45,13 +51,13 @@ export geval (e E c N l N) none = {
   (l2 - 1)
 }
 
-ge1     (e E c N l N gop @() none) N = {
+ge1     (e E c nat l nat gop @() none) nat = {
   geval  e.a c 0
   gop@
   0
 }
 
-ge2     (e E c N l N gop @() none) N = {
+ge2     (e E c nat l nat gop @() none) nat = {
   geval  e.a.s  c 0
   gpush        &c "rax"
   geval  e.a    c 0
@@ -135,7 +141,7 @@ geid   necl  = {
 }
 export eid    exok  = {
   (search_scope x o k.p k.n) is s
-  (s.is_type and diag "not a variable")
+  (s.is_type and kdiag k "not a variable")
   cast E alloc sizeof Expr is e
   (e.s = 0    )
   (e.q = &geid)
@@ -193,13 +199,13 @@ gemem   necl  = {
 export emem  exoka  = {
   jadv x
   { a.t for t (t.q == &TPTR) then t.a } is t
-  (t.q != &TSTCT and diag "not a struct")
+  (t.q != &TSTCT and kdiag k "not a struct")
   cast T 0 is g
   { t.a for a
     { (a.k.n == k.s.n) then strncmp a.k.p k.s.p k.s.n }
     ? { (g = a) cast T 0 }
       a.s }
-  { !g then diag "no such member" }
+  { !g then kdiag k "no such member" }
   tree k.s g &gemem is e
   (e.a = a)
   e
@@ -408,7 +414,7 @@ export eass   exoka  = {
 }
 
 
-gargs(e E c @N) none = {
+gargs(e E c @nat) none = {
   !!e then
   gargs e.s c
   geval e c@ 0
@@ -430,7 +436,7 @@ export ecall exoka = {
   { a for b
     u then
     (b.s = p3 x o)
-    { !type_equal b.s.t u then diag "asymmetric argument" }
+    { !type_equal b.s.t u then kdiag k "asymmetric argument" }
     (u = u.s)
     b.s }
   tree x@ a.t.a &gecall is e
@@ -468,7 +474,7 @@ gebrk  necl = {
 }
 export ebrk   exok  = { tree k nnat &gebrk is e (e.a = p3 x o) e }
 
-gegsys3 (n N a0 N e E c N) none = {
+gegsys3 (n nat a0 nat e E c nat) none = {
   geval e.a    c 0
   gpush       &c "rax"
   geval e.a.s  c 0
