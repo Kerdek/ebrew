@@ -1,14 +1,4 @@
-
-argreg1(d N) S = {
-  (d == 0) ? "dil"
-  (d == 1) ? "sil"
-  (d == 2) ? "dl"
-  (d == 3) ? "cl"
-  (d == 4) ? "r8b"
-             "r9b"
-}
-
-argreg8(d N) S = {
+argreg(d N) S = {
   (d == 0) ? "rdi"
   (d == 1) ? "rsi"
   (d == 2) ? "rdx"
@@ -44,7 +34,7 @@ gcmp (a S b S) none = gt2 "cmp" a b
 gshr () none = gshx 'r'
 gshl () none = gshx 'l'
 
-gpromote(b S) none = (gt2 "movzbl" "al" b)
+gpromote(b S) none = gt2 "movzbl" "al" b
 
 gsetf     (s S     b S    ) none = { gs "set" gs s gc ' ' gtreg "al" glf gpromote b }
 gcmp_setf (s S a S b S c S) none = { gcmp a b gsetf s c }
@@ -71,9 +61,9 @@ gbe () none = gegcmp "be"
 ga  () none = gegcmp "a"
 gae () none = gegcmp "ae"
 
-gfpush(c @N  l N ) none = { !!l then gs "sub $" gn (l << 3) gc ',' gtreg "rsp" glf (c@ = c@ + l) }
-gfpop (c @N  l N ) none = { !!l then gs "add $" gn (l << 3) gc ',' gtreg "rsp" glf (c@ = c@ - l) }
-gpush (c @N  d S ) none = { gt1 "push" d (c@ = c@ + 1) }
-gpop  (c @N  s S ) none = { gt1 "pop"  s (c@ = c@ - 1) }
+gfpush(c @N  l N) none = { !!l then gs "sub $" gn (l << 3) gc ',' gtreg "rsp" glf (c@ = c@ + l) }
+gfpop (c @N  l N) none = { !!l then gs "add $" gn (l << 3) gc ',' gtreg "rsp" glf (c@ = c@ - l) }
+gpush (c @N  d S) none = { gt1 "push" d (c@ = c@ + 1) }
+gpop  (c @N  s S) none = { gt1 "pop"  s (c@ = c@ - 1) }
 
-gindex(      l N ) none = { !!l then gs  "add $" gn  l gc  ',' gtreg  "rax" glf  }
+gindex(      l N) none = { !!l then gs  "add $" gn  l gc  ',' gtreg  "rax" glf  }

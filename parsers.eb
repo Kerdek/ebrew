@@ -145,7 +145,7 @@ gtpars(x X o O t T c N g N) N = {
 }
 gtparr(x X o O t T c N g N) N = {
   !t ? { gdrop p4 x o c 0 }
-    { gpush &c argreg8 g
+    { gpush &c argreg g
       scratch Expr nd
       scratch Scope o1
       (o1.s = o)
@@ -156,7 +156,6 @@ gtparr(x X o O t T c N g N) N = {
       (nd.u  = t)
       (((g == 5) ? &gtpars &gtparr)@ x &o1 t.s c (g + 1) + 1) }
 }
-
 
 typedecl(x X o O) none = {
   consume x ";" ?
@@ -197,5 +196,6 @@ function(x X o O) none = {
 
 export decls(x X o O) none = {
   x@ then
-  (consume x "type" ? &typedecl &function)@ x o
+  ( consume x "type" ? &typedecl
+                       &function )@ x o
 }

@@ -1,4 +1,4 @@
-bin/ebrew: bin/stageaaa/ebrew
+bin/ebrew: stageaaa/ebrew
 	cp $^ $@
 
 %/ebrew: %/ebrew.o %/nodes.o %/tokens.o %/parsers.o %/types.o
@@ -11,7 +11,7 @@ bin/ebrew: bin/stageaaa/ebrew
  TOKENS_UNIT = lib.eh ebrew.eh tokens.eh tokens.eb
   NODES_UNIT = lib.eh ebrew.eh tokens.eh io.eh gnugas.eh types.eh parsers.eh nodes.eh nodes.eb
 PARSERS_UNIT = lib.eh ebrew.eh tokens.eh io.eh gnugas.eh types.eh parsers.eh nodes.eh parsers.eb
-  TYPES_UNIT = lib.eh ebrew.eh types.eh types.eb
+  TYPES_UNIT = lib.eh ebrew.eh tokens.eh types.eh types.eb
 
 stage/ebrew.a: $(EBREW_UNIT)
 	cat $^ | $(CC) > $@

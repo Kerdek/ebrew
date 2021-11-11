@@ -1,4 +1,6 @@
-type necl (e E c N l N) N ;
+type
+  necl (e E c N l N) N
+;
 
 tree(k K t T q @necl) E = {
   cast E alloc sizeof Expr is e
@@ -7,12 +9,6 @@ tree(k K t T q @necl) E = {
   (e.q = q)
   e
 }
-
-t0  (k K t T q @necl            ) E = {tree k t q}
-t1  (k K t T q @necl         a E) E = {tree k t q is e e ret (e.a = a)}
-t2  (k K t T q @necl     b E a E) E = {tree k t q is e e ret (e.a = a)  (e.a.s = b)}
-t3  (k K t T q @necl c E b E a E) E = {tree k t q is e e ret (e.a = a)  (e.a.s = b)  (e.a.s.s = c)}
-tt  (k K t T q @necl u T        ) E = {t0   k t q is e e ret (e.u = u)}
 
 gcast(a T b T) none = {
   (b.q == &TNONE) ?
@@ -74,21 +70,34 @@ export ebrace   exok  = p5 x o
 export eparen   exok  = p7 x o
 
 genat    necl  = { gs "mov $" gk e.k gs ",%rax" glf 0 }
-export enat     exok   = t0 k nnat  &genat
+export enat     exok   = tree k nnat  &genat
 
 gebyte   necl  = { gs "mov $" gk e.k ((e.k.p^1 == '\\') ? 3 2) gs ",%rax" glf 0 }
-export ebyte    exok   = t0 k nbyte &gebyte
+export ebyte    exok   = tree k nbyte &gebyte
 
-gesize   necl  = { gtlit e.u.size "rax" 0 }
-export esize    exok   = tt k nnat &gesize ptype x o
+gesize   necl  = {
+  gtlit e.u.size "rax"
+  0
+}
+export esize    exok   = {
+  tree k nnat &gesize is e
+  (e.u = ptype x o)
+  e
+}
 
 gederef  necl  = (gexpr e.a c 0 + 1 - l)
-export ederef   exoka  = t1 k a.t.a &gederef a
+export ederef   exoka  = {
+  tree k a.t.a &gederef is e
+  (e.a = a)
+  e
+}
 
 geaddr   necl  = gexpr e.a c 1
 export eaddr    exok   = {
   p2 x o is a
-  t1 k nptr a.t &geaddr a
+  tree k nptr a.t &geaddr is e
+  (e.a = a)
+  e
 }
 
 gecast  necl  = {
@@ -96,17 +105,25 @@ gecast  necl  = {
   gcast  e.a.t e.t
   0
 }
-export eas      exoka  = t1 k ptype x o &gecast a
+export eas      exoka  = {
+  tree k ptype x o &gecast is e
+  (e.a = a)
+  e
+}
 export ecast    exok   = {
   ptype x o is u
-  t1 k u &gecast p4 x o
+  tree k u &gecast is e
+  (e.a = p4 x o)
+  e
 }
 
 gestr necl  = {
   gs "mov .s" gn cast nat e.k gs "@GOTPCREL(%rip),%rax" glf
   0
 }
-export estr   exok  = t0 k nptr nbyte &gestr
+export estr   exok  = {
+  tree k nptr nbyte &gestr
+}
 
 geid   necl  = {
   e.a ?
@@ -131,21 +148,21 @@ export eid    exok  = {
   e
 }
 
-gelnot necl  = ge1 e c l &geglnot export elnot exok  = t1 k nnat &gelnot p3    x o
-geneg  necl  = ge1 e c l &gegneg  export eneg  exok  = t1 k nnat &geneg  p3    x o
-gediv  necl  = ge2 e c l &gdiv    export ediv  exoka = t2 k nnat &gediv  p4    x o a
-gemod  necl  = ge2 e c l &gmod    export emod  exoka = t2 k nnat &gemod  p4    x o a
-geadd  necl  = ge2 e c l &gegadd  export eadd  exoka = t2 k nnat &geadd  pmul  x o a
-gesub  necl  = ge2 e c l &gegsub  export esub  exoka = t2 k nnat &gesub  pmul  x o a
-gemul  necl  = ge2 e c l &gegmul  export emul  exoka = t2 k nnat &gemul  p4    x o a
-geshl  necl  = ge2 e c l &gshl    export eshl  exoka = t2 k nnat &geshl  padd  x o a
-geshr  necl  = ge2 e c l &gshr    export eshr  exoka = t2 k nnat &geshr  padd  x o a
-gee    necl  = ge2 e c l &ge      export ee    exoka = t2 k nnat &gee    psh   x o a
-gene   necl  = ge2 e c l &gne     export ene   exoka = t2 k nnat &gene   psh   x o a
-geae   necl  = ge2 e c l &gae     export eae   exoka = t2 k nnat &geae   psh   x o a
-gea    necl  = ge2 e c l &ga      export ea    exoka = t2 k nnat &gea    psh   x o a
-geb    necl  = ge2 e c l &gb      export eb    exoka = t2 k nnat &geb    psh   x o a
-gebe   necl  = ge2 e c l &gbe     export ebe   exoka = t2 k nnat &gebe   psh   x o a
+gelnot necl  = ge1 e c l &geglnot export elnot exok  = { tree k nnat &gelnot is e (e.a = p3 x o ) e }
+geneg  necl  = ge1 e c l &gegneg  export eneg  exok  = { tree k nnat &geneg  is e (e.a = p3 x o ) e }
+gediv  necl  = ge2 e c l &gdiv    export ediv  exoka = { tree k nnat &gediv  is e (e.a = a) (e.a.s = p4    x o) e }
+gemod  necl  = ge2 e c l &gmod    export emod  exoka = { tree k nnat &gemod  is e (e.a = a) (e.a.s = p4    x o) e }
+geadd  necl  = ge2 e c l &gegadd  export eadd  exoka = { tree k nnat &geadd  is e (e.a = a) (e.a.s = pmul  x o) e }
+gesub  necl  = ge2 e c l &gegsub  export esub  exoka = { tree k nnat &gesub  is e (e.a = a) (e.a.s = pmul  x o) e }
+gemul  necl  = ge2 e c l &gegmul  export emul  exoka = { tree k nnat &gemul  is e (e.a = a) (e.a.s = p4    x o) e }
+geshl  necl  = ge2 e c l &gshl    export eshl  exoka = { tree k nnat &geshl  is e (e.a = a) (e.a.s = padd  x o) e }
+geshr  necl  = ge2 e c l &gshr    export eshr  exoka = { tree k nnat &geshr  is e (e.a = a) (e.a.s = padd  x o) e }
+gee    necl  = ge2 e c l &ge      export ee    exoka = { tree k nnat &gee    is e (e.a = a) (e.a.s = psh   x o) e }
+gene   necl  = ge2 e c l &gne     export ene   exoka = { tree k nnat &gene   is e (e.a = a) (e.a.s = psh   x o) e }
+geae   necl  = ge2 e c l &gae     export eae   exoka = { tree k nnat &geae   is e (e.a = a) (e.a.s = psh   x o) e }
+gea    necl  = ge2 e c l &ga      export ea    exoka = { tree k nnat &gea    is e (e.a = a) (e.a.s = psh   x o) e }
+geb    necl  = ge2 e c l &gb      export eb    exoka = { tree k nnat &geb    is e (e.a = a) (e.a.s = psh   x o) e }
+gebe   necl  = ge2 e c l &gbe     export ebe   exoka = { tree k nnat &gebe   is e (e.a = a) (e.a.s = psh   x o) e }
 
 geelem necl   = {
   geval  e.a    c 0
@@ -155,7 +172,12 @@ geelem necl   = {
   gs  "lea (%rdx,%rax," gn  e.a.t.a.size gs  "),%rax" glf 
   (1 - l)
 }
-export eelem  exoka = t2 k a.t.a &geelem p3 x o a
+export eelem  exoka = {
+  tree k a.t.a &geelem is e
+  (e.a = a)
+  (e.a.s = p3 x o)
+  e
+}
 
 gemem   necl  = {
   geval  e.a c 0
@@ -178,7 +200,9 @@ export emem  exoka  = {
     ? { (g = a) cast T 0 }
       a.s }
   { !g then diag "no such member" }
-  t1 k.s g &gemem a
+  tree k.s g &gemem is e
+  (e.a = a)
+  e
 }
 
 geseq  necl  = {
@@ -188,7 +212,10 @@ geseq  necl  = {
 }
 export eseq   exoka  = {
   p5 x o is b
-  t2 k b.t &geseq b a
+  tree k b.t &geseq is e
+  (e.a = a)
+  (e.a.s = b)
+  e
 }
 
 geret necl  = {
@@ -198,7 +225,12 @@ geret necl  = {
   gpop         &c "rax"
   0
 }
-export eret  exoka  = t2 k a.t &geret p5 x o a
+export eret  exoka  = {
+  tree k a.t &geret is e
+  (e.a = a)
+  (e.a.s = p5 x o)
+  e
+}
 
 gecond necl   = {
   geval   e.a     c 0
@@ -213,7 +245,11 @@ gecond necl   = {
 }
 export econd  exoka = {
   p4 x o is b
-  t3 k b.t &gecond p4 x o b a
+  tree k b.t &gecond is e
+  (e.a = a)
+  (e.a.s = b)
+  (e.a.s.s = p4 x o)
+  e
 }
 
 geland necl  = {
@@ -231,11 +267,17 @@ geland necl  = {
 }
 export ethen  exoka  = {
   p5 x o is b
-  t2 k b.t &geland b a
+  tree k b.t &geland is e
+  (e.a = a)
+  (e.a.s = b)
+  e
 }
 export eland  exoka  = {
   pcmp x o is b
-  t2 k b.t &geland b a
+  tree k b.t &geland is e
+  (e.a = a)
+  (e.a.s = b)
+  e
 }
 
 gelor  necl  = {
@@ -251,8 +293,18 @@ gelor  necl  = {
   glabel   e.k      "a"
   0
 }
-export eelse  exoka  = t2 k a.t &gelor p5    x o a
-export elor   exoka  = t2 k a.t &gelor pland x o a
+export eelse  exoka  = {
+  tree k a.t &gelor is e
+  (e.a = a)
+  (e.a.s = p5    x o)
+  e
+}
+export elor   exoka  = {
+  tree k a.t &gelor is e
+  (e.a = a)
+  (e.a.s = pland x o)
+  e
+}
 
 gescratch necl = {
   (e.u.size + 7 >> 3) is d
@@ -348,7 +400,12 @@ geass  necl  = {
   gtz                "eax"
   0
 }
-export eass   exoka  = t2 k nnone &geass p7 x o a
+export eass   exoka  = {
+  tree k nnone &geass is e
+  (e.a = a)
+  (e.a.s = p7 x o)
+  e
+}
 
 
 gargs(e E c @N) none = {
@@ -363,7 +420,7 @@ gecall necl  = {
   0 is d
   { !!e.a.s then
     e.a.s for e (d < 6) then e.s ret
-    gpop &c argreg8 d
+    gpop &c argreg d
     (d = d + 1) }
   gs "call *%rax" glf
   0
@@ -376,7 +433,9 @@ export ecall exoka = {
     { !type_equal b.s.t u then diag "asymmetric argument" }
     (u = u.s)
     b.s }
-  t1 x@ a.t.a &gecall a
+  tree x@ a.t.a &gecall is e
+  (e.a = a)
+  e
 }
 
 geexit necl = {
@@ -386,7 +445,7 @@ geexit necl = {
   gt0 "syscall"
   0
 }
-export eexit  exok  = t1 k nnone &geexit p3 x o
+export eexit  exok  = { tree k nnone &geexit is e (e.a = p3 x o) e }
 
 geibrk  necl = {
   gtlit 0  "rdi"
@@ -395,7 +454,7 @@ geibrk  necl = {
   gt0 "mov %rax,.scurbrk"
   0
 }
-export eibrk   exok  = t0 k nnone &geibrk
+export eibrk   exok  = { tree k nnone &geibrk }
 
 gebrk  necl = {
   geval e.a c 0
@@ -407,7 +466,7 @@ gebrk  necl = {
   gt0 "mov %rdi,.scurbrk"
   0
 }
-export ebrk   exok  = t1 k nnat &gebrk p3 x o
+export ebrk   exok  = { tree k nnat &gebrk is e (e.a = p3 x o) e }
 
 gegsys3 (n N a0 N e E c N) none = {
   geval e.a    c 0
@@ -422,10 +481,10 @@ gegsys3 (n N a0 N e E c N) none = {
 }
 
 geread  necl = gegsys3 0 0 e c
-export eread   exok  = t2 k nnat &geread p3 x o p3 x o
+export eread   exok  = { tree k nnat &geread  is e (e.a = p3 x o) (e.a.s = p3 x o) e }
 
 gewrite necl = gegsys3 1 1 e c
-export ewrite  exok  = t2 k nnat &gewrite p3 x o p3 x o
+export ewrite  exok  = { tree k nnat &gewrite is e (e.a = p3 x o) (e.a.s = p3 x o) e }
 
 geerr   necl = gegsys3 1 2 e c
-export eerr    exok  = t2 k nnat &geerr p3 x o p3 x o
+export eerr    exok  = { tree k nnat &geerr   is e (e.a = p3 x o) (e.a.s = p3 x o) e }
