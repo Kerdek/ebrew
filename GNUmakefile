@@ -12,7 +12,7 @@ BOOT != find bin -name 'ebrew-*' | sort --version-sort | tail -n 1
 default: all
 
 all: .dummy
-	$(MAKE) stage/ebrew stagea/ebrew stageaa/ebrew stageaaa/ebrew bin/ebrew
+	$(MAKE) --no-print-directory stage/ebrew stagea/ebrew stageaa/ebrew stageaaa/ebrew bin/ebrew
 
 info: .dummy
 	@echo "using bootstrap compiler: $(BOOT)"
