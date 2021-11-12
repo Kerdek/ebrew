@@ -205,7 +205,6 @@ function(x X o O) none = {
   (o2.e = 0)
   (o2.is_type = 0)
   (o2.is_def = jeq x "=")
-  (x.section = t.k)
   { o2.is_def then
     jadv x
     gs ".section .text." gk t.k glf
