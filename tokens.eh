@@ -19,10 +19,12 @@ type
   K @Token
 
   Ctx {
+    s    @Ctx
     c0    byte
     c1    byte
     k    @K
     p    @byte
+    section K
     line  nat
     col   nat
   }
