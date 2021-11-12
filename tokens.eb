@@ -72,7 +72,7 @@ string(x X) nat = {
   gs ".s" gn cast nat k gc ':' gs ".string \""
   { &k.p^1 for i (i < &k.p^(k.n - 1)) then gc i@ &i^1 }
   gc '\"' glf
-  gs ".section .text." gk x.section glf
+  gs ".previous" glf
   (x.k@ = k)
   1
 }

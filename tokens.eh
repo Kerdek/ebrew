@@ -24,7 +24,6 @@ type
     c1    byte
     k    @K
     p    @byte
-    section K
     line  nat
     col   nat
   }
