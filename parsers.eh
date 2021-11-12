@@ -1,6 +1,4 @@
 type
-  X @K
-
   Expr {
     s @Expr
     a @Expr

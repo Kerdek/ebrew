@@ -17,6 +17,17 @@ type
   }
 
   K @Token
+
+  Ctx {
+    c0    byte
+    c1    byte
+    k    @K
+    p    @byte
+    line  nat
+    col   nat
+  }
+
+  X @Ctx
 ;
 
-export tokens (k @K p @byte) none
+export token (x X) none

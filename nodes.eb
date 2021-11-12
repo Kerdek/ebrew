@@ -5,7 +5,7 @@ type
     d nat
   }
 
-  necl (e E c nat l nat) @Crumb
+  necl (e E c nat l nat) nat
 ;
 
 tree(k K t T q @necl) E = {
@@ -145,7 +145,7 @@ export eid    exok  = {
   cast E alloc sizeof Expr is e
   (e.s = 0    )
   (e.q = &geid)
-  (e.k = x    )
+  (e.k = x.k@    )
   s.e ? {
     (e.a = s.e  )
     (e.t = s.e.u)
@@ -439,7 +439,7 @@ export ecall exoka = {
     { !type_equal b.s.t u then kdiag k "asymmetric argument" }
     (u = u.s)
     b.s }
-  tree x@ a.t.a &gecall is e
+  tree x.k@ a.t.a &gecall is e
   (e.a = a)
   e
 }

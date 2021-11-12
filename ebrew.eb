@@ -2,17 +2,20 @@ export _start() nat = {
   ibrk 0
   (1 << 20) is big
   cast @byte alloc big is p
-  { p is q
-    { 1 for _
-      read q big is n
-      { (n == -1) then
-        exit 1 }
-      (q = &q^n)
-      (big = big - n)
-      n }
-    (q@ = cast byte 0) }
+  gt0 ".data"
+  gt0 ".globl .scurbrk"
+  gt0 ".weak .scurbrk"
+  gt0 ".scurbrk:.quad 0"
   cast K 0 is k
-  tokens &k p
-  decls &k cast O 0
+  scratch Ctx ctx
+  (read &ctx.c0 1)
+  (ctx.c1 = cast byte -1)
+  (ctx.k = &k)
+  (ctx.p = p)
+  (ctx.p@ = ctx.c0)
+  (ctx.line = 1)
+  (ctx.col = 1)
+  token &ctx
+  decls &ctx cast O 0
   exit 0
 }

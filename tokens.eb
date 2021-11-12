@@ -4,21 +4,20 @@ export JCHR () none = 0
 export JSTR () none = 0
 export JNUM () none = 0
 
-type
-    Ctx {
-        c     byte
-        k    @K
-        p    @byte
-        line  nat
-        col   nat
-    }
-
-    X @Ctx
-;
-
-xeq  (x X c byte) nat  = (x.p^0 == c)
-xseq (x X c byte) nat  = (x.p^1 == c)
-xadv (x X       ) none = { (x.p@ or diag "unexpected end of file") (x.col = x.col + 1) { xeq x '\n' then (x.col = 1) (x.line = x.line + 1) } (x.p = &x.p^1) }
+xeq  (x X c byte) nat  = (x.c0 == c)
+xseq (x X c byte) nat  = { (x.c0 or diag "unexpected end of file") (x.c1 == cast byte -1 and (read &x.c1 1 or (x.c1 = cast byte 0))) (x.c1 == c) }
+xadv (x X       ) none = {
+  (x.c0 or diag "unexpected end of file")
+  (x.p = &x.p^1)
+  (x.col = x.col + 1)
+  { xeq x '\n' then
+    (x.col = 1)
+    (x.line = x.line + 1) }
+  (x.c1 == cast byte -1) ?
+    (read &x.c0 1 or (x.c0 = cast byte 0))
+    { (x.c0 = x.c1) (x.c1 = cast byte -1) }
+  (x.p@ = x.c0)
+}
 
 ntoken(q TokenKind a @byte x X) K = {
   cast K alloc sizeof Token is k
@@ -142,30 +141,20 @@ punct(x X) nat = {
   1
 }
 
-token(x X) none = {
+nonws(x X) nat = {
   number x else
   string x else
   char   x else
   id     x else
-  punct  x else
-  diag "invalid token"
+  punct  x
 }
 
-export tokens(k @K p @byte) none = {
-  gt0 ".data"
-  gt0 ".globl .scurbrk"
-  gt0 ".weak .scurbrk"
-  gt0 ".scurbrk:.quad 0"
-  scratch Ctx ctx
-  (ctx.k = k)
-  (ctx.p = p)
-  (ctx.line = 1)
-  (ctx.col = 1)
+export token(x X) none = {
   { 1 for _
-    ctx.p@ then
-    comment &ctx else
-    ws &ctx else
-    token &ctx
-    (ctx.k = &ctx.k.s)
-    1 }
+    comment x else
+    ws      x      }
+  x.p@ ?
+    { nonws   x else
+      diag "invalid token" }
+    (x.k@ = cast K 0)
 }
