@@ -21,29 +21,31 @@ ifeq ($(BOOTSTRAP),bin)
 bin/ebrew: .dummy
 else
 $(BOOTSTRAP)/ebrew: .dummy
-	mkdir -p $(BUILDING)
 	@$(MAKE) -f build.mak --no-print-directory BUILDING=$(BOOTSTRAP) $(BOOTSTRAP)/ebrew
 endif
+
+$(BUILDING): .dummy
+	mkdir -p $(BUILDING)
 
 $(BUILDING)/ebrew: $(BUILDING)/ebrew.o $(BUILDING)/nodes.o $(BUILDING)/tokens.o $(BUILDING)/parsers.o $(BUILDING)/types.o
 	ld -o $@ -m elf_x86_64 $^
 
-%.o: %.a
+%.o: %.s
 	as -g -o $@ -c $^
 
-$(BUILDING)/ebrew.a: $(EBREW_UNIT) | $(BOOTSTRAP)/ebrew $(BUILDING)
+$(BUILDING)/ebrew.s: $(EBREW_UNIT) | $(BOOTSTRAP)/ebrew $(BUILDING)
 	cat $^ | $(BOOTSTRAP)/ebrew > $@
 
-$(BUILDING)/tokens.a: $(TOKENS_UNIT) | $(BOOTSTRAP)/ebrew $(BUILDING)
+$(BUILDING)/tokens.s: $(TOKENS_UNIT) | $(BOOTSTRAP)/ebrew $(BUILDING)
 	cat $^ | $(BOOTSTRAP)/ebrew > $@
 
-$(BUILDING)/nodes.a: $(NODES_UNIT) | $(BOOTSTRAP)/ebrew $(BUILDING)
+$(BUILDING)/nodes.s: $(NODES_UNIT) | $(BOOTSTRAP)/ebrew $(BUILDING)
 	cat $^ | $(BOOTSTRAP)/ebrew > $@
 
-$(BUILDING)/parsers.a: $(PARSERS_UNIT) | $(BOOTSTRAP)/ebrew $(BUILDING)
+$(BUILDING)/parsers.s: $(PARSERS_UNIT) | $(BOOTSTRAP)/ebrew $(BUILDING)
 	cat $^ | $(BOOTSTRAP)/ebrew > $@
 
-$(BUILDING)/types.a: $(TYPES_UNIT) | $(BOOTSTRAP)/ebrew $(BUILDING)
+$(BUILDING)/types.s: $(TYPES_UNIT) | $(BOOTSTRAP)/ebrew $(BUILDING)
 	cat $^ | $(BOOTSTRAP)/ebrew > $@
 
 .dummy:
