@@ -7,5 +7,6 @@ stage%: .dummy
 
 clean: .dummy
 	rm -f stage*/*
+	rmdir stage*
 
 .dummy:
