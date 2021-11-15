@@ -68,8 +68,8 @@ string(x X) nat = {
   }
   xadv x
   ntoken &JSTR q x is k
-  gs ".section .data..s" gn cast nat k glf
-  gs ".s" gn cast nat k gc ':' gs ".string \""
+  gs ".section .data..s" gn (k.line * 10000 + k.col) glf
+  gs ".s" gn (k.line * 10000 + k.col) gc ':' gs ".string \""
   { &k.p^1 for i (i < &k.p^(k.n - 1)) then gc i@ &i^1 }
   gc '\"' glf
   gs ".previous" glf

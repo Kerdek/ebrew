@@ -124,7 +124,7 @@ export ecast    exok   = {
 }
 
 gestr necl  = {
-  gs "mov .s" gn cast nat e.k gs "@GOTPCREL(%rip),%rax" glf
+  gs "mov .s" gn (e.k.line * 10000 + e.k.col) gs "@GOTPCREL(%rip),%rax" glf
   0
 }
 export estr   exok  = {
