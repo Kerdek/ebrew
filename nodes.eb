@@ -261,11 +261,9 @@ geland necl  = {
   geval  e.a c 0
   gtcz              "rax"
   gje    e.k        "a"
-  { keep then
-    gpush        &c "rax" }
+  gpush        &c "rax"
   geval  e.a.s c 0
-  { keep then
-    gpop         &c "rax" }
+  gpop         &c (keep ? "rax" "rdx")
   glabel e.k        "a"
   0
 }
@@ -289,11 +287,9 @@ gelor  necl  = {
   geval    e.a   c  0
   gtcz              "rax"
   gjne     e.k      "a"
-  { keep then
-    gpush        &c "rax" }
+  gpush        &c "rax"
   geval    e.a.s  c 0
-  { keep then
-    gpop         &c "rax" }
+  gpop         &c (keep ? "rax" "rdx")
   glabel   e.k      "a"
   0
 }
