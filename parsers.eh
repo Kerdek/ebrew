@@ -2,7 +2,7 @@ type
   Expr {
     s @Expr
     a @Expr
-    q @(e @Expr c nat l nat) nat
+    q @(e @Expr c nat) nat
     k  K
     t  T
     u  T
