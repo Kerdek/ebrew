@@ -411,22 +411,34 @@ export eass   exoka  = {
   e
 }
 
-
-gargs(e E c @nat) none = {
-  !!e then
-  gargs e.s c
-  geval e c@ 0
-  gpush c "rax"
-}
 gecall necl  = {
-  gargs e.a.s &c
   geval e.a    c 0
+  0 is stack
+  e.a.t is tf
+  { tf.a.s then
+    tf.a.s for u
+    (stack = stack + 1)
+    u.s }
+  gfpush &c stack
+  gpush &c "rax"
+  8 is off
+  e.a.s is b
+  { tf.a.s then
+    tf.a.s for u
+    geval b c 0
+    gs "mov %rax," gn off gs "(%rsp)" glf
+    (off = off + 8)
+    (b = b.s)
+    u.s }
+  gpop &c "rax"
   0 is d
-  { !!e.a.s then
-    e.a.s for e (d < 6) then e.s ret
+  { tf.a.s then
+    tf.a.s for u
+    (d < 6) then
     gpop &c argreg d
-    (d = d + 1) }
-  gs "call *%rax" glf
+    (d = d + 1)
+    u.s }
+  gt0 "call *%rax"
   0
 }
 export ecall exoka = {
