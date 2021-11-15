@@ -1,47 +1,19 @@
-type
-  Expr {
-    s @Expr
-    a @Expr
-    q @(e @Expr c nat l nat) nat
-    k  K
-    t  T
-    u  T
-    c  nat
-  }
+export ptype  (x X) T
 
-  E @Expr
+export p2     (x X) nat
+export p3     (x X) nat
+export p4     (x X) nat
+export p5     (x X) nat
+export p7     (x X) nat
+export p8     (x X) nat
+export pmul   (x X) nat
+export padd   (x X) nat
+export psh    (x X) nat
+export pcmp   (x X) nat
+export pland  (x X) nat
 
-  Scope {
-    s        @Scope
-    k        K
-    t        T
-    e        E
-    is_type  nat
-    is_def   nat
-  }
-
-  O @Scope
-
-  txo   (x X o O    ) T
-  lhs   (x X o O    ) E
-  rhs   (x X o O a E) E
-;
-
-export ptype  txo
-
-export p2     lhs
-export p3     lhs
-export p4     lhs
-export p5     lhs
-export p7     lhs
-export pmul   lhs
-export padd   lhs
-export psh    lhs
-export pcmp   lhs
-export pland  lhs
-
-export decls      (x X o O     ) none
-export declarator (x X o O t @T) none
+export decls      (x X     ) none
+export declarator (x X t @T) none
 
 export jadv   (x X        ) K
 export jeq    (x X c @byte) nat
@@ -50,4 +22,4 @@ export consume(x X c @byte) nat
 
 export try_search_scope(o O c @byte n nat) O
 
-export search_scope(x X o O c @byte n nat) @Scope
+export search_scope(x X c @byte n nat) @Scope

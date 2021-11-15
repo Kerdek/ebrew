@@ -66,4 +66,4 @@ gfpop (c @nat  l nat) none = { !!l then gs "add $" gn (l << 3) gc ',' gtreg "rsp
 gpush (c @nat  d @byte) none = { gt1 "push" d (c@ = c@ + 1) }
 gpop  (c @nat  s @byte) none = { gt1 "pop"  s (c@ = c@ - 1) }
 
-gindex(      l nat) none = { !!l then gs  "add $" gn  l gc  ',' gtreg  "rax" glf  }
+gindex(l nat) none = { l then gs "add $" gn l gc ',' gtreg "rax" glf }

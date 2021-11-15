@@ -1,57 +1,52 @@
 type
-  exok  (x X o O k K    ) E
-  exoka (x X o O k K a E) E
+  exk  (x X k K) none
 ;
 
-export esize    exok
-export ecast    exok
-export enat     exok
-export ewrite   exok
-export eaddr    exok
-export escratch exok
-export ebrk     exok
-export eibrk    exok
-export eneg     exok
-export elnot    exok
-export eid      exok
-export eerr     exok
-export eread    exok
-export estr     exok
-export ebrace   exok
-export eparen   exok
-export eexit    exok
-export ebyte    exok
+export esize    exk
+export ecast    exk
+export enat     exk
+export ewrite   exk
+export eaddr    exk
+export escratch exk
+export ebrk     exk
+export eibrk    exk
+export eneg     exk
+export elnot    exk
+export eid      exk
+export eerr     exk
+export eread    exk
+export estr     exk
+export ebrace   exk
+export eparen   exk
+export eexit    exk
+export ebyte    exk
+export eas      exk
+export eelem    exk
+export ederef   exk
+export eseq     exk
+export elor     exk
+export eass     exk
+export eis      exk
+export efor     exk
+export eret     exk
+export emul     exk
+export ediv     exk
+export emod     exk
+export ethen    exk
+export eelse    exk
+export econd    exk
+export eadd     exk
+export esub     exk
+export eshl     exk
+export eshr     exk
+export eb       exk
+export ea       exk
+export ebe      exk
+export eae      exk
+export ee       exk
+export ene      exk
+export eland    exk
+export ecall    exk
+export emem     exk
 
-export eas      exoka
-export eelem    exoka
-export ederef   exoka
-export eseq     exoka
-export elor     exoka
-export eass     exoka
-export eis      exoka
-export efor     exoka
-export eret     exoka
-export emul     exoka
-export ediv     exoka
-export emod     exoka
-export ethen    exoka
-export eelse    exoka
-export econd    exoka
-export eadd     exoka
-export esub     exoka
-export eshl     exoka
-export eshr     exoka
-export eb       exoka
-export ea       exoka
-export ebe      exoka
-export eae      exoka
-export ee       exoka
-export ene      exoka
-export eland    exoka
-export ecall    exoka
-export emem     exoka
-
-export gexpr (e E c nat l nat) nat
-
-export gdrop (e E c nat    ) none
-export geval (e E c nat l nat) none
+export geval (x X l nat) none

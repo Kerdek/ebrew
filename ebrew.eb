@@ -15,7 +15,8 @@ export _start() nat = {
   (ctx.p@ = ctx.c0)
   (ctx.line = 1)
   (ctx.col = 1)
+  (ctx.o = 0)
   token &ctx
-  decls &ctx cast O 0
+  decls &ctx
   exit 0
 }
