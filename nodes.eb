@@ -191,7 +191,11 @@ export ebe exk = {
 
 export eelem  exk = {
   x.t is a
-  g2ops x &p3
+  geval x 0
+  gpush &x.c "rax"
+  p3 x
+  geval x 0
+  gpop &x.c "rdi"
   gs "lea (%rdi,%rax," gn a.a.size gs "),%rax" glf
   (x.t = a.a)
   (x.l = 1  )
