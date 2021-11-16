@@ -2,7 +2,6 @@
 
 current goals:
 - diags
-- generate code during parsing (eliminate AST entirely)
 - eliminate all other structs
 - generics
 - closures

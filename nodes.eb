@@ -81,7 +81,7 @@ export ecast exk = {
 }
 
 export estr exk = {
-  gs "mov .s" gn cast nat k gs "@GOTPCREL(%rip),%rax" glf
+  gs "mov .s" gn (k.line * 10000 + k.col) gs "@GOTPCREL(%rip),%rax" glf
   (x.t = nptr nbyte)
   (x.l = 0)
 }
@@ -228,10 +228,11 @@ export eseq   exk  = p5 x
 export eret  exk  = {
   x.t is t
   x.l is l
+  geval x 0
   gpush &x.c "rax"
   p5 x
   gpop &x.c "rax"
-  (x.l = l)
+  (x.l = 0)
   (x.t = t)
 }
 
@@ -259,7 +260,6 @@ export ethen  exk  = {
   geval x 0
   gpop &x.c ((x.t.q == &TNONE) ? "rax" "rdx")
   glabel k "a"
-  (x.t = a)
   (x.l = 0)
 }
 
@@ -273,7 +273,6 @@ export eland  exk  = {
   geval x 0
   gpop &x.c ((x.t.q == &TNONE) ? "rax" "rdx")
   glabel k "a"
-  (x.t = a)
   (x.l = 0)
 }
 
@@ -319,8 +318,10 @@ export escratch exk = {
   x.o is o
   (x.o = &o1)
   p5 x
+  geval x 0
   (x.o = o)
   gfpop &x.c d
+  (x.l = 0)
 }
 
 export eis exk = {
@@ -339,8 +340,10 @@ export eis exk = {
   x.o is o
   (x.o = &o1)
   p5 x
+  geval x 0
   (x.o = o)
   gfpop &x.c d
+  (x.l = 0)
 }
 
 export efor exk = {
@@ -363,13 +366,12 @@ export efor exk = {
   x.o is o
   (x.o = &o1)
   p5 x
-  (x.o = o)
   geval x 0
+  (x.o = o)
   gtcz "rax"
   gjne k "a"
   gload a 0 "rsp" "rax"
   gfpop &x.c d
-  (x.t = a)
   (x.l = 0)
 }
 

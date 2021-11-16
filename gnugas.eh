@@ -41,9 +41,9 @@ gcmp_setf (s @byte a @byte b @byte c @byte) none = { gcmp a b gsetf s c }
 gcmpz_setf(s @byte a @byte b @byte    ) none = { gtcz a   gsetf s b }
 glnot     (    a @byte b @byte    ) none = { gcmpz_setf "e" a b }
 
-gj        (k K l @byte    ) none = { gs "jmp " gs l gn cast nat k gc '$' glf }
-gjc       (k K l @byte s @byte) none = { gs "j" gs s gc ' ' gs l gn cast nat k gc '$' glf }
-glabel    (k K l @byte    ) none = { gs l gn cast nat k gs "$:" glf }
+gj        (k K l @byte    ) none = { gs "jmp " gs l gn (k.line * 10000 + k.col) gc '$' glf }
+gjc       (k K l @byte s @byte) none = { gs "j" gs s gc ' ' gs l gn (k.line * 10000 + k.col) gc '$' glf }
+glabel    (k K l @byte    ) none = { gs l gn (k.line * 10000 + k.col) gs "$:" glf }
 
 gje  (k K l @byte) none = gjc k l "e"
 gjne (k K l @byte) none = gjc k l "ne"
