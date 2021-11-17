@@ -1,19 +1,8 @@
-export JID  () none
-export JPCT () none
-export JCHR () none
-export JSTR () none
-export JNUM () none
-
 type
-  TokenKind @() none
-
   Token {
     s @Token
-    q TokenKind
     p @byte
     n nat
-    line nat
-    col nat
   }
 
   K @Token
@@ -61,4 +50,8 @@ type
   X @Ctx
 ;
 
+export xisid  (x X) nat
+export xisstr (x X) nat
+export xisnum (x X) nat
+export xischr (x X) nat
 export token (x X) none

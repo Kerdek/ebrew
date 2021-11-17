@@ -1,8 +1,7 @@
-export JID  () none = 0
-export JPCT () none = 0
-export JCHR () none = 0
-export JSTR () none = 0
-export JNUM () none = 0
+export xisid  (x X) nat = (isaz x.k.p@ or isAZ x.k.p@)
+export xisstr (x X) nat = (x.k.p@ == '\"')
+export xisnum (x X) nat = is09 x.k.p@
+export xischr (x X) nat = (x.k.p@ == '\'')
 
 xeq  (x X c byte) nat  = (x.c0 == c)
 xseq (x X c byte) nat  = { (x.c0 or diag "unexpected end of file") (x.c1 == cast byte -1 and (read &x.c1 1 or (x.c1 = cast byte 0))) (x.c1 == c) }
@@ -19,14 +18,11 @@ xadv (x X       ) none = {
   (x.p@ = x.c0)
 }
 
-ntoken(q TokenKind a @byte x X) K = {
+ntoken(a @byte x X) K = {
   cast K alloc sizeof Token is k
   (k.s    = 0    )
-  (k.q    = q    )
   (k.p    = a  )
   (k.n    = x.p - a)
-  (k.line = x.line)
-  (k.col = x.col)
   k
 }
 
@@ -51,7 +47,7 @@ number(x X) nat = {
   x.p is q
   { 1 for _ is09 x.p@ then xadv x 1 }
   (x.p != q) then
-  (x.k@ = ntoken &JNUM q x)
+  (x.k@ = ntoken q x)
   1
 }
 
@@ -67,9 +63,9 @@ string(x X) nat = {
     1
   }
   xadv x
-  ntoken &JSTR q x is k
-  gs ".section .data..s" gn (k.line * 10000 + k.col) glf
-  gs ".s" gn (k.line * 10000 + k.col) gc ':' gs ".string \""
+  ntoken q x is k
+  gs ".section .data..s" gn (x.line * 10000 + x.col) glf
+  gs ".s" gn (x.line * 10000 + x.col) gc ':' gs ".string \""
   { &k.p^1 for i (i < &k.p^(k.n - 1)) then gc i@ &i^1 }
   gc '\"' glf
   gs ".previous" glf
@@ -86,7 +82,7 @@ char(x X) nat = {
   xadv x
   (xeq x '\'' or diag "expected '")
   xadv x
-  (x.k@ = ntoken &JCHR q x)
+  (x.k@ = ntoken q x)
   1
 }
 
@@ -94,7 +90,7 @@ id(x X) nat = {
   x.p is q
   { 1 for _ isid x.p@ then xadv x 1 }
   (x.p != q) then
-  (x.k@ = ntoken &JID q x)
+  (x.k@ = ntoken q x)
   1
 }
 
@@ -139,7 +135,7 @@ punct(x X) nat = {
     sw1 x '`'     else
     sw1 x '%'
   }
-  (x.k@ = ntoken &JPCT q x)
+  (x.k@ = ntoken q x)
   1
 }
 

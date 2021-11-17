@@ -1,22 +1,22 @@
 export jadv   (x X        ) K    = { (x.k@ or diag "unexpected end of tokens") x.k@ ret (x.k = &x.k.s) token x }
 export jeq    (x X c @byte) nat  = { x.k@ then memcmp x.k.p c x.k.n then !c^x.k.n }
-export expect (x X c @byte) none = { { !jeq x c then kdiag x.k@ "unexpected" } jadv x }
+export expect (x X c @byte) none = { { !jeq x c then kdiag x "unexpected" } jadv x }
 export consume(x X c @byte) nat  = { jeq x c is r { r then jadv x } r }
 
-try_search_scope(o O c @byte n nat) O = {
+try_search_scope(x X) O = {
   cast O 0 is r
-  { o then
-    o for oi
-    (n != oi.k.n or !strncmp oi.k.p c n) ?
-      oi.s
-      { (r = oi)
+  { x.o then x.o for o
+    (o.k.n != x.k.n or !strncmp o.k.p x.k.p x.k.n) ?
+      o.s
+      { (r = o)
         cast O 0 } }
   r
 }
 
-export search_scope(x X c @byte n nat) @Scope = {
-  try_search_scope x.o c n else
-  kdiag x.k@ "lookup failed"
+export search_scope(x X) @Scope = {
+  try_search_scope x else
+  ok x.k@ olf
+  kdiag x "lookup failed"
 }
 
 export declarator (x X t @T) none = {
@@ -71,13 +71,13 @@ export ptype (x X) T = {
   consume x "@"      ? nptr        ptype x
   consume x "("      ? func_params       x
   consume x "{"      ? struct_decl       x
-  { search_scope x x.k.p x.k.n is s
-    (s.is_type or kdiag x.k@ "not a type")
+  { search_scope x is o
+    (o.is_type or kdiag x "not a type")
     jadv x
-    s.t }
+    o.t }
 }
 
-pj(x X q TokenKind e @exk) nat = { x.k@ then (x.k.q == q) then jadv x is k e@ x k 1 }
+pj(x X xcat @(x X) nat e @exk) nat = { x.k@ then xcat@ x then e@ x cast K 0 1 }
 pl(x X c @byte     e @exk) nat = { x.k@ then jeq x c then jadv x is k e@ x k 1 }
 pr(x X c @byte     e @exk) nat = { x.k@ then jeq x c then jadv x is k e@ x k 1 }
 pu(x X c @byte     e @exk) nat = { x.k@ then !jeq x c then e@ x x.k@ 1 }
@@ -96,11 +96,11 @@ p1     (x X) nat = { pl x "&"       &eaddr    else
                      pl x "err"     &eerr     else
                      pl x "("       &eparen   else
                      pl x "{"       &ebrace   else
-                     pj x &JID      &eid      else
-                     pj x &JSTR     &estr     else
-                     pj x &JNUM     &enat     else
-                     pj x &JCHR     &ebyte    else
-                     kdiag x.k@ "expected an expression"
+                     pj x &xisid    &eid      else
+                     pj x &xisstr   &estr     else
+                     pj x &xisnum   &enat     else
+                     pj x &xischr   &ebyte    else
+                     kdiag x "expected an expression"
                      0 }
 pa2    (x X) nat = { pr x "^"    &eelem       else
                      pr x "."    &emem        else
@@ -190,12 +190,10 @@ typedecl (x X) none = {
 
 function (x X) none = {
   consume x "export" is globl
+  try_search_scope x is o
   scratch T t
   declarator x &t
-  try_search_scope x.o t.k.p t.k.n is o
-  { o then
-    (o.is_type and kdiag x.k@ "redeclared as a different type of symbol")
-    (o.is_def >= jeq x "=" and kdiag x.k@ "remention") }
+  (!o or !o.is_type and !o.is_def and jeq x "=" or kdiag x "remention")
   scratch Scope o1
   (o1.s = x.o)
   (o1.k = t.k)

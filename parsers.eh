@@ -20,6 +20,5 @@ export jeq    (x X c @byte) nat
 export expect (x X c @byte) none
 export consume(x X c @byte) nat
 
-export try_search_scope(o O c @byte n nat) O
-
-export search_scope(x X c @byte n nat) @Scope
+export try_search_scope(x X) O
+export search_scope    (x X) O

@@ -34,12 +34,14 @@ export ebrace   exk  = { p5 x expect x "}" }
 export eparen   exk  = { p8 x expect x ")" }
 
 export enat     exk   = {
+  jadv x is k
   gs "mov $" gk k gs ",%rax" glf
   (x.t = nnat)
   (x.l = 0)
 }
 
 export ebyte    exk   = {
+  jadv x is k
   gs "mov $" gk k ((k.p^1 == '\\') ? 3 2) gs ",%rax" glf
   (x.t = nbyte)
   (x.l = 0)
@@ -81,18 +83,20 @@ export ecast exk = {
 }
 
 export estr exk = {
-  gs "mov .s" gn (k.line * 10000 + k.col) gs "@GOTPCREL(%rip),%rax" glf
+  gs "mov .s" gn (x.line * 10000 + x.col) gs "@GOTPCREL(%rip),%rax" glf
+  jadv x is k
   (x.t = nptr nbyte)
   (x.l = 0)
 }
 
 export eid exk = {
-  search_scope x k.p k.n is s
-  (s.is_type and kdiag k "not a variable")
-  s.is_local ?
-    { gaddr s.t (x.c - s.c << 3) "rsp" "rax" }
-    { gs "mov " gk s.t.k gs "@GOTPCREL(%rip),%rax" glf }
-  (x.t = s.t)
+  search_scope x is o
+  jadv x is k
+  (o.is_type and kdiag x "not a variable")
+  o.is_local ?
+    { gaddr o.t (x.c - o.c << 3) "rsp" "rax" }
+    { gs "mov " gk o.t.k gs "@GOTPCREL(%rip),%rax" glf }
+  (x.t = o.t)
   (x.l = 1  )
 }
 
@@ -210,14 +214,14 @@ export emem  exk  = {
       gload t.a 0 "rax" "rax"
     t.a
   } is t
-  (t.q != &TSTCT and kdiag k "not a struct")
+  (t.q != &TSTCT and kdiag x "not a struct")
   jadv x
   cast T 0 is g
   { t.a for a
     { (a.k.n == k.s.n) then strncmp a.k.p k.s.p k.s.n }
     ? { (g = a) cast T 0 }
       a.s }
-  (g or kdiag k "no such member")
+  (g or kdiag x "no such member")
   gindex g.offset
   (x.t = g)
   (x.l = 1)
@@ -237,69 +241,74 @@ export eret  exk  = {
 }
 
 export econd  exk = {
+  (x.line * 10000 + x.col) is n
   geval x 0
   gtcz "rax"
-  gje k "a"
+  gje n "a"
   p4 x
   geval x 0
-  gj k "b"
-  glabel k "a"
+  gj n "b"
+  glabel n "a"
   p4 x
   geval x 0
-  glabel k "b"
+  glabel n "b"
   (x.l = 0)
 }
 
 export ethen  exk  = {
+  (x.line * 10000 + x.col) is n
   x.t is a
   geval x 0
   gtcz "rax"
-  gje k "a"
+  gje n "a"
   gpush &x.c "rax"
   p5 x
   geval x 0
   gpop &x.c ((x.t.q == &TNONE) ? "rax" "rdx")
-  glabel k "a"
+  glabel n "a"
   (x.l = 0)
 }
 
 export eland  exk  = {
+  (x.line * 10000 + x.col) is n
   x.t is a
   geval x 0
   gtcz "rax"
-  gje k "a"
+  gje n "a"
   gpush &x.c "rax"
   pcmp x
   geval x 0
   gpop &x.c ((x.t.q == &TNONE) ? "rax" "rdx")
-  glabel k "a"
+  glabel n "a"
   (x.l = 0)
 }
 
 export eelse  exk  = {
+  (x.line * 10000 + x.col) is n
   x.t is a
   geval x 0
   gtcz "rax"
-  gjne k "a"
+  gjne n "a"
   gpush &x.c "rax"
   p5 x
   geval x 0
   gpop &x.c ((x.t.q == &TNONE) ? "rax" "rdx")
-  glabel k "a"
+  glabel n "a"
   (x.t = a)
   (x.l = 0)
 }
 
 export elor exk = {
+  (x.line * 10000 + x.col) is n
   x.t is a
   geval x 0
   gtcz "rax"
-  gjne k "a"
+  gjne n "a"
   gpush &x.c "rax"
   pland x
   geval x 0
   gpop &x.c ((x.t.q == &TNONE) ? "rax" "rdx")
-  glabel k "a"
+  glabel n "a"
   (x.t = a)
   (x.l = 0)
 }
@@ -347,15 +356,16 @@ export eis exk = {
 }
 
 export efor exk = {
+  (x.line * 10000 + x.col) is n
   x.t is a
   (a.size + 7 >> 3) is d
   geval x 0
   gfpush &x.c d
   gstore a "rsp"
-  gj k "b"
-  glabel k "a"
+  gj n "b"
+  glabel n "a"
   gstore a "rsp"
-  glabel k "b"
+  glabel n "b"
   scratch Scope o1
   (o1.s  = x.o    )
   (o1.k  = jadv x )
@@ -369,7 +379,7 @@ export efor exk = {
   geval x 0
   (x.o = o)
   gtcz "rax"
-  gjne k "a"
+  gjne n "a"
   gload a 0 "rsp" "rax"
   gfpop &x.c d
   (x.l = 0)
@@ -403,7 +413,7 @@ export ecall exk = {
   { tf.a.s then
     tf.a.s for u
     p3 x
-    (type_equal x.t u or kdiag k "asymmetric argument")
+    (type_equal x.t u or kdiag x "asymmetric argument")
     geval x 0
     gs "mov %rax," gn off gs "(%rsp)" glf
     (off = off + 8)

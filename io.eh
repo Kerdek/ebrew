@@ -15,9 +15,9 @@ on1(n nat) none = { n then on1 (n / 10) oc cast byte ('0' + n % 10) }
 on (n nat) none = { n ? on1 n oc '0' }
 
 diag  (s @byte) none = { os s olf exit 1 }
-kdiag (k K s @byte) none = {
-  { k.p for q (q@ and q@ != '\n') then (&q^(-1)) } is begin_line
-  { k.p for q (q@ and q@ != '\n') then (&q^1) } is end_line
-  oc '(' on k.line oc ',' on k.col os "): " osn &begin_line^1 (end_line - begin_line)
+kdiag (x X s @byte) none = {
+  { x.k.p for q (q@ and q@ != '\n') then (&q^(-1)) } is begin_line
+  { x.k.p for q (q@ and q@ != '\n') then (&q^1) } is end_line
+  oc '(' on x.line oc ',' on x.col os "): " osn &begin_line^1 (end_line - begin_line)
   diag s
 }

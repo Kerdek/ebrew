@@ -41,16 +41,16 @@ gcmp_setf (s @byte a @byte b @byte c @byte) none = { gcmp a b gsetf s c }
 gcmpz_setf(s @byte a @byte b @byte    ) none = { gtcz a   gsetf s b }
 glnot     (    a @byte b @byte    ) none = { gcmpz_setf "e" a b }
 
-gj        (k K l @byte    ) none = { gs "jmp " gs l gn (k.line * 10000 + k.col) gc '$' glf }
-gjc       (k K l @byte s @byte) none = { gs "j" gs s gc ' ' gs l gn (k.line * 10000 + k.col) gc '$' glf }
-glabel    (k K l @byte    ) none = { gs l gn (k.line * 10000 + k.col) gs "$:" glf }
+gj        (n nat l @byte        ) none = { gs "jmp " gs l gn n gc '$' glf }
+gjc       (n nat l @byte s @byte) none = { gs "j" gs s gc ' ' gs l gn n gc '$' glf }
+glabel    (n nat l @byte        ) none = { gs l gn n gs "$:" glf }
 
-gje  (k K l @byte) none = gjc k l "e"
-gjne (k K l @byte) none = gjc k l "ne"
-gjb  (k K l @byte) none = gjc k l "b"
-gjbe (k K l @byte) none = gjc k l "be"
-gja  (k K l @byte) none = gjc k l "a"
-gjae (k K l @byte) none = gjc k l "ae"
+gje  (n nat l @byte) none = gjc n l "e"
+gjne (n nat l @byte) none = gjc n l "ne"
+gjb  (n nat l @byte) none = gjc n l "b"
+gjbe (n nat l @byte) none = gjc n l "be"
+gja  (n nat l @byte) none = gjc n l "a"
+gjae (n nat l @byte) none = gjc n l "ae"
 
 gegcmp(s @byte) none = gcmp_setf s "rdi" "rax" "eax"
 
