@@ -30,6 +30,7 @@ type
   Ctx {
     s    @Ctx
     p    @byte
+    q    @byte
     kp   @byte
     kn    nat
     line  nat

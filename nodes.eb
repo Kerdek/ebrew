@@ -1,32 +1,32 @@
 
-gcast(t T) none = {
+gcast(x X t T) none = {
   (t.q == &TNONE) ?
-    gtz     "eax"
+    gtz x     "eax"
     { (t.q == &TBYTE) then
-      gpromote  "eax" }
+      gpromote x  "eax" }
 }
 
-gaddr(t T n nat s @byte d @byte) none = {
+gaddr(x X t T n nat s @byte d @byte) none = {
   (n or !strcmp s d) then
-  gs "lea " { n then gn n } gs "(%" gs s gs "),%" gs d glf
+  gs x "lea " { n then gn x n } gs x "(%" gs x s gs x "),%" gs x d glf x
 }
-gload(t T n nat s @byte d @byte) none = {
+gload(x X t T n nat s @byte d @byte) none = {
   (t.q == &TBYTE) ?
-    { gs  "movzbq " gn n gs "(%" gs s gs "),%" gs  d glf }
-    { gs  "mov "    gn n gs "(%" gs s gs "),%" gs  d glf }
+    { gs x  "movzbq " gn x n gs x "(%" gs x s gs x "),%" gs x  d glf x }
+    { gs x  "mov "    gn x n gs x "(%" gs x s gs x "),%" gs x  d glf x }
 }
-gstore(t T d @byte) none = {
+gstore(x X t T d @byte) none = {
   (t.q == &TBYTE) ?
-    { gs "mov %al,(%"  gs d gc ')' glf }
-    { gs "mov %rax,(%" gs d gc ')' glf }
+    { gs x "mov %al,(%"  gs x d gc x ')' glf x }
+    { gs x "mov %rax,(%" gs x d gc x ')' glf x }
 }
 
 export geval (x X l nat) none = {
   x.l for l2
   (l2 > l) then
   (l2 == 1 and l == 0) ?
-    (x.t.q == &TFUNC or x.t.q == &TSTCT or gload x.t 0 "rax" "rax")
-    { gt0 "mov (%rax),%rax" }
+    (x.t.q == &TFUNC or x.t.q == &TSTCT or gload x x.t 0 "rax" "rax")
+    { gt0 x "mov (%rax),%rax" }
   (l2 - 1)
 }
 
@@ -34,14 +34,14 @@ export ebrace   ex  = { p5 x expect x "}" }
 export eparen   ex  = { p8 x expect x ")" }
 
 export enat     ex   = {
-  gs "mov $" gsn x.kp x.kn gs ",%rax" glf
+  gs x "mov $" gsn x x.kp x.kn gs x ",%rax" glf x
   jadv x
   (x.t = nnat x)
   (x.l = 0)
 }
 
 export ebyte    ex   = {
-  gs "mov $" gsn x.kp x.kn ((x.kp^1 == '\\') ? 3 2) gs ",%rax" glf
+  gs x "mov $" gsn x x.kp x.kn ((x.kp^1 == '\\') ? 3 2) gs x ",%rax" glf x
   jadv x
   (x.t = nbyte x)
   (x.l = 0)
@@ -49,7 +49,7 @@ export ebyte    ex   = {
 
 export esize    ex   = {
   ptype x is t
-  gtlit t.size "rax"
+  gtlit x t.size "rax"
   (x.t = nnat x)
   (x.l = 0)
 }
@@ -68,7 +68,7 @@ export eaddr ex = {
 export eas ex = {
   geval x 0
   ptype x is t
-  gcast t
+  gcast x t
   (x.t = t)
   (x.l = 0)
 }
@@ -77,13 +77,13 @@ export ecast ex = {
   ptype x is t
   p4 x
   geval x 0
-  gcast t
+  gcast x t
   (x.t = t)
   (x.l = 0)
 }
 
 export estr ex = {
-  gs "mov .s" gn (x.line * 10000 + x.col) gs "@GOTPCREL(%rip),%rax" glf
+  gs x "mov .s" gn x (x.line * 10000 + x.col) gs x "@GOTPCREL(%rip),%rax" glf x
   jadv x
   (x.t = nptr x nbyte x)
   (x.l = 0)
@@ -93,8 +93,8 @@ export eid ex = {
   search_scope x is o
   (o.is_type and kdiag x "not a variable")
   o.is_local ?
-    { gaddr o.t (x.c - o.c << 3) "rsp" "rax" }
-    { gs "mov " gsn o.kp o.kn gs "@GOTPCREL(%rip),%rax" glf }
+    { gaddr x o.t (x.c - o.c << 3) "rsp" "rax" }
+    { gs x "mov " gsn x o.kp o.kn gs x "@GOTPCREL(%rip),%rax" glf x }
   jadv x
   (x.t = o.t)
   (x.l = 1  )
@@ -109,98 +109,98 @@ g1ops (x X p@ (x X) nat) none = {
 
 g2ops (x X p@ (x X) nat) none = {
   geval x 0
-  gpush &x.c "rax"
+  gpush x &x.c "rax"
   p@ x
   geval x 0
-  gt0 "mov %rax,%rdi"
-  gpop &x.c "rax"
+  gt0 x "mov %rax,%rdi"
+  gpop x &x.c "rax"
   (x.t = nnat x)
   (x.l = 0)
 }
 
 export elnot ex = {
   g1ops x &p3
-  glnot "rax" "eax"
+  glnot x "rax" "eax"
 }
 
 export eneg ex = {
   g1ops x &p3
-  gtneg "rax"
+  gtneg x "rax"
 }
 
 export eadd ex = {
   g2ops x &pmul
-  gadd "rdi" "rax"
+  gadd x "rdi" "rax"
 }
 
 export esub ex = {
   g2ops x &pmul
-  gsub "rdi" "rax"
+  gsub x "rdi" "rax"
 }
 
 export emul ex = {
   g2ops x &p4
-  gmul "rdi"
+  gmul x "rdi"
 }
 
 export ediv ex = {
   g2ops x &p4
-  gdiv
+  gdiv x
 }
 
 export emod ex = {
   g2ops x &p4
-  gmod
+  gmod x
 }
 
 export eshl ex = {
   g2ops x &padd
-  gshl
+  gshl x
 }
 
 export eshr ex = {
   g2ops x &padd
-  gshr
+  gshr x
 }
 
 export ee ex = {
   g2ops x &psh
-  ge
+  ge x
 }
 
 export ene ex = {
   g2ops x &psh
-  gne
+  gne x
 }
 
 export eae ex = {
   g2ops x &psh
-  gae
+  gae x
 }
 
 export ea ex = {
   g2ops x &psh
-  ga
+  ga x
 }
 
 export eb ex = {
   g2ops x &psh
-  gb
+  gb x
 }
 
 export ebe ex = {
   g2ops x &psh
-  gbe
+  gbe x
 }
 
 export eelem  ex = {
   x.t is a
   geval x 0
-  gpush &x.c "rax"
+  gpush x &x.c "rax"
   p3 x
   geval x 0
-  gpop &x.c "rdi"
-  gs "lea (%rdi,%rax," gn a.a.size gs "),%rax" glf
+  gpop x &x.c "rdi"
+  gs x "lea (%rdi,%rax," gn x a.a.size gs x "),%rax" glf x
   (x.t = a.a)
   (x.l = 1  )
 }
@@ -210,8 +210,8 @@ export emem  ex  = {
   { x.t for t
     (t.q == &TPTR) then
     (t.a.q == &TSTCT) ?
-      gaddr t.a 0 "rax" "rax"
-      gload t.a 0 "rax" "rax"
+      gaddr x t.a 0 "rax" "rax"
+      gload x t.a 0 "rax" "rax"
     t.a
   } is t
   (t.q != &TSTCT and kdiag x "not a struct")
@@ -222,7 +222,7 @@ export emem  ex  = {
       a.s }
   (g or kdiag x "no such member")
   jadv x
-  gindex g.offset
+  gindex x g.offset
   (x.t = g)
   (x.l = 1)
 }
@@ -233,9 +233,9 @@ export eret  ex  = {
   x.t is t
   x.l is l
   geval x 0
-  gpush &x.c "rax"
+  gpush x &x.c "rax"
   p5 x
-  gpop &x.c "rax"
+  gpop x &x.c "rax"
   (x.l = 0)
   (x.t = t)
 }
@@ -243,15 +243,15 @@ export eret  ex  = {
 export econd  ex = {
   (x.line * 10000 + x.col) is n
   geval x 0
-  gtcz "rax"
-  gje n "a"
+  gtcz x "rax"
+  gje x n "a"
   p4 x
   geval x 0
-  gj n "b"
-  glabel n "a"
+  gj x n "b"
+  glabel x n "a"
   p4 x
   geval x 0
-  glabel n "b"
+  glabel x n "b"
   (x.l = 0)
 }
 
@@ -259,13 +259,13 @@ export ethen  ex  = {
   (x.line * 10000 + x.col) is n
   x.t is a
   geval x 0
-  gtcz "rax"
-  gje n "a"
-  gpush &x.c "rax"
+  gtcz x "rax"
+  gje x n "a"
+  gpush x &x.c "rax"
   p5 x
   geval x 0
-  gpop &x.c ((x.t.q == &TNONE) ? "rax" "rdx")
-  glabel n "a"
+  gpop x &x.c ((x.t.q == &TNONE) ? "rax" "rdx")
+  glabel x n "a"
   (x.l = 0)
 }
 
@@ -273,13 +273,13 @@ export eland  ex  = {
   (x.line * 10000 + x.col) is n
   x.t is a
   geval x 0
-  gtcz "rax"
-  gje n "a"
-  gpush &x.c "rax"
+  gtcz x "rax"
+  gje x n "a"
+  gpush x &x.c "rax"
   pcmp x
   geval x 0
-  gpop &x.c ((x.t.q == &TNONE) ? "rax" "rdx")
-  glabel n "a"
+  gpop x &x.c ((x.t.q == &TNONE) ? "rax" "rdx")
+  glabel x n "a"
   (x.l = 0)
 }
 
@@ -287,13 +287,13 @@ export eelse  ex  = {
   (x.line * 10000 + x.col) is n
   x.t is a
   geval x 0
-  gtcz "rax"
-  gjne n "a"
-  gpush &x.c "rax"
+  gtcz x "rax"
+  gjne x n "a"
+  gpush x &x.c "rax"
   p5 x
   geval x 0
-  gpop &x.c ((x.t.q == &TNONE) ? "rax" "rdx")
-  glabel n "a"
+  gpop x &x.c ((x.t.q == &TNONE) ? "rax" "rdx")
+  glabel x n "a"
   (x.t = a)
   (x.l = 0)
 }
@@ -302,13 +302,13 @@ export elor ex = {
   (x.line * 10000 + x.col) is n
   x.t is a
   geval x 0
-  gtcz "rax"
-  gjne n "a"
-  gpush &x.c "rax"
+  gtcz x "rax"
+  gjne x n "a"
+  gpush x &x.c "rax"
   pland x
   geval x 0
-  gpop &x.c ((x.t.q == &TNONE) ? "rax" "rdx")
-  glabel n "a"
+  gpop x &x.c ((x.t.q == &TNONE) ? "rax" "rdx")
+  glabel x n "a"
   (x.t = a)
   (x.l = 0)
 }
@@ -316,7 +316,7 @@ export elor ex = {
 export escratch ex = {
   ptype x is t
   (t.size + 7 >> 3) is d
-  gfpush &x.c d
+  gfpush x &x.c d
   scratch Scope o1
   (o1.s  = x.o    )
   (o1.kp = x.kp   )
@@ -331,7 +331,7 @@ export escratch ex = {
   p5 x
   (x.o = o)
   geval x 0
-  gfpop &x.c d
+  gfpop x &x.c d
   (x.l = 0)
 }
 
@@ -339,8 +339,8 @@ export eis ex = {
   x.t is a
   (a.size + 7 >> 3) is d
   geval x 0
-  gfpush &x.c d
-  gstore a "rsp"
+  gfpush x &x.c d
+  gstore x a "rsp"
   scratch Scope o1
   (o1.s  = x.o    )
   (o1.kp = x.kp   )
@@ -355,7 +355,7 @@ export eis ex = {
   p5 x
   (x.o = o)
   geval x 0
-  gfpop &x.c d
+  gfpop x &x.c d
   (x.l = 0)
 }
 
@@ -364,12 +364,12 @@ export efor ex = {
   x.t is a
   (a.size + 7 >> 3) is d
   geval x 0
-  gfpush &x.c d
-  gstore a "rsp"
-  gj n "b"
-  glabel n "a"
-  gstore a "rsp"
-  glabel n "b"
+  gfpush x &x.c d
+  gstore x a "rsp"
+  gj x n "b"
+  glabel x n "a"
+  gstore x a "rsp"
+  glabel x n "b"
   scratch Scope o1
   (o1.s  = x.o    )
   (o1.kp = x.kp   )
@@ -384,22 +384,22 @@ export efor ex = {
   p5 x
   (x.o = o)
   geval x 0
-  gtcz "rax"
-  gjne n "a"
-  gload a 0 "rsp" "rax"
-  gfpop &x.c d
+  gtcz x "rax"
+  gjne x n "a"
+  gload x a 0 "rsp" "rax"
+  gfpop x &x.c d
   (x.l = 0)
 }
 
 export eass ex  = {
   x.t is a
   geval x 1
-  gpush &x.c "rax"
+  gpush x &x.c "rax"
   p7 x
   geval x 0
-  gpop &x.c "rdi"
-  gstore a "rdi"
-  gtz "eax"
+  gpop x &x.c "rdi"
+  gstore x a "rdi"
+  gtz x "eax"
   (x.t = nnone x)
   (x.l = 0    )
 }
@@ -413,26 +413,26 @@ export ecall ex = {
     tf.a.s for u
     (stack = stack + 1)
     u.s }
-  gfpush &x.c stack
-  gpush &x.c "rax"
+  gfpush x &x.c stack
+  gpush x &x.c "rax"
   8 is off
   { tf.a.s then
     tf.a.s for u
     p3 x
     (type_equal x.t u or kdiag x "asymmetric argument")
     geval x 0
-    gs "mov %rax," gn off gs "(%rsp)" glf
+    gs x "mov %rax," gn x off gs x "(%rsp)" glf x
     (off = off + 8)
     u.s }
-  gpop &x.c "rax"
+  gpop x &x.c "rax"
   0 is d
   { tf.a.s then
     tf.a.s for u
     (d < 6) then
-    gpop &x.c argreg d
+    gpop x &x.c argreg d
     (d = d + 1)
     u.s }
-  gt0 "call *%rax"
+  gt0 x "call *%rax"
   (x.t = tf.a )
   (x.l = 0    )
   (x.c = c)
@@ -441,9 +441,9 @@ export ecall ex = {
 export eexit  ex  = {
   p3 x
   geval x 0
-  gt2 "mov" "rax" "rdi"
-  gtlit 60 "rax"
-  gt0 "syscall"
+  gt2 x "mov" "rax" "rdi"
+  gtlit x 60 "rax"
+  gt0 x "syscall"
   (x.t = nnone x)
   (x.l = 0    )
 }
@@ -451,9 +451,9 @@ export eexit  ex  = {
 export ebrk ex = {
   p3 x
   geval x 0
-  gt0 "mov %rax,%rdi"
-  gtlit 12 "rax"
-  gt0 "syscall"
+  gt0 x "mov %rax,%rdi"
+  gtlit x 12 "rax"
+  gt0 x "syscall"
   (x.t = nnat x)
   (x.l = 0     )
 }
@@ -461,14 +461,14 @@ export ebrk ex = {
 gsys3 (x X fd nat id nat) none = {
   p3 x
   geval x 0
-  gpush &x.c "rax"
+  gpush x &x.c "rax"
   p3 x
   geval x 0
-  gpop &x.c "rsi"
-  gt2 "mov" "rax" "rdx"
-  gtlit fd "rdi"
-  gtlit id "rax"
-  gt0 "syscall"
+  gpop x &x.c "rsi"
+  gt2 x "mov" "rax" "rdx"
+  gtlit x fd "rdi"
+  gtlit x id "rax"
+  gt0 x "syscall"
   (x.t = nnat x)
   (x.l = 0    )
 }

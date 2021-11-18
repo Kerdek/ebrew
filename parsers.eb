@@ -166,7 +166,7 @@ gtpars(x X t T g nat) nat = {
 }
 gtparr(x X t T g nat) nat = {
   !t ? { p4 x geval x 0 0 }
-    { gpush &x.c argreg g
+    { gpush x &x.c argreg g
       scratch Scope o1
       (o1.s = x.o)
       (o1.kp = t.kp)
@@ -211,13 +211,13 @@ function (x X) none = {
   (x.o = &o1)
   { o1.is_def then
     jadv x
-    gs ".section .text." gsn o1.kp o1.kn glf
-    { globl then gs ".globl" gc ' ' gsn o1.kp o1.kn glf }
-    gsn o1.kp o1.kn gc ':' glf
+    gs x ".section .text." gsn x o1.kp o1.kn glf x
+    { globl then gs x ".globl" gc x ' ' gsn x o1.kp o1.kn glf x }
+    gsn x o1.kp o1.kn gc x ':' glf x
     (x.c = 0)
     gtparr x t.a.s 0 is stack
-    gfpop &x.c stack
-    gt0 "ret" }
+    gfpop x &x.c stack
+    gt0 x "ret" }
   decls x
 }
 

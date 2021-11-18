@@ -54,11 +54,11 @@ string(x X) nat = {
   xadv x
   (x.kp = q)
   (x.kn = x.p - q)
-  gs ".section .data..s" gn (x.line * 10000 + x.col) glf
-  gs ".s" gn (x.line * 10000 + x.col) gc ':' gs ".string \""
-  { &x.kp^1 for i (i < &x.kp^(x.kn - 1)) then gc i@ &i^1 }
-  gc '\"' glf
-  gs ".previous" glf
+  gs x ".section .data..s" gn x (x.line * 10000 + x.col) glf x
+  gs x ".s" gn x (x.line * 10000 + x.col) gc x ':' gs x ".string \""
+  { &x.kp^1 for i (i < &x.kp^(x.kn - 1)) then gc x i@ &i^1 }
+  gc x '\"' glf x
+  gs x ".previous" glf x
   1
 }
 

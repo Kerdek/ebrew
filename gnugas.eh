@@ -7,63 +7,63 @@ argreg(d nat) @byte = {
              "r9"
 }
 
-gtreg(s @byte        ) none = { gc '%' gs s }
-gt0  (s @byte        ) none = { gs s glf  }
-gt1  (s @byte a @byte    ) none = { gs s gc ' ' gtreg a glf }
-gt2  (s @byte a @byte b @byte) none = { gs s gc ' ' gtreg a gc ',' gtreg b glf }
+gtreg(x X s @byte        ) none = { gc x '%' gs x s }
+gt0  (x X s @byte        ) none = { gs x s glf x  }
+gt1  (x X s @byte a @byte    ) none = { gs x s gc x ' ' gtreg x a glf x }
+gt2  (x X s @byte a @byte b @byte) none = { gs x s gc x ' ' gtreg x a gc x ',' gtreg x b glf x }
 
-gtz (a @byte) none = gt2  "xor"  a a
-gtcz(a @byte) none = gt2  "test" a a
+gtz (x X a @byte) none = gt2 x "xor"  a a
+gtcz(x X a @byte) none = gt2 x "test" a a
 
-gtlit(l nat a @byte) none = (!!l ? { gs "mov $" gn l gc ',' gtreg a glf } gtz  a)
+gtlit(x X l nat a @byte) none = (!!l ? { gs x "mov $" gn x l gc x ',' gtreg x a glf x } gtz x  a)
 
-gtnot(    a @byte) none = gt1 "not" a
-gtneg(    a @byte) none = gt1 "neg" a
-gmul (    a @byte) none = gt1 "mul" a
-gdiv (       ) none = { gtz "edx" gt1 "div" "rdi" }
-gmod (       ) none = { gdiv
-                        gt2 "mov" "rdx" "rax" }
-gshx (x byte    ) none = { gt2 "mov" "dil" "cl" gs "sh" gc x gs " %cl,%rax" glf }
+gtnot(x X a @byte) none = gt1 x "not" a
+gtneg(x X a @byte) none = gt1 x "neg" a
+gmul (x X a @byte) none = gt1 x "mul" a
+gdiv (x X    ) none = { gtz x "edx" gt1 x "div" "rdi" }
+gmod (x X    ) none = { gdiv x
+                        gt2 x "mov" "rdx" "rax" }
+gshx (x X k byte    ) none = { gt2 x "mov" "dil" "cl" gs x "sh" gc x k gs x " %cl,%rax" glf x }
 
-gadd (a @byte b @byte) none = gt2 "add" a b
-gsub (a @byte b @byte) none = gt2 "sub" a b
-gand (a @byte b @byte) none = gt2 "and" a b
-gor  (a @byte b @byte) none = gt2 "or"  a b
-gxor (a @byte b @byte) none = gt2 "xor" a b
-gcmp (a @byte b @byte) none = gt2 "cmp" a b
-gshr () none = gshx 'r'
-gshl () none = gshx 'l'
+gadd (x X a @byte b @byte) none = gt2 x "add" a b
+gsub (x X a @byte b @byte) none = gt2 x "sub" a b
+gand (x X a @byte b @byte) none = gt2 x "and" a b
+gor  (x X a @byte b @byte) none = gt2 x "or"  a b
+gxor (x X a @byte b @byte) none = gt2 x "xor" a b
+gcmp (x X a @byte b @byte) none = gt2 x "cmp" a b
+gshr (x X ) none = gshx x 'r'
+gshl (x X ) none = gshx x 'l'
 
-gpromote(b @byte) none = gt2 "movzbl" "al" b
+gpromote(x X b @byte) none = gt2 x "movzbl" "al" b
 
-gsetf     (s @byte     b @byte    ) none = { gs "set" gs s gc ' ' gtreg "al" glf gpromote b }
-gcmp_setf (s @byte a @byte b @byte c @byte) none = { gcmp a b gsetf s c }
-gcmpz_setf(s @byte a @byte b @byte    ) none = { gtcz a   gsetf s b }
-glnot     (    a @byte b @byte    ) none = { gcmpz_setf "e" a b }
+gsetf     (x X s @byte     b @byte    ) none = { gs x "set" gs x s gc x ' ' gtreg x "al" glf x gpromote x b }
+gcmp_setf (x X s @byte a @byte b @byte c @byte) none = { gcmp x a b gsetf x s c }
+gcmpz_setf(x X s @byte a @byte b @byte    ) none = { gtcz x a   gsetf x s b }
+glnot     (x X     a @byte b @byte    ) none = { gcmpz_setf x "e" a b }
 
-gj        (n nat l @byte        ) none = { gs "jmp " gs l gn n gc '$' glf }
-gjc       (n nat l @byte s @byte) none = { gs "j" gs s gc ' ' gs l gn n gc '$' glf }
-glabel    (n nat l @byte        ) none = { gs l gn n gs "$:" glf }
+gj        (x X n nat l @byte        ) none = { gs x "jmp " gs x l gn x n gc x '$' glf x }
+gjc       (x X n nat l @byte s @byte) none = { gs x "j" gs x s gc x ' ' gs x l gn x n gc x '$' glf x }
+glabel    (x X n nat l @byte        ) none = { gs x l gn x n gs x "$:" glf x }
 
-gje  (n nat l @byte) none = gjc n l "e"
-gjne (n nat l @byte) none = gjc n l "ne"
-gjb  (n nat l @byte) none = gjc n l "b"
-gjbe (n nat l @byte) none = gjc n l "be"
-gja  (n nat l @byte) none = gjc n l "a"
-gjae (n nat l @byte) none = gjc n l "ae"
+gje  (x X n nat l @byte) none = gjc x n l "e"
+gjne (x X n nat l @byte) none = gjc x n l "ne"
+gjb  (x X n nat l @byte) none = gjc x n l "b"
+gjbe (x X n nat l @byte) none = gjc x n l "be"
+gja  (x X n nat l @byte) none = gjc x n l "a"
+gjae (x X n nat l @byte) none = gjc x n l "ae"
 
-gegcmp(s @byte) none = gcmp_setf s "rdi" "rax" "eax"
+gegcmp(x X s @byte) none = gcmp_setf x s "rdi" "rax" "eax"
 
-ge  () none = gegcmp "e"
-gne () none = gegcmp "ne"
-gb  () none = gegcmp "b"
-gbe () none = gegcmp "be"
-ga  () none = gegcmp "a"
-gae () none = gegcmp "ae"
+ge  (x X) none = gegcmp x "e"
+gne (x X) none = gegcmp x "ne"
+gb  (x X) none = gegcmp x "b"
+gbe (x X) none = gegcmp x "be"
+ga  (x X) none = gegcmp x "a"
+gae (x X) none = gegcmp x "ae"
 
-gfpush(c @nat  l nat) none = { !!l then gs "sub $" gn (l << 3) gc ',' gtreg "rsp" glf (c@ = c@ + l) }
-gfpop (c @nat  l nat) none = { !!l then gs "add $" gn (l << 3) gc ',' gtreg "rsp" glf (c@ = c@ - l) }
-gpush (c @nat  d @byte) none = { gt1 "push" d (c@ = c@ + 1) }
-gpop  (c @nat  s @byte) none = { gt1 "pop"  s (c@ = c@ - 1) }
+gfpush(x X c @nat  l nat) none = { !!l then gs x "sub $" gn x (l << 3) gc x ',' gtreg x "rsp" glf x (c@ = c@ + l) }
+gfpop (x X c @nat  l nat) none = { !!l then gs x "add $" gn x (l << 3) gc x ',' gtreg x "rsp" glf x (c@ = c@ - l) }
+gpush (x X c @nat  d @byte) none = { gt1 x "push" d (c@ = c@ + 1) }
+gpop  (x X c @nat  s @byte) none = { gt1 x "pop"  s (c@ = c@ - 1) }
 
-gindex(l nat) none = { l then gs "add $" gn l gc ',' gtreg "rax" glf }
+gindex(x X l nat) none = { l then gs x "add $" gn x l gc x ',' gtreg x "rax" glf x }
