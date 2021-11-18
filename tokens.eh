@@ -29,11 +29,9 @@ type
 
   Ctx {
     s    @Ctx
-    c0    byte
-    c1    byte
+    p    @byte
     kp   @byte
     kn    nat
-    p    @byte
     line  nat
     col   nat
     curbrk @none

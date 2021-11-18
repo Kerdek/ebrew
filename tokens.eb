@@ -3,19 +3,15 @@ export xisstr (x X) nat = (x.kp@ == '\"')
 export xisnum (x X) nat = is09 x.kp@
 export xischr (x X) nat = (x.kp@ == '\'')
 
-xeq  (x X c byte) nat  = (x.c0 == c)
-xseq (x X c byte) nat  = { (x.c0 or diag "unexpected end of file") (x.c1 == cast byte -1 and (read &x.c1 1 or (x.c1 = cast byte 0))) (x.c1 == c) }
+xeq  (x X c byte) nat  = (x.p@ == c)
+xseq (x X c byte) nat  = { (x.p@ or diag "unexpected end of file") (x.p^1 == c) }
 xadv (x X       ) none = {
-  (x.c0 or diag "unexpected end of file")
+  (x.p@ or diag "unexpected end of file")
   (x.p = &x.p^1)
   (x.col = x.col + 1)
   { xeq x '\n' then
     (x.col = 1)
     (x.line = x.line + 1) }
-  (x.c1 == cast byte -1) ?
-    (read &x.c0 1 or (x.c0 = cast byte 0))
-    { (x.c0 = x.c1) (x.c1 = cast byte -1) }
-  (x.p@ = x.c0)
 }
 
 comment(x X) nat = {

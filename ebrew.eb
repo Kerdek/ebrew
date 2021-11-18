@@ -1,16 +1,14 @@
 export _start() nat = {
   cast @none brk 0 is curbrk
-  brk ((1 << 20) + cast nat curbrk)
-  cast @byte alloc (1 << 18) &curbrk is p
-
-  gt0 ".data"
-
+  brk ((1 << 22) + cast nat curbrk)
+  cast @byte alloc (1 << 20) &curbrk is p
+  ({ p for q
+    read q (1 << 20) is n
+    n then
+    &q^n }@ = 0)
   scratch Ctx ctx
-  (read &ctx.c0 1)
   (ctx.curbrk = curbrk)
-  (ctx.c1 = cast byte -1)
   (ctx.p = p)
-  (ctx.p@ = ctx.c0)
   (ctx.line = 1)
   (ctx.col = 1)
   (ctx.o = 0)
