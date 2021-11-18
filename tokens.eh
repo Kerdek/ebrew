@@ -36,6 +36,7 @@ type
     p    @byte
     line  nat
     col   nat
+    curbrk @none
     o O
     t T
     l nat

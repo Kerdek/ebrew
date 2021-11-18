@@ -5,12 +5,11 @@ export TSTCT () none
 export TPTR  () none
 export TFUNC () none
 
-export nnone (   ) T
-export nbyte (   ) T
-export nnat  (   ) T
-export nstct (   ) T
-export nptr  (a T) T
-export nfunc (a T) T
-export nnew  (a T) T
+export nnone (x X    ) T
+export nbyte (x X    ) T
+export nnat  (x X    ) T
+export nstct (x X    ) T
+export nptr  (x X a T) T
+export nfunc (x X a T) T
 
 export type_equal(t T u T) nat

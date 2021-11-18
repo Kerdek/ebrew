@@ -9,7 +9,6 @@ export ewrite   ex
 export eaddr    ex
 export escratch ex
 export ebrk     ex
-export eibrk    ex
 export eneg     ex
 export elnot    ex
 export eid      ex

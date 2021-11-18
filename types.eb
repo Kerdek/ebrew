@@ -1,5 +1,5 @@
-ntype(size nat align nat q TypeKind) T = {
-  cast T alloc sizeof Type is t
+ntype(x X size nat align nat q TypeKind) T = {
+  cast T alloc sizeof Type &x.curbrk is t
   (t.size  = size  )
   (t.align = align )
   (t.q = q)
@@ -7,18 +7,18 @@ ntype(size nat align nat q TypeKind) T = {
   t
 }
 
-ntypea(size nat align nat q TypeKind a T) T = {
-  ntype size align q is t
+ntypea(x X size nat align nat q TypeKind a T) T = {
+  ntype x size align q is t
   (t.a = a)
   t
 }
 
-export nnone (   ) T = ntype  0 0 &TNONE
-export nbyte (   ) T = ntype  1 1 &TBYTE
-export nnat  (   ) T = ntype  8 8 &TNAT
-export nstct (   ) T = ntype  0 1 &TSTCT
-export nptr  (a T) T = ntypea 8 8 &TPTR  a
-export nfunc (a T) T = ntypea 1 1 &TFUNC a
+export nnone (x X    ) T = ntype  x 0 0 &TNONE
+export nbyte (x X    ) T = ntype  x 1 1 &TBYTE
+export nnat  (x X    ) T = ntype  x 8 8 &TNAT
+export nstct (x X    ) T = ntype  x 0 1 &TSTCT
+export nptr  (x X a T) T = ntypea x 8 8 &TPTR  a
+export nfunc (x X a T) T = ntypea x 1 1 &TFUNC a
 
 export type_equal(t T u T) nat = {
   t then

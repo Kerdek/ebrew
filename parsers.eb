@@ -19,7 +19,7 @@ export search_scope(x X) @Scope = {
 }
 
 export declarator (x X t @T) none = {
-  (t@ = cast T alloc sizeof Type)
+  (t@ = cast T alloc sizeof Type &x.curbrk)
   (t.kp = x.kp)
   (t.kn = x.kn)
   jadv x
@@ -34,7 +34,7 @@ export declarator (x X t @T) none = {
 align(n nat a nat) nat = ((n + a - 1) / a * a)
 
 struct_decl (x X) T = {
-  nstct is t
+  nstct x is t
   &t.a is u
   { 1 for _ 
      !consume x "}" then
@@ -62,17 +62,17 @@ func_params (x X) T = {
     1 }
   jadv x
   ptype x is ret
-  nfunc cast T alloc sizeof Type is t
+  nfunc x cast T alloc sizeof Type &x.curbrk is t
   memcpy cast @byte t.a cast @byte ret sizeof Type
   (t.a.s = params)
   t
 }
 
 export ptype (x X) T = {
-  consume x "none"   ? nnone
-  consume x "byte"   ? nbyte
-  consume x "nat"    ? nnat
-  consume x "@"      ? nptr        ptype x
+  consume x "none"   ? nnone x
+  consume x "byte"   ? nbyte x
+  consume x "nat"    ? nnat x
+  consume x "@"      ? nptr x        ptype x
   consume x "("      ? func_params       x
   consume x "{"      ? struct_decl       x
   { search_scope x is o
@@ -94,7 +94,6 @@ p1     (x X) nat = { pl x "&"       &eaddr    else
                      pl x "sizeof"  &esize    else
                      pl x "exit"    &eexit    else
                      pl x "brk"     &ebrk     else
-                     pl x "ibrk"    &eibrk    else
                      pl x "read"    &eread    else
                      pl x "write"   &ewrite   else
                      pl x "err"     &eerr     else

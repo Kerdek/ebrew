@@ -1,13 +1,13 @@
 export _start() nat = {
-  ibrk 0
-  (1 << 20) is big
-  cast @byte alloc big is p
+  cast @none brk 0 is curbrk
+  brk ((1 << 20) + cast nat curbrk)
+  cast @byte alloc (1 << 18) &curbrk is p
+
   gt0 ".data"
-  gt0 ".globl .scurbrk"
-  gt0 ".weak .scurbrk"
-  gt0 ".scurbrk:.quad 0"
+
   scratch Ctx ctx
   (read &ctx.c0 1)
+  (ctx.curbrk = curbrk)
   (ctx.c1 = cast byte -1)
   (ctx.p = p)
   (ctx.p@ = ctx.c0)
