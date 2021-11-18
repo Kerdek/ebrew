@@ -1,42 +1,12 @@
-bin/ebrew: stageaaa/ebrew
-	cp $^ $@
 
-%/ebrew: %/ebrew.o %/nodes.o %/tokens.o %/parsers.o %/types.o
-	ld -o $@ -m elf_x86_64 $^
+default: stage3
 
-%.o: %.a
-	as -g -o $@ -c $^
+stage%: .dummy
+	mkdir -p $@
+	$(MAKE) -f build.mak --no-print-directory BUILDING=$@ $@/ebrew
 
-  EBREW_UNIT = lib.eh ebrew.eh tokens.eh io.eh gnugas.eh types.eh parsers.eh nodes.eh lex.eh ebrew.eb
- TOKENS_UNIT = lib.eh ebrew.eh tokens.eh io.eh gnugas.eh types.eh parsers.eh nodes.eh lex.eh tokens.eb
-  NODES_UNIT = lib.eh ebrew.eh tokens.eh io.eh gnugas.eh types.eh parsers.eh nodes.eh lex.eh nodes.eb
-PARSERS_UNIT = lib.eh ebrew.eh tokens.eh io.eh gnugas.eh types.eh parsers.eh nodes.eh lex.eh parsers.eb
-  TYPES_UNIT = lib.eh ebrew.eh tokens.eh io.eh gnugas.eh types.eh parsers.eh nodes.eh lex.eh types.eb
-
-stage/ebrew.a: $(EBREW_UNIT)
-	cat $^ | $(CC) > $@
-%a/ebrew.a: $(EBREW_UNIT) | %/ebrew
-	cat $^ | $*/ebrew > $@
-
-stage/tokens.a: $(TOKENS_UNIT)
-	cat $^ | $(CC) > $@
-%a/tokens.a: $(TOKENS_UNIT) | %/ebrew
-	cat $^ | $*/ebrew > $@
-
-stage/nodes.a: $(NODES_UNIT)
-	cat $^ | $(CC) > $@
-%a/nodes.a: $(NODES_UNIT) | %/ebrew
-	cat $^ | $*/ebrew > $@
-
-stage/parsers.a: $(PARSERS_UNIT)
-	cat $^ | $(CC) > $@
-%a/parsers.a: $(PARSERS_UNIT) | %/ebrew
-	cat $^ | $*/ebrew > $@
-
-stage/types.a: $(TYPES_UNIT)
-	cat $^ | $(CC) > $@
-%a/types.a: $(TYPES_UNIT) | %/ebrew
-	cat $^ | $*/ebrew > $@
-
-clean:
+clean: .dummy
 	rm -f stage*/*
+	rmdir stage*
+
+.dummy:
