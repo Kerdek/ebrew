@@ -1,7 +1,7 @@
-export xisid  (x X) nat = (isaz x.k.p@ or isAZ x.k.p@)
-export xisstr (x X) nat = (x.k.p@ == '\"')
-export xisnum (x X) nat = is09 x.k.p@
-export xischr (x X) nat = (x.k.p@ == '\'')
+export xisid  (x X) nat = (isaz x.kp@ or isAZ x.kp@)
+export xisstr (x X) nat = (x.kp@ == '\"')
+export xisnum (x X) nat = is09 x.kp@
+export xischr (x X) nat = (x.kp@ == '\'')
 
 xeq  (x X c byte) nat  = (x.c0 == c)
 xseq (x X c byte) nat  = { (x.c0 or diag "unexpected end of file") (x.c1 == cast byte -1 and (read &x.c1 1 or (x.c1 = cast byte 0))) (x.c1 == c) }
@@ -16,14 +16,6 @@ xadv (x X       ) none = {
     (read &x.c0 1 or (x.c0 = cast byte 0))
     { (x.c0 = x.c1) (x.c1 = cast byte -1) }
   (x.p@ = x.c0)
-}
-
-ntoken(a @byte x X) K = {
-  cast K alloc sizeof Token is k
-  (k.s    = 0    )
-  (k.p    = a  )
-  (k.n    = x.p - a)
-  k
 }
 
 comment(x X) nat = {
@@ -47,7 +39,8 @@ number(x X) nat = {
   x.p is q
   { 1 for _ is09 x.p@ then xadv x 1 }
   (x.p != q) then
-  (x.k@ = ntoken q x)
+  (x.kp = q)
+  (x.kn = x.p - q)
   1
 }
 
@@ -63,13 +56,13 @@ string(x X) nat = {
     1
   }
   xadv x
-  ntoken q x is k
+  (x.kp = q)
+  (x.kn = x.p - q)
   gs ".section .data..s" gn (x.line * 10000 + x.col) glf
   gs ".s" gn (x.line * 10000 + x.col) gc ':' gs ".string \""
-  { &k.p^1 for i (i < &k.p^(k.n - 1)) then gc i@ &i^1 }
+  { &x.kp^1 for i (i < &x.kp^(x.kn - 1)) then gc i@ &i^1 }
   gc '\"' glf
   gs ".previous" glf
-  (x.k@ = k)
   1
 }
 
@@ -82,7 +75,8 @@ char(x X) nat = {
   xadv x
   (xeq x '\'' or diag "expected '")
   xadv x
-  (x.k@ = ntoken q x)
+  (x.kp = q)
+  (x.kn = x.p - q)
   1
 }
 
@@ -90,7 +84,8 @@ id(x X) nat = {
   x.p is q
   { 1 for _ isid x.p@ then xadv x 1 }
   (x.p != q) then
-  (x.k@ = ntoken q x)
+  (x.kp = q)
+  (x.kn = x.p - q)
   1
 }
 
@@ -135,7 +130,8 @@ punct(x X) nat = {
     sw1 x '`'     else
     sw1 x '%'
   }
-  (x.k@ = ntoken q x)
+  (x.kp = q)
+  (x.kn = x.p - q)
   1
 }
 
@@ -154,5 +150,5 @@ export token(x X) none = {
   x.p@ ?
     { nonws   x else
       diag "invalid token" }
-    (x.k@ = cast K 0)
+    (x.kp = cast @byte 0)
 }

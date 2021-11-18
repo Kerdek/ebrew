@@ -1,19 +1,12 @@
 type
-  Token {
-    s @Token
-    p @byte
-    n nat
-  }
-
-  K @Token
-
   TypeKind  @()none
 
   Type {
     s      @Type
     a      @Type
     q       TypeKind
-    k       K
+    kp     @byte
+    kn      nat
     size    nat
     align   nat
     offset  nat
@@ -23,7 +16,8 @@ type
 
   Scope {
     s        @Scope
-    k        K
+    kp      @byte
+    kn       nat
     t        T
     c        nat
     is_type  nat
@@ -37,7 +31,8 @@ type
     s    @Ctx
     c0    byte
     c1    byte
-    k    @K
+    kp   @byte
+    kn    nat
     p    @byte
     line  nat
     col   nat

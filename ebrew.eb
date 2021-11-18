@@ -6,11 +6,9 @@ export _start() nat = {
   gt0 ".globl .scurbrk"
   gt0 ".weak .scurbrk"
   gt0 ".scurbrk:.quad 0"
-  cast K 0 is k
   scratch Ctx ctx
   (read &ctx.c0 1)
   (ctx.c1 = cast byte -1)
-  (ctx.k = &k)
   (ctx.p = p)
   (ctx.p@ = ctx.c0)
   (ctx.line = 1)

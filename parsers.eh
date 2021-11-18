@@ -15,7 +15,7 @@ export pland  (x X) nat
 export decls      (x X     ) none
 export declarator (x X t @T) none
 
-export jadv   (x X        ) K
+export jadv   (x X        ) none
 export jeq    (x X c @byte) nat
 export expect (x X c @byte) none
 export consume(x X c @byte) nat

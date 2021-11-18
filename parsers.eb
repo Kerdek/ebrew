@@ -1,12 +1,12 @@
-export jadv   (x X        ) K    = { (x.k@ or diag "unexpected end of tokens") x.k@ ret (x.k = &x.k.s) token x }
-export jeq    (x X c @byte) nat  = { x.k@ then memcmp x.k.p c x.k.n then !c^x.k.n }
+export jadv   (x X        ) none = { (x.kp or diag "unexpected end of tokens") token x }
+export jeq    (x X c @byte) nat  = { x.kp then memcmp c x.kp x.kn then !c^x.kn }
 export expect (x X c @byte) none = { { !jeq x c then kdiag x "unexpected" } jadv x }
 export consume(x X c @byte) nat  = { jeq x c is r { r then jadv x } r }
 
 try_search_scope(x X) O = {
   cast O 0 is r
   { x.o then x.o for o
-    (o.k.n != x.k.n or !strncmp o.k.p x.k.p x.k.n) ?
+    (o.kn != x.kn or !strncmp o.kp x.kp x.kn) ?
       o.s
       { (r = o)
         cast O 0 } }
@@ -15,16 +15,20 @@ try_search_scope(x X) O = {
 
 export search_scope(x X) @Scope = {
   try_search_scope x else
-  ok x.k@ olf
   kdiag x "lookup failed"
 }
 
 export declarator (x X t @T) none = {
   (t@ = cast T alloc sizeof Type)
-  jadv x is k
+  (t.kp = x.kp)
+  (t.kn = x.kn)
+  jadv x
   ptype x is u
-  memcpy cast @byte t@ cast @byte u sizeof Type
-  (t.k = k)
+  (t.a = u.a)
+  (t.q = u.q)
+  (t.size = u.size)
+  (t.align = u.align)
+  (t.offset = u.offset)
 }
 
 align(n nat a nat) nat = ((n + a - 1) / a * a)
@@ -77,10 +81,10 @@ export ptype (x X) T = {
     o.t }
 }
 
-pj(x X xcat @(x X) nat e @exk) nat = { x.k@ then xcat@ x then e@ x cast K 0 1 }
-pl(x X c @byte     e @exk) nat = { x.k@ then jeq x c then jadv x is k e@ x k 1 }
-pr(x X c @byte     e @exk) nat = { x.k@ then jeq x c then jadv x is k e@ x k 1 }
-pu(x X c @byte     e @exk) nat = { x.k@ then !jeq x c then e@ x x.k@ 1 }
+pj(x X xcat @(x X) nat e @ex) nat = { x.kp then xcat@ x then e@ x 1 }
+pl(x X c @byte     e @ex) nat = { x.kp then jeq x c then jadv x e@ x 1 }
+pr(x X c @byte     e @ex) nat = { x.kp then jeq x c then jadv x e@ x 1 }
+pu(x X c @byte     e @ex) nat = { x.kp then !jeq x c then e@ x 1 }
 
 p1     (x X) nat = { pl x "&"       &eaddr    else
                      pl x "-"       &eneg     else
@@ -105,7 +109,7 @@ p1     (x X) nat = { pl x "&"       &eaddr    else
 pa2    (x X) nat = { pr x "^"    &eelem       else
                      pr x "."    &emem        else
                      pr x "@"    &ederef           }
-pa3    (x X) nat = { (x.t.q == &TFUNC) then { ecall x x.k@ 1 } }
+pa3    (x X) nat = { (x.t.q == &TFUNC) then { ecall x 1 } }
 pa4    (x X) nat = { pr x "?"    &econd      }
 pa5    (x X) nat = { pr x "ret"  &eret  else
                      pr x "is"   &eis   else
@@ -150,7 +154,8 @@ gtpars(x X t T g nat) nat = {
   !t ? { p4 x geval x 0 0 }
     { scratch Scope o1
       (o1.s = x.o)
-      (o1.k = t.k)
+      (o1.kp = t.kp)
+      (o1.kn = t.kn)
       (o1.is_type  = 0)
       (o1.is_local = 1)
       (o1.c  = -g)
@@ -165,7 +170,8 @@ gtparr(x X t T g nat) nat = {
     { gpush &x.c argreg g
       scratch Scope o1
       (o1.s = x.o)
-      (o1.k = t.k)
+      (o1.kp = t.kp)
+      (o1.kn = t.kn)
       (o1.is_type  = 0)
       (o1.is_local = 1)
       (o1.c = x.c)
@@ -180,8 +186,9 @@ typedecl (x X) none = {
   consume x ";" ?
     decls x
     { scratch Scope o1
-      (o1.s = x.o)
-      (o1.k = x.k@)
+      (o1.s  = x.o )
+      (o1.kp = x.kp)
+      (o1.kn = x.kn)
       (o1.is_type = 1)
       (x.o = &o1)
       declarator x &o1.t
@@ -196,7 +203,8 @@ function (x X) none = {
   (!o or !o.is_type and !o.is_def and jeq x "=" or kdiag x "remention")
   scratch Scope o1
   (o1.s = x.o)
-  (o1.k = t.k)
+  (o1.kp = t.kp)
+  (o1.kn = t.kn)
   (o1.t = t)
   (o1.is_type  = 0)
   (o1.is_local = 0)
@@ -204,9 +212,9 @@ function (x X) none = {
   (x.o = &o1)
   { o1.is_def then
     jadv x
-    gs ".section .text." gk t.k glf
-    { globl then gs ".globl" gc ' ' gk t.k glf }
-    gk t.k gc ':' glf
+    gs ".section .text." gsn o1.kp o1.kn glf
+    { globl then gs ".globl" gc ' ' gsn o1.kp o1.kn glf }
+    gsn o1.kp o1.kn gc ':' glf
     (x.c = 0)
     gtparr x t.a.s 0 is stack
     gfpop &x.c stack
@@ -215,7 +223,7 @@ function (x X) none = {
 }
 
 export decls (x X) none = {
-  x.k@ then
+  x.kp then
   ( consume x "type" ? &typedecl
                        &function ) is f
   f@ x
