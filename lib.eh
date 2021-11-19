@@ -1,4 +1,4 @@
-alloc (n nat c @@none) @none = { c@ ret (c@ = c@ + n) }
+alloc (n nat c @@byte) @byte = { c@ ret (c@ = c@ + n) }
 
 strlen(a @byte) nat = { 0 for i a^i then (i + 1) }
 

@@ -1,24 +1,50 @@
+type
+  timespec {
+    s nat
+    n nat
+  }
+;
+
 export _start() nat = {
-  cast @none brk 0 is curbrk
-  brk ((1 << 24) + cast nat curbrk)
-  cast @byte alloc (1 << 20) &curbrk is p
-  ({ p for p
-    read p (1 << 20) is n
-    n then
-    &p^n }@ = 0)
-  cast @byte alloc (1 << 23) &curbrk is q
-  scratch Ctx ctx
-  (ctx.curbrk = curbrk)
-  (ctx.p = p)
-  (ctx.q = q)
-  (ctx.line = 1)
-  (ctx.col = 1)
-  (ctx.o = 0)
-  token &ctx
-  decls &ctx
-  { q for q
-    write q (ctx.q - q) is n
-    n then
-    &q^n }
+  scratch Ctx x
+
+  (x.s = 0)
+  (x.curbrk = brk 0)
+
+  brk &x.curbrk^(10 * (1 << 20))
+
+  (x.p = cast @byte alloc (1 << 20) &x.curbrk)
+  (x.q = cast @byte alloc (1 << 23) &x.curbrk)
+  (x.line = 1)
+  (x.col = 1)
+
+  {
+    { x.p for p
+      read p (1 << 20) is n
+      n then
+      &p^n }
+
+    x.curbrk is ibrk
+    x.q is iq
+
+    scratch timespec t0
+    clock_gettime 1 &t0
+
+    token &x
+    decls &x
+
+    scratch timespec t1
+    clock_gettime 1 &t1
+
+    ((t1.s - t0.s) * 1000000 + (t1.n - t0.n) / 1000) is microseconds
+
+    on (x.curbrk - ibrk) os " heap" os " / " on microseconds os " us" olf
+
+    { iq for q
+      write q (x.q - q) is n
+      n then
+      &q^n }
+  }
+
   exit 0
 }

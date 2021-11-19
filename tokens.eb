@@ -8,10 +8,10 @@ xseq (x X c byte) nat  = { (x.p@ or diag "unexpected end of file") (x.p^1 == c) 
 xadv (x X       ) none = {
   (x.p@ or diag "unexpected end of file")
   (x.p = &x.p^1)
-  (x.col = x.col + 1)
-  { xeq x '\n' then
+  xeq x '\n' ? {
     (x.col = 1)
-    (x.line = x.line + 1) }
+    (x.line = x.line + 1)
+  } (x.col = x.col + 1)
 }
 
 comment(x X) nat = {

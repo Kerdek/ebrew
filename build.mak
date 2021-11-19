@@ -1,11 +1,7 @@
 
 HEADERS = lib.eh ebrew.eh tokens.eh io.eh gnugas.eh types.eh parsers.eh nodes.eh lex.eh 
 
-EBREW_UNIT = $(HEADERS) ebrew.eb
-TOKENS_UNIT = $(HEADERS) tokens.eb
-NODES_UNIT = $(HEADERS) nodes.eb
-PARSERS_UNIT = $(HEADERS) parsers.eb
-TYPES_UNIT = $(HEADERS) types.eb
+EBREW_UNIT = $(HEADERS) ebrew.eb tokens.eb nodes.eb parsers.eb types.eb
 
 BUILDING=stage3
 
@@ -27,25 +23,13 @@ endif
 $(BUILDING): .dummy
 	mkdir -p $(BUILDING)
 
-$(BUILDING)/ebrew: $(BUILDING)/ebrew.o $(BUILDING)/nodes.o $(BUILDING)/tokens.o $(BUILDING)/parsers.o $(BUILDING)/types.o
+$(BUILDING)/ebrew: $(BUILDING)/ebrew.o
 	ld -o $@ -m elf_x86_64 $^
 
 %.o: %.s
 	as -g -o $@ -c $^
 
 $(BUILDING)/ebrew.s: $(EBREW_UNIT) | $(BOOTSTRAP)/ebrew $(BUILDING)
-	cat $^ | $(BOOTSTRAP)/ebrew > $@
-
-$(BUILDING)/tokens.s: $(TOKENS_UNIT) | $(BOOTSTRAP)/ebrew $(BUILDING)
-	cat $^ | $(BOOTSTRAP)/ebrew > $@
-
-$(BUILDING)/nodes.s: $(NODES_UNIT) | $(BOOTSTRAP)/ebrew $(BUILDING)
-	cat $^ | $(BOOTSTRAP)/ebrew > $@
-
-$(BUILDING)/parsers.s: $(PARSERS_UNIT) | $(BOOTSTRAP)/ebrew $(BUILDING)
-	cat $^ | $(BOOTSTRAP)/ebrew > $@
-
-$(BUILDING)/types.s: $(TYPES_UNIT) | $(BOOTSTRAP)/ebrew $(BUILDING)
 	cat $^ | $(BOOTSTRAP)/ebrew > $@
 
 .dummy:

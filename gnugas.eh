@@ -36,10 +36,10 @@ gshl (x X ) none = gshx x 'l'
 
 gpromote(x X b @byte) none = gt2 x "movzbl" "al" b
 
-gsetf     (x X s @byte     b @byte    ) none = { gs x "set" gs x s gc x ' ' gtreg x "al" glf x gpromote x b }
+gsetf     (x X s @byte         b @byte        ) none = { gs x "set" gs x s gc x ' ' gtreg x "al" glf x gpromote x b }
 gcmp_setf (x X s @byte a @byte b @byte c @byte) none = { gcmp x a b gsetf x s c }
-gcmpz_setf(x X s @byte a @byte b @byte    ) none = { gtcz x a   gsetf x s b }
-glnot     (x X     a @byte b @byte    ) none = { gcmpz_setf x "e" a b }
+gcmpz_setf(x X s @byte a @byte b @byte        ) none = { gtcz x a   gsetf x s b }
+glnot     (x X         a @byte b @byte        ) none = { gcmpz_setf x "e" a b }
 
 gj        (x X n nat l @byte        ) none = { gs x "jmp " gs x l gn x n gc x '$' glf x }
 gjc       (x X n nat l @byte s @byte) none = { gs x "j" gs x s gc x ' ' gs x l gn x n gc x '$' glf x }
@@ -61,9 +61,9 @@ gbe (x X) none = gegcmp x "be"
 ga  (x X) none = gegcmp x "a"
 gae (x X) none = gegcmp x "ae"
 
-gfpush(x X c @nat  l nat) none = { !!l then gs x "sub $" gn x (l << 3) gc x ',' gtreg x "rsp" glf x (c@ = c@ + l) }
-gfpop (x X c @nat  l nat) none = { !!l then gs x "add $" gn x (l << 3) gc x ',' gtreg x "rsp" glf x (c@ = c@ - l) }
-gpush (x X c @nat  d @byte) none = { gt1 x "push" d (c@ = c@ + 1) }
-gpop  (x X c @nat  s @byte) none = { gt1 x "pop"  s (c@ = c@ - 1) }
+gfpush(x X l nat  ) none = { l then gs x "sub $" gn x (l << 3) gc x ',' gtreg x "rsp" glf x (x.c = x.c + l) }
+gfpop (x X l nat  ) none = { l then gs x "add $" gn x (l << 3) gc x ',' gtreg x "rsp" glf x (x.c = x.c - l) }
+gpush (x X d @byte) none = { gt1 x "push" d (x.c = x.c + 1) }
+gpop  (x X s @byte) none = { gt1 x "pop"  s (x.c = x.c - 1) }
 
 gindex(x X l nat) none = { l then gs x "add $" gn x l gc x ',' gtreg x "rax" glf x }

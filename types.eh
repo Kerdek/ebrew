@@ -1,10 +1,3 @@
-export TNONE () none
-export TBYTE () none
-export TNAT  () none
-export TSTCT () none
-export TPTR  () none
-export TFUNC () none
-
 export nnone (x X    ) T
 export nbyte (x X    ) T
 export nnat  (x X    ) T

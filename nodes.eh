@@ -18,6 +18,7 @@ export estr     ex
 export ebrace   ex
 export eparen   ex
 export eexit    ex
+export eclock_gettime   ex
 export ebyte    ex
 export eas      ex
 export eelem    ex
@@ -47,5 +48,3 @@ export ene      ex
 export eland    ex
 export ecall    ex
 export emem     ex
-
-export geval (x X l nat) none

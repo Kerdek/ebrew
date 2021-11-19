@@ -1,31 +1,32 @@
-export jadv   (x X        ) none = { (x.kp or diag "unexpected end of tokens") token x }
-export jeq    (x X c @byte) nat  = { x.kp then memcmp c x.kp x.kn then !c^x.kn }
-export expect (x X c @byte) none = { { !jeq x c then kdiag x "unexpected" } jadv x }
-export consume(x X c @byte) nat  = { jeq x c is r { r then jadv x } r }
+jadv   (x X        ) none = { (x.kp or diag "unexpected end of tokens") token x }
+jeq    (x X c @byte) nat  = { x.kp then memcmp c x.kp cast nat x.kn then !c^x.kn }
+expect (x X c @byte) none = { { !jeq x c then kdiag x "unexpected" } jadv x }
+consume(x X c @byte) nat  = { jeq x c is r { r then jadv x } r }
 
-try_search_scope(x X) O = {
-  cast O 0 is r
-  { x.o then x.o for o
-    (o.kn != x.kn or !strncmp o.kp x.kp x.kn) ?
-      o.s
-      { (r = o)
-        cast O 0 } }
-  r
+try_search_scope(x X) X = {
+  cast X 0 is x1
+  { x.s then
+    x.s for s
+    (s.kn != x.kn or !strncmp s.kp x.kp cast nat x.kn) ?
+      s.s
+      { (x1 = s)
+        cast X 0 } }
+  x1
 }
 
-export search_scope(x X) @Scope = {
+search_scope(x X) X = {
   try_search_scope x else
   kdiag x "lookup failed"
 }
 
-export declarator (x X t @T) none = {
+declarator (x X t @T) none = {
   (t@ = cast T alloc sizeof Type &x.curbrk)
   (t.kp = x.kp)
   (t.kn = x.kn)
   jadv x
   ptype x is u
   (t.a = u.a)
-  (t.q = u.q)
+  (t.kind = u.kind)
   (t.size = u.size)
   (t.align = u.align)
   (t.offset = u.offset)
@@ -68,7 +69,7 @@ func_params (x X) T = {
   t
 }
 
-export ptype (x X) T = {
+ptype (x X) T = {
   consume x "none"   ? nnone x
   consume x "byte"   ? nbyte x
   consume x "nat"    ? nnat x
@@ -82,9 +83,9 @@ export ptype (x X) T = {
 }
 
 pj(x X xcat @(x X) nat e @ex) nat = { x.kp then xcat@ x then e@ x 1 }
-pl(x X c @byte     e @ex) nat = { x.kp then jeq x c then jadv x e@ x 1 }
-pr(x X c @byte     e @ex) nat = { x.kp then jeq x c then jadv x e@ x 1 }
-pu(x X c @byte     e @ex) nat = { x.kp then !jeq x c then e@ x 1 }
+pl(x X c @byte         e @ex) nat = { x.kp then jeq x c then jadv x e@ x 1 }
+pr(x X c @byte         e @ex) nat = { x.kp then jeq x c then jadv x e@ x 1 }
+pu(x X c @byte         e @ex) nat = { x.kp then !jeq x c then e@ x 1 }
 
 p1     (x X) nat = { pl x "&"       &eaddr    else
                      pl x "-"       &eneg     else
@@ -93,6 +94,7 @@ p1     (x X) nat = { pl x "&"       &eaddr    else
                      pl x "cast"    &ecast    else
                      pl x "sizeof"  &esize    else
                      pl x "exit"    &eexit    else
+                     pl x "clock_gettime"   &eclock_gettime   else
                      pl x "brk"     &ebrk     else
                      pl x "read"    &eread    else
                      pl x "write"   &ewrite   else
@@ -108,7 +110,7 @@ p1     (x X) nat = { pl x "&"       &eaddr    else
 pa2    (x X) nat = { pr x "^"    &eelem       else
                      pr x "."    &emem        else
                      pr x "@"    &ederef           }
-pa3    (x X) nat = { (x.t.q == &TFUNC) then { ecall x 1 } }
+pa3    (x X) nat = { (x.t.kind== 5) then { ecall x 1 } }
 pa4    (x X) nat = { pr x "?"    &econd      }
 pa5    (x X) nat = { pr x "ret"  &eret  else
                      pr x "is"   &eis   else
@@ -135,93 +137,83 @@ pa7    (x X) nat = { pr x "as"   &eas        }
 pa8    (x X) nat = { pr x "="    &eass       }
 
 
-export p2    (x X) nat = { p1    x for _ pa2    x }
-export p3    (x X) nat = { p2    x for _ pa3    x }
-export p4    (x X) nat = { p3    x for _ pa4    x }
-export p5    (x X) nat = { pl    x "scratch" &escratch else
+p2    (x X) nat = { p1    x for _ pa2    x }
+p3    (x X) nat = { p2    x for _ pa3    x }
+p4    (x X) nat = { p3    x for _ pa4    x }
+p5    (x X) nat = { pl    x "scratch" &escratch else
                            p4    x       pa5    x }
-export pmul  (x X) nat = { p4    x for _ pamul  x }
-export padd  (x X) nat = { pmul  x for _ paadd  x }
-export psh   (x X) nat = { padd  x for _ pash   x }
-export pcmp  (x X) nat = { psh   x for _ pacmp  x }
-export pland (x X) nat = { pcmp  x for _ paland x }
-export plor  (x X) nat = { pland x for _ palor  x }
-export p7    (x X) nat = { plor  x for _ pa7    x }
-export p8    (x X) nat = { p7    x       pa8    x }
+pmul  (x X) nat = { p4    x for _ pamul  x }
+padd  (x X) nat = { pmul  x for _ paadd  x }
+psh   (x X) nat = { padd  x for _ pash   x }
+pcmp  (x X) nat = { psh   x for _ pacmp  x }
+pland (x X) nat = { pcmp  x for _ paland x }
+plor  (x X) nat = { pland x for _ palor  x }
+p7    (x X) nat = { plor  x for _ pa7    x }
+p8    (x X) nat = { p7    x       pa8    x }
 
 gtpars(x X t T g nat) nat = {
   !t ? { p4 x geval x 0 0 }
-    { scratch Scope o1
-      (o1.s = x.o)
-      (o1.kp = t.kp)
-      (o1.kn = t.kn)
-      (o1.is_type  = 0)
-      (o1.is_local = 1)
-      (o1.c  = -g)
-      (o1.t   = t)
-      x.o is o
-      (x.o = &o1)
+    { scratch Ctx x1
+      xcpy &x1 x
+      (x.s.kp = t.kp)
+      (x.s.kn = t.kn)
+      (x.s.is_type  = 0)
+      (x.s.is_local = 1)
+      (x.s.c  = -g)
+      (x.s.t   = t)
       gtpars x t.s (g + 1) ret
-      (x.o = o) }
+      (x.s = x.s.s) }
 }
+
 gtparr(x X t T g nat) nat = {
   !t ? { p4 x geval x 0 0 }
-    { gpush x &x.c argreg g
-      scratch Scope o1
-      (o1.s = x.o)
-      (o1.kp = t.kp)
-      (o1.kn = t.kn)
-      (o1.is_type  = 0)
-      (o1.is_local = 1)
-      (o1.c = x.c)
-      (o1.t = t)
-      x.o is o
-      (x.o = &o1)
+    { gpush x argreg g
+      scratch Ctx x1
+      xcpy &x1 x
+      (x.s.kp = t.kp)
+      (x.s.kn = t.kn)
+      (x.s.is_type  = 0)
+      (x.s.is_local = 1)
+      (x.s.t = t)
       (((g == 5) ? &gtpars &gtparr)@ x t.s (g + 1) + 1) ret
-      (x.o = o) }
+      (x.s = x.s.s) }
 }
 
 typedecl (x X) none = {
   consume x ";" ?
     decls x
-    { scratch Scope o1
-      (o1.s  = x.o )
-      (o1.kp = x.kp)
-      (o1.kn = x.kn)
-      (o1.is_type = 1)
-      (x.o = &o1)
-      declarator x &o1.t
+    { scratch Ctx x1
+      xcpy &x1 x
+      (x.s.is_type = 1)
+      declarator x &x.s.t
       typedecl x }
 }
 
 function (x X) none = {
   consume x "export" is globl
   try_search_scope x is o
-  scratch T t
-  declarator x &t
-  (!o or !o.is_type and !o.is_def and jeq x "=" or kdiag x "remention")
-  scratch Scope o1
-  (o1.s = x.o)
-  (o1.kp = t.kp)
-  (o1.kn = t.kn)
-  (o1.t = t)
-  (o1.is_type  = 0)
-  (o1.is_local = 0)
-  (o1.is_def   = jeq x "=")
-  (x.o = &o1)
-  { o1.is_def then
+  scratch Ctx x1
+  xcpy &x1 x
+  (x.s.is_type  = 0)
+  (x.s.is_local = 0)
+  declarator x &x.s.t
+  (x.s.is_def   = jeq x "=")
+  (!o or !o.is_type and !o.is_def and x.s.is_def or kdiag x "remention")
+  { x.s.is_def then
+    gs x ".section .text." gsn x &x1 glf x
+    { globl then gs x ".globl" gc x ' ' gsn x &x1 glf x }
+    gsn x &x1 gc x ':' glf x
     jadv x
-    gs x ".section .text." gsn x o1.kp o1.kn glf x
-    { globl then gs x ".globl" gc x ' ' gsn x o1.kp o1.kn glf x }
-    gsn x o1.kp o1.kn gc x ':' glf x
     (x.c = 0)
-    gtparr x t.a.s 0 is stack
-    gfpop x &x.c stack
+    x.curbrk is ibrk
+    gtparr x x.s.t.a.s 0 is stack
+    (x.curbrk = ibrk)
+    gfpop x stack
     gt0 x "ret" }
   decls x
 }
 
-export decls (x X) none = {
+decls (x X) none = {
   x.kp then
   ( consume x "type" ? &typedecl
                        &function ) is f
