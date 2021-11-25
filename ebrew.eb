@@ -1,4 +1,888 @@
 type
+  Type {
+    s      @Type
+    a      @Type
+    kp     @byte
+    kn      byte
+    kind    byte
+    size    byte
+    offset  byte
+    align   byte
+  }
+
+  T @Type
+
+  Ctx {
+    s       @Ctx
+    t       @Type
+    line     nat
+    col      nat
+    c        nat
+    pline   @byte
+    p       @byte
+    q       @byte
+    curbrk  @byte
+    kp      @byte
+    kn       byte
+    l        byte
+    is_type  byte
+    is_def   byte
+    is_local byte
+  }
+
+  X mut Ctx
+;
+
+xcpy (x1 X x X it nat il nat id nat) none = {
+  memcpy cast @byte &tum x1 cast @byte &tum x sizeof Ctx
+  (x1.s = x.s)
+  (x.s  = &tum x1 )
+  (x.s.is_type = cast byte it)
+  (x.s.is_local = cast byte il)
+  (x.s.is_def = cast byte id)
+}
+
+gc (x X c byte) none = { (x.q@ = c) (x.q = &x.q^1) }
+gs (x X s @byte) none = { s for p p@ then gc x p@ &p^1 }
+gsn(x X x1 X) none = { 0 for m (m < x1.kn) then gc x x1.kp^m (m + 1) }
+glf(x X) none = gc x '\n'
+gn1(x X n nat) none = { n then gn1 x (n / 10) gc x cast byte ('0' + n % 10) }
+gn (x X n nat) none = { n ? gn1 x n gc x '0' }
+
+oc (c byte) none = err &c 1
+os (s @byte) none = err s strlen s
+osn(s @byte n nat) none = err s n
+olf() none = oc '\n'
+on1(n nat) none = { n then on1 (n / 10) oc cast byte ('0' + n % 10) }
+on (n nat) none = { n ? on1 n oc '0' }
+
+diag  (s @byte) none = { os s olf exit 1 }
+xdiag (x X s @byte) none = {
+  { x.kp for q (q@ and q@ != '\n') then (&q^ 1) } is end_line
+  oc '(' on x.line oc ',' on x.col os "): " osn x.pline (end_line - x.pline)
+  diag s
+}
+
+ntype(x X size nat align nat kind nat) T = {
+  cast T alloc sizeof Type &x.curbrk is t
+  (t.s = 0)
+  (t.size  = size  )
+  (t.align = align )
+  (t.kind = cast byte kind)
+  t
+}
+
+ntypea(x X size nat align nat kind nat a T) T = {
+  ntype x size align kind is t
+  (t.a = a)
+  t
+}
+
+nnone (x X    ) T = ntype  x 0 0 0
+nbyte (x X    ) T = ntype  x 1 1 1
+nnat  (x X    ) T = ntype  x 8 8 2
+nstct (x X    ) T = ntype  x 0 1 3
+nptr  (x X a T) T = ntypea x 8 8 4 a
+nfunc (x X a T) T = ntypea x 1 1 5 a
+nmut  (x X a T) T = ntypea x 8 8 6 a
+nclos (x X a T) T = ntypea x 8 8 7 a
+
+type_equal(t T u T) nat = {
+  t then
+  u then
+  (t == u) else
+  { (t.kind == u.kind) then
+    (t.kind == 0 ) else
+    (t.kind == 1 ) else
+    (t.kind == 2  ) else
+    (t.kind == 4  ) ? type_equal t.a u.a
+    (t.kind == 6  ) ? type_equal t.a u.a
+    (t.kind == 7  ) ? type_equal t.a u.a
+      { (t.kind == 5 ) then
+        t.a is p
+        u.a is q
+        { 1 for _
+          type_equal p q then
+          (p = p.s)
+          (q = q.s)
+          1 }
+        (p == q) } }
+}
+
+issp (c byte    ) nat = (c == ' ' )
+istb (c byte    ) nat = (c == '\t')
+islf (c byte    ) nat = (c == '\n')
+iscr (c byte    ) nat = (c == '\r')
+is_  (c byte    ) nat = (c == '_' )
+
+isin (c byte a byte b byte) nat = (a <= c and c <= b)
+
+isAZ (c byte    ) nat = isin c 'A' 'Z'
+isaz (c byte    ) nat = isin c 'a' 'z'
+is09 (c byte    ) nat = isin c '0' '9'
+isaf (c byte    ) nat = isin c 'a' 'f'
+isws (c byte    ) nat = { issp c else
+                          istb c else
+                          islf c else
+                          iscr c      }
+is0f (c byte    ) nat = { is09 c else
+                          isaf c      }
+isid (c byte    ) nat = { isAZ c else
+                          isaz c else
+                          is09 c else
+                          is_  c      }
+
+xisid  (x X) nat = (isaz x.kp@ or isAZ x.kp@)
+xisstr (x X) nat = (x.kp@ == '\"')
+xisnum (x X) nat = is09 x.kp@
+xischr (x X) nat = (x.kp@ == '\'')
+
+xeq  (x X c byte) nat  = (x.p@ == c)
+xseq (x X c byte) nat  = { (x.p@ or diag "unexpected end of file") (x.p^1 == c) }
+xadv (x X       ) none = {
+  (x.p@ or diag "unexpected end of file")
+  (x.p = &x.p^1)
+  xeq x '\n' ? {
+    (x.col = 1)
+    (x.line = x.line + 1)
+    (x.pline = &x.p^1)
+  } (x.col = x.col + 1)
+}
+
+argreg (d nat) @byte = {
+  (d == 0) ? "rdi"
+  (d == 1) ? "rsi"
+  (d == 2) ? "rdx"
+  (d == 3) ? "rcx"
+  (d == 4) ? "r8"
+             "r9"
+}
+
+gtreg (x X s @byte                ) none = { gc x '%' gs x s }
+gt0   (x X s @byte                ) none = { gs x s glf x  }
+gt1   (x X s @byte a @byte        ) none = { gs x s gc x ' ' gtreg x a glf x }
+gt2   (x X s @byte a @byte b @byte) none = { gs x s gc x ' ' gtreg x a gc x ',' gtreg x b glf x }
+
+gtz  (x X a @byte) none = gt2 x "xor"  a a
+gtcz (x X a @byte) none = gt2 x "test" a a
+
+gtlit (x X l nat a @byte) none = (l ? { gs x "mov $" gn x l gc x ',' gtreg x a glf x } gtz x  a)
+
+gtnot (x X a @byte) none = gt1 x "not" a
+gtneg (x X a @byte) none = gt1 x "neg" a
+gmul  (x X a @byte) none = gt1 x "mul" a
+gdiv  (x X    ) none = { gtz x "edx" gt1 x "div" "rdi" }
+gmod  (x X    ) none = { gdiv x
+                        gt2 x "mov" "rdx" "rax" }
+gshx (x X k byte    ) none = { gt2 x "mov" "dil" "cl" gs x "sh" gc x k gs x " %cl,%rax" glf x }
+
+gadd (x X a @byte b @byte) none = gt2 x "add" a b
+gsub (x X a @byte b @byte) none = gt2 x "sub" a b
+gand (x X a @byte b @byte) none = gt2 x "and" a b
+gor  (x X a @byte b @byte) none = gt2 x "or"  a b
+gxor (x X a @byte b @byte) none = gt2 x "xor" a b
+gcmp (x X a @byte b @byte) none = gt2 x "cmp" a b
+gshr (x X ) none = gshx x 'r'
+gshl (x X ) none = gshx x 'l'
+
+gpromote(x X b @byte) none = gt2 x "movzbl" "al" b
+
+gsetf     (x X s @byte         b @byte        ) none = { gs x "set" gs x s gc x ' ' gtreg x "al" glf x gpromote x b }
+gcmp_setf (x X s @byte a @byte b @byte c @byte) none = { gcmp x a b gsetf x s c }
+gcmpz_setf(x X s @byte a @byte b @byte        ) none = { gtcz x a   gsetf x s b }
+glnot     (x X         a @byte b @byte        ) none = { gcmpz_setf x "e" a b }
+
+gj        (x X n nat l @byte        ) none = { gs x "jmp " gs x l gn x n gc x '$' glf x }
+gjc       (x X n nat l @byte s @byte) none = { gs x "j" gs x s gc x ' ' gs x l gn x n gc x '$' glf x }
+glabel    (x X n nat l @byte        ) none = { gs x l gn x n gs x "$:" glf x }
+
+gje  (x X n nat l @byte) none = gjc x n l "e"
+gjne (x X n nat l @byte) none = gjc x n l "ne"
+gjb  (x X n nat l @byte) none = gjc x n l "b"
+gjbe (x X n nat l @byte) none = gjc x n l "be"
+gja  (x X n nat l @byte) none = gjc x n l "a"
+gjae (x X n nat l @byte) none = gjc x n l "ae"
+
+gegcmp(x X s @byte) none = gcmp_setf x s "rdi" "rax" "eax"
+
+gfpush(x X l nat  ) none = { l then gs x "sub $" gn x (l << 3) gc x ',' gtreg x "rsp" glf x (x.c = x.c + l) }
+gfpop (x X l nat  ) none = { l then gs x "add $" gn x (l << 3) gc x ',' gtreg x "rsp" glf x (x.c = x.c - l) }
+gpush (x X d @byte) none = { gt1 x "push" d (x.c = x.c + 1) }
+gpop  (x X s @byte) none = { gt1 x "pop"  s (x.c = x.c - 1) }
+
+gindex(x X l nat) none = { l then gs x "add $" gn x l gc x ',' gtreg x "rax" glf x }
+
+comment(x X) nat = {
+  (xeq x '/' and xseq x '*') then
+  xadv x
+  xadv x
+  { 1 for _
+    (xeq x '*' and xseq x '/') ?
+      { xadv x xadv x 0 }
+      { xadv x        1 } }
+  1
+}
+
+ws(x X) nat = {
+  isws x.p@ then
+  xadv x
+  1
+}
+
+number(x X) nat = {
+  x.p is q
+  { 1 for _ is09 x.p@ then xadv x 1 }
+  (x.p != q) then
+  (x.kp = q)
+  (x.kn = x.p - q)
+  1
+}
+
+string(x X) nat = {
+  xeq x '"' then
+  x.p is q
+  xadv x
+  { 1 for _
+    { 1 for _ xeq x '\\' then xadv x xadv x 1}
+    (xeq x '\n' and diag "newline in string literal")
+    not xeq x '"' then
+    xadv x
+    1
+  }
+  xadv x
+  (x.kp = q)
+  (x.kn = x.p - q)
+  gs x ".section .data..s" gn x (x.line * 10000 + x.col) glf x
+  gs x ".s" gn x (x.line * 10000 + x.col) gc x ':' gs x ".string \""
+  { &x.kp^1 for i (i < &x.kp^(x.kn - 1)) then gc x i@ &i^1 }
+  gc x '\"' glf x
+  gs x ".previous" glf x
+  1
+}
+
+char(x X) nat = {
+  xeq x '\'' then
+  x.p is q
+  xadv x
+  { xeq x '\\' then
+    xadv x }
+  xadv x
+  (xeq x '\'' or diag "expected '")
+  xadv x
+  (x.kp = q)
+  (x.kn = x.p - q)
+  1
+}
+
+id(x X) nat = {
+  x.p is q
+  { 1 for _ isid x.p@ then xadv x 1 }
+  (x.p != q) then
+  (x.kp = q)
+  (x.kn = x.p - q)
+  1
+}
+
+sw1(x X a byte       ) nat = { xeq x a then xadv x 1 }
+sw2(x X a byte b byte) nat = { xeq x a then xseq x b then xadv x xadv x 1 }
+
+punct(x X) nat = {
+  x.p is q
+  { sw2 x '=' '=' else
+    sw2 x '!' '=' else
+    sw2 x '<' '=' else
+    sw2 x '>' '=' else
+    sw2 x '<' '<' else
+    sw2 x '>' '>' else
+    sw2 x '/' '/' else
+    sw1 x '='     else
+    sw1 x '<'     else
+    sw1 x '>'     else
+    sw1 x '+'     else
+    sw1 x '-'     else
+    sw1 x '*'     else
+    sw1 x '/'     else
+    sw1 x '&'     else
+    sw1 x '|'     else
+    sw1 x '@'     else
+    sw1 x '#'     else
+    sw1 x '{'     else
+    sw1 x '}'     else
+    sw1 x '('     else
+    sw1 x ')'     else
+    sw1 x '['     else
+    sw1 x ']'     else
+    sw1 x '!'     else
+    sw1 x '?'     else
+    sw1 x ':'     else
+    sw1 x ';'     else
+    sw1 x ','     else
+    sw1 x '.'     else
+    sw1 x '~'     else
+    sw1 x '^'     else
+    sw1 x '$'     else
+    sw1 x '`'     else
+    sw1 x '%'
+  }
+  (x.kp = q)
+  (x.kn = x.p - q)
+  1
+}
+
+nonws (x X) nat = {
+  number x else
+  string x else
+  char   x else
+  id     x else
+  punct  x
+}
+
+token (x X) none = {
+  { 1 for _
+    comment x else
+    ws      x      }
+  x.p@ ?
+    { nonws   x else
+      diag "invalid token" }
+    (x.kp = cast @byte 0)
+}
+
+jadv (x X        ) none = { (x.kp or diag "unexpected end of tokens") token x }
+jeq  (x X c @byte) nat  = { x.kp then memcmp c x.kp cast nat x.kn then not c^x.kn }
+jexp (x X c @byte) none = { { not jeq x c then xdiag x "unexpected" } jadv x }
+jeat (x X c @byte) nat  = { jeq x c is r { r then jadv x } r }
+
+gcast (x X) none = {
+  (x.t.kind == 0) ?
+    gtz x "eax"
+    { (x.t.kind == 1) then
+      gpromote x "eax" }
+}
+
+gaddr (x X t T n nat s @byte d @byte) none = {
+  (n or not strcmp s d) then
+  gs x "lea " { n then gn x n } gs x "(%" gs x s gs x "),%" gs x d glf x
+}
+
+gload (x X t T n nat s @byte d @byte) none = {
+  (t.kind == 1) ?
+    { gs x  "movzbq " gn x n gs x "(%" gs x s gs x "),%" gs x  d glf x }
+    { gs x  "mov "    gn x n gs x "(%" gs x s gs x "),%" gs x  d glf x }
+}
+
+gstore (x X t T d @byte) none = {
+  (t.kind == 1) ?
+    { gs x "mov %al,(%"  gs x d gc x ')' glf x }
+    { gs x "mov %rax,(%" gs x d gc x ')' glf x }
+}
+
+geval (x X l nat) none = {
+  x.l for l2
+  (l2 > l) then
+  (l2 == 1 and l == 0) ?
+    (x.t.kind == 5 or x.t.kind == 3 or gload x x.t 0 "rax" "rax")
+    { gt0 x "mov (%rax),%rax" }
+  (l2 - 1)
+}
+
+gval (x X t T l nat) nat = {
+  (x.t = t)
+  (x.l = l)
+  1
+}
+
+g1ops (x X p@ (x X) nat) nat = {
+  p@ x
+  geval x 0
+  gval x nnat x 0
+}
+
+g2ops (x X p@ (x X) nat) nat = {
+  geval x 0
+  gpush x "rax"
+  p@ x
+  geval x 0
+  gt0 x "mov %rax,%rdi"
+  gpop x "rax"
+  gval x nnat x 0
+}
+
+xhash (x X) nat = (x.line * 10000 + x.col)
+
+ge  (x X) nat = gegcmp x "e" 
+gne (x X) nat = gegcmp x "ne"
+gb  (x X) nat = gegcmp x "b" 
+gbe (x X) nat = gegcmp x "be"
+ga  (x X) nat = gegcmp x "a" 
+gae (x X) nat = gegcmp x "ae"
+
+glocal (x X p@ (x X) nat) none = {
+  some Ctx x1
+  xcpy mut x1 x 0 1 0
+  jadv x
+  p@ x
+  (x.s = x.s.s)
+}
+
+gss (x X gjc@ (x X n nat c @byte) none p@ (x X) nat) none = {
+  xhash x is n
+  geval x 0
+  gtcz x "rax"
+  gjc@ x n "a"
+  gpush x "rax"
+  p@ x
+  geval x 0
+  gpop x (x.t.kind ? "rdx" "rax")
+  glabel x n "a"
+}
+
+gpt (x X t T) nat = {
+  gs x "mov $" gsn x x gs x ",%rax" glf x
+  jadv x
+  gval x t 0
+}
+
+ptype (x X) T
+p2 (x X) nat
+p3 (x X) nat
+p4 (x X) nat
+p5 (x X) nat
+p8 (x X) nat
+
+gsys3 (x X fd nat id nat) nat = {
+  p3 x
+  geval x 0
+  gpush x "rax"
+  p3 x
+  geval x 0
+  gpop x "rsi"
+  gt2 x "mov" "rax" "rdx"
+  gtlit x fd "rdi"
+  gtlit x id "rax"
+  gt0 x "syscall"
+  gval x nnat x 0
+}
+
+align(n nat a nat) nat = ((n + a - 1) / a * a)
+
+try_search_scope (x X) @Ctx = {
+  cast @Ctx 0 is x1
+  { x.s then
+    x.s for s
+    (s.kn != x.kn or not strncmp s.kp x.kp cast nat x.kn) ?
+      s.s
+      { (x1 = s)
+        cast @Ctx 0 } }
+  x1
+}
+
+search_scope (x X) @Ctx = {
+  try_search_scope x else
+  xdiag x "lookup failed"
+}
+
+declarator (x X t @@Type) none = {
+  (t@ = cast @Type alloc sizeof Type &x.curbrk)
+  (t.kp = x.kp)
+  (t.kn = x.kn)
+  jadv x
+  ptype x is u
+  (t.a = u.a)
+  (t.kind = u.kind)
+  (t.size = u.size)
+  (t.align = u.align)
+  (t.offset = u.offset)
+}
+
+struct_decl (x X) @Type = {
+  nstct x is t
+  &t.a is u
+  { 1 for _ 
+     not jeat x "}" then
+      declarator x u
+      (u = &u.s) }
+  0 is bits
+  { t.a then
+    t.a for g
+    (bits = align bits (g.align * 8))
+    (g.offset = bits / 8)
+    (bits = bits + g.size * 8)
+    {(t.align < g.align) then (t.align = g.align)}
+    g.s }
+  (t.size = align bits (t.align * 8) / 8)
+  t
+}
+
+func_params (x X) @Type = {
+  cast T 0 is params
+  &params is u
+  { 1 for _
+    not jeq x ")" then
+    declarator x u
+    (u = &u.s)
+    1 }
+  jadv x
+  ptype x is ret
+  nfunc x cast @Type alloc sizeof Type &x.curbrk is t
+  memcpy cast @byte t.a cast @byte ret sizeof Type
+  (t.a.s = params)
+  t
+}
+
+ptype (x X) @Type = {
+  jeat x "none"   ? nnone       x
+  jeat x "byte"   ? nbyte       x
+  jeat x "nat"    ? nnat        x
+  jeat x "@"      ? nptr        x ptype x
+  jeat x "mut"    ? nmut        x ptype x
+  jeat x "("      ? func_params x
+  jeat x "{"      ? struct_decl x
+  { search_scope x is x1
+    (x1.is_type or xdiag x "not a type")
+    jadv x
+    x1.t }
+}
+
+p1 (x X) nat = {
+  { xisnum x then gpt x nnat  x } else
+  { xischr x then gpt x nbyte x } else
+  { xisstr x then
+    gs x "mov .s" gn x xhash x gs x "@GOTPCREL(%rip),%rax" glf x
+    jadv x
+    gval x nptr x nbyte x 0 } else
+  { jeat x "(" then p8 x ret jexp x ")" } else
+  { jeat x "{" then p5 x ret jexp x "}" } else
+  { jeat x "&" then p2 x gval x nptr x x.t (x.l - 1) 1 } else
+  { jeat x "-"    then g1ops x &p3 ret gtneg x "rax"       } else
+  { jeat x "not"  then g1ops x &p3 ret glnot x "rax" "eax" } else
+  { jeat x "read"    then gsys3 x 0 0 } else
+  { jeat x "write"   then gsys3 x 1 1 } else
+  { jeat x "err"     then gsys3 x 2 1 } else
+  { jeat x "mut" then
+    p4 x
+    geval x 1
+    gs x "sub %rsp,%rax" glf x
+    gs x "sub $" gn x (x.c << 3) gs x ",%rax" glf x
+    gval x nmut x x.t 0 } else
+  { jeat x "tum" then
+    p4 x
+    geval x 0
+    gs x "lea " gn x (x.c << 3) gs x "(%rsp,%rax),%rax" glf x
+    gval x x.t.a 1 } else
+  { jeat x "cast" then
+    ptype x is t
+    p4 x
+    geval x 0
+    gcast x
+    gval x t 0 } else
+  { jeat x "sizeof" then
+    ptype x is t
+    gtlit x cast nat t.size "rax"
+    gval x nnat x 0 } else
+  { jeat x "exit" then
+    p3 x
+    geval x 0
+    gt2 x "mov" "rax" "rdi"
+    gtlit x 60 "rax"
+    gt0 x "syscall"
+    gval x nnone x 0 } else
+  { jeat x "gettime" then
+    p3 x
+    geval x 0
+    gpush x "rax"
+    p3 x
+    geval x 0
+    gt2 x "mov" "rax" "rsi"
+    gpop x "rdi"
+    gtlit x 228 "rax"
+    gt0 x "syscall"
+    gval x nnat x 0 } else
+  { jeat x "brk" then
+    p3 x
+    geval x 0
+    gt0 x "mov %rax,%rdi"
+    gtlit x 12 "rax"
+    gt0 x "syscall"
+    gval x nptr x nbyte x 0 } else
+  { jeat x "some" then
+    (x.t = ptype x)
+    (x.t.size + 7 >> 3) is d
+    gfpush x d
+    some Ctx x1
+    xcpy mut x1 x 0 1 0
+    jadv x
+    p5 x
+    (x.s = x.s.s)
+    geval x 0
+    gfpop x d
+    gval x x.t 0 } else
+  { xisid x then
+    search_scope x is x1
+    (x1.is_type and xdiag x "not a variable")
+    gval x x1.t 1
+    x1.is_local ?
+      { gaddr x x.t (x.c - x1.c << 3) "rsp" "rax" }
+      { gs x "mov " gsn x x gs x "@GOTPCREL(%rip),%rax" glf x }
+    jadv x } else
+  xdiag x "expected an expression"
+}
+
+p2 (x X) nat = {
+  p1 x for _
+  { jeat x "@" then gval x x.t.a (x.l + 1) } else
+  { jeat x "^" then
+    x.t is t
+    geval x 0
+    gpush x "rax"
+    p3 x
+    geval x 0
+    gpop x "rdi"
+    gs x "lea (%rdi,%rax," gn x cast nat t.a.size gs x "),%rax" glf x
+    gval x t.a 1 } else
+  { jeat x "." then
+    geval x 0
+    { x.t for t
+      { (t.kind == 4) then
+        (t.a.kind == 3) ?
+          { gs x "lea (%rax),%rax" glf x }
+          { gs x "mov (%rax),%rax" glf x }
+        t.a } else
+      { (t.kind == 6) then
+        (t.a.kind == 3) ?
+          { gs x "lea " gn x (x.c << 3) gs x "(%rsp,%rax),%rax" glf x }
+          { gs x "mov " gn x (x.c << 3) gs x "(%rsp,%rax),%rax" glf x }
+        t.a }
+    } is t
+    (t.kind != 3 and xdiag x "not a struct")
+    cast T 0 is g
+    { t.a for a
+      { (a.kn == x.kn) then strncmp a.kp x.kp cast nat x.kn }
+      ? { (g = a) cast T 0 }
+        a.s }
+    (g or xdiag x "no such member")
+    jadv x
+    gindex x cast nat g.offset
+    gval x g 1 }
+}
+
+p3 (x X) nat = {
+  p2 x for _
+  (x.t.kind == 5) then
+  geval x 0
+  x.c is c
+  0 is d
+  x.t is t
+  { t.a.s then
+    t.a.s for u
+    (d = d + 1)
+    u.s }
+  gfpush x d
+  gpush x "rax"
+  8 is off
+  { t.a.s then
+    t.a.s for u
+    p3 x
+    (type_equal x.t u or xdiag x "asymmetric argument")
+    geval x 0
+    { (u.kind == 6) then
+      gs x "add $" gn x ((c + ((d > 6) ? (d - 5) 1)) << 3) gs x ",%rax" glf x }
+    gs x "mov %rax," gn x off gs x "(%rsp)" glf x
+    (off = off + 8)
+    u.s }
+  gpop x "rax"
+  { 0 for i
+    (i < d and i < 6) then
+    gpop x argreg i
+    (i + 1) }
+  gt0 x "call *%rax"
+  (x.c = c)
+  gval x t.a 0
+}
+
+p4 (x X) nat = {
+  p3 x for _
+  { jeat x "?" then
+    xhash x is n
+    geval x 0
+    gtcz x "rax"
+    gje x n "a"
+    p4 x
+    geval x 0
+    gj x n "b"
+    glabel x n "a"
+    p4 x
+    geval x 0
+    glabel x n "b"
+    gval x x.t 0 }
+}
+
+p5 (x X) nat = {
+  p4 x for _
+  { jeat x "ret" then
+    x.t is t
+    geval x 0
+    gpush x "rax"
+    p5 x
+    gpop x "rax"
+    gval x t 0 } else
+  { jeat x "is" then
+    geval x 0
+    gpush x "rax"
+    glocal x &p5
+    geval x 0
+    gpop x "rdx"
+    gval x x.t 0
+    1 } else
+  { jeat x "for" then
+    xhash x is n
+    geval x 0
+    gpush x "rax"
+    gj x n "b"
+    glabel x n "a"
+    gstore x x.t "rsp"
+    glabel x n "b"
+    glocal x &p5
+    geval x 0
+    gtcz x "rax"
+    gjne x n "a"
+    gpop x "rax"
+    gval x x.t 0 } else
+  { jeat x "then" then
+    gss x &gje &p5
+    gval x x.t 0 } else
+  { jeat x "else" then
+    x.t is t
+    gss x &gjne &p5
+    gval x t 0 } else
+  { not jeq x "}" then
+    p5 x }
+}
+
+pmul (x X) nat = {
+  p4 x for _
+  { jeat x "*" then g2ops x &p4 gmul x "rdi" 1 } else
+  { jeat x "/" then g2ops x &p4 gdiv x       1 } else
+  { jeat x "%" then g2ops x &p4 gmod x       1 }
+}
+
+padd  (x X) nat = {
+  pmul x for _
+  { jeat x "+" then g2ops x &pmul gadd x "rdi" "rax" 1 } else
+  { jeat x "-" then g2ops x &pmul gsub x "rdi" "rax" 1 }
+}
+
+psh (x X) nat = {
+  padd x for _
+  { jeat x "<<" then g2ops x &padd gshl x 1 } else
+  { jeat x ">>" then g2ops x &padd gshr x 1 }
+}
+
+pcmp (x X) nat = {
+  psh x for _
+  { jeat x "<"  then g2ops x &psh gb  x 1 } else
+  { jeat x ">"  then g2ops x &psh ga  x 1 } else
+  { jeat x "<=" then g2ops x &psh gbe x 1 } else
+  { jeat x ">=" then g2ops x &psh gae x 1 } else
+  { jeat x "==" then g2ops x &psh ge  x 1 } else
+  { jeat x "!=" then g2ops x &psh gne x 1 }
+}
+
+pland (x X) nat = {
+  pcmp x for _
+  jeat x "and" then
+  gss x &gje &pcmp
+  gval x x.t 0
+}
+
+plor (x X) nat = {
+  pland x for _
+  jeat x "or" then
+  x.t is t
+  gss x &gjne &pland
+  gval x t 0
+}
+
+p7 (x X) nat = {
+  plor x for _
+  jeat x "as" then
+  geval x 0
+  gcast x
+  gval x ptype x 0
+}
+
+p8 (x X) nat = {
+  p7 x for _
+  jeat x "=" then
+  x.t is t
+  geval x 1
+  gpush x "rax"
+  p7 x
+  geval x 0
+  gpop x "rdx"
+  gstore x t "rdx"
+  gval x nnone x 0
+  1
+}
+
+gtpars(x X t T g nat) nat = {
+  not t ? { p4 x geval x 0 0 }
+    { some Ctx x1
+      xcpy mut x1 x 0 1 0
+      (x.s.kp = t.kp)
+      (x.s.kn = t.kn)
+      (x.s.c  = -g)
+      (x.s.t   = t)
+      gtpars x t.s (g + 1) ret
+      (x.s = x.s.s) }
+}
+
+gtparr(x X t T g nat) nat = {
+  not t ? { p4 x geval x 0 0 }
+    { gpush x argreg g
+      some Ctx x1
+      xcpy mut x1 x 0 1 0
+      (x.s.kp = t.kp)
+      (x.s.kn = t.kn)
+      (x.s.t = t)
+      (((g == 5) ? &gtpars &gtparr)@ x t.s (g + 1) + 1) ret
+      (x.s = x.s.s) }
+}
+
+decls (x X) none
+
+typedecl (x X) none = {
+  jeat x ";" ?
+    decls x
+    { some Ctx x1
+      xcpy mut x1 x 1 0 0
+      declarator x &x.s.t
+      typedecl x }
+}
+
+decls (x X) none = {
+  x.kp then jeat x "type" ? typedecl x
+  { jeat x "export" is globl
+    try_search_scope x is o
+    some Ctx x1
+    xcpy mut x1 x 0 0 0
+    declarator x &x.s.t
+    (x.s.is_def   = jeq x "=")
+    (not o or not o.is_type and not o.is_def and x.s.is_def or xdiag x "remention")
+    { x.s.is_def then
+      gs x ".section .text." gsn x mut x1 glf x
+      { globl then gs x ".globl" gc x ' ' gsn x mut x1 glf x }
+      gsn x mut x1 gc x ':' glf x
+      jadv x
+      (x.c = 0)
+      x.curbrk is ibrk
+      gtparr x x.s.t.a.s 0 is stack
+      (x.curbrk = ibrk)
+      gfpop x stack
+      gt0 x "ret" }
+      decls x }
+}
+
+type
   timespec {
     s nat
     n nat
@@ -6,7 +890,7 @@ type
 ;
 
 export _start() nat = {
-  scratch Ctx x
+  some Ctx x
 
   (x.s = 0)
   (x.curbrk = brk 0)
@@ -15,6 +899,7 @@ export _start() nat = {
 
   (x.p = cast @byte alloc (1 << 20) &x.curbrk)
   (x.q = cast @byte alloc (1 << 23) &x.curbrk)
+  (x.pline = x.p)
   (x.line = 1)
   (x.col = 1)
 
@@ -27,14 +912,14 @@ export _start() nat = {
     x.curbrk is ibrk
     x.q is iq
 
-    scratch timespec t0
-    clock_gettime 1 &t0
+    some timespec t0
+    gettime 1 &t0
 
-    token &x
-    decls &x
+    token mut x
+    decls mut x
 
-    scratch timespec t1
-    clock_gettime 1 &t1
+    some timespec t1
+    gettime 1 &t1
 
     ((t1.s - t0.s) * 1000000 + (t1.n - t0.n) / 1000) is microseconds
 

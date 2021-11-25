@@ -1,7 +1,4 @@
-
-HEADERS = lib.eh ebrew.eh tokens.eh io.eh gnugas.eh types.eh parsers.eh nodes.eh lex.eh 
-
-EBREW_UNIT = $(HEADERS) ebrew.eb tokens.eb nodes.eb parsers.eb types.eb
+EBREW_UNIT = lib.eh ebrew.eb
 
 BUILDING=stage3
 
@@ -27,7 +24,7 @@ $(BUILDING)/ebrew: $(BUILDING)/ebrew.o
 	ld -o $@ -m elf_x86_64 $^
 
 %.o: %.s
-	as -g -o $@ -c $^
+	as -o $@ -c $^
 
 $(BUILDING)/ebrew.s: $(EBREW_UNIT) | $(BOOTSTRAP)/ebrew $(BUILDING)
 	cat $^ | $(BOOTSTRAP)/ebrew > $@
