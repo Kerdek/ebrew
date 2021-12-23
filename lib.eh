@@ -1,4 +1,5 @@
-alloc (n nat c @@byte) @byte = { c@ ret (c@ = c@ + n) }
+initbrk (n nat) nat = { brk 0 is i brk (i + n) i }
+alloc (n nat c @@byte) @byte = { c@ ret (c@ = &c@^n) }
 
 strlen(a @byte) nat = { 0 for i a^i then (i + 1) }
 
@@ -49,3 +50,8 @@ strcmp(a @byte b @byte) nat = {
         0 } }
   r
 }
+
+ioread  (p @byte n nat) nat = read p n
+iowrite (p @byte n nat) nat = write p n
+ioretry (p @byte q @byte io @(p @byte n nat) nat) none = { p for i io@ i (q - i) is n n then &i^n }
+
