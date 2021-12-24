@@ -1,23 +1,22 @@
 initbrk (n nat) nat = { brk 0 is i brk (i + n) i }
-alloc (n nat c @@byte) @byte = { c@ ret (c@ = &c@^n) }
 
-strlen(a @byte) nat = { 0 for i a^i then (i + 1) }
+strlen(a @byte) nat = { 0 for i elem i a then (i + 1) }
 
 memcpy (a @byte b @byte n nat) none = {
   n then
   n for m
-  (a@ = b@)
-  (a = &a^1)
-  (b = &b^1)
+  (the a = the b)
+  (a = &elem 1 a)
+  (b = &elem 1 b)
   (m - 1)
 }
 
 memcmp(a @byte b @byte n nat) nat = {
   1 is r
   { n then n for m
-    (a@ == b@) ?
-      { (a = &a^1)
-        (b = &b^1)
+    (the a == the b) ?
+      { (a = &elem 1 a)
+        (b = &elem 1 b)
         (m - 1) }
       { (r = 0)
         0 } }
@@ -28,10 +27,10 @@ strncmp(a @byte b @byte n nat) nat = {
   1 is r
   { n then
     n for m
-    (a@ == b@) ?
-      { a@ then
-        (a = &a^1)
-        (b = &b^1)
+    (the a == the b) ?
+      { the a then
+        (a = &elem 1 a)
+        (b = &elem 1 b)
         (m - 1) }
       { (r = 0)
         0 } }
@@ -41,10 +40,10 @@ strncmp(a @byte b @byte n nat) nat = {
 strcmp(a @byte b @byte) nat = {
   1 is r
   { 1 for _
-    (a@ == b@) ?
-      { a@ then
-        (a = &a^1)
-        (b = &b^1)
+    (the a == the b) ?
+      { the a then
+        (a = &elem 1 a)
+        (b = &elem 1 b)
         1 }
       { (r = 0)
         0 } }
@@ -53,5 +52,5 @@ strcmp(a @byte b @byte) nat = {
 
 ioread  (p @byte n nat) nat = read p n
 iowrite (p @byte n nat) nat = write p n
-ioretry (p @byte q @byte io @(p @byte n nat) nat) none = { p for i io@ i (q - i) is n n then &i^n }
+ioretry (p @byte q @byte io @(p @byte n nat) nat) none = { p for i the io i (q - i) is n n then &elem n i }
 
