@@ -1,5 +1,7 @@
 # ebrew
 
+Everything is a 64-bit natural number.
+
 current goals:
 - diags
 - generics
