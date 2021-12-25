@@ -1,8 +1,9 @@
 # ebrew
 
+Everything is a 64-bit natural number.
+
 current goals:
 - diags
-- eliminate all other structs
 - generics
 - closures
 - lib
