@@ -1,169 +1,180 @@
-ctx_size () nat = 88
+type
+  X @ #
+  T @ #
+;
 
-ctx_successor  (x @byte) @@byte = cast @@byte &elem  0 x
-ctx_type       (x @byte) @@byte = cast @@byte &elem  8 x
-ctx_line_no    (x @byte) @ nat  = cast @ nat  &elem 16 x
-ctx_col_no     (x @byte) @ nat  = cast @ nat  &elem 24 x
-ctx_frame_len  (x @byte) @ nat  = cast @ nat  &elem 32 x
-ctx_line_ptr   (x @byte) @@byte = cast @@byte &elem 40 x
-ctx_inbuf      (x @byte) @@byte = cast @@byte &elem 48 x
-ctx_outbuf     (x @byte) @@byte = cast @@byte &elem 56 x
-ctx_curbrk     (x @byte) @@byte = cast @@byte &elem 64 x
-ctx_token      (x @byte) @@byte = cast @@byte &elem 72 x
-ctx_token_len  (x @byte) @ byte = cast @ byte &elem 80 x
-ctx_category   (x @byte) @ byte = cast @ byte &elem 81 x
-ctx_is_type    (x @byte) @ byte = cast @ byte &elem 82 x
-ctx_is_def     (x @byte) @ byte = cast @ byte &elem 83 x
-ctx_is_local   (x @byte) @ byte = cast @ byte &elem 84 x
+ctx_alloc_size () none = 120
 
-type_size () nat = 32
+ctx_successor  (x X) @ X     = cast @ X    (x +   0)
+ctx_type       (x X) @ T     = cast @ T    (x +   8)
+ctx_line_no    (x X) @ none  = cast @ none (x +  16)
+ctx_col_no     (x X) @ none  = cast @ none (x +  24)
+ctx_frame_len  (x X) @ none  = cast @ none (x +  32)
+ctx_line_ptr   (x X) @ none  = cast @ none (x +  40)
+ctx_inbuf      (x X) @ none  = cast @ none (x +  48)
+ctx_outbuf     (x X) @ none  = cast @ none (x +  56)
+ctx_curbrk     (x X) @ none  = cast @ none (x +  64)
+ctx_token      (x X) @ none  = cast @ none (x +  72)
+ctx_token_len  (x X) @ none  = cast @ none (x +  80)
+ctx_category   (x X) @ none  = cast @ none (x +  88)
+ctx_is_type    (x X) @ none  = cast @ none (x +  96)
+ctx_is_def     (x X) @ none  = cast @ none (x + 104)
+ctx_is_local   (x X) @ none  = cast @ none (x + 112)
 
-type_successor (t @byte) @@byte = cast @@byte &elem  0 t
-type_argument  (t @byte) @@byte = cast @@byte &elem  8 t
-type_token     (t @byte) @@byte = cast @@byte &elem 16 t
-type_token_len (t @byte) @ byte = cast @ byte &elem 24 t
-type_kind      (t @byte) @ byte = cast @ byte &elem 25 t
+type_alloc_size () none = 40
 
-ctx_copy (xa @byte xb @byte it nat il nat id nat) none = {
-  memcpy xa xb ctx_size
-  (the ctx_successor xa = the ctx_successor xb)
-  (the ctx_successor xb = xa)
-  (the ctx_is_type  the ctx_successor xb = cast byte it)
-  (the ctx_is_local the ctx_successor xb = cast byte il)
-  (the ctx_is_def   the ctx_successor xb = cast byte id)
+type_successor (t T) @ T     = cast @ T    (t +  0)
+type_argument  (t T) @ T     = cast @ T    (t +  8)
+type_token     (t T) @ none  = cast @ none (t + 16)
+type_token_len (t T) @ none  = cast @ none (t + 24)
+type_kind      (t T) @ none  = cast @ none (t + 32)
+
+ctx_copy (a X b X it none il none id none) none = {
+  memcpy cast none a cast none b ctx_alloc_size
+  (the ctx_successor a = the ctx_successor b)
+  (the ctx_successor b = a)
+  (the ctx_is_type  the ctx_successor b = it)
+  (the ctx_is_local the ctx_successor b = il)
+  (the ctx_is_def   the ctx_successor b = id)
 }
 
-try_lookup (x @byte) @byte = {
-  cast @byte 0 is xb
-  { the ctx_successor x then
-    the ctx_successor x for s
-    (the ctx_token_len s != the ctx_token_len x or not strncmp the ctx_token s the ctx_token x cast nat the ctx_token_len x) ?
-      the ctx_successor s
+try_lookup (x X) X = {
+  cast X 0 is xb
+  the ctx_successor x is s0
+  { s0 then s0 for s
+    (the ctx_token_len s != the ctx_token_len x or (not strncmp the ctx_token s the ctx_token x the ctx_token_len x)) ?
+      (the ctx_successor s)
       { (xb = s)
-        cast @byte 0 } }
+        cast X 0 } }
   xb
 }
 
-alloc (x @byte n nat) @byte = { the ctx_curbrk x ret (the ctx_curbrk x = &elem n the ctx_curbrk x) }
+alloc (x X n none) none = { the ctx_curbrk x ret (the ctx_curbrk x = the ctx_curbrk x + n) }
 
-push_scope (x @byte is_type nat is_local nat is_def nat f @(x @byte) none) none = {
-  alloc x ctx_size is xb
+push_scope (x X is_type none is_local none is_def none f @(x X) none) none = {
+  cast X alloc x ctx_alloc_size is xb
   ctx_copy xb x is_type is_local is_def
   the f x
 }
 
-lookup_push_scope (x @byte is_type nat is_local nat is_def nat f @(x @byte o @byte) none) none = {
+lookup_push_scope (x X is_type none is_local none is_def none f @(x X o X) none) none = {
   try_lookup x is o
-  alloc x ctx_size is xb
+  cast X alloc x ctx_alloc_size is xb
   ctx_copy xb x is_type is_local is_def
   the f x o
 }
 
-oglf (x @byte       c @(x @byte c byte) none) none = the c x '\n
-ogn1 (x @byte n nat c @(x @byte c byte) none) none = { n then ogn1 x (n / 10) c the c x cast byte ('0 + n % 10) }
-ogn  (x @byte n nat c @(x @byte c byte) none) none = { n ? ogn1 x n c the c x '0 }
+oglf (x X       c @(x X c none) none) none = the c x '\n
+ogn1 (x X n none c @(x X c none) none) none = { n then ogn1 x (n / 10) c the c x ('0 + n % 10) }
+ogn  (x X n none c @(x X c none) none) none = { n ? ogn1 x n c the c x '0 }
 
-gc  (x @byte c   byte     ) none = { (the the ctx_outbuf x = c) (the ctx_outbuf x = &elem 1 the ctx_outbuf x) }
-gs  (x @byte s  @byte     ) none = { s for p the p then gc x the p &elem 1 p }
-gsn (x @byte xb @byte     ) none = { 0 for m (m < the ctx_token_len xb) then gc x elem m the ctx_token xb (m + 1) }
-glf (x @byte              ) none = oglf x   &gc
-gn  (x @byte         n nat) none = ogn  x n &gc
+gc  (x X c none      ) none = { (poke the ctx_outbuf x c) (the ctx_outbuf x = the ctx_outbuf x + 1) }
+gs  (x X s none      ) none = { s for p peek p then gc x peek p (p + 1) }
+gsn (x X xb X       ) none = { 0 for m (m < the ctx_token_len xb) then gc x peek (the ctx_token xb + m) (m + 1) }
+glf (x X            ) none = oglf x   addr gc
+gn  (x X       n none) none = ogn  x n addr gc
 
-oc  (x @byte c  byte      ) none = err &c 1
-os  (x @byte s @byte      ) none = err s strlen s
-osn (x @byte s @byte n nat) none = err s n
-olf (x @byte              ) none = oglf x   &oc
-on  (x @byte         n nat) none = ogn  x n &oc
+oc  (x X c none       ) none = sys 1 2 addr c 1 0 0 0
+os  (x X s none       ) none = sys 1 2  s strlen s 0 0 0
+osn (x X s none n none) none = sys 1 2  s n 0 0 0
+olf (x X              ) none = oglf x   addr oc
+on  (x X        n none) none = ogn  x n addr oc
 
-diag (x @byte s @byte) none = {
-  { the ctx_token x for q (the q and the q != '\n) then (&elem 1 q) } is end_line
-  oc x '( on x the ctx_line_no x oc x ', on x the ctx_col_no x os x "): " osn x the ctx_line_ptr x (end_line - the ctx_line_ptr x)
-  os x s olf x
-  exit 1
+diag (x X s none) none = {
+  oc x '( on x the ctx_line_no x oc x ', on x the ctx_col_no x os x "): " os x s olf x
+  sys 60 1 0 0 0 0 0
 }
 
-lookup (x @byte) @byte = {
+lookup (x X) X = {
   try_lookup x else
   diag x "lookup failed"
 }
 
-make_type (x @byte kind nat) @byte = {
-  alloc x type_size is t
-  (the type_successor t = 0             )
-  (the type_kind      t = cast byte kind)
+make_type (x X kind none) T = {
+  cast T alloc x type_alloc_size is t
+  (the type_successor t = cast T 0)
+  (the type_kind      t = kind    )
   t
 }
 
-make_type_a (x @byte kind nat a @byte) @byte = {
+make_type_a (x X kind none arg T) T = {
   make_type x kind is t
-  (the type_argument t = a)
+  (the type_argument t = arg)
   t
 }
 
-nnone (x @byte        ) @byte = make_type   x 0
-nbyte (x @byte        ) @byte = make_type   x 1
-nnat  (x @byte        ) @byte = make_type   x 2
-nptr  (x @byte a @byte) @byte = make_type_a x 3 a
-nfunc (x @byte a @byte) @byte = make_type_a x 4 a
+typeid_none () none = 0
+typeid_unit () none = 1
+typeid_name () none = 2
+typeid_ptr  () none = 3
+typeid_func () none = 4
 
-type_equal (t @byte u @byte) nat = {
-  t then
-  u then
-  (t == u) else
-  the type_kind t is tk
-  (tk == the type_kind u) then
-  (tk == 0 or tk == 1 or tk == 2) else
-  the type_argument t is p
-  the type_argument u is q
-  { (tk == 3) then type_equal p q 1 } else
-  (tk == 4) then
-  { 1 for _
-    type_equal p q then
-    (p = the type_successor p)
-    (q = the type_successor q)
-    1 }
-  (p == q)
+nnone (x X      ) T = make_type   x typeid_none
+nunit (x X      ) T = make_type   x typeid_unit
+nname (x X arg T) T = make_type   x typeid_name
+nptr  (x X arg T) T = make_type_a x typeid_ptr  arg
+nfunc (x X arg T) T = make_type_a x typeid_func arg
+
+type_equal (ta T tb T) none = {
+  ta then
+  tb then
+  (ta == tb) else
+  the type_kind ta is tk
+  (tk == the type_kind tb) then
+  (tk != typeid_unit) then
+  (tk == typeid_none) else
+  (tk == typeid_ptr or tk == typeid_name) ? type_equal the type_argument ta the type_argument tb
+  { (tk == typeid_func) then
+    the type_argument ta is aa
+    the type_argument tb is ab
+    { 1 for _
+      type_equal aa ab then
+      (aa = the type_successor aa)
+      (ab = the type_successor ab)
+      1 }
+    (aa == ab) }
 }
 
-issp (c byte    ) nat = (c == '  )
-istb (c byte    ) nat = (c == '\t)
-islf (c byte    ) nat = (c == '\n)
-iscr (c byte    ) nat = (c == '\r)
-is_  (c byte    ) nat = (c == '_ )
+issp (c none) none = (c == '  )
+istb (c none) none = (c == '\t)
+islf (c none) none = (c == '\n)
+iscr (c none) none = (c == '\r)
+is_  (c none) none = (c == '_ )
 
-isin (c byte a byte b byte) nat = (a <= c and c <= b)
+isin (c none a none b none) none = (a <= c and c <= b)
 
-isAZ (c byte    ) nat = isin c 'A 'Z
-isaz (c byte    ) nat = isin c 'a 'z
-is09 (c byte    ) nat = isin c '0 '9
-isaf (c byte    ) nat = isin c 'a 'f
-isws (c byte    ) nat = { issp c else
-                          istb c else
-                          islf c else
-                          iscr c      }
-is0f (c byte    ) nat = { is09 c else
-                          isaf c      }
-isid (c byte    ) nat = { isAZ c else
-                          isaz c else
-                          is09 c else
-                          is_  c      }
+isAZ (c none) none = isin c 'A 'Z
+isaz (c none) none = isin c 'a 'z
+is09 (c none) none = isin c '0 '9
+isaf (c none) none = isin c 'a 'f
 
-caret_is      (x @byte c byte) nat  = (the the ctx_inbuf x == c)
-caret_next_is (x @byte c byte) nat  = { (the the ctx_inbuf x or diag x "unexpected end of file") (elem 1 the ctx_inbuf x == c) }
+isws (c none) none = ( issp c or
+                      istb c or
+                      islf c or
+                      iscr c    )
+is0f (c none) none = ( is09 c or
+                      isaf c    )
+isid (c none) none = ( isAZ c or
+                      isaz c or
+                      is09 c or
+                      is_  c    )
 
-caret_advance (x @byte) none = {
-  (the the ctx_inbuf x or diag x "unexpected end of file")
-  (the ctx_inbuf x = &elem 1 the ctx_inbuf x)
-  caret_is x '\n ? {
-    (the ctx_col_no x = 1)
-    (the ctx_line_no x = the ctx_line_no x + 1)
-    (the ctx_line_ptr x = &elem 1 the ctx_inbuf x) }
+caret_is      (x X c none) none  =   (peek the ctx_inbuf x == c)
+caret_next_is (x X c none) none  = { (peek the ctx_inbuf x or diag x "unexpected end of file") (peek (the ctx_inbuf x + 1) == c) }
+
+caret_advance (x X) none = {
+  (peek the ctx_inbuf x or diag x "unexpected end of file")
+  (the ctx_inbuf x = the ctx_inbuf x + 1)
+  caret_is x '\n ?
+    { (the ctx_col_no x = 1)
+      (the ctx_line_no x = the ctx_line_no x + 1)
+      (the ctx_line_ptr x = the ctx_inbuf x + 1) }
     (the ctx_col_no x = the ctx_col_no x + 1)
 }
 
-caret_hash (x @byte) nat = (the ctx_line_no x * 10000 + the ctx_col_no x)
+caret_hash (x X) none = (the ctx_line_no x * 10000 + the ctx_col_no x)
 
-comment (x @byte) nat = {
+comment (x X) none = {
   (caret_is x '/ and caret_next_is x '*) then
   caret_advance x
   caret_advance x
@@ -174,16 +185,16 @@ comment (x @byte) nat = {
   1
 }
 
-number (x @byte) nat = {
+number (x X) none = {
   the ctx_inbuf x is q
-  { 1 for _ is09 the the ctx_inbuf x then caret_advance x 1 }
+  { 1 for _ is09 peek the ctx_inbuf x then caret_advance x 1 }
   (the ctx_inbuf x != q) then
   (the ctx_token x = q)
   (the ctx_token_len x = the ctx_inbuf x - q)
   1
 }
 
-string (x @byte) nat = {
+string (x X) none = {
   caret_is x '" then
   the ctx_inbuf x is q
   caret_advance x
@@ -199,13 +210,13 @@ string (x @byte) nat = {
   (the ctx_token_len x = the ctx_inbuf x - q)
   gs x ".section .text..s" gn x caret_hash x glf x
   gs x ".s" gn x caret_hash x gc x ': gs x ".string \""
-  { &elem 1 the ctx_token x for i (i < &elem (the ctx_token_len x - 1) the ctx_token x) then gc x the i &elem 1 i }
+  { (the ctx_token x + 1) for i (i < the ctx_token x + the ctx_token_len x - 1) then gc x peek i (i + 1) }
   gc x '\" glf x
   gs x ".previous" glf x
   1
 }
 
-char (x @byte) nat = {
+char (x X) none = {
   caret_is x '\' then
   the ctx_inbuf x is q
   caret_advance x
@@ -219,19 +230,19 @@ char (x @byte) nat = {
   1
 }
 
-id (x @byte) nat = {
+id (x X) none = {
   the ctx_inbuf x is q
-  { 1 for _ isid the the ctx_inbuf x then caret_advance x 1 }
+  { 1 for _ isid peek the ctx_inbuf x then caret_advance x 1 }
   (the ctx_inbuf x != q) then
   (the ctx_token x = q)
   (the ctx_token_len x = the ctx_inbuf x - q)
   1
 }
 
-sw1 (x @byte a byte       ) nat = { caret_is x a then caret_advance x 1 }
-sw2 (x @byte a byte b byte) nat = { caret_is x a then caret_next_is x b then caret_advance x caret_advance x 1 }
+sw1 (x X a none        ) none = { caret_is x a then caret_advance x 1 }
+sw2 (x X a none b none) none = { caret_is x a then caret_next_is x b then caret_advance x caret_advance x 1 }
 
-punct (x @byte) nat = {
+punct (x X) none = {
   the ctx_inbuf x is q
   { sw2 x '= '= else
     sw2 x '! '= else
@@ -276,21 +287,21 @@ punct (x @byte) nat = {
   1
 }
 
-eof (x @byte) nat = {
-  not the the ctx_inbuf x then
-  (the ctx_token x = cast @byte 0)
+eof (x X) none = {
+  not peek the ctx_inbuf x then
+  (the ctx_token x = 0)
   1
 }
 
-ws (x @byte) nat = {
+ws (x X) none = {
   1 for _
   comment x else
-  isws the the ctx_inbuf x then
+  isws peek the ctx_inbuf x then
   caret_advance x
   1
 }
 
-token (x @byte) none = {
+token (x X) none = {
   ws     x
   eof    x else
   number x else
@@ -301,12 +312,13 @@ token (x @byte) none = {
   diag x "invalid token"
 }
 
-token_advance (x @byte        ) none = { (the ctx_token x or diag x "unexpected end of tokens") token x }
-token_is      (x @byte c @byte) nat  = { the ctx_token x then memcmp c the ctx_token x cast nat the ctx_token_len x then not elem the ctx_token_len x c }
-token_expect  (x @byte c @byte) none = { { not token_is x c then diag x "unexpected" } token_advance x }
-token_eat     (x @byte c @byte) nat  = { token_is x c is r { r then token_advance x } r }
+token_advance (x X      ) none = { (the ctx_token x or diag x "unexpected end of tokens") token x }
+token_is      (x X c none) none  = {  the ctx_token x then memcmp c the ctx_token x the ctx_token_len x then not peek (c + the ctx_token_len x) }
 
-argreg (d nat) @byte = {
+token_expect  (x X c none) none = { (token_is x c or diag x "unexpected") token_advance x }
+token_eat     (x X c none) none  = {  token_is x c is r { r then token_advance x } r }
+
+argreg (d none) none = {
   (d == 0) ? "rdi"
   (d == 1) ? "rsi"
   (d == 2) ? "rdx"
@@ -315,141 +327,124 @@ argreg (d nat) @byte = {
              "r9"
 }
 
-gtreg (x @byte s @byte                ) none = { gc x '% gs x s }
-gt0   (x @byte s @byte                ) none = { gs x s glf x  }
-gt1   (x @byte s @byte a @byte        ) none = { gs x s gc x '  gtreg x a glf x }
-gt2   (x @byte s @byte a @byte b @byte) none = { gs x s gc x '  gtreg x a gc x ', gtreg x b glf x }
+gtreg (x X s none            ) none = { gc x '% gs x s }
+gt0   (x X s none            ) none = { gs x s glf x  }
+gt1   (x X s none a none      ) none = { gs x s gc x '  gtreg x a glf x }
+gt2   (x X s none a none b none) none = { gs x s gc x '  gtreg x a gc x ', gtreg x b glf x }
 
-gtz  (x @byte a @byte) none = gt2 x "xor"  a a
-cz (x @byte a @byte) none = gt2 x "test" a a
+gtz  (x X a none) none = gt2 x "xor"  a a
+cz   (x X a none) none = gt2 x "test" a a
 
-gtlit (x @byte l nat a @byte) none = (l ? { gs x "mov $" gn x l gc x ', gtreg x a glf x } gtz x a)
+gtlit (x X l none a none) none = (l ? { gs x "mov $" gn x l gc x ', gtreg x a glf x } gtz x a)
 
-gtneg (x @byte a @byte) none = gt1 x "neg" a
-gmul  (x @byte a @byte) none = gt1 x "mul" a
-gdiv  (x @byte        ) none = { gtz x "edx" gt1 x "div" "rdi" }
-gmod  (x @byte        ) none = { gdiv x gt2 x "mov" "rdx" "rax" }
-gshx  (x @byte k byte ) none = { gt2 x "mov" "dil" "cl" gs x "sh" gc x k gs x " %cl,%rax" glf x }
+gtneg (x X a none) none = gt1 x "neg" a
+gmul  (x X a none) none = gt1 x "mul" a
+gdiv  (x X      ) none = { gtz x "edx" gt1 x "div" "rcx" }
+gmod  (x X      ) none = { gdiv x gt2 x "mov" "rdx" "rax" }
+gshx  (x X k none) none = { gs x "sh" gc x k gs x " %cl,%rax" glf x }
 
-gadd (x @byte a @byte b @byte) none = gt2 x "add" a b
-gsub (x @byte a @byte b @byte) none = gt2 x "sub" a b
-gor  (x @byte a @byte b @byte) none = gt2 x "or"  a b
-gcmp (x @byte a @byte b @byte) none = gt2 x "cmp" a b
-gshr (x @byte ) none = gshx x 'r
-gshl (x @byte ) none = gshx x 'l
+gadd (x X a none b none) none = gt2 x "add" a b
+gsub (x X a none b none) none = gt2 x "sub" a b
+gor  (x X a none b none) none = gt2 x "or"  a b
+gcmp (x X a none b none) none = gt2 x "cmp" a b
+gshr (x X ) none = gshx x 'r
+gshl (x X ) none = gshx x 'l
 
-gpromote (x @byte b @byte) none = gt2 x "movzbl" "al" b
+gpromote (x X b none) none = gt2 x "movzbl" "al" b
 
-gsetf      (x @byte s @byte         b @byte        ) none = { gs x "set" gs x s gc x '  gtreg x "al" glf x gpromote x b }
-gcmp_setf  (x @byte s @byte a @byte b @byte c @byte) none = { gcmp x a b gsetf x s c }
-gcmpz_setf (x @byte s @byte a @byte b @byte        ) none = { cz x a   gsetf x s b }
-glnot      (x @byte         a @byte b @byte        ) none = { gcmpz_setf x "e" a b }
+gsetf      (x X s none       b none      ) none = { gs x "set" gs x s gc x '  gtreg x "al" glf x gpromote x b }
+gcmp_setf  (x X s none a none b none c none) none = { gcmp x a b gsetf x s c }
+gcmpz_setf (x X s none a none b none      ) none = { cz x a   gsetf x s b }
+glnot      (x X       a none b none      ) none = { gcmpz_setf x "e" a b }
 
-local_symbol (x @byte n nat        ) none = { gc x 'l gn x n gc x '$ }
+local_symbol (x X n none        ) none = { gc x 'l gn x n gc x '$ }
 
-label(x @byte n nat        ) none = {                        local_symbol x n gc x ': glf x }
-jc   (x @byte n nat s @byte) none = { gc x 'j gs x s gc x '  local_symbol x n         glf x }
+label(x X n none        ) none = {                        local_symbol x n gc x ': glf x }
+jc   (x X n none s none) none = { gc x 'j gs x s gc x '  local_symbol x n         glf x }
 
-jmp  (x @byte n nat) none = jc x n "mp"
-je   (x @byte n nat) none = jc x n "e"
-jne  (x @byte n nat) none = jc x n "ne"
-jb   (x @byte n nat) none = jc x n "b"
-jbe  (x @byte n nat) none = jc x n "be"
-ja   (x @byte n nat) none = jc x n "a"
-jae  (x @byte n nat) none = jc x n "ae"
+jmp  (x X n none) none = jc x n "mp"
+je   (x X n none) none = jc x n "e"
+jne  (x X n none) none = jc x n "ne"
+jb   (x X n none) none = jc x n "b"
+jbe  (x X n none) none = jc x n "be"
+ja   (x X n none) none = jc x n "a"
+jae  (x X n none) none = jc x n "ae"
 
-gegcmp(x @byte s @byte) none = gcmp_setf x s "rdi" "rax" "eax"
+gegcmp(x X s none) none = gcmp_setf x s "rcx" "rax" "eax"
 
-gfpop (x @byte l nat  ) none = { l then gs x "add $" gn x (l << 3) gc x ', gtreg x "rsp" glf x (the ctx_frame_len x = the ctx_frame_len x + l) }
-gfpush(x @byte l nat  ) none = gfpop x -l
+gfpop (x X l none  ) none = { l then gs x "add $" gn x (l << 3) gc x ', gtreg x "rsp" glf x (the ctx_frame_len x = the ctx_frame_len x + l) }
+gfpush(x X l none  ) none = gfpop x -l
 
-push (x @byte d @byte) none = { gt1 x "push" d (the ctx_frame_len x = the ctx_frame_len x - 1) }
-pop  (x @byte s @byte) none = { gt1 x "pop"  s (the ctx_frame_len x = the ctx_frame_len x + 1) }
+push (x X d none) none = { gt1 x "push" d (the ctx_frame_len x = the ctx_frame_len x - 1) }
+pop  (x X s none) none = { gt1 x "pop"  s (the ctx_frame_len x = the ctx_frame_len x + 1) }
 
-gcast (x @byte) none = {
-  (the type_kind the ctx_type x == 0) ?
-    gtz x "eax"
-    { (the type_kind the ctx_type x == 1) then
-      gpromote x "eax" }
-}
-
-gaddr (x @byte t @byte n nat s @byte d @byte) none = {
+gaddr (x X t T n none s none d none) none = {
   (n or not strcmp s d) then
   gs x "lea " { n then gn x n } gs x "(%" gs x s gs x "),%" gs x d glf x
 }
 
-gload (x @byte t @byte n nat s @byte d @byte) none = {
-  (the type_kind t == 1) ?
-    { gs x  "movzbq " gn x n gs x "(%" gs x s gs x "),%" gs x d glf x }
-    { gs x  "mov "    gn x n gs x "(%" gs x s gs x "),%" gs x d glf x }
-}
+gload (x X t T n none s none d none) none = { gs x "mov " gn x n gs x "(%" gs x s gs x "),%" gs x d glf x }
+store (x X t T d none) none = { gs x "mov %rax,(%" gs x d gc x ') glf x }
 
-store (x @byte t @byte d @byte) none = {
-  (the type_kind t == 1) ?
-    { gs x "mov %al,(%"  gs x d gc x ') glf x }
-    { gs x "mov %rax,(%" gs x d gc x ') glf x }
-}
-
-eval (x @byte l nat) none = {
+eval (x X l none) none = {
   the ctx_category x for l2
   (l2 > l) then
   (l2 == 1 and l == 0) ?
-    (the type_kind the ctx_type x == 4 or gload x the ctx_type x 0 "rax" "rax")
+    (the type_kind the ctx_type x == typeid_func or gload x the ctx_type x 0 "rax" "rax")
     { gt0 x "mov (%rax),%rax" }
   (l2 - 1)
 }
 
-note (x @byte t @byte l nat) nat = {
+note (x X t T l none) none = {
   (the ctx_type x = t)
   (the ctx_category x = l)
 }
 
-g1ops (x @byte p@ (x @byte) none) nat = {
+g1ops (x X p@ (x X) none) none = {
   the p x
   eval x 0
-  note x nnat x 0
+  note x nnone x 0
 }
 
-g2ops (x @byte p@ (x @byte) none) nat = {
+g2ops (x X p@ (x X) none) none = {
   eval x 0
   push x "rax"
   the p x
   eval x 0
-  gt0 x "mov %rax,%rdi"
+  gt0 x "mov %rax,%rcx"
   pop x "rax"
-  note x nnat x 0
-  1
+  note x nnone x 0
 }
 
-ge  (x @byte) none = gegcmp x "e"
-gne (x @byte) none = gegcmp x "ne"
-gb  (x @byte) none = gegcmp x "b"
-gbe (x @byte) none = gegcmp x "be"
-ga  (x @byte) none = gegcmp x "a"
-gae (x @byte) none = gegcmp x "ae"
+ge  (x X) none = gegcmp x "e"
+gne (x X) none = gegcmp x "ne"
+gb  (x X) none = gegcmp x "b"
+gbe (x X) none = gegcmp x "be"
+ga  (x X) none = gegcmp x "a"
+gae (x X) none = gegcmp x "ae"
 
-let (x @byte p @(x @byte) none) none = {
-  alloc x ctx_size is xb
+let (x X p @(x X) none) none = {
+  cast X alloc x ctx_alloc_size is xb
   ctx_copy xb x 0 1 0
   token_advance x
   the p x
   (the ctx_successor x = the ctx_successor the ctx_successor x)
 }
 
-gpt (x @byte t @byte) none = {
+gpt (x X t T) none = {
   gs x "mov $" gsn x x gs x ",%rax" glf x
   token_advance x
   note x t 0
   1
 }
 
-ptype (x @byte) @byte
-p3 (x @byte) none
-p4 (x @byte) none
-p5 (x @byte) none
-p8 (x @byte) none
+ptype (x X) T
+p3    (x X) none
+p4    (x X) none
+p5    (x X) none
+p6    (x X) none
 
-gsys3 (x @byte fd nat id nat) none = {
+gsys3 (x X fd none id none) none = {
   p3 x
   eval x 0
   push x "rax"
@@ -460,13 +455,13 @@ gsys3 (x @byte fd nat id nat) none = {
   gtlit x fd "rdi"
   gtlit x id "rax"
   gt0 x "syscall"
-  note x nnat x 0
+  note x nnone x 0
 }
 
-align(n nat a nat) nat = ((n + a - 1) / a * a)
+align(n none a none) none = ((n + a - 1) / a * a)
 
-param (x @byte t @@byte) none = {
-  (the t = alloc x type_size)
+pname (x X t @T) none = {
+  (the t = cast T alloc x type_alloc_size)
   (the type_token     the t = the ctx_token x)
   (the type_token_len the t = the ctx_token_len x)
   token_advance x
@@ -475,26 +470,24 @@ param (x @byte t @@byte) none = {
   (the type_kind      the t = the type_kind      u)
 }
 
-pfunc (x @byte) @byte = {
-  cast @byte 0 is params
-  &params is u
+pfunc (x X) T = {
+  cast T 0 is params
+  addr params is u
   { 1 for _
-    not token_is x ")" then
-    param x u
+    not token_eat x ")" then
+    pname x u
     (u = type_successor the u)
     1 }
-  token_advance x
   ptype x is r
-  nfunc x alloc x type_size is t
-  memcpy the type_argument t r 32
+  nfunc x cast T alloc x type_alloc_size is t
+  memcpy cast none the type_argument t cast none r type_alloc_size
   (the type_successor the type_argument t = params)
   t
 }
 
-ptype (x @byte) @byte = {
+ptype (x X) T = {
   token_eat x "none"   ? nnone       x
-  token_eat x "byte"   ? nbyte       x
-  token_eat x "nat"    ? nnat        x
+  token_eat x "#"      ? nunit       x
   token_eat x "@"      ? nptr        x ptype x
   token_eat x "("      ? pfunc   x
   { lookup x is xb
@@ -503,62 +496,65 @@ ptype (x @byte) @byte = {
     the ctx_type xb }
 }
 
-token_is_id     (x @byte) nat = (isaz the the ctx_token x or isAZ the the ctx_token x)
-token_is_string (x @byte) nat = (the the ctx_token x == '\")
-token_is_byte   (x @byte) nat = (the the ctx_token x == '\')
-token_is_number (x @byte) nat = is09 the the ctx_token x
-
-p1 (x @byte) nat = {
-  { token_is_number x then gpt x nnat  x 1 } else
-  { token_is_byte   x then gpt x nbyte x 1 } else
-  { token_is_string x then
+p1 (x X) none = {
+  peek the ctx_token x is first_byte
+  { is09 first_byte     then gpt x nnone x 1 } else
+  { (first_byte == '\') then gpt x nnone x 1 } else
+  { (first_byte == '\") then
     gs x "mov .s" gn x caret_hash x gs x "@GOTPCREL(%rip),%rax" glf x
     token_advance x
-    note x nptr x nbyte x 0
+    note x nnone x 0
     1 } else
-  { token_eat x "("       then p8 x token_expect x ")" 1 } else
-  { token_eat x "{"       then p5 x token_expect x "}" 1 } else
-  { token_eat x "&"       then p1 x note x nptr x the ctx_type x (the ctx_category x - 1) 1 } else
-  { token_eat x "-"       then g1ops x &p3 gtneg x "rax"       1 } else
-  { token_eat x "not"     then g1ops x &p3 glnot x "rax" "eax" 1 } else
-  { token_eat x "read"    then gsys3 x 0 0 1 } else
-  { token_eat x "write"   then gsys3 x 1 1 1 } else
-  { token_eat x "err"     then gsys3 x 2 1 1 } else
-  { token_eat x "the"     then p3 x note x the type_argument the ctx_type x (the ctx_category x + 1) 1 } else
-  { token_eat x "elem" then
+  { token_eat x "("     then p6 x token_expect x ")" 1 } else
+  { token_eat x "{"     then p5 x token_expect x "}" 1 } else
+  { token_eat x "addr"  then p1 x note x nptr x the ctx_type x (the ctx_category x - 1) 1 } else
+  { token_eat x "the"   then p3 x { (the type_kind the ctx_type x != typeid_ptr) then diag x "not a pointer" } note x the type_argument the ctx_type x (the ctx_category x + 1) 1 } else
+  { token_eat x "-"     then g1ops x addr p3 gtneg x "rax"       1 } else
+  { token_eat x "not"   then g1ops x addr p3 glnot x "rax" "eax" 1 } else
+  { token_eat x "sys"   then
+    push x "rdi"
+    push x "rsi"
+    p3 x eval x 0 push x "rax"
+    p3 x eval x 0 push x "rax"
+    p3 x eval x 0 push x "rax"
+    p3 x eval x 0 push x "rax"
+    p3 x eval x 0 push x "rax"
+    p3 x eval x 0 push x "rax"
+    p3 x gt2 x "mov" "rax" "r9"
+    pop x "r8"
+    pop x "r10"
+    pop x "rdx"
+    pop x "rsi"
+    pop x "rdi"
+    pop x "rax"
+    gt0 x "syscall"
+    pop x "rsi"
+    pop x "rdi"
+    note x nnone x 0
+    1 } else
+  { token_eat x "poke"  then
     p3 x
     eval x 0
     push x "rax"
     p3 x
     eval x 0
-    pop x "rdi"
-    gs x "lea (%rdi,%rax),%rax" glf x
-    note x the type_argument the ctx_type x 1
+    pop x "rcx"
+    gt0 x "movb %al,(%rcx)"
+    note x nnone x 0
+    1 } else
+  { token_eat x "peek"  then
+    p3 x
+    eval x 0
+    gt0 x "movzb (%rax),%eax"
+    note x nnone x 0
     1 } else
   { token_eat x "cast" then
     ptype x is t
     p4 x
     eval x 0
-    gcast x
     note x t 0
     1 } else
-  { token_eat x "exit" then
-    p3 x
-    eval x 0
-    gt2 x "mov" "rax" "rdi"
-    gtlit x 60 "rax"
-    gt0 x "syscall"
-    note x nnone x 0
-    1 } else
-  { token_eat x "brk" then
-    p3 x
-    eval x 0
-    gt0 x "mov %rax,%rdi"
-    gtlit x 12 "rax"
-    gt0 x "syscall"
-    note x nptr x nbyte x 0
-    1 } else
-  { token_is_id x then
+  { isid first_byte then
     lookup x is xb
     (the ctx_is_type xb and diag x "not a variable")
     note x the ctx_type xb 1
@@ -570,10 +566,10 @@ p1 (x @byte) nat = {
   diag x "expected an expression"
 }
 
-p3 (x @byte) none = {
+p3 (x X) none = {
   p1 x
   1 for _
-  { (the type_kind the ctx_type x == 4) then
+  { (the type_kind the ctx_type x == typeid_func) then
     eval x 0
     the ctx_frame_len x is c
     0 is d
@@ -588,10 +584,8 @@ p3 (x @byte) none = {
     { the type_successor the type_argument t then
       the type_successor the type_argument t for u
       p3 x
-      (type_equal the ctx_type x u or diag x "alocal_symbolmetric argument")
+      (type_equal the ctx_type x u or diag x "asymmetric argument")
       eval x 0
-      { (the type_kind u == 6) then
-        gs x "add $" gn x ((-c + ((d > 6) ? (d - 5) 1)) << 3) gs x ",%rax" glf x }
       gs x "mov %rax," gn x off gs x "(%rsp)" glf x
       (off = off + 8)
       the type_successor u }
@@ -606,7 +600,7 @@ p3 (x @byte) none = {
     1 }
 }
 
-p4 (x @byte) none = {
+p4 (x X) none = {
   p3 x
   1 for _
   { token_eat x "?" then
@@ -625,19 +619,17 @@ p4 (x @byte) none = {
     1 }
 }
 
-logical (x @byte jc @(x @byte n nat) none p @(x @byte) none) none = {
+logical (x X jc @(x X n none) none p @(x X) none) none = {
   caret_hash x is n
   eval       x 0
   cz         x "rax"
   the jc     x n
-  push       x "rax"
   the p      x
   eval       x 0
-  pop        x (the type_kind the ctx_type x ? "rdx" "rax")
   label      x n
 }
 
-p5 (x @byte) none = {
+p5 (x X) none = {
   p4 x
   1 for _
   { token_eat x "ret" then
@@ -651,7 +643,7 @@ p5 (x @byte) none = {
   { token_eat x "is" then
     eval x 0
     push x "rax"
-    let x &p5
+    let x addr p5
     eval x 0
     pop x "rdx"
     note x the ctx_type x 0
@@ -664,7 +656,7 @@ p5 (x @byte) none = {
     label x n
     store x the ctx_type x "rsp"
     label x (n + 1)
-    let   x &p5
+    let   x addr p5
     eval x 0
     cz    x "rax"
     jne   x n
@@ -672,12 +664,12 @@ p5 (x @byte) none = {
     note  x the ctx_type x 0
     1 } else
   { token_eat x "then" then
-    logical x &je &p5
+    logical x addr je addr p5
     note x the ctx_type x 0
     1 } else
   { token_eat x "else" then
     the ctx_type x is t
-    logical x &jne &p5
+    logical x addr jne addr p5
     note x t 0
     1 } else
   { not token_is x "}" then
@@ -685,86 +677,77 @@ p5 (x @byte) none = {
     1 }
 }
 
-pmul (x @byte) none = {
+pmul (x X) none = {
   p4 x
   1 for _
-  { token_eat x "*" then g2ops x &p4 gmul x "rdi" 1 } else
-  { token_eat x "/" then g2ops x &p4 gdiv x       1 } else
-  { token_eat x "%" then g2ops x &p4 gmod x       1 }
+  { token_eat x "*" then g2ops x addr p4 gmul x "rcx" 1 } else
+  { token_eat x "/" then g2ops x addr p4 gdiv x       1 } else
+  { token_eat x "%" then g2ops x addr p4 gmod x       1 }
 }
 
-padd  (x @byte) none = {
+padd  (x X) none = {
   pmul x
   1 for _
-  { token_eat x "+" then g2ops x &pmul gadd x "rdi" "rax" 1 } else
-  { token_eat x "-" then g2ops x &pmul gsub x "rdi" "rax" 1 }
+  { token_eat x "+" then g2ops x addr pmul gadd x "rcx" "rax" 1 } else
+  { token_eat x "-" then g2ops x addr pmul gsub x "rcx" "rax" 1 }
 }
 
-psh (x @byte) none = {
+psh (x X) none = {
   padd x
   1 for _
-  { token_eat x "<<" then g2ops x &padd gshl x 1 } else
-  { token_eat x ">>" then g2ops x &padd gshr x 1 }
+  { token_eat x "<<" then g2ops x addr padd gshl x 1 } else
+  { token_eat x ">>" then g2ops x addr padd gshr x 1 }
 }
 
-pcmp (x @byte) none = {
+pcmp (x X) none = {
   psh x
   1 for _
-  { token_eat x "<"  then g2ops x &psh gb  x 1 } else
-  { token_eat x ">"  then g2ops x &psh ga  x 1 } else
-  { token_eat x "<=" then g2ops x &psh gbe x 1 } else
-  { token_eat x ">=" then g2ops x &psh gae x 1 } else
-  { token_eat x "==" then g2ops x &psh ge  x 1 } else
-  { token_eat x "!=" then g2ops x &psh gne x 1 }
+  { token_eat x "<"  then g2ops x addr psh gb  x 1 } else
+  { token_eat x ">"  then g2ops x addr psh ga  x 1 } else
+  { token_eat x "<=" then g2ops x addr psh gbe x 1 } else
+  { token_eat x ">=" then g2ops x addr psh gae x 1 } else
+  { token_eat x "==" then g2ops x addr psh ge  x 1 } else
+  { token_eat x "!=" then g2ops x addr psh gne x 1 }
 }
 
-pland (x @byte) none = {
+pland (x X) none = {
   pcmp x
   1 for _
   { token_eat x "and" then
-    logical x &je &pcmp
+    logical x addr je addr pcmp
     note x the ctx_type x 0
     1 }
 }
 
-plor (x @byte) none = {
+plor (x X) none = {
   pland x
   1 for _
   { token_eat x "or" then
     the ctx_type x is t
-    logical x &jne &pland
+    logical x addr jne addr pland
     note x t 0
     1 }
 }
 
-p7 (x @byte) none = {
+p6 (x X) none = {
   plor x
-  1 for _
-  { token_eat x "as" then
-    eval x 0
-    gcast x
-    note x ptype x 0
-    1 }
-}
-
-p8 (x @byte) none = {
-  p7 x
   1 for _
   { token_eat x "=" then
     the ctx_type x is t
     eval x 1
     push x "rax"
-    p7 x
+    plor x
+    (type_equal t the ctx_type x or diag x "asymmetric assignment")
     eval x 0
-    pop x "rdx"
-    store x t "rdx"
+    pop x "rcx"
+    store x t "rcx"
     note x nnone x 0
     1 }
 }
 
-stack_params(x @byte t @byte g nat) nat = {
+stack_params(x X t T g none) none = {
   not t ? { p4 x eval x 0 0 }
-    { alloc x ctx_size is xb
+    { cast X alloc x ctx_alloc_size is xb
       ctx_copy xb x 0 1 0
       (the ctx_token the ctx_successor x = the type_token t)
       (the ctx_token_len the ctx_successor x = the type_token_len t)
@@ -774,32 +757,32 @@ stack_params(x @byte t @byte g nat) nat = {
       (the ctx_successor x = the ctx_successor the ctx_successor x) }
 }
 
-register_params (x @byte t @byte g nat) nat = {
+register_params (x X t T g none) none = {
   not t ? { p4 x eval x 0 0 }
     { push x argreg g
-      alloc x ctx_size is xb
+      cast X alloc x ctx_alloc_size is xb
       ctx_copy xb x 0 1 0
       (the ctx_token the ctx_successor x = the type_token t)
       (the ctx_token_len the ctx_successor x = the type_token_len t)
       (the ctx_type the ctx_successor x = t)
-      (the ((g == 5) ? &stack_params &register_params) x the type_successor t (g + 1) + 1) ret
+      (the ((g == 5) ? addr stack_params addr register_params) x the type_successor t (g + 1) + 1) ret
       (the ctx_successor x = the ctx_successor the ctx_successor x) }
 }
 
-maybe (x @byte f @(x @byte) none) none = { f then the f x }
+maybe (x X f @(x X) none) none = { f then the f x }
 
-typed    (x @byte o @byte) none
-function (x @byte o @byte) none
+typed    (x X o X) none
+function (x X o X) none
 
-function_declaration (x @byte) none = lookup_push_scope x 0 0 0 &function
-type_declaration     (x @byte) none = lookup_push_scope x 1 0 0 &typed
+function_declaration (x X) none = lookup_push_scope x 0 0 0 addr function
+type_declaration     (x X) none = lookup_push_scope x 1 0 0 addr typed
 
-declaration (x @byte) @(x @byte) none = { the ctx_token x then token_eat x "type" ? &type_declaration &function_declaration }
+declaration (x X) @(x X) none = { the ctx_token x then token_eat x "type" ? addr type_declaration addr function_declaration }
 
-maybe_declaration (x @byte) none = maybe x declaration x
+maybe_declaration (x X) none = maybe x declaration x
 
-function (x @byte o @byte) none = {
-  param x ctx_type the ctx_successor x
+function (x X o X) none = {
+  pname x ctx_type the ctx_successor x
   (the ctx_is_def the ctx_successor x = token_is x "=")
   (not o or not the ctx_is_type o and not the ctx_is_def o and the ctx_is_def the ctx_successor x or diag x "remention")
   { the ctx_is_def the ctx_successor x then
@@ -808,33 +791,37 @@ function (x @byte o @byte) none = {
     token_advance x
     (the ctx_frame_len x = 0)
     register_params x the type_successor the type_argument the ctx_type the ctx_successor x 0 is stack
+    (type_equal the type_argument the ctx_type the ctx_successor x the ctx_type x or diag x "asymmetric return")
     gfpop x stack
     gt0 x "ret" }
   maybe_declaration x
 }
 
-typed (x @byte o @byte) none = {
-  param x ctx_type the ctx_successor x
+typed (x X o X) none = {
+  pname x ctx_type the ctx_successor x
   (o and diag x "remention")
   token_eat x ";" ? maybe_declaration x type_declaration x
 }
 
-compile (x @byte) none = {
+compile (x X) none = {
   gs x ".globl _start\n"
   token x
   maybe_declaration x
 }
 
-chat (x @byte) none = {
-  ioretry the ctx_inbuf x &elem (1 << 20) the ctx_inbuf x &ioread
-  the ctx_outbuf x is iq
+chat (x X) none = {
+  ioretry the ctx_inbuf x (the ctx_inbuf x + (1 << 20)) addr ioread is a
+  (a == -1 and diag x "read failed")
+  poke a 0
+  the ctx_outbuf x is q
   compile x
-  ioretry iq the ctx_outbuf x &iowrite
+  ioretry q the ctx_outbuf x addr iowrite is b
+  (b == -1 and diag x "write failed")
 }
 
-init_ctx(x @byte inbuf nat outbuf nat) none = {
-  (the ctx_curbrk    x = &elem ctx_size x)
-  (the ctx_successor x = 0                    )
+initialize(x X inbuf none outbuf none) none = {
+  (the ctx_curbrk    x = x + ctx_alloc_size   )
+  (the ctx_successor x = cast X 0             )
   (the ctx_inbuf     x = alloc x (1 << inbuf ))
   (the ctx_outbuf    x = alloc x (1 << outbuf))
   (the ctx_line_ptr  x = the ctx_inbuf x      )
@@ -842,6 +829,6 @@ init_ctx(x @byte inbuf nat outbuf nat) none = {
   (the ctx_col_no    x = 1                    )
 }
 
-main (x @byte) none = { init_ctx x 20 23 chat x }
+main (x X) none = { initialize x 20 23 chat x }
 
-_start ()    none = { main cast @byte initbrk (1 << 24) exit 0 }
+_start () none = { main cast X initbrk (1 << 24) sys 60 0 0 0 0 0 0 }
