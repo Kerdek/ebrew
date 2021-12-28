@@ -15,3 +15,13 @@ Possible use of this is inspection of files generated or debugging.
 The script always clears out the `ebtemp` directory if it exists before actually doing anything.
 
 > The script does minimal error checking. Its just for testing/automation purposes only.
+
+
+## Exporting ebrew to path
+
+Example:
+```sh
+$ make stage3
+$ cp stage3/ebrew $HOME/.local/bin/
+$ export PATH="$HOME/.local/bin:$PATH"
+```
