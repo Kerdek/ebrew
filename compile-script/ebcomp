@@ -1,0 +1,51 @@
+#!/bin/sh
+
+# simple shell script to compile ebrew programs
+# minimal error checking
+
+# do not change
+UNIT="unit.eb"
+ASM="unit.s"
+OBJ="unit.o"
+
+TMP="ebtemp"
+
+# changeable name
+OUT="a.out"
+
+if [ $# == 0 ];
+then
+   printf "%s\n" "Usage: ebcomp somefile.eb ..." 
+   exit
+fi
+
+# cleanup 
+if [ -d $TMP  ];
+then
+    rm -r $TMP
+fi
+
+# writes all argument files into a single unit file called unit.eb
+for FILE in "$@"; do
+    cat $FILE >> $UNIT
+done
+
+# check if ebrew is in path
+if ! command -v ebrew &> /dev/null
+then
+    printf "%s\n" "ebrew is not on path!"
+    exit
+fi
+
+# compile the unit.eb to unit.s
+cat $UNIT | ebrew > $ASM
+
+# generate object file using gas
+as $ASM -o $OBJ
+
+# generate executable using ld
+ld $OBJ -o $OUT
+
+# cleanup
+mkdir -p $TMP
+mv {$UNIT,$ASM,$OBJ} "$TMP/"
