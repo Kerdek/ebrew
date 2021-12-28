@@ -1,65 +1,195 @@
-initbrk (n none) none = { sys 12 0 0 0 0 0 0 is i sys 12 (i + n) 0 0 0 0 0 i }
+exit (exit_code $) $ __syscall 60 exit_code 0 0 0 0 0
 
-strlen(a none) none = { 0 for i peek (a + i) then (i + 1) }
+type
+  AllocSize    @#
+  ProgramBreak @#
+;
 
-memcpy (a none b none n none) none = {
+alloc_size (n $) AllocSize __cast AllocSize n
+
+initbrk (n AllocSize) ProgramBreak { __syscall 12 0 0 0 0 0 0 is i __syscall 12 (i + n) 0 0 0 0 0 __cast ProgramBreak i }
+
+strlen(a $) $ { 0 for i __peek (a + i) then (i + 1) }
+
+memcpy (a $ b $ n $) $ {
   n then
   n for m
-  poke a peek b
-  (a = a + 1)
-  (b = b + 1)
+  __poke a __peek b
+  __set __addr a (a + 1)
+  __set __addr b (b + 1)
   (m - 1)
 }
 
-memcmp(a none b none n none) none = {
+memcmp(a $ b $ n $) $ {
   1 is r
   { n then n for m
-    (peek a == peek b) ?
-      { (a = a + 1)
-        (b = b + 1)
+    __cond (__peek a == __peek b)
+      { __set __addr a (a + 1)
+        __set __addr b (b + 1)
         (m - 1) }
-      { (r = 0)
+      { __set __addr r 0
         0 } }
   r
 }
 
-strncmp(a none b none n none) none = {
+strncmp(a $ b $ n $) $ {
   1 is r
   { n then
     n for m
-    (peek a == peek b) ?
-      { peek a then
-        (a = a + 1)
-        (b = b + 1)
+    __cond (__peek a == __peek b)
+      { __peek a then
+        __set __addr a (a + 1)
+        __set __addr b (b + 1)
         (m - 1) }
-      { (r = 0)
+      { __set __addr r 0
         0 } }
   r
 }
 
-strcmp(a none b none) none = {
+strcmp(a $ b $) $ {
   1 is r
   { 1 for _
-    (peek a == peek b) ?
-      { peek a then
-        (a = a + 1)
-        (b = b + 1)
+    __cond (__peek a == __peek b)
+      { __peek a then
+        __set __addr a (a + 1)
+        __set __addr b (b + 1)
         1 }
-      { (r = 0)
+      { __set __addr r 0
         0 } }
   r
 }
 
-ioread  (p none n none) none = sys 0 0 p n 0 0 0
-iowrite (p none n none) none = sys 1 1 p n 0 0 0
-ioretry (p none q none io @(p none n none) none) none = {
+type
+  Buffer    @#
+  Stream    @#
+  InOut     (s Stream p Buffer n $) $
+  InBuffer  @#
+  OutBuffer @#
+  InStream  (p InBuffer  n $) $
+  OutStream (p OutBuffer n $) $
+;
+
+stdin  InStream  __syscall 0 0 p n 0 0 0
+stdout OutStream __syscall 1 1 p n 0 0 0
+stderr OutStream __syscall 1 2 p n 0 0 0
+
+in  InOut __cast InStream  s __cast InBuffer  p n
+out InOut __cast OutStream s __cast OutBuffer p n
+
+retry (io InOut s Stream p Buffer q Buffer) $ {
   0 is a
   { p for i
-    the io i (q - i) is n
-    (n == -1 and (a = -1))
-    (n and n != -1) then (i + n) } is b
+    io s i (q - i) is n
+    { __e n __neg 1 then __set __addr a __neg 1 }
+    n then (i + n) } is b
   (a or b)
 }
+
+retry_in  (s InStream  p InBuffer  q InBuffer ) $
+
+retry
+in
+__cast Stream __addr s
+__cast Buffer p
+__cast Buffer q
+
+retry_out (s OutStream p OutBuffer q OutBuffer) $
+
+retry
+out
+__cast Stream __addr s
+__cast Buffer p
+__cast Buffer q
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
