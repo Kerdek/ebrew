@@ -1,32 +1,27 @@
-EBREW_UNIT = lib.eh ebrew.eb
-
-BUILDING=stage3
-
-ifeq ($(BUILDING),stage1)
+ifeq ($(STAGE),stage1)
 BOOTSTRAP = bin
 else
-BOOTSTRAP_N != expr $(BUILDING:stage%=%) - 1
+BOOTSTRAP_N != expr $(STAGE:stage%=%) - 1
 BOOTSTRAP = stage$(BOOTSTRAP_N)
 endif
 
-
 ifeq ($(BOOTSTRAP),bin)
-bin/ebrew: .dummy
+bin/ebrew:
 else
-$(BOOTSTRAP)/ebrew: .dummy
-	@$(MAKE) -f build.mak --no-print-directory BUILDING=$(BOOTSTRAP) $(BOOTSTRAP)/ebrew
+$(BOOTSTRAP)/ebrew:
+	@$(MAKE) -f build.mak --no-print-directory STAGE=$(BOOTSTRAP) $(BOOTSTRAP)/ebrew
 endif
 
-$(BUILDING): .dummy
-	mkdir -p $(BUILDING)
+$(STAGE):
+	mkdir -p $(STAGE)
 
-$(BUILDING)/ebrew: $(BUILDING)/ebrew.o
-	ld -o $@ -m elf_x86_64 $^
+%ebrew: %ebrew.o
+	ld -o $@ $^
 
-%.o: %.s
+%ebrew.o: %ebrew.s
 	as -o $@ -c $^
 
-$(BUILDING)/ebrew.s: $(EBREW_UNIT) | $(BOOTSTRAP)/ebrew $(BUILDING)
+$(STAGE)/ebrew.s: lib.eh ebrew.eb | $(BOOTSTRAP)/ebrew $(STAGE)
 	cat $^ | $(BOOTSTRAP)/ebrew > $@
 
 .dummy:
