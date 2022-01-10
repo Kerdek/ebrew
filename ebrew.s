@@ -1430,20 +1430,19 @@ pop %rdi
 call *%rax
 add $16,%rsp
 ret
-.section .text.caret_next_is
-caret_next_is:
+.section .text.check_eof
+check_eof:
 push %rdi
-push %rsi
 mov caret_byte@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
-mov 24(%rsp),%rax
+mov 16(%rsp),%rax
 mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
 test %rax,%rax
-jne l15100001400$
+jne l15100000700$
 mov exit@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -1452,7 +1451,21 @@ mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-l15100001400$:
+l15100000700$:
+add $8,%rsp
+ret
+.section .text.caret_next_is
+caret_next_is:
+push %rdi
+push %rsi
+mov check_eof@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
 mov cmpe@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -1500,7 +1513,7 @@ ret
 .section .text.caret_advance
 caret_advance:
 push %rdi
-mov caret_byte@GOTPCREL(%rip),%rax
+mov check_eof@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
 mov 16(%rsp),%rax
@@ -1508,17 +1521,6 @@ mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-test %rax,%rax
-jne l15500002600$
-mov exit@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov $3,%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-l15500002600$:
 mov store@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -1580,7 +1582,7 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-je l15700001400$
+je l16000001400$
 mov store@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -1641,8 +1643,8 @@ pop %rax
 pop %rdi
 pop %rsi
 call *%rax
-jmp l15700001401$
-l15700001400$:
+jmp l16000001401$
+l16000001400$:
 mov store@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -1685,7 +1687,7 @@ pop %rax
 pop %rdi
 pop %rsi
 call *%rax
-l15700001401$:
+l16000001401$:
 add $8,%rsp
 ret
 .section .text.caret_eat
@@ -1711,7 +1713,7 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-je l16400000400$
+je l16700000400$
 mov caret_advance@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -1721,7 +1723,7 @@ pop %rax
 pop %rdi
 call *%rax
 mov $1,%rax
-l16400000400$:
+l16700000400$:
 add $16,%rsp
 ret
 .section .text.caret_eat_by
@@ -1744,7 +1746,7 @@ pop %rax
 pop %rdi
 call *%rax
 test %rax,%rax
-je l16900000400$
+je l17200000400$
 mov caret_advance@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -1754,7 +1756,7 @@ pop %rax
 pop %rdi
 call *%rax
 mov $1,%rax
-l16900000400$:
+l17200000400$:
 add $16,%rsp
 ret
 .section .text.caret_eat_for
@@ -1777,13 +1779,13 @@ pop %rax
 pop %rdi
 call *%rax
 test %rax,%rax
-je l17400000900$
+je l17700000900$
 mov $1,%rax
 push %rax
-jmp l17400001101$
-l17400001100$:
+jmp l17700001101$
+l17700001100$:
 mov %rax,(%rsp)
-l17400001101$:
+l17700001101$:
 mov caret_eat_by@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -1796,9 +1798,9 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-jne l17400001100$
+jne l17700001100$
 pop %rax
-l17400000900$:
+l17700000900$:
 add $16,%rsp
 ret
 .section .text.ws
@@ -1806,10 +1808,10 @@ ws:
 push %rdi
 mov $1,%rax
 push %rax
-jmp l17900001101$
-l17900001100$:
+jmp l18200001101$
+l18200001100$:
 mov %rax,(%rsp)
-l17900001101$:
+l18200001101$:
 mov caret_eat@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -1822,13 +1824,13 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-je l18100001700$
+je l18400001700$
 mov $1,%rax
 push %rax
-jmp l18100001901$
-l18100001900$:
+jmp l18400001901$
+l18400001900$:
 mov %rax,(%rsp)
-l18100001901$:
+l18400001901$:
 mov not@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -1848,7 +1850,7 @@ pop %rax
 pop %rdi
 call *%rax
 test %rax,%rax
-je l18300003100$
+je l18600003100$
 mov caret_advance@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -1857,13 +1859,13 @@ mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-l18300003100$:
+l18600003100$:
 test %rax,%rax
-jne l18100001900$
+jne l18400001900$
 pop %rax
-l18100001700$:
+l18400001700$:
 test %rax,%rax
-jne l18400002600$
+jne l18700002600$
 mov caret_eat_by@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -1875,9 +1877,9 @@ pop %rax
 pop %rdi
 pop %rsi
 call *%rax
-l18400002600$:
+l18700002600$:
 test %rax,%rax
-jne l17900001100$
+jne l18200001100$
 pop %rax
 mov not@GOTPCREL(%rip),%rax
 add $-8,%rsp
@@ -1895,7 +1897,7 @@ pop %rax
 pop %rdi
 call *%rax
 test %rax,%rax
-je l18600001200$
+je l18900001200$
 mov store@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -1908,7 +1910,7 @@ pop %rdi
 pop %rsi
 call *%rax
 mov $1,%rax
-l18600001200$:
+l18900001200$:
 add $8,%rsp
 ret
 .section .text.id
@@ -1958,19 +1960,19 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-je l19700000800$
+je l20000000800$
 mov $1,%rax
 push %rax
-jmp l19700001501$
-l19700001500$:
+jmp l20000001501$
+l20000001500$:
 mov %rax,(%rsp)
-l19700001501$:
+l20000001501$:
 mov $1,%rax
 push %rax
-jmp l19800001901$
-l19800001900$:
+jmp l20100001901$
+l20100001900$:
 mov %rax,(%rsp)
-l19800001901$:
+l20100001901$:
 mov caret_eat@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -1983,7 +1985,7 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-je l20000003100$
+je l20300003100$
 mov caret_advance@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -1992,9 +1994,9 @@ mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-l20000003100$:
+l20300003100$:
 test %rax,%rax
-jne l19800001900$
+jne l20100001900$
 pop %rax
 mov not@GOTPCREL(%rip),%rax
 add $-8,%rsp
@@ -2022,7 +2024,7 @@ pop %rax
 pop %rdi
 call *%rax
 test %rax,%rax
-je l20200002700$
+je l20500002700$
 mov caret_advance@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -2031,9 +2033,9 @@ mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-l20200002700$:
+l20500002700$:
 test %rax,%rax
-jne l19700001500$
+jne l20000001500$
 pop %rax
 mov caret_advance@GOTPCREL(%rip),%rax
 add $-8,%rsp
@@ -2043,7 +2045,7 @@ mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-l19700000800$:
+l20000000800$:
 add $8,%rsp
 ret
 .section .text.char
@@ -2061,7 +2063,7 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-je l20700000800$
+je l21000000800$
 mov caret_eat@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -2093,7 +2095,7 @@ pop %rdi
 pop %rsi
 call *%rax
 mov $1,%rax
-l20700000800$:
+l21000000800$:
 add $8,%rsp
 ret
 .section .text.punct
@@ -2111,7 +2113,7 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-jne l21400000400$
+jne l21700000400$
 mov caret_eat@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -2124,7 +2126,7 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-jne l21500001500$
+jne l21800001500$
 mov caret_eat@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -2136,8 +2138,8 @@ pop %rax
 pop %rdi
 pop %rsi
 call *%rax
-l21500001500$:
-l21400000400$:
+l21800001500$:
+l21700000400$:
 add $8,%rsp
 ret
 .section .text.next
@@ -2152,7 +2154,7 @@ pop %rax
 pop %rdi
 call *%rax
 test %rax,%rax
-jne l22300001000$
+jne l22600001000$
 mov exit@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -2161,7 +2163,7 @@ mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-l22300001000$:
+l22600001000$:
 mov ws@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -2171,7 +2173,7 @@ pop %rax
 pop %rdi
 call *%rax
 test %rax,%rax
-jne l22500000500$
+jne l22800000500$
 mov load@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -2197,7 +2199,7 @@ pop %rax
 pop %rdi
 call *%rax
 test %rax,%rax
-jne l22700000800$
+jne l23000000800$
 mov string@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -2207,7 +2209,7 @@ pop %rax
 pop %rdi
 call *%rax
 test %rax,%rax
-jne l22800000800$
+jne l23100000800$
 mov char@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -2217,7 +2219,7 @@ pop %rax
 pop %rdi
 call *%rax
 test %rax,%rax
-jne l22900000800$
+jne l23200000800$
 mov id@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -2227,7 +2229,7 @@ pop %rax
 pop %rdi
 call *%rax
 test %rax,%rax
-jne l23000000800$
+jne l23300000800$
 mov punct@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -2237,7 +2239,7 @@ pop %rax
 pop %rdi
 call *%rax
 test %rax,%rax
-jne l23200001300$
+jne l23500001300$
 mov exit@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -2246,11 +2248,11 @@ mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-l23200001300$:
+l23500001300$:
+l23300000800$:
+l23200000800$:
+l23100000800$:
 l23000000800$:
-l22900000800$:
-l22800000800$:
-l22700000800$:
 mov store@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -2305,7 +2307,7 @@ pop %rdi
 pop %rsi
 call *%rax
 add $8,%rsp
-l22500000500$:
+l22800000500$:
 add $8,%rsp
 ret
 .section .text.have
@@ -2321,7 +2323,7 @@ pop %rax
 pop %rdi
 call *%rax
 test %rax,%rax
-je l23800000500$
+je l24100000500$
 mov memcmp@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
@@ -2358,7 +2360,7 @@ pop %rsi
 pop %rdx
 call *%rax
 test %rax,%rax
-je l23900000900$
+je l24200000900$
 mov not@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -2398,8 +2400,8 @@ mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-l23900000900$:
-l23800000500$:
+l24200000900$:
+l24100000500$:
 add $16,%rsp
 ret
 .section .text.have_lit
@@ -2468,7 +2470,7 @@ call *%rax
 push %rax
 mov 0(%rsp),%rax
 test %rax,%rax
-je l25300001000$
+je l25600001000$
 mov next@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -2477,7 +2479,7 @@ mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-l25300001000$:
+l25600001000$:
 mov 0(%rsp),%rax
 add $8,%rsp
 add $16,%rsp
@@ -2590,7 +2592,7 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-jne l26300000900$
+jne l26600000900$
 mov not@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -2640,7 +2642,7 @@ mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-l26300000900$:
+l26600000900$:
 add $16,%rsp
 ret
 .section .text.verbatim
@@ -2689,10 +2691,10 @@ pop %rax
 pop %rdi
 call *%rax
 push %rax
-jmp l27000001001$
-l27000001000$:
+jmp l27300001001$
+l27300001000$:
 mov %rax,(%rsp)
-l27000001001$:
+l27300001001$:
 mov cmpa@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -2705,7 +2707,7 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-je l27200000400$
+je l27500000400$
 mov put_byte@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -2735,9 +2737,9 @@ pop %rax
 pop %rdi
 pop %rsi
 call *%rax
-l27200000400$:
+l27500000400$:
 test %rax,%rax
-jne l27000001000$
+jne l27300001000$
 pop %rax
 add $8,%rsp
 add $16,%rsp
@@ -2863,20 +2865,20 @@ add $-32,%rsp
 push %rax
 mov 40(%rsp),%rax
 mov %rax,8(%rsp)
-.section .text..s29300001800
-.s29300001800:.string "test"
+.section .text..s29600001800
+.s29600001800:.string "test"
 .previous
-mov .s29300001800@GOTPCREL(%rip),%rax
+mov .s29600001800@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
-.section .text..s29300002500
-.s29300002500:.string "%rax"
+.section .text..s29600002500
+.s29600002500:.string "%rax"
 .previous
-mov .s29300002500@GOTPCREL(%rip),%rax
+mov .s29600002500@GOTPCREL(%rip),%rax
 mov %rax,24(%rsp)
-.section .text..s29400000100
-.s29400000100:.string "%rax"
+.section .text..s29700000100
+.s29700000100:.string "%rax"
 .previous
-mov .s29400000100@GOTPCREL(%rip),%rax
+mov .s29700000100@GOTPCREL(%rip),%rax
 mov %rax,32(%rsp)
 pop %rax
 pop %rdi
@@ -2988,10 +2990,10 @@ add $-16,%rsp
 push %rax
 mov 32(%rsp),%rax
 mov %rax,8(%rsp)
-.section .text..s30800000100
-.s30800000100:.string ":\n"
+.section .text..s31100000100
+.s31100000100:.string ":\n"
 .previous
-mov .s30800000100@GOTPCREL(%rip),%rax
+mov .s31100000100@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
@@ -3010,10 +3012,10 @@ mov 40(%rsp),%rax
 mov %rax,8(%rsp)
 mov 32(%rsp),%rax
 mov %rax,16(%rsp)
-.section .text..s31100000100
-.s31100000100:.string "jmp"
+.section .text..s31400000100
+.s31400000100:.string "jmp"
 .previous
-mov .s31100000100@GOTPCREL(%rip),%rax
+mov .s31400000100@GOTPCREL(%rip),%rax
 mov %rax,24(%rsp)
 pop %rax
 pop %rdi
@@ -3033,10 +3035,10 @@ mov 40(%rsp),%rax
 mov %rax,8(%rsp)
 mov 32(%rsp),%rax
 mov %rax,16(%rsp)
-.section .text..s31400000100
-.s31400000100:.string "je"
+.section .text..s31700000100
+.s31700000100:.string "je"
 .previous
-mov .s31400000100@GOTPCREL(%rip),%rax
+mov .s31700000100@GOTPCREL(%rip),%rax
 mov %rax,24(%rsp)
 pop %rax
 pop %rdi
@@ -3056,10 +3058,10 @@ mov 40(%rsp),%rax
 mov %rax,8(%rsp)
 mov 32(%rsp),%rax
 mov %rax,16(%rsp)
-.section .text..s31700000100
-.s31700000100:.string "jne"
+.section .text..s32000000100
+.s32000000100:.string "jne"
 .previous
-mov .s31700000100@GOTPCREL(%rip),%rax
+mov .s32000000100@GOTPCREL(%rip),%rax
 mov %rax,24(%rsp)
 pop %rax
 pop %rdi
@@ -3076,10 +3078,10 @@ add $-16,%rsp
 push %rax
 mov 24(%rsp),%rax
 mov %rax,8(%rsp)
-.section .text..s32000000100
-.s32000000100:.string "@GOTPCREL(%rip),%rax\n"
+.section .text..s32300000100
+.s32300000100:.string "@GOTPCREL(%rip),%rax\n"
 .previous
-mov .s32000000100@GOTPCREL(%rip),%rax
+mov .s32300000100@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
@@ -3097,10 +3099,10 @@ add $-16,%rsp
 push %rax
 mov 40(%rsp),%rax
 mov %rax,8(%rsp)
-.section .text..s32300000100
-.s32300000100:.string ".section .text..s"
+.section .text..s32600000100
+.s32600000100:.string ".section .text..s"
 .previous
-mov .s32300000100@GOTPCREL(%rip),%rax
+mov .s32600000100@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
@@ -3122,10 +3124,10 @@ add $-16,%rsp
 push %rax
 mov 40(%rsp),%rax
 mov %rax,8(%rsp)
-.section .text..s32500000100
-.s32500000100:.string "\n.s"
+.section .text..s32800000100
+.s32800000100:.string "\n.s"
 .previous
-mov .s32500000100@GOTPCREL(%rip),%rax
+mov .s32800000100@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
@@ -3147,10 +3149,10 @@ add $-16,%rsp
 push %rax
 mov 40(%rsp),%rax
 mov %rax,8(%rsp)
-.section .text..s32700000100
-.s32700000100:.string ":.string "
+.section .text..s33000000100
+.s33000000100:.string ":.string "
 .previous
-mov .s32700000100@GOTPCREL(%rip),%rax
+mov .s33000000100@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
@@ -3172,10 +3174,10 @@ add $-16,%rsp
 push %rax
 mov 40(%rsp),%rax
 mov %rax,8(%rsp)
-.section .text..s32900000100
-.s32900000100:.string "\n.previous\n"
+.section .text..s33200000100
+.s33200000100:.string "\n.previous\n"
 .previous
-mov .s32900000100@GOTPCREL(%rip),%rax
+mov .s33200000100@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
@@ -3192,10 +3194,10 @@ add $-16,%rsp
 push %rax
 mov 32(%rsp),%rax
 mov %rax,8(%rsp)
-.section .text..s33100002900
-.s33100002900:.string "mov .s"
+.section .text..s33400002900
+.s33400002900:.string "mov .s"
 .previous
-mov .s33100002900@GOTPCREL(%rip),%rax
+mov .s33400002900@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
@@ -3615,7 +3617,7 @@ push %rdx
 push %rcx
 mov 16(%rsp),%rax
 test %rax,%rax
-je l36100000400$
+je l36400000400$
 mov put_string@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -3674,10 +3676,10 @@ pop %rax
 pop %rdi
 call *%rax
 mov %rax,8(%rsp)
-.section .text..s36400000100
-.s36400000100:.string ",%rsp\n"
+.section .text..s36700000100
+.s36700000100:.string ",%rsp\n"
 .previous
-mov .s36400000100@GOTPCREL(%rip),%rax
+mov .s36700000100@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
@@ -3725,7 +3727,7 @@ pop %rax
 pop %rdi
 pop %rsi
 call *%rax
-l36100000400$:
+l36400000400$:
 add $32,%rsp
 ret
 .section .text.pushpop
@@ -3810,10 +3812,10 @@ mov 48(%rsp),%rax
 mov %rax,8(%rsp)
 mov 40(%rsp),%rax
 mov %rax,16(%rsp)
-.section .text..s37100002500
-.s37100002500:.string "add $"
+.section .text..s37400002500
+.s37400002500:.string "add $"
 .previous
-mov .s37100002500@GOTPCREL(%rip),%rax
+mov .s37400002500@GOTPCREL(%rip),%rax
 mov %rax,24(%rsp)
 mov add@GOTPCREL(%rip),%rax
 mov %rax,32(%rsp)
@@ -3836,10 +3838,10 @@ mov 48(%rsp),%rax
 mov %rax,8(%rsp)
 mov 40(%rsp),%rax
 mov %rax,16(%rsp)
-.section .text..s37400002600
-.s37400002600:.string "add $-"
+.section .text..s37700002600
+.s37700002600:.string "add $-"
 .previous
-mov .s37400002600@GOTPCREL(%rip),%rax
+mov .s37700002600@GOTPCREL(%rip),%rax
 mov %rax,24(%rsp)
 mov sub@GOTPCREL(%rip),%rax
 mov %rax,32(%rsp)
@@ -4351,13 +4353,13 @@ call *%rax
 push %rax
 mov 0(%rsp),%rax
 test %rax,%rax
-je l41300000900$
+je l41600000900$
 mov 0(%rsp),%rax
 push %rax
-jmp l41300001401$
-l41300001400$:
+jmp l41600001401$
+l41600001400$:
 mov %rax,(%rsp)
-l41300001401$:
+l41600001401$:
 mov cmp_token@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -4384,7 +4386,7 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-je l41400001900$
+je l41700001900$
 mov load@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -4393,8 +4395,8 @@ mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-jmp l41400001901$
-l41400001900$:
+jmp l41700001901$
+l41700001900$:
 mov store@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -4407,11 +4409,11 @@ pop %rdi
 pop %rsi
 call *%rax
 mov $0,%rax
-l41400001901$:
+l41700001901$:
 test %rax,%rax
-jne l41300001400$
+jne l41600001400$
 pop %rax
-l41300000900$:
+l41600000900$:
 mov 8(%rsp),%rax
 add $8,%rsp
 add $8,%rsp
@@ -4429,7 +4431,7 @@ pop %rax
 pop %rdi
 call *%rax
 test %rax,%rax
-jne l42300001000$
+jne l42600001000$
 mov exit@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -4438,7 +4440,7 @@ mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-l42300001000$:
+l42600001000$:
 add $8,%rsp
 ret
 .section .text.new_type
@@ -4532,13 +4534,13 @@ mov $0,%rax
 push %rax
 mov 8(%rsp),%rax
 test %rax,%rax
-je l43700000900$
+je l44000000900$
 mov 8(%rsp),%rax
 push %rax
-jmp l43700001101$
-l43700001100$:
+jmp l44000001101$
+l44000001100$:
 mov %rax,(%rsp)
-l43700001101$:
+l44000001101$:
 mov store@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -4569,9 +4571,9 @@ pop %rax
 pop %rdi
 call *%rax
 test %rax,%rax
-jne l43700001100$
+jne l44000001100$
 pop %rax
-l43700000900$:
+l44000000900$:
 mov 0(%rsp),%rax
 add $8,%rsp
 add $8,%rsp
@@ -4582,10 +4584,10 @@ push %rdi
 push %rsi
 mov 8(%rsp),%rax
 test %rax,%rax
-je l44400000500$
+je l44700000500$
 mov 0(%rsp),%rax
 test %rax,%rax
-je l44500000400$
+je l44800000400$
 mov cmpe@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -4598,7 +4600,7 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-jne l44600000500$
+jne l44900000500$
 mov load@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -4643,7 +4645,7 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-je l44900000400$
+je l45200000400$
 mov store@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -4696,10 +4698,10 @@ pop %rsi
 call *%rax
 mov $1,%rax
 push %rax
-jmp l45100001101$
-l45100001100$:
+jmp l45400001101$
+l45400001100$:
 mov %rax,(%rsp)
-l45100001101$:
+l45400001101$:
 mov type_equal@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -4712,7 +4714,7 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-je l45300000800$
+je l45600000800$
 mov store@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -4750,9 +4752,9 @@ pop %rdi
 pop %rsi
 call *%rax
 mov $1,%rax
-l45300000800$:
+l45600000800$:
 test %rax,%rax
-jne l45100001100$
+jne l45400001100$
 pop %rax
 mov cmpe@GOTPCREL(%rip),%rax
 add $-16,%rsp
@@ -4765,12 +4767,12 @@ pop %rax
 pop %rdi
 pop %rsi
 call *%rax
-l44900000400$:
+l45200000400$:
 add $8,%rsp
 add $8,%rsp
-l44600000500$:
-l44500000400$:
-l44400000500$:
+l44900000500$:
+l44800000400$:
+l44700000500$:
 add $16,%rsp
 ret
 .section .text.stack_offset
@@ -4974,10 +4976,10 @@ mov 48(%rsp),%rax
 mov %rax,8(%rsp)
 mov 40(%rsp),%rax
 mov %rax,16(%rsp)
-.section .text..s47900002100
-.s47900002100:.string "pop"
+.section .text..s48200002100
+.s48200002100:.string "pop"
 .previous
-mov .s47900002100@GOTPCREL(%rip),%rax
+mov .s48200002100@GOTPCREL(%rip),%rax
 mov %rax,24(%rsp)
 mov add@GOTPCREL(%rip),%rax
 mov %rax,32(%rsp)
@@ -5000,10 +5002,10 @@ mov 48(%rsp),%rax
 mov %rax,8(%rsp)
 mov 40(%rsp),%rax
 mov %rax,16(%rsp)
-.section .text..s48200002200
-.s48200002200:.string "push"
+.section .text..s48500002200
+.s48500002200:.string "push"
 .previous
-mov .s48200002200@GOTPCREL(%rip),%rax
+mov .s48500002200@GOTPCREL(%rip),%rax
 mov %rax,24(%rsp)
 mov sub@GOTPCREL(%rip),%rax
 mov %rax,32(%rsp)
@@ -5032,10 +5034,10 @@ pop %rax
 pop %rdi
 call *%rax
 mov %rax,8(%rsp)
-.section .text..s48600000100
-.s48600000100:.string "lea "
+.section .text..s48900000100
+.s48900000100:.string "lea "
 .previous
-mov .s48600000100@GOTPCREL(%rip),%rax
+mov .s48900000100@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
@@ -5098,10 +5100,10 @@ pop %rax
 pop %rdi
 call *%rax
 mov %rax,8(%rsp)
-.section .text..s48800000100
-.s48800000100:.string "(%rsp),%rax\n"
+.section .text..s49100000100
+.s49100000100:.string "(%rsp),%rax\n"
 .previous
-mov .s48800000100@GOTPCREL(%rip),%rax
+mov .s49100000100@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
@@ -5206,10 +5208,10 @@ add $-16,%rsp
 push %rax
 mov 32(%rsp),%rax
 mov %rax,8(%rsp)
-.section .text..s49800000100
-.s49800000100:.string "%rax"
+.section .text..s50100000100
+.s50100000100:.string "%rax"
 .previous
-mov .s49800000100@GOTPCREL(%rip),%rax
+mov .s50100000100@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
@@ -5291,10 +5293,10 @@ add $-16,%rsp
 push %rax
 mov 48(%rsp),%rax
 mov %rax,8(%rsp)
-.section .text..s50600000100
-.s50600000100:.string "%rax"
+.section .text..s50900000100
+.s50900000100:.string "%rax"
 .previous
-mov .s50600000100@GOTPCREL(%rip),%rax
+mov .s50900000100@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
@@ -5348,20 +5350,20 @@ pop %rax
 pop %rdi
 call *%rax
 mov %rax,8(%rsp)
-.section .text..s50800002400
-.s50800002400:.string "mov"
+.section .text..s51100002400
+.s51100002400:.string "mov"
 .previous
-mov .s50800002400@GOTPCREL(%rip),%rax
+mov .s51100002400@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
-.section .text..s50800003100
-.s50800003100:.string "%rax"
+.section .text..s51100003100
+.s51100003100:.string "%rax"
 .previous
-mov .s50800003100@GOTPCREL(%rip),%rax
+mov .s51100003100@GOTPCREL(%rip),%rax
 mov %rax,24(%rsp)
-.section .text..s50900000100
-.s50900000100:.string "(%rsp)"
+.section .text..s51200000100
+.s51200000100:.string "(%rsp)"
 .previous
-mov .s50900000100@GOTPCREL(%rip),%rax
+mov .s51200000100@GOTPCREL(%rip),%rax
 mov %rax,32(%rsp)
 pop %rax
 pop %rdi
@@ -5439,10 +5441,10 @@ add $-16,%rsp
 push %rax
 mov 48(%rsp),%rax
 mov %rax,8(%rsp)
-.section .text..s51400000100
-.s51400000100:.string "%rax"
+.section .text..s51700000100
+.s51700000100:.string "%rax"
 .previous
-mov .s51400000100@GOTPCREL(%rip),%rax
+mov .s51700000100@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
@@ -5748,10 +5750,10 @@ pop %rax
 pop %rdi
 call *%rax
 mov %rax,8(%rsp)
-.section .text..s54000000100
-.s54000000100:.string "mov $"
+.section .text..s54300000100
+.s54300000100:.string "mov $"
 .previous
-mov .s54000000100@GOTPCREL(%rip),%rax
+mov .s54300000100@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
@@ -5794,10 +5796,10 @@ pop %rax
 pop %rdi
 call *%rax
 mov %rax,8(%rsp)
-.section .text..s54200000100
-.s54200000100:.string ",%rax\n"
+.section .text..s54500000100
+.s54500000100:.string ",%rax\n"
 .previous
-mov .s54200000100@GOTPCREL(%rip),%rax
+mov .s54500000100@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
@@ -6006,10 +6008,10 @@ pop %rax
 pop %rdi
 call *%rax
 mov %rax,8(%rsp)
-.section .text..s55400000100
-.s55400000100:.string "mov "
+.section .text..s55700000100
+.s55700000100:.string "mov "
 .previous
-mov .s55400000100@GOTPCREL(%rip),%rax
+mov .s55700000100@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
@@ -6031,7 +6033,7 @@ pop %rax
 pop %rdi
 call *%rax
 test %rax,%rax
-je l55400001400$
+je l55700001400$
 mov put_number@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -6082,17 +6084,17 @@ pop %rax
 pop %rdi
 call *%rax
 mov %rax,8(%rsp)
-.section .text..s55700000100
-.s55700000100:.string "(%rsp),%rax\n"
+.section .text..s56000000100
+.s56000000100:.string "(%rsp),%rax\n"
 .previous
-mov .s55700000100@GOTPCREL(%rip),%rax
+mov .s56000000100@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
 pop %rsi
 call *%rax
-jmp l55400001401$
-l55400001400$:
+jmp l55700001401$
+l55700001400$:
 mov verbatim@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -6133,7 +6135,7 @@ mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-l55400001401$:
+l55700001401$:
 mov store@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -6199,14 +6201,14 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-je l56600000100$
-.section .text..s56600000100
-.s56600000100:.string "%rdi"
+je l56900000100$
+.section .text..s56900000100
+.s56900000100:.string "%rdi"
 .previous
-mov .s56600000100@GOTPCREL(%rip),%rax
-l56600000100$:
+mov .s56900000100@GOTPCREL(%rip),%rax
+l56900000100$:
 test %rax,%rax
-jne l56600000400$
+jne l56900000400$
 mov cmpe@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -6219,14 +6221,14 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-je l56700000100$
-.section .text..s56700000100
-.s56700000100:.string "%rsi"
+je l57000000100$
+.section .text..s57000000100
+.s57000000100:.string "%rsi"
 .previous
-mov .s56700000100@GOTPCREL(%rip),%rax
-l56700000100$:
+mov .s57000000100@GOTPCREL(%rip),%rax
+l57000000100$:
 test %rax,%rax
-jne l56700000400$
+jne l57000000400$
 mov cmpe@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -6239,14 +6241,14 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-je l56800000100$
-.section .text..s56800000100
-.s56800000100:.string "%rdx"
+je l57100000100$
+.section .text..s57100000100
+.s57100000100:.string "%rdx"
 .previous
-mov .s56800000100@GOTPCREL(%rip),%rax
-l56800000100$:
+mov .s57100000100@GOTPCREL(%rip),%rax
+l57100000100$:
 test %rax,%rax
-jne l56800000400$
+jne l57100000400$
 mov cmpe@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -6259,14 +6261,14 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-je l56900000100$
-.section .text..s56900000100
-.s56900000100:.string "%rcx"
+je l57200000100$
+.section .text..s57200000100
+.s57200000100:.string "%rcx"
 .previous
-mov .s56900000100@GOTPCREL(%rip),%rax
-l56900000100$:
+mov .s57200000100@GOTPCREL(%rip),%rax
+l57200000100$:
 test %rax,%rax
-jne l56900000400$
+jne l57200000400$
 mov cmpe@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -6279,23 +6281,23 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-je l57000000100$
-.section .text..s57000000100
-.s57000000100:.string "%r8"
+je l57300000100$
+.section .text..s57300000100
+.s57300000100:.string "%r8"
 .previous
-mov .s57000000100@GOTPCREL(%rip),%rax
-l57000000100$:
+mov .s57300000100@GOTPCREL(%rip),%rax
+l57300000100$:
 test %rax,%rax
-jne l57100000100$
-.section .text..s57100000100
-.s57100000100:.string "%r9"
+jne l57400000100$
+.section .text..s57400000100
+.s57400000100:.string "%r9"
 .previous
-mov .s57100000100@GOTPCREL(%rip),%rax
-l57100000100$:
+mov .s57400000100@GOTPCREL(%rip),%rax
+l57400000100$:
+l57200000400$:
+l57100000400$:
+l57000000400$:
 l56900000400$:
-l56800000400$:
-l56700000400$:
-l56600000400$:
 add $8,%rsp
 ret
 .section .text.gen_arg
@@ -6314,10 +6316,10 @@ pop %rax
 pop %rdi
 call *%rax
 mov %rax,8(%rsp)
-.section .text..s57400000100
-.s57400000100:.string "mov %rax,"
+.section .text..s57700000100
+.s57700000100:.string "mov %rax,"
 .previous
-mov .s57400000100@GOTPCREL(%rip),%rax
+mov .s57700000100@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
@@ -6370,10 +6372,10 @@ pop %rax
 pop %rdi
 call *%rax
 mov %rax,8(%rsp)
-.section .text..s57600000100
-.s57600000100:.string "(%rsp)\n"
+.section .text..s57900000100
+.s57900000100:.string "(%rsp)\n"
 .previous
-mov .s57600000100@GOTPCREL(%rip),%rax
+mov .s57900000100@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
@@ -6442,13 +6444,13 @@ mov $1,%rax
 push %rax
 mov 8(%rsp),%rax
 test %rax,%rax
-je l58600000500$
+je l58900000500$
 mov 8(%rsp),%rax
 push %rax
-jmp l58600001601$
-l58600001600$:
+jmp l58900001601$
+l58900001600$:
 mov %rax,(%rsp)
-l58600001601$:
+l58900001601$:
 mov 32(%rsp),%rax
 add $-16,%rsp
 push %rax
@@ -6486,7 +6488,7 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-jne l59000001400$
+jne l59300001400$
 mov exit@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -6495,7 +6497,7 @@ mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-l59000001400$:
+l59300001400$:
 mov gen_arg@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -6516,9 +6518,9 @@ pop %rax
 pop %rdi
 call *%rax
 test %rax,%rax
-jne l58600001600$
+jne l58900001600$
 pop %rax
-l58600000500$:
+l58900000500$:
 add $8,%rsp
 add $24,%rsp
 ret
@@ -6544,10 +6546,10 @@ add $-16,%rsp
 push %rax
 mov 40(%rsp),%rax
 mov %rax,8(%rsp)
-.section .text..s59700000100
-.s59700000100:.string "%rax"
+.section .text..s60000000100
+.s60000000100:.string "%rax"
 .previous
-mov .s59700000100@GOTPCREL(%rip),%rax
+mov .s60000000100@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
@@ -6572,10 +6574,10 @@ add $-16,%rsp
 push %rax
 mov 40(%rsp),%rax
 mov %rax,8(%rsp)
-.section .text..s59900000100
-.s59900000100:.string "%rax"
+.section .text..s60200000100
+.s60200000100:.string "%rax"
 .previous
-mov .s59900000100@GOTPCREL(%rip),%rax
+mov .s60200000100@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
@@ -6830,17 +6832,17 @@ pop %rax
 pop %rdi
 call *%rax
 mov %rax,8(%rsp)
-.section .text..s62500000100
-.s62500000100:.string "("
+.section .text..s62800000100
+.s62800000100:.string "("
 .previous
-mov .s62500000100@GOTPCREL(%rip),%rax
+mov .s62800000100@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-je l62400000900$
+je l62700000900$
 mov new_type@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -6862,10 +6864,10 @@ pop %rax
 pop %rdi
 call *%rax
 push %rax
-jmp l62600001801$
-l62600001800$:
+jmp l62900001801$
+l62900001800$:
 mov %rax,(%rsp)
-l62600001801$:
+l62900001801$:
 mov not@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -6881,10 +6883,10 @@ pop %rax
 pop %rdi
 call *%rax
 mov %rax,8(%rsp)
-.section .text..s62800000100
-.s62800000100:.string ")"
+.section .text..s63100000100
+.s63100000100:.string ")"
 .previous
-mov .s62800000100@GOTPCREL(%rip),%rax
+mov .s63100000100@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
@@ -6895,7 +6897,7 @@ pop %rax
 pop %rdi
 call *%rax
 test %rax,%rax
-je l62800001200$
+je l63100001200$
 mov parse_param@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -6915,14 +6917,14 @@ mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-l62800001200$:
+l63100001200$:
 test %rax,%rax
-jne l62600001800$
+jne l62900001800$
 pop %rax
 mov 0(%rsp),%rax
 add $8,%rsp
-jmp l62400000901$
-l62400000900$:
+jmp l62700000901$
+l62700000900$:
 mov load@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -6938,7 +6940,7 @@ mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-l62400000901$:
+l62700000901$:
 add $8,%rsp
 ret
 .section .text.kind_expr
@@ -6967,7 +6969,7 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-je l63600002400$
+je l63900002400$
 mov 24(%rsp),%rax
 add $-24,%rsp
 push %rax
@@ -6982,7 +6984,7 @@ pop %rdi
 pop %rsi
 pop %rdx
 call *%rax
-l63600002400$:
+l63900002400$:
 add $40,%rsp
 ret
 .section .text.parse_primary
@@ -7005,91 +7007,16 @@ pop %rsi
 pop %rdx
 call *%rax
 test %rax,%rax
-jne l64000000400$
-mov kind_expr@GOTPCREL(%rip),%rax
-add $-40,%rsp
-push %rax
-.section .text..s64000002200
-.s64000002200:.string "addr"
-.previous
-mov .s64000002200@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov gen_addr@GOTPCREL(%rip),%rax
-mov %rax,16(%rsp)
-mov 64(%rsp),%rax
-mov %rax,24(%rsp)
-mov 56(%rsp),%rax
-mov %rax,32(%rsp)
-mov 48(%rsp),%rax
-mov %rax,40(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-pop %r8
-call *%rax
-test %rax,%rax
-jne l64100000400$
-mov kind_expr@GOTPCREL(%rip),%rax
-add $-40,%rsp
-push %rax
-.section .text..s64100002000
-.s64100002000:.string "do"
-.previous
-mov .s64100002000@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov gen_do@GOTPCREL(%rip),%rax
-mov %rax,16(%rsp)
-mov 64(%rsp),%rax
-mov %rax,24(%rsp)
-mov 56(%rsp),%rax
-mov %rax,32(%rsp)
-mov 48(%rsp),%rax
-mov %rax,40(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-pop %r8
-call *%rax
-test %rax,%rax
-jne l64200000400$
-mov kind_expr@GOTPCREL(%rip),%rax
-add $-40,%rsp
-push %rax
-.section .text..s64200002100
-.s64200002100:.string "let"
-.previous
-mov .s64200002100@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov gen_let@GOTPCREL(%rip),%rax
-mov %rax,16(%rsp)
-mov 64(%rsp),%rax
-mov %rax,24(%rsp)
-mov 56(%rsp),%rax
-mov %rax,32(%rsp)
-mov 48(%rsp),%rax
-mov %rax,40(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-pop %r8
-call *%rax
-test %rax,%rax
 jne l64300000400$
 mov kind_expr@GOTPCREL(%rip),%rax
 add $-40,%rsp
 push %rax
-.section .text..s64300002100
-.s64300002100:.string "for"
+.section .text..s64300002200
+.s64300002200:.string "addr"
 .previous
-mov .s64300002100@GOTPCREL(%rip),%rax
+mov .s64300002200@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
-mov gen_for@GOTPCREL(%rip),%rax
+mov gen_addr@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 mov 64(%rsp),%rax
 mov %rax,24(%rsp)
@@ -7109,12 +7036,12 @@ jne l64400000400$
 mov kind_expr@GOTPCREL(%rip),%rax
 add $-40,%rsp
 push %rax
-.section .text..s64400002100
-.s64400002100:.string "and"
+.section .text..s64400002000
+.s64400002000:.string "do"
 .previous
-mov .s64400002100@GOTPCREL(%rip),%rax
+mov .s64400002000@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
-mov gen_and@GOTPCREL(%rip),%rax
+mov gen_do@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 mov 64(%rsp),%rax
 mov %rax,24(%rsp)
@@ -7134,12 +7061,12 @@ jne l64500000400$
 mov kind_expr@GOTPCREL(%rip),%rax
 add $-40,%rsp
 push %rax
-.section .text..s64500002000
-.s64500002000:.string "or"
+.section .text..s64500002100
+.s64500002100:.string "let"
 .previous
-mov .s64500002000@GOTPCREL(%rip),%rax
+mov .s64500002100@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
-mov gen_or@GOTPCREL(%rip),%rax
+mov gen_let@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 mov 64(%rsp),%rax
 mov %rax,24(%rsp)
@@ -7159,10 +7086,85 @@ jne l64600000400$
 mov kind_expr@GOTPCREL(%rip),%rax
 add $-40,%rsp
 push %rax
-.section .text..s64600002000
-.s64600002000:.string "if"
+.section .text..s64600002100
+.s64600002100:.string "for"
 .previous
-mov .s64600002000@GOTPCREL(%rip),%rax
+mov .s64600002100@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov gen_for@GOTPCREL(%rip),%rax
+mov %rax,16(%rsp)
+mov 64(%rsp),%rax
+mov %rax,24(%rsp)
+mov 56(%rsp),%rax
+mov %rax,32(%rsp)
+mov 48(%rsp),%rax
+mov %rax,40(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+pop %rcx
+pop %r8
+call *%rax
+test %rax,%rax
+jne l64700000400$
+mov kind_expr@GOTPCREL(%rip),%rax
+add $-40,%rsp
+push %rax
+.section .text..s64700002100
+.s64700002100:.string "and"
+.previous
+mov .s64700002100@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov gen_and@GOTPCREL(%rip),%rax
+mov %rax,16(%rsp)
+mov 64(%rsp),%rax
+mov %rax,24(%rsp)
+mov 56(%rsp),%rax
+mov %rax,32(%rsp)
+mov 48(%rsp),%rax
+mov %rax,40(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+pop %rcx
+pop %r8
+call *%rax
+test %rax,%rax
+jne l64800000400$
+mov kind_expr@GOTPCREL(%rip),%rax
+add $-40,%rsp
+push %rax
+.section .text..s64800002000
+.s64800002000:.string "or"
+.previous
+mov .s64800002000@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov gen_or@GOTPCREL(%rip),%rax
+mov %rax,16(%rsp)
+mov 64(%rsp),%rax
+mov %rax,24(%rsp)
+mov 56(%rsp),%rax
+mov %rax,32(%rsp)
+mov 48(%rsp),%rax
+mov %rax,40(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+pop %rcx
+pop %r8
+call *%rax
+test %rax,%rax
+jne l64900000400$
+mov kind_expr@GOTPCREL(%rip),%rax
+add $-40,%rsp
+push %rax
+.section .text..s64900002000
+.s64900002000:.string "if"
+.previous
+mov .s64900002000@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
 mov gen_if@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
@@ -7180,7 +7182,7 @@ pop %rcx
 pop %r8
 call *%rax
 test %rax,%rax
-jne l64700000400$
+jne l65000000400$
 mov have_lit@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -7197,7 +7199,7 @@ pop %rax
 pop %rdi
 call *%rax
 test %rax,%rax
-je l64700003600$
+je l65000003600$
 mov gen_lit@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
@@ -7212,9 +7214,9 @@ pop %rdi
 pop %rsi
 pop %rdx
 call *%rax
-l64700003600$:
+l65000003600$:
 test %rax,%rax
-jne l64800000400$
+jne l65100000400$
 mov have_str@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -7231,7 +7233,7 @@ pop %rax
 pop %rdi
 call *%rax
 test %rax,%rax
-je l64800003600$
+je l65100003600$
 mov gen_str@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
@@ -7246,9 +7248,9 @@ pop %rdi
 pop %rsi
 pop %rdx
 call *%rax
-l64800003600$:
+l65100003600$:
 test %rax,%rax
-jne l64900000400$
+jne l65200000400$
 mov have_id@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -7265,7 +7267,7 @@ pop %rax
 pop %rdi
 call *%rax
 test %rax,%rax
-je l64900003500$
+je l65200003500$
 mov gen_id@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
@@ -7280,9 +7282,9 @@ pop %rdi
 pop %rsi
 pop %rdx
 call *%rax
-l64900003500$:
+l65200003500$:
 test %rax,%rax
-jne l65100001000$
+jne l65400001000$
 mov exit@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -7291,7 +7293,10 @@ mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-l65100001000$:
+l65400001000$:
+l65200000400$:
+l65100000400$:
+l65000000400$:
 l64900000400$:
 l64800000400$:
 l64700000400$:
@@ -7299,9 +7304,6 @@ l64600000400$:
 l64500000400$:
 l64400000400$:
 l64300000400$:
-l64200000400$:
-l64100000400$:
-l64000000400$:
 add $24,%rsp
 ret
 .section .text.parse_call
@@ -7321,20 +7323,20 @@ pop %rax
 pop %rdi
 call *%rax
 mov %rax,8(%rsp)
-.section .text..s65400002300
-.s65400002300:.string ")"
+.section .text..s65700002300
+.s65700002300:.string ")"
 .previous
-mov .s65400002300@GOTPCREL(%rip),%rax
+mov .s65700002300@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-jne l65500000400$
+jne l65800000400$
 mov 0(%rsp),%rax
 test %rax,%rax
-je l65500002200$
+je l65800002200$
 mov type_equal@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -7360,15 +7362,15 @@ pop %rax
 pop %rdi
 pop %rsi
 call *%rax
-l65500002200$:
+l65800002200$:
 test %rax,%rax
-jne l65600000500$
+jne l65900000500$
 mov $1,%rax
 push %rax
-jmp l65600000701$
-l65600000700$:
+jmp l65900000701$
+l65900000700$:
 mov %rax,(%rsp)
-l65600000701$:
+l65900000701$:
 mov load@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -7399,7 +7401,7 @@ pop %rax
 pop %rdi
 call *%rax
 test %rax,%rax
-je l65800000500$
+je l66100000500$
 mov load@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -7486,19 +7488,19 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-je l66300001700$
+je l66600001700$
 mov 0(%rsp),%rax
-jmp l66300001701$
-l66300001700$:
+jmp l66600001701$
+l66600001700$:
 mov $6,%rax
-l66300001701$:
+l66600001701$:
 push %rax
 mov $0,%rax
 push %rax
-jmp l66400001101$
-l66400001100$:
+jmp l66700001101$
+l66700001100$:
 mov %rax,(%rsp)
-l66400001101$:
+l66700001101$:
 mov cmpa@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -7511,7 +7513,7 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-je l66600000800$
+je l66900000800$
 mov gen_argreg@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -7534,9 +7536,9 @@ pop %rax
 pop %rdi
 pop %rsi
 call *%rax
-l66600000800$:
+l66900000800$:
 test %rax,%rax
-jne l66400001100$
+jne l66700001100$
 pop %rax
 add $8,%rsp
 mov mnem1@GOTPCREL(%rip),%rax
@@ -7551,15 +7553,15 @@ pop %rax
 pop %rdi
 call *%rax
 mov %rax,8(%rsp)
-.section .text..s66800002500
-.s66800002500:.string "call"
+.section .text..s67100002500
+.s67100002500:.string "call"
 .previous
-mov .s66800002500@GOTPCREL(%rip),%rax
+mov .s67100002500@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
-.section .text..s66900000100
-.s66900000100:.string "*%rax"
+.section .text..s67200000100
+.s67200000100:.string "*%rax"
 .previous
-mov .s66900000100@GOTPCREL(%rip),%rax
+mov .s67200000100@GOTPCREL(%rip),%rax
 mov %rax,24(%rsp)
 pop %rax
 pop %rdi
@@ -7638,12 +7640,12 @@ add $8,%rsp
 add $8,%rsp
 add $8,%rsp
 add $8,%rsp
-l65800000500$:
+l66100000500$:
 test %rax,%rax
-jne l65600000700$
+jne l65900000700$
 pop %rax
-l65600000500$:
-l65500000400$:
+l65900000500$:
+l65800000400$:
 add $24,%rsp
 ret
 .section .text.parse_expr
@@ -7698,17 +7700,17 @@ pop %rax
 pop %rdi
 call *%rax
 mov %rax,8(%rsp)
-.section .text..s67800002200
-.s67800002200:.string "("
+.section .text..s68100002200
+.s68100002200:.string "("
 .previous
-mov .s67800002200@GOTPCREL(%rip),%rax
+mov .s68100002200@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-je l67800002500$
+je l68100002500$
 mov parse_expr@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
@@ -7735,16 +7737,16 @@ pop %rax
 pop %rdi
 call *%rax
 mov %rax,8(%rsp)
-.section .text..s67900000100
-.s67900000100:.string ")"
+.section .text..s68200000100
+.s68200000100:.string ")"
 .previous
-mov .s67900000100@GOTPCREL(%rip),%rax
+mov .s68200000100@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
 pop %rsi
 call *%rax
-l67800002500$:
+l68100002500$:
 add $24,%rsp
 ret
 .section .text.parse_arg
@@ -7766,7 +7768,7 @@ pop %rsi
 pop %rdx
 call *%rax
 test %rax,%rax
-jne l68200001500$
+jne l68500001500$
 mov parse_expr@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
@@ -7781,7 +7783,7 @@ pop %rdi
 pop %rsi
 pop %rdx
 call *%rax
-l68200001500$:
+l68500001500$:
 add $16,%rsp
 ret
 .section .text.params
@@ -7792,7 +7794,7 @@ push %rdx
 push %rcx
 mov 8(%rsp),%rax
 test %rax,%rax
-je l68400004100$
+je l68700004100$
 mov 24(%rsp),%rax
 add $-24,%rsp
 push %rax
@@ -7807,8 +7809,8 @@ pop %rdi
 pop %rsi
 pop %rdx
 call *%rax
-jmp l68400004101$
-l68400004100$:
+jmp l68700004101$
+l68700004100$:
 mov parse_arg@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -7821,7 +7823,7 @@ pop %rdi
 pop %rsi
 call *%rax
 mov $0,%rax
-l68400004101$:
+l68700004101$:
 add $32,%rsp
 ret
 .section .text.params_next
@@ -8049,10 +8051,10 @@ mov 64(%rsp),%rax
 mov %rax,16(%rsp)
 mov 56(%rsp),%rax
 mov %rax,24(%rsp)
-.section .text..s68900004900
-.s68900004900:.string "%r9"
+.section .text..s69200004900
+.s69200004900:.string "%r9"
 .previous
-mov .s68900004900@GOTPCREL(%rip),%rax
+mov .s69200004900@GOTPCREL(%rip),%rax
 mov %rax,32(%rsp)
 mov $1,%rax
 mov %rax,40(%rsp)
@@ -8079,10 +8081,10 @@ mov 64(%rsp),%rax
 mov %rax,16(%rsp)
 mov 56(%rsp),%rax
 mov %rax,24(%rsp)
-.section .text..s69000005000
-.s69000005000:.string "%r8"
+.section .text..s69300005000
+.s69300005000:.string "%r8"
 .previous
-mov .s69000005000@GOTPCREL(%rip),%rax
+mov .s69300005000@GOTPCREL(%rip),%rax
 mov %rax,32(%rsp)
 mov 48(%rsp),%rax
 mov %rax,40(%rsp)
@@ -8109,10 +8111,10 @@ mov 64(%rsp),%rax
 mov %rax,16(%rsp)
 mov 56(%rsp),%rax
 mov %rax,24(%rsp)
-.section .text..s69100005100
-.s69100005100:.string "%rcx"
+.section .text..s69400005100
+.s69400005100:.string "%rcx"
 .previous
-mov .s69100005100@GOTPCREL(%rip),%rax
+mov .s69400005100@GOTPCREL(%rip),%rax
 mov %rax,32(%rsp)
 mov 48(%rsp),%rax
 mov %rax,40(%rsp)
@@ -8139,10 +8141,10 @@ mov 64(%rsp),%rax
 mov %rax,16(%rsp)
 mov 56(%rsp),%rax
 mov %rax,24(%rsp)
-.section .text..s69200005100
-.s69200005100:.string "%rdx"
+.section .text..s69500005100
+.s69500005100:.string "%rdx"
 .previous
-mov .s69200005100@GOTPCREL(%rip),%rax
+mov .s69500005100@GOTPCREL(%rip),%rax
 mov %rax,32(%rsp)
 mov 48(%rsp),%rax
 mov %rax,40(%rsp)
@@ -8169,10 +8171,10 @@ mov 64(%rsp),%rax
 mov %rax,16(%rsp)
 mov 56(%rsp),%rax
 mov %rax,24(%rsp)
-.section .text..s69300005100
-.s69300005100:.string "%rsi"
+.section .text..s69600005100
+.s69600005100:.string "%rsi"
 .previous
-mov .s69300005100@GOTPCREL(%rip),%rax
+mov .s69600005100@GOTPCREL(%rip),%rax
 mov %rax,32(%rsp)
 mov 48(%rsp),%rax
 mov %rax,40(%rsp)
@@ -8199,10 +8201,10 @@ mov 64(%rsp),%rax
 mov %rax,16(%rsp)
 mov 56(%rsp),%rax
 mov %rax,24(%rsp)
-.section .text..s69400005100
-.s69400005100:.string "%rdi"
+.section .text..s69700005100
+.s69700005100:.string "%rdi"
 .previous
-mov .s69400005100@GOTPCREL(%rip),%rax
+mov .s69700005100@GOTPCREL(%rip),%rax
 mov %rax,32(%rsp)
 mov 48(%rsp),%rax
 mov %rax,40(%rsp)
@@ -8234,7 +8236,7 @@ pop %rax
 pop %rdi
 call *%rax
 test %rax,%rax
-je l69800000400$
+je l70100000400$
 mov try_lookup@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -8244,7 +8246,7 @@ pop %rax
 pop %rdi
 call *%rax
 test %rax,%rax
-jne l69800003500$
+jne l70100003500$
 mov push_book@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
@@ -8259,7 +8261,7 @@ pop %rdi
 pop %rsi
 pop %rdx
 call *%rax
-l69800003500$:
+l70100003500$:
 push %rax
 mov not@GOTPCREL(%rip),%rax
 add $-8,%rsp
@@ -8284,7 +8286,7 @@ pop %rax
 pop %rdi
 call *%rax
 test %rax,%rax
-jne l69900003500$
+jne l70400001500$
 mov exit@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -8293,7 +8295,7 @@ mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-l69900003500$:
+l70400001500$:
 mov parse_param@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -8339,10 +8341,10 @@ pop %rax
 pop %rdi
 call *%rax
 mov %rax,8(%rsp)
-.section .text..s70200000100
-.s70200000100:.string "?"
+.section .text..s70700000100
+.s70700000100:.string "?"
 .previous
-mov .s70200000100@GOTPCREL(%rip),%rax
+mov .s70700000100@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
@@ -8373,7 +8375,7 @@ pop %rax
 pop %rdi
 call *%rax
 test %rax,%rax
-je l70300001200$
+je l70800001200$
 mov put_string@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -8386,10 +8388,10 @@ pop %rax
 pop %rdi
 call *%rax
 mov %rax,8(%rsp)
-.section .text..s70300004900
-.s70300004900:.string ".section .text."
+.section .text..s70800004900
+.s70800004900:.string ".section .text."
 .previous
-mov .s70300004900@GOTPCREL(%rip),%rax
+mov .s70800004900@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
@@ -8475,10 +8477,10 @@ pop %rax
 pop %rdi
 call *%rax
 mov %rax,8(%rsp)
-.section .text..s70800000100
-.s70800000100:.string ":\n"
+.section .text..s71300000100
+.s71300000100:.string ":\n"
 .previous
-mov .s70800000100@GOTPCREL(%rip),%rax
+mov .s71300000100@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
@@ -8569,16 +8571,16 @@ pop %rax
 pop %rdi
 call *%rax
 mov %rax,8(%rsp)
-.section .text..s71100000100
-.s71100000100:.string "ret"
+.section .text..s71600000100
+.s71600000100:.string "ret"
 .previous
-mov .s71100000100@GOTPCREL(%rip),%rax
+mov .s71600000100@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
 pop %rsi
 call *%rax
-l70300001200$:
+l70800001200$:
 add $8,%rsp
 mov parse_declaration@GOTPCREL(%rip),%rax
 add $-8,%rsp
@@ -8588,7 +8590,7 @@ mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-l69800000400$:
+l70100000400$:
 add $8,%rsp
 ret
 .section .text.main
@@ -8606,10 +8608,10 @@ pop %rax
 pop %rdi
 call *%rax
 mov %rax,8(%rsp)
-.section .text..s71500000100
-.s71500000100:.string ".globl _start"
+.section .text..s72000000100
+.s72000000100:.string ".globl _start"
 .previous
-mov .s71500000100@GOTPCREL(%rip),%rax
+mov .s72000000100@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
@@ -8631,7 +8633,7 @@ pop %rax
 pop %rdi
 call *%rax
 test %rax,%rax
-jne l71600000500$
+jne l72100000500$
 mov load@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -8671,7 +8673,7 @@ pop %rax
 pop %rdi
 call *%rax
 test %rax,%rax
-jne l71900001400$
+jne l72400001400$
 mov exit@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -8680,7 +8682,7 @@ mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-l71900001400$:
+l72400001400$:
 mov store@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -8764,11 +8766,11 @@ pop %rax
 pop %rdi
 call *%rax
 add $8,%rsp
-l71600000500$:
+l72100000500$:
 add $8,%rsp
 ret
-.section .text.initialize
-initialize:
+.section .text.runtime
+runtime:
 push %rdi
 push %rsi
 push %rdx
@@ -9120,7 +9122,7 @@ add $24,%rsp
 ret
 .section .text._start
 _start:
-mov initialize@GOTPCREL(%rip),%rax
+mov runtime@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
 mov shl@GOTPCREL(%rip),%rax

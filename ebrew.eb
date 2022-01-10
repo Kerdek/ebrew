@@ -73,14 +73,17 @@ peek load kin k
 caret_is (is (c) k)
 is peek load k
 
+check_eof (k)
+or  caret_byte k
+	# unexpected eof #
+	exit 2
+
 caret_next_is (k c)
-do  or  caret_byte k
-        # unexpected eof #
-        exit 2
+do  check_eof k
     cmpe c peek add 1 load kin k
 
 caret_advance (k)
-do  or caret_byte k exit 3
+do  check_eof k
 do  store kin k add 1 load kin k
     if  cmpe caret_byte k '\n
     do  store kcol_no k  1
@@ -260,7 +263,7 @@ do  put_string out "mov .s"
 do  put_number out n
     load_rip out
 
-# wew #
+# accounting #
 
 xbrk     (x) add (         x) nsize
 xout     (x) add (xbrk     x) nsize
@@ -269,6 +272,31 @@ xscalar  (x) add (xcaret   x) ksize
 xtype    (x) add (xscalar  x) nsize
 xdepth   (x) add (xtype    x) nsize
 xsize    ( )      xdepth      nsize
+
+fpushpop (out depth size ins sign (a b))
+and size
+do  put_string out ins
+do  put_number out shl 3 size
+do  put_string out ",%rsp\n"
+    store depth sign size load depth
+
+pushpop  (out depth reg  ins sign (a b))
+do  mnem1 out ins reg
+    store depth sign 1 load depth
+
+fpop  (x size)
+fpushpop xout x xdepth x size "add $" add
+
+fpush (x size)
+fpushpop xout x xdepth x size "add $-" sub
+
+pop   (x reg)
+pushpop xout x xdepth x reg "pop"  add
+
+push  (x reg)
+pushpop xout x xdepth x reg "push" sub
+
+# nametable #
 
 ocaret   (o) add (         o) nsize
 otype    (o) add (ocaret   o) ksize
@@ -281,27 +309,6 @@ targ     (t) add (         t) nsize
 tcaret   (t) add (targ     t) nsize
 tkind    (t) add (tcaret   t) ksize
 tsize    ( )      tkind       nsize
-
-# accounting #
-
-fpushpop (x size ins sign (a b))
-and size
-do  put_string xout x ins
-do  put_number xout x shl 3 size
-do  put_string xout x ",%rsp\n"
-    store xdepth x sign size load xdepth x
-
-pushpop  (x reg  ins sign (a b))
-do  mnem1 xout x ins reg
-    store xdepth x sign 1 load xdepth x
-
-fpop  (x size)
-fpushpop x size "add $" add
-
-fpush (x size)
-fpushpop x size "add $-" sub
-
-# nametable #
 
 book_var (x o isvar)
 do store otype   o load xtype   x
@@ -402,12 +409,6 @@ do  g xout x n
 do  p x t
 do  label xout x n
     1
-
-pop   (x reg)
-pushpop x reg "pop"  add
-
-push  (x reg)
-pushpop x reg "push" sub
 
 gen_addr (p (x t) x t)
 do  put_string xout x "lea "
@@ -624,7 +625,9 @@ register0 (x t g) a_register register1 x t "%rdi" g
 parse_declaration (x)
 and caret_byte xcaret x
 do  let or try_lookup x push_book book_fn x 0 o
-    do  or not load oisdef o exit 13
+    do  or 	not load oisdef o
+			# remention #
+	       	exit 13
     do  parse_param x otype o
     do  store oisdef o not eat xcaret x "?"
         and load oisdef o
@@ -649,7 +652,7 @@ do  store xcaret x q
 do  store klength xcaret x sub q load kin xcaret x
     parse_declaration x
 
-initialize (heap inbuf outbuf)
+runtime (heap inbuf outbuf)
 let initbrk heap x
 do  store x 0
 do  store xbrk x add x xsize
@@ -662,7 +665,8 @@ do  store xscalar x new_type x 0
 let load xout x q
 do  main x 
 do  retry stdout q load xout x
+	# OK #
     exit 0
 
 _start ()
-initialize shl 24 1 shl 20 1 shl 23 1
+runtime shl 24 1 shl 20 1 shl 23 1
