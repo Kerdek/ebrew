@@ -1,907 +1,668 @@
-type
-	X @#
-	T @#
-	LineNo       @#
-	ColNo        @#
-	StackDepth   @#
-	LinePtr      @#
-	TokenCaret   @#
-	TokenLength  @#
-	IsType       @#
-	IsDef        @#
-	IsVar        @#
-	TypeKind     @#
-	Parser       (x X) $
-	TypedParser  (x X t T) $
-;
-
-set_ctx          (a @X            b X           ) $ __store a b
-set_type         (a @T            b T           ) $ __store a b
-set_line_no      (a @LineNo       b LineNo      ) $ __store a b
-set_col_no       (a @ColNo        b ColNo       ) $ __store a b
-set_stack_depth  (a @StackDepth   b StackDepth  ) $ __store a b
-set_line_ptr     (a @LinePtr      b LinePtr     ) $ __store a b
-set_in_buffer    (a @InBuffer     b InBuffer    ) $ __store a b
-set_out_buffer   (a @OutBuffer    b OutBuffer   ) $ __store a b
-set_program_break(a @ProgramBreak b ProgramBreak) $ __store a b
-set_token_caret  (a @TokenCaret   b TokenCaret  ) $ __store a b
-set_token_length (a @TokenLength  b TokenLength ) $ __store a b
-set_is_type      (a @IsType       b IsType      ) $ __store a b
-set_is_def       (a @IsDef        b IsDef       ) $ __store a b
-set_is_var       (a @IsVar        b IsVar       ) $ __store a b
-set_type_kind    (a @TypeKind     b TypeKind    ) $ __store a b
-
-get_ctx          (a @X            ) X            __cast X            __load a
-get_type         (a @T            ) T            __cast T            __load a
-get_line_no      (a @LineNo       ) LineNo       __cast LineNo       __load a
-get_col_no       (a @ColNo        ) ColNo        __cast ColNo        __load a
-get_stack_depth  (a @StackDepth   ) StackDepth   __cast StackDepth   __load a
-get_line_ptr     (a @LinePtr      ) LinePtr      __cast LinePtr      __load a
-get_in_buffer    (a @InBuffer     ) InBuffer     __cast InBuffer     __load a
-get_out_buffer   (a @OutBuffer    ) OutBuffer    __cast OutBuffer    __load a
-get_program_break(a @ProgramBreak ) ProgramBreak __cast ProgramBreak __load a
-get_token_caret  (a @TokenCaret   ) TokenCaret   __cast TokenCaret   __load a
-get_token_length (a @TokenLength  ) TokenLength  __cast TokenLength  __load a
-get_is_type      (a @IsType       ) IsType       __cast IsType       __load a
-get_is_def       (a @IsDef        ) IsDef        __cast IsDef        __load a
-get_is_var       (a @IsVar        ) IsVar        __cast IsVar        __load a
-get_type_kind    (a @TypeKind     ) TypeKind     __cast TypeKind     __load a
-
-ctx_alloc_size () AllocSize alloc_size 120
-
-ctx_successor    (x X) @ X            __cast @ X              __add   0	x
-ctx_type         (x X) @ T            __cast @ T              __add   8	x
-ctx_line_no      (x X) @ LineNo       __cast @ LineNo         __add  16	x
-ctx_col_no       (x X) @ ColNo        __cast @ ColNo          __add  24	x
-ctx_stack_depth  (x X) @ StackDepth   __cast @ StackDepth     __add  32	x
-ctx_line_ptr     (x X) @ LinePtr      __cast @ LinePtr        __add  40	x
-ctx_inbuf        (x X) @ InBuffer     __cast @ InBuffer       __add  48	x
-ctx_outbuf       (x X) @ OutBuffer    __cast @ OutBuffer      __add  56	x
-ctx_curbrk       (x X) @ ProgramBreak __cast @ ProgramBreak   __add  64	x
-ctx_token_caret  (x X) @ TokenCaret   __cast @ TokenCaret     __add  72	x
-ctx_token_length (x X) @ TokenLength  __cast @ TokenLength    __add  80	x
-ctx_is_type      (x X) @ IsType       __cast @ IsType         __add  88	x
-ctx_is_def       (x X) @ IsDef        __cast @ IsDef          __add  96	x
-ctx_is_var       (x X) @ IsVar        __cast @ IsVar          __add 104	x
-
-set_ctx_successor	(	x	X	a	X	)	$	set_ctx	ctx_successor	x a
-set_ctx_type	(	x	X	a	T	)	$	set_type	ctx_type	x a
-set_ctx_line_no	(	x	X	a	LineNo	)	$	set_line_no	ctx_line_no	x a
-set_ctx_col_no	(	x	X	a	ColNo	)	$	set_col_no	ctx_col_no	x a
-set_ctx_stack_depth	(	x	X	a	StackDepth	)	$	set_stack_depth	ctx_stack_depth	x a
-set_ctx_line_ptr	(	x	X	a	LinePtr	)	$	set_line_ptr	ctx_line_ptr	x a
-set_ctx_inbuf	(	x	X	a	InBuffer	)	$	set_in_buffer	ctx_inbuf	x a
-set_ctx_outbuf	(	x	X	a	OutBuffer	)	$	set_out_buffer	ctx_outbuf	x a
-set_ctx_curbrk	(	x	X	a	ProgramBreak	)	$	set_program_break	ctx_curbrk	x a
-set_ctx_token_caret	(	x	X	a	TokenCaret	)	$	set_token_caret	ctx_token_caret	x a
-set_ctx_token_length	(	x	X	a	TokenLength	)	$	set_token_length	ctx_token_length	x a
-set_ctx_is_type	(	x	X	a	IsType	)	$	set_is_type	ctx_is_type	x a
-set_ctx_is_def	(	x	X	a	IsDef	)	$	set_is_def	ctx_is_def	x a
-set_ctx_is_var	(	x	X	a	IsVar	)	$	set_is_var	ctx_is_var	x a
-
-get_ctx_successor	(	x	X	)	X            get_ctx	ctx_successor	x
-get_ctx_type	(	x	X	)	T            get_type	ctx_type	x
-get_ctx_line_no	(	x	X	)	LineNo       get_line_no	ctx_line_no	x
-get_ctx_col_no	(	x	X	)	ColNo        get_col_no	ctx_col_no	x
-get_ctx_stack_depth	(	x	X	)	StackDepth   get_stack_depth	ctx_stack_depth	x
-get_ctx_line_ptr	(	x	X	)	LinePtr      get_line_ptr	ctx_line_ptr	x
-get_ctx_inbuf	(	x	X	)	InBuffer     get_in_buffer	ctx_inbuf	x
-get_ctx_outbuf	(	x	X	)	OutBuffer    get_out_buffer	ctx_outbuf	x
-get_ctx_curbrk	(	x	X	)	ProgramBreak get_program_break	ctx_curbrk	x
-get_ctx_token_caret	(	x	X	)	TokenCaret   get_token_caret	ctx_token_caret	x
-get_ctx_token_length	(	x	X	)	TokenLength  get_token_length	ctx_token_length	x
-get_ctx_is_type	(	x	X	)	IsType       get_is_type	ctx_is_type	x
-get_ctx_is_def	(	x	X	)	IsDef        get_is_def	ctx_is_def	x
-get_ctx_is_var	(	x	X	)	IsVar        get_is_var	ctx_is_var	x
-
-ctx_offset     (x X o X) $ __sub get_ctx_stack_depth x get_ctx_stack_depth o
-
-type_alloc_size () AllocSize alloc_size 40
-
-type_successor	(	t	T	)	@	T	__cast	@	T	__add  0	t
-type_argument	(	t	T	)	@	T	__cast	@	T	__add  8	t
-type_token_caret	(	t	T	)	@	TokenCaret	__cast	@	TokenCaret	__add 16	t
-type_token_length	(	t	T	)	@	TokenLength	__cast	@	TokenLength	__add 24	t
-type_type_kind	(	t	T	)	@	TypeKind	__cast	@	TypeKind	__add 32	t
-
-set_type_successor	(	t	T	a	T	) $ set_type	type_successor	t a
-set_type_argument	(	t	T	a	T	) $ set_type	type_argument	t a
-set_type_token_caret	(	t	T	a	TokenCaret	) $ set_token_caret	type_token_caret	t a
-set_type_token_length	(	t	T	a	TokenLength	) $ set_token_length	type_token_length	t a
-set_type_type_kind	(	t	T	a	TypeKind	) $ set_type_kind	type_type_kind	t a
-
-get_type_successor	(	t	T	)	T	get_type	type_successor	t
-get_type_argument	(	t	T	)	T	get_type	type_argument	t
-get_type_token_caret	(	t	T	)	TokenCaret	get_token_caret	type_token_caret	t
-get_type_token_length	(	t	T	)	TokenLength	get_token_length	type_token_length	t
-get_type_type_kind	(	t	T	)	TypeKind	get_type_kind	type_type_kind	t
-
-ctx_copy (a X b X it IsType il IsVar) $ {
-	memcpy __cast $ a __cast $ b __cast $ ctx_alloc_size
-	set_ctx ctx_successor a get_ctx_successor b
-	set_ctx ctx_successor b a
-	set_is_type	ctx_is_type	get_ctx_successor b it
-	set_is_var	ctx_is_var	get_ctx_successor b il
-	set_is_def	ctx_is_def	get_ctx_successor b __cast IsDef 0
-}
-
-alloc (x X n AllocSize) ProgramBreak {
-	get_ctx_curbrk x is r
-	set_program_break ctx_curbrk x __cast ProgramBreak __add get_ctx_curbrk x n
-	r
-}
-
-type COut (x X c $) $ ;
-
-oglf (x X     c COut) $ c x '\n
-ogn1 (x X n $ c COut) $ { n then ogn1 x __div 10 n c c x __add '0 __mod 10 n }
-ogn  (x X n $ c COut) $ { __cond n ogn1 x n c c x '0 }
-ogs  (x X s $ c COut) $ { s for p __peek p then c x __peek p __add 1 p }
-
-gc  COut { __poke get_ctx_outbuf x c set_out_buffer ctx_outbuf x __cast OutBuffer __add get_ctx_outbuf x 1 }
-oc  COut retry_out stderr __cast OutBuffer __addr c __cast OutBuffer __add 1 __addr c
-
-gs  (x X s $) $ ogs x s gc
-gsn (x X o X) $ { 0 for m __a m get_ctx_token_length o then gc x __peek __add get_ctx_token_caret o m __add 1 m }
-glf (x X    ) $ oglf x   gc
-gn  (x X n $) $ ogn  x n gc
-
-os  (x X s $    ) $ ogs x s oc
-osn (x X s $ n $) $ retry_out stderr __cast OutBuffer s __cast OutBuffer __add s n
-olf (x X        ) $ oglf x   oc
-on  (x X     n $) $ ogn  x n oc
-
-diag (x X s $) $ {
-	oc x '( on x __cast $ get_ctx_line_no x oc x ', on x __cast $ get_ctx_col_no x os x "): " os x s olf x
-	exit exit_code 1
-}
-
-try_lookup (x X) X {
-	__cast X 0 is o
-	get_ctx_successor x is s0
-	{ s0 then s0 for s
-		__cond { __ne get_ctx_token_length s get_ctx_token_length x else
-						 __not strncmp __cast $ get_ctx_token_caret s __cast $ get_ctx_token_caret x __cast $ get_ctx_token_length x }
-			get_ctx_successor s
-			{ __store __addr o s
-				__cast X 0 } }
-	o
-}
-
-lookup (x X) X {
-	try_lookup x else
-	diag x "lookup failed"
-}
-
-make_type (x X k TypeKind) T {
-	__cast T alloc x type_alloc_size is t
-	set_type      type_successor t __cast T 0
-	set_type_kind type_type_kind      t k
-	t
-}
-
-make_type_a (x X k TypeKind arg T) T {
-	make_type x k is t
-	set_type type_argument t arg
-	t
-}
-
-typeid_none () TypeKind __cast TypeKind 0
-typeid_unit () TypeKind __cast TypeKind 1
-typeid_name () TypeKind __cast TypeKind 2
-typeid_ptr  () TypeKind __cast TypeKind 3
-typeid_func () TypeKind __cast TypeKind 4
-
-nnone (x X      ) T make_type   x typeid_none
-nunit (x X      ) T make_type   x typeid_unit
-nname (x X arg T) T make_type_a x typeid_name arg
-nptr  (x X arg T) T make_type_a x typeid_ptr  arg
-nfunc (x X arg T) T make_type_a x typeid_func arg
-
-type_equal (a T b T) $ {
-
-		a		then
-			b	then
-	__e	a	b	else
-
-	get_type_type_kind a is ka
-	get_type_type_kind b is kb
-
-	__e	ka	kb	then
-	__ne	ka	typeid_unit	then
-	__e	ka	typeid_none	else
-
-	__cond { __e ka typeid_ptr else __e ka typeid_name }
-		type_equal get_type_argument a get_type_argument b
-
-	{ __e ka typeid_func then
-		set_type __addr a get_type_argument a
-		set_type __addr b get_type_argument b
-		{ 1 for _
-			type_equal a b then
-			set_type __addr a get_type_successor a
-			set_type __addr b get_type_successor b
-			1 }
-		__e a b }
-}
-
-issp (c $) $ __e c ' 
-istb (c $) $ __e c '\t
-islf (c $) $ __e c '\n
-iscr (c $) $ __e c '\r
-is_  (c $) $ __e c '_
-issq (c $) $ __e c '\'
-isdq (c $) $ __e c '\"
-
-isin (c $ a $ b $) $ { __ae a c then __ae c b }
-
-isAZ (c $) $ isin c 'A 'Z
-isaz (c $) $ isin c 'a 'z
-is09 (c $) $ isin c '0 '9
-isaf (c $) $ isin c 'a 'f
-
-isws (c $) $ {	issp	c	else
-	istb	c	else
-	islf	c	else
-	iscr	c		}
-
-is0f (c $) $ {	is09	c	else
-	isaf	c		}
-
-isid (c $) $ {	isAZ	c	else
-	isaz	c	else
-	is09	c	else
-	is_	c		}
-
-type ByteParser (x X c $) $ ;
-
-caret_is      ByteParser __e __peek get_ctx_inbuf x c
-caret_next_is ByteParser {
-	{ __peek get_ctx_inbuf x else diag x "unexpected end of file" }
-	__e __peek __add 1 get_ctx_inbuf x c
-}
-
-caret_advance Parser {
-	{ __peek get_ctx_inbuf x else diag x "unexpected end of file" }
-	set_in_buffer ctx_inbuf x __cast InBuffer __add 1 get_ctx_inbuf x
-	__cond caret_is x '\n
-		{ set_col_no   ctx_col_no   x __cast ColNo 1
-			set_line_no  ctx_line_no  x __cast LineNo  __add 1 get_ctx_line_no x
-			set_line_ptr ctx_line_ptr x __cast LinePtr __add 1 get_ctx_inbuf   x }
-		set_col_no ctx_col_no x __cast ColNo __add 1 get_ctx_col_no x
-}
-
-caret Parser __mul 100 __add get_ctx_col_no x __mul 1000000 get_ctx_line_no x
-
-/* tokenizer */
-
-comment Parser {
-	caret_is	x	'/	then
-	caret_next_is	x	'*	then
-	caret_advance x
-	caret_advance x
-	{ 1 for _
-		{	__not	caret_is	x	'*	then
-			__not	caret_next_is	x	'/	then
-			caret_advance x
-			1 } else
-
-		caret_advance	x
-		caret_advance	x
-		0 }
-	1
-}
-
-number Parser {
-	get_ctx_inbuf x is q
-	{ 1 for _ is09 __peek get_ctx_inbuf x then caret_advance x 1 }
-	__ne get_ctx_inbuf x q then
-	set_token_caret  ctx_token_caret	x __cast TokenCaret q
-	set_token_length ctx_token_length	x __cast TokenLength __sub q get_ctx_inbuf x
-	1
-}
-
-string Parser {
-	caret_is x '" then
-	get_ctx_inbuf x is q
-	caret_advance x
-	{ 1 for _
-		{ 1 for _ caret_is x '\\ then caret_advance x caret_advance x 1}
-		{ caret_is x '\n then diag x "newline in string literal" }
-		__not caret_is x '" then
-		caret_advance x
-		1
-	}
-	caret_advance x
-	set_ctx_token_caret	x __cast TokenCaret q
-	set_ctx_token_length	x __cast TokenLength __sub q get_ctx_inbuf x
-	gs x ".section .text..s" gn x caret x glf x
-	gs x ".s" gn x caret x gc x ': gs x ".string \""
-	{ __add 1 get_ctx_token_caret x for i __a i __sub 1 __add get_ctx_token_caret x get_ctx_token_length x then gc x __peek i __add 1 i }
-	gc x '\" glf x
-	gs x ".previous" glf x
-	1
-}
-
-char Parser {
-	caret_is x '\' then
-	get_ctx_inbuf x is q
-	caret_advance x
-	{ caret_is x '\\ then caret_advance x }
-	caret_advance x
-	{ caret_is x '\' then caret_advance x }
-	set_ctx_token_caret  x __cast TokenCaret  q
-	set_ctx_token_length x __cast TokenLength __sub q get_ctx_inbuf x
-	1
-}
-
-id Parser {
-	get_ctx_inbuf x is q
-	{ 1 for _ isid __peek get_ctx_inbuf x then caret_advance x 1 }
-	__ne get_ctx_inbuf x q then
-	set_ctx_token_caret  x __cast TokenCaret  q
-	set_ctx_token_length x __cast TokenLength __sub q get_ctx_inbuf x
-	1
-}
-
-sw1 (x X a $	) $ { caret_is x a then caret_advance x 1 }
-sw2 (x X a $ b $	) $ { caret_is x a then caret_next_is x b then caret_advance x caret_advance x 1 }
-
-punct Parser {
-	get_ctx_inbuf x is q
-	{ sw2 x '= '= else
-		sw2 x '! '= else
-		sw2 x '< '= else
-		sw2 x '= '> else
-		sw2 x '> '= else
-		sw2 x '< '- else
-		sw2 x '- '> else
-		sw2 x '< '< else
-		sw2 x '> '> else
-		sw2 x '/ '/ else
-		sw1 x '=    else
-		sw1 x '<    else
-		sw1 x '>    else
-		sw1 x '+    else
-		sw1 x '-    else
-		sw1 x '*    else
-		sw1 x '/    else
-		sw1 x '&    else
-		sw1 x '|    else
-		sw1 x '@    else
-		sw1 x '#    else
-		sw1 x '{    else
-		sw1 x '}    else
-		sw1 x '(    else
-		sw1 x ')    else
-		sw1 x '[    else
-		sw1 x ']    else
-		sw1 x '!    else
-		sw1 x '?    else
-		sw1 x ':    else
-		sw1 x ';    else
-		sw1 x ',    else
-		sw1 x '.    else
-		sw1 x '~    else
-		sw1 x '^    else
-		sw1 x '$    else
-		sw1 x '`    else
-		sw1 x '%
-	}
-	set_ctx_token_caret  x __cast TokenCaret  q
-	set_ctx_token_length x __cast TokenLength __sub q get_ctx_inbuf x
-	1
-}
-
-eof Parser {
-	__not __peek get_ctx_inbuf x then
-	set_ctx_token_caret x __cast TokenCaret 0
-	1
-}
-
-ws Parser {
-	1 for _
-	comment x else
-	isws __peek get_ctx_inbuf x then
-	caret_advance x
-	1
-}
-
-token Parser {
-	ws     x
-	eof    x else
-	number x else
-	string x else
-	char   x else
-	id     x else
-	punct  x else
-	diag x "invalid token"
-}
-
-/* tokenizer api */
-
-type StringParser (x X c $) $ ;
-
-denote Parser {
-	{ get_ctx_token_caret x else diag x "unexpected end of tokens" }
-	token x
-}
-
-have StringParser {   get_ctx_token_caret x then memcmp c __cast $ get_ctx_token_caret x __cast $ get_ctx_token_length x then __not __peek __add c get_ctx_token_length x }
-need StringParser { { have x c else diag x "unexpected" } denote x }
-eat  StringParser {   have x c is r { r then denote x } r }
-
-/* x86_64 codegen minilib */
-
-mnem0   (x X s $        ) $ { gs x s glf x }
-mnem1   (x X s $ a $    ) $ { gs x s gc x '  gs x a glf x }
-mnem2   (x X s $ a $ b $) $ { gs x s gc x '  gs x a gc x ', gs x b glf x }
-
-cz   (x X a $) $ mnem2 x "test" a a
-
-gsh  (x X s $) $ { gs x s gs x " %cl,%rax" glf x }
-
-gadd Parser mnem2  x "add" "%rcx" "%rax"
-gsub Parser mnem2  x "sub" "%rcx" "%rax"
-gcmp Parser mnem2  x "cmp" "%rcx" "%rax"
-shr  Parser gsh   x "shr"
-shl  Parser gsh   x "shl"
-sar  Parser gsh   x "sar"
-sal  Parser gsh   x "sal"
-
-gpromote (x X b $) $ mnem2 x "movzbl" "%al" b
-
-setc   (x X s $) $ { gs x "set" gs x s gs x " %al" glf x gpromote x "%eax" }
-cmpset (x X s $) $ { gcmp x setc x s "%eax" }
-
-gnot	Parser	{ cz x "%rax" setc x "e" "%eax" }
-gneg	Parser	mnem1 x "neg" "%rax"
-gmul	Parser	mnem1 x "mul" "%rcx"
-gimul	Parser	mnem1 x "imul" "%rcx"
-gdiv	Parser	{ mnem2 x "xor" "%edx" "%edx" mnem1 x "div" "%rcx" }
-gidiv	Parser	{ mnem2 x "xor" "%edx" "%edx" mnem1 x "idiv" "%rcx" }
-gmod	Parser	{ gdiv x mnem2 x "mov" "%rdx" "%rax" }
-gb	Parser	cmpset	x "b"
-gbe	Parser	cmpset	x "be"
-ga	Parser	cmpset	x "a"
-gae	Parser	cmpset	x "ae"
-gg	Parser	cmpset	x "g"
-gge	Parser	cmpset	x "ge"
-gl	Parser	cmpset	x "l"
-gle	Parser	cmpset	x "le"
-ge	Parser	cmpset	x "e"
-gne	Parser	cmpset	x "ne"
-gpoke	Parser	mnem2	x "movb"	"%al"	"(%rcx)"
-gpeek	Parser	mnem2	x "movzb"	"(%rax)"	"%eax"
-
-local_symbol (x X n $) $ { gc x 'l gn x n gc x '$ }
-
-jc   (x X n $ s $) $ { gc x 'j gs x s gc x '  local_symbol x n glf x }
-
-label	(x X n $) $ { local_symbol x n gc x ': glf x }
-jmp	(x X n $) $ jc x n "mp"
-ja	(x X n $) $ jc x n "a"
-jae	(x X n $) $ jc x n "ae"
-jb	(x X n $) $ jc x n "b"
-jbe	(x X n $) $ jc x n "be"
-jg	(x X n $) $ jc x n "g"
-jge	(x X n $) $ jc x n "ge"
-jl	(x X n $) $ jc x n "l"
-jle	(x X n $) $ jc x n "le"
-je	(x X n $) $ jc x n "e"
-jne	(x X n $) $ jc x n "ne"
-
-type StackMode () $ ;
-
-stackmode_pop  StackMode "pop"
-stackmode_push StackMode "push"
-
-stackdepth_adjust (x X mode StackMode size $) $
-	set_ctx_stack_depth x __cast StackDepth __add get_ctx_stack_depth x __cond __e mode stackmode_push __neg size size
-
-fpushpop (x X size $ mode StackMode) $ {
-	size then
-	gs x "add $" { __e mode stackmode_push then gc x '- } gn x __shl 3 size gs x ",%rsp" glf x
-	stackdepth_adjust x mode size
-}
-pushpop  (x X register $ mode StackMode) $ {
-	mnem1 x mode register
-	stackdepth_adjust x mode 1
-}
-
-fpop (x X size $) $ fpushpop x size stackmode_pop
-fpush(x X size $) $ fpushpop x size stackmode_push
-
-pop  (x X source      $) $ pushpop x source      stackmode_pop
-push (x X destination $) $ pushpop x destination stackmode_push
-
-load  (x X) $ { gs x "mov (%rax),%rax" glf x }
-store (x X) $ { gs x "mov %rax,(%rcx)" glf x }
-
-/* parsers */
-
-type TypeParser (x X t @T) $ ;
-
-ptype TypeParser ;
-
-pname TypeParser {
-	set_type t __cast T alloc x type_alloc_size
-	set_token_caret type_token_caret	__cast T __load t get_ctx_token_caret	x
-	set_token_length type_token_length	__cast T __load t get_ctx_token_length	x
-	denote x
-	__cast T 0 is u
-	ptype x __addr u
-	set_type      type_argument	__cast T __load t get_type_argument	u
-	set_type_kind type_type_kind	__cast T __load t get_type_type_kind	u
-}
-
-ptype TypeParser {
-	__cond eat x "$" set_type t nnone x
-	__cond eat x "#" set_type t nunit x
-	__cond eat x "@" {
-		set_type t make_type x typeid_ptr
-		__store __addr t type_argument __cast T __load t
-		ptype x t }
-	__cond eat x "(" {
-		__cast T 0 is params
-		__addr params is u
-		{ 1 for _
-			__not eat x ")" then
-			pname x u
-			__store __addr u type_successor __cast T __load u
-			1 }
-		__cast T 0 is r
-		ptype x __addr r
-		set_type t nfunc x __cast T alloc x type_alloc_size
-		memcpy __cast $ get_type_argument __cast T __load t __cast $ r __cast $ type_alloc_size
-		set_type type_successor get_type_argument __cast T __load t params
-	}
-	{ lookup x is o
-		{ get_ctx_is_type o else diag x "not a type" }
-		denote x
-		set_type t get_ctx_type o }
-}
-
-
-bracket (x X t T a $ p TypedParser b $) $ {
-	eat x a then
-	p x t
-	need x b
-	1
-}
-
-let (x X t T p TypedParser) $ {
-	__cast X alloc x ctx_alloc_size is o
-	ctx_copy o	x __cast IsType 0 __cast IsVar 1
-	denote	x
-	p	x t
-	set_ctx	ctx_successor x get_ctx_successor get_ctx_successor x
-}
-
-logic (x X t T op $ jc(x X n $) $ p TypedParser) $ {
-	eat	x op then
-	caret	x is n
-	cz	x "%rax"
-	jc	x n
-	p	x t
-	label	x n
-	1
-}
-
-pcall	TypedParser	;
-pseq	TypedParser	;
-
-/* builtin generators */
-
-unary (x X t T op $ g Parser) $ {
-	eat	x op then
-	pcall	x nnone x
-	g	x
-	set_ctx_type	x nnone x
-	1
-}
-
-binary (x X t T op $ g Parser) $ {
-	eat	x op then
-	pcall	x nnone x
-	push	x "%rax"
-	pcall	x nnone x
-	pop	x "%rcx"
-	g	x
-	set_ctx_type	x nnone x
-	1
-}
-
-argreg (d StackDepth) $ {
-	{	__e	d	0	then	"%rdi"	}	else
-	{	__e	d	1	then	"%rsi"	}	else
-	{	__e	d	2	then	"%rdx"	}	else
-	{	__e	d	3	then	"%rcx"	}	else
-	{	__e	d	4	then	"%r8"	}	else
-						"%r9"
-}
-
-pcall TypedParser {
-	{
-		bracket	x	__cast T 0 "{"	pseq	"}"	else
-
-		unary	x	t	"__neg"	gneg	else
-		unary	x	t	"__not"	gnot	else
-		unary	x	t	"__peek"	gpeek	else
-		unary	x	t	"__load"	load	else
-		binary	x	t	"__poke"	gpoke	else
-		binary	x	t	"__a"	ga	else
-		binary	x	t	"__ae"	gae	else
-		binary	x	t	"__b"	gb	else
-		binary	x	t	"__be"	gbe	else
-		binary	x	t	"__g"	gg	else
-		binary	x	t	"__ge"	gge	else
-		binary	x	t	"__l"	gl	else
-		binary	x	t	"__le"	gle	else
-		binary	x	t	"__e"	ge	else
-		binary	x	t	"__ne"	gne	else
-		binary	x	t	"__shl"	shl	else
-		binary	x	t	"__shr"	shr	else
-		binary	x	t	"__sal"	sal	else
-		binary	x	t	"__sar"	sar	else
-		binary	x	t	"__add"	gadd	else
-		binary	x	t	"__sub"	gsub	else
-		binary	x	t	"__mul"	gmul	else
-		binary	x	t	"__imul"	gimul	else
-		binary	x	t	"__div"	gdiv	else
-		binary	x	t	"__idiv"	gidiv	else
-		binary	x	t	"__mod"	gmod	else
-		binary	x	t	"__store"	store	else
-
-
-		{	eat	x "__addr" then
-			lookup x is o
-			{ get_ctx_is_type o then diag x "not a variable" }
-			gs x "lea " gn x __shl 3 ctx_offset x o gs x "(%rsp),%rax" glf x
-			set_ctx_type x nptr x get_ctx_type o
-			denote x
-			1 } else
-
-		{	eat	x "__cast" then
-			__cast T 0 is t
-			ptype	x __addr t
-			pcall	x t
-			set_ctx_type	x t
-			1 } else
-
-		{	eat	x "__cond" then
-			caret	x is n
-			__add 1 n	  is m
-			pcall	x __cast T 0
-			cz	x "%rax"
-			je	x n
-			pcall	x __cast T 0
-			jmp	x m
-			label	x n
-			pcall	x __cast T 0
-			label	x m
-			set_ctx_type	x nnone x
-			1 } else
-
-		{	eat x "__syscall" then
-
-			{	6 for i
-				pcall	x __cast T 0
-				push	x "%rax"
-				__sub 1 i }
-
-			pcall	x __cast T 0
-			mnem2	x "mov" "%rax" "%r9"
-			pop	x "%r8"
-			pop	x "%r10"
-			pop	x "%rdx"
-			pop	x "%rsi"
-			pop	x "%rdi"
-			pop	x "%rax"
-			mnem0 x "syscall"
-			set_ctx_type	x nnone x
-			1 } else
-
-		__peek get_ctx_token_caret x is first_byte
-
-		{	{ is09 first_byte else issq first_byte } then
-			gs	x "mov $" gsn x x gs x ",%rax" glf x
-			denote	x
-			set_ctx_type	x nnone x
-			1 } else
-
-		{	isdq first_byte then
-			gs	x "mov .s" gn x caret x gs x "@GOTPCREL(%rip),%rax" glf x
-			denote	x
-			set_ctx_type	x nnone x
-			1 } else
-
-		{	isid first_byte then
-			lookup x is o
-			{ get_ctx_is_type o then diag x "not a variable" }
-			__cond get_ctx_is_var o
-				{ gs x "mov " gn x __shl 3 ctx_offset x o gs x "(%rsp),%rax" glf x set_ctx_type x get_ctx_type o }
-				{ gs x "mov " gsn x x gs x "@GOTPCREL(%rip),%rax" glf x set_ctx_type x get_ctx_type o }
-			denote x
-			1 } else
-
-		diag x "syntax error" }
-
-	{ t then type_equal t get_ctx_type x } else
-	1 for _
-	{ __e get_type_type_kind get_ctx_type x typeid_func then
-		get_ctx_stack_depth x is c
-		0 is d
-		get_ctx_type x is t
-		get_type_successor get_type_argument t is tsb
-		{	tsb then
-			tsb for u
-			__store __addr d __add 1 d
-			get_type_successor u }
-		fpush x d
-		push x "%rax"
-		8 is off
-		{ tsb then
-			tsb for u
-			pcall x u
-			{ type_equal get_ctx_type x u else diag x "asymmetric argument" }
-			gs x "mov %rax," gn x off gs x "(%rsp)" glf x
-			__store __addr off __add 8 off
-			get_type_successor u }
-		pop x "%rax"
-		{ __cast StackDepth 0 for i
-			__a i d then
-			__a i 6 then
-			pop x argreg i
-			__add 1 i }
-		mnem1 x "call" "*%rax"
-		set_stack_depth ctx_stack_depth x c
-		set_ctx_type x get_type_argument t
-		1 }
-}
-
-pseq TypedParser {
-
-	{	eat	x "ret" then
-		pcall	x t
-		ret 1 } else
-
-	pcall x __cast T 0
-
-	{	eat    x "is" then
-		push   x "%rax"
-		let    x t pseq
-		pop    x "%rdx"
-		ret 1 } else
-
-	{	eat	x "for" then
-		caret	x is n
-		__add 1 n is m
-		push	x "%rax"
-		jmp	x m
-		label	x n
-		mnem2	x	"mov" "%rsp" "%rcx"
-		store	x
-		label	x m
-		let	x t pseq
-		cz	x "%rax"
-		jne	x n
-		pop	x "%rax"
-		ret 1 } else
-
-	logic x t "then" je pseq else
-
-	{	get_ctx_type	x is u
-		logic	x t "else" jne pseq then
-		set_ctx_type	x u
-		ret 1 } else
-
-	{	__not have	x "}" then
-		pseq	x t
-		ret 1 }
-}
-
-push_param (x X t T) X {
-	__cast X alloc x ctx_alloc_size is o
-	ctx_copy o x __cast IsType 0 __cast IsVar 1
-	set_ctx_token_caret	o	get_type_token_caret	t
-	set_ctx_token_length	o	get_type_token_length	t
-	set_ctx_type	o t
-	o
-}
-
-pop_param (x X o X stack StackDepth) StackDepth {
-	set_ctx_successor x get_ctx_successor o
-	stack
-}
-
-stack_params (x X r T t T g StackDepth) StackDepth {
-	__cast StackDepth __cond __not t { pcall x r 0 }
-		{ push_param x t is o
-			set_ctx_stack_depth	o g
-			pop_param x o stack_params x r get_type_successor t __cast StackDepth __add 1 g }
-}
-
-register_params (x X r T t T g StackDepth) StackDepth {
-__cast StackDepth __cond __not t { pcall x r 0 }
-		{ push x argreg g
-			push_param x t is o
-			get_type_successor t is ta
-			__cast StackDepth __add 1 g is ga
-			pop_param x o __cast StackDepth __add 1 __cond __e g 5 stack_params x r ta ga register_params x r ta ga }
-}
-
-global (x X it IsType rule (x X o X) $) X {
-	{ try_lookup x else
-	__cast X alloc x ctx_alloc_size is o
-	ctx_copy o x it __cast IsVar 0
-	o } is o
-	{ rule x o else diag x "remention" }
-	pname x ctx_type o
-	o
-}
-
-declaration Parser ;
-
-function_definition_rule (x X o X) $ { __not get_ctx_is_type o then __not get_ctx_is_def o }
-
-function Parser {
-	global x __cast IsType 0 function_definition_rule is o
-	set_is_def ctx_is_def o __cast IsDef __not eat x ";"
-	{ get_ctx_is_def o then
-		gs x ".section .text." gsn x o glf x
-		gsn x o gc x ': glf x
-		set_stack_depth ctx_stack_depth x __cast StackDepth 0
-		register_params x get_type_argument get_ctx_type o get_type_successor get_type_argument get_ctx_type o __cast StackDepth 0 is stack
-		{ type_equal get_type_argument get_ctx_type o get_ctx_type x else diag x "asymmetric return" }
-		fpop x __cast $ stack
-		mnem0 x "ret" }
-	declaration x
-}
-
-type_definition_rule (x X o X) $ __not get_ctx_is_def o
-
-typedef Parser {
-	global x __cast IsType 1 type_definition_rule is o
-	set_is_def ctx_is_def o __cast IsDef 1
-	__cond eat x ";" declaration x typedef x
-}
-
-declaration Parser {
-	get_ctx_token_caret x then
-	__cond eat x "type"
-		typedef  x
-		function x
-}
-
-/* we call token here to put the first token in the parser stream */
-
-compile Parser {
-	gs x ".globl _start" glf x
-	token x
-	declaration x
-}
-
-main Parser {
-	__poke retry_in stdin get_ctx_inbuf x __cast InBuffer __add get_ctx_inbuf x __shl 20 1 0
-	get_ctx_outbuf x is q
-	compile x
-	retry_out stdout q get_ctx_outbuf x is b
-	0
-}
-
-/* general formalities */
-
-initialize (curbrk ProgramBreak inbuf AllocSize outbuf AllocSize) X {
-	__cast X curbrk is x
-	set_program_break ctx_curbrk    x __cast ProgramBreak __add curbrk ctx_alloc_size
-	set_ctx           ctx_successor x __cast X 0
-	set_in_buffer     ctx_inbuf     x __cast InBuffer  alloc x inbuf
-	set_out_buffer    ctx_outbuf    x __cast OutBuffer alloc x outbuf
-	set_line_ptr      ctx_line_ptr  x __cast LinePtr get_ctx_inbuf x
-	set_line_no       ctx_line_no   x __cast LineNo 1
-	set_col_no        ctx_col_no    x __cast ColNo  1
-	x
-}
-
-_start () $ exit exit_code main initialize initbrk alloc_size __shl 24 1 alloc_size __shl 20 1 alloc_size __shl 23 1
+# byte output #
+
+put_byte (out c)
+let load out p
+do poke p c
+store out add 1 p
+
+put_digit (out n)
+put_byte out add '0 n
+
+put_digits (out n)
+and n
+do  put_digits out div 10 n
+    put_digit  out mod 10 n
+
+put_number (out n)
+if n put_digits out if n n '0
+   put_byte   out '0
+
+put_string (out s)
+for s p
+and peek p
+do  put_byte out peek p
+    add 1 p
+
+put_string_byte (out s c)
+do put_string out s
+   put_byte   out c
+
+# byte classification #
+
+is_sp (c) cmpe c ' 
+is_tb (c) cmpe c '\t
+is_lf (c) cmpe c '\n
+is_cr (c) cmpe c '\r
+is_us (c) cmpe c '_
+is_sq (c) cmpe c '\'
+is_dq (c) cmpe c '\"
+
+is_in (c a b) not or cmpa c a cmpa b c
+
+is_AZ (c) is_in c 'A 'Z
+is_az (c) is_in c 'a 'z
+is_09 (c) is_in c '0 '9
+
+is_ws (c)
+or  is_sp c
+or  is_tb c
+or  is_lf c
+    is_cr c
+
+is_id (c)
+or  is_AZ c
+or  is_az c
+or  is_09 c
+    is_us c
+
+is_lit (c)
+or  is_09 c
+    is_sq c
+
+# byte input #
+
+klength  (k) add (         k) nsize
+kline_no (x) add (klength  x) nsize
+kcol_no  (x) add (kline_no x) nsize
+kin      (x) add (kcol_no  x) nsize
+ksize    ( )      kin         nsize
+
+caret_byte (k)
+peek load kin k
+
+caret_is (is (c) k)
+is peek load k
+
+caret_next_is (k c)
+do  or  caret_byte k
+        # unexpected eof #
+        exit 2
+    cmpe c peek add 1 load kin k
+
+caret_advance (k)
+do  or caret_byte k exit 3
+do  store kin k add 1 load kin k
+    if  cmpe caret_byte k '\n
+    do  store kcol_no k  1
+        store kline_no k add 1 load kline_no k
+        store kcol_no k add 1 load kcol_no k
+
+caret_eat (k a)
+and cmpe a caret_byte k
+do  caret_advance k
+    1
+
+caret_eat_by (is (c) k)
+and is caret_byte k
+do  caret_advance k
+    1
+
+caret_eat_for (is (c) k)
+and is caret_byte k
+    for 1 _ caret_eat_by is k
+
+# token #
+
+ws (k)
+do  for 1 _
+    or  and caret_eat k '#
+            for 1 _
+            and not caret_eat k '#
+                caret_advance k
+            caret_eat_by is_ws k
+    and not caret_byte k
+        do  store k 0
+        1
+
+id (k)
+caret_eat_for is_id k
+
+number (k)
+caret_eat_for is_09 k
+
+string (k)
+and caret_eat k '"
+    do  for 1 _
+        do  for 1 _
+            and caret_eat k '\\
+                caret_advance k
+        and not cmpe caret_byte k '"
+            caret_advance k
+        caret_advance k
+
+char (k)
+and caret_eat k '\'
+    do  caret_eat k '\\
+    do  caret_advance k
+    do  caret_eat k '\'
+        1
+
+punct (k)
+or  caret_eat k '(
+or  caret_eat k ')
+    caret_eat k '?
+
+
+# token api #
+
+next (k)
+do  or load k
+    # no more tokens #
+    exit 6
+or  ws k
+let load kin k q
+do  or number k
+    or string k
+    or char   k
+    or id     k
+    or punct  k
+       # invalid token #
+       exit 5
+do  store k q
+    store klength k sub q load kin k
+
+have (k c)
+and load k
+and memcmp c load k load klength k
+    not peek add c load klength k
+
+have_lit (k)
+caret_is is_lit k
+
+have_str (k)
+caret_is is_dq k
+
+have_id (k)
+caret_is is_id k
+
+eat (k c)
+let have k c r
+do  and r
+    next k r
+
+flake (k)
+mul  100 
+add  load kcol_no k
+mul  1000000
+load kline_no k
+
+cmp_token (ka kb)
+or  ne load klength ka load klength kb
+    not strncmp
+        load ka
+        load kb
+        load klength ka
+
+verbatim (out k)
+let add load k load klength k end
+for load k in
+and cmpa in end
+do  put_byte out peek in
+    add 1 in
+
+# x86_64 #
+
+ins1 (out s)
+put_string_byte out s ' 
+
+mnem0 (out s)
+put_string_byte out s '\n
+
+mnem1 (out s a)
+do  ins1  out s
+    mnem0 out a
+
+mnem2 (out s a b)
+do  ins1  out s
+do  put_string_byte out a ',
+    mnem0 out b
+
+cz (out)
+mnem2 out "test" "%rax" "%rax"
+
+label_id (out n)
+do  put_byte out 'l
+do  put_number out n
+    put_byte out '$
+
+jc (out n s)
+do  put_string_byte out s ' 
+do  label_id out n
+    put_byte out '\n
+
+label (out n)
+do  label_id out n 
+    put_string out ":\n"
+
+jmp (out n)
+jc out n "jmp"
+
+je (out n)
+jc out n "je"
+
+jne (out n)
+jc out n "jne"
+
+load_rip (out)
+put_string out "@GOTPCREL(%rip),%rax\n"
+
+str_section (out n k)
+do  put_string out ".section .text..s"
+do  put_number out n
+do  put_string out "\n.s"
+do  put_number out n
+do  put_string out ":.string "
+do  verbatim   out k
+    put_string out "\n.previous\n"
+
+str_load (out n)
+do  put_string out "mov .s" 
+do  put_number out n
+    load_rip out
+
+# wew #
+
+xbrk     (x) add (         x) nsize
+xout     (x) add (xbrk     x) nsize
+xcaret   (x) add (xout     x) nsize
+xscalar  (x) add (xcaret   x) ksize
+xtype    (x) add (xscalar  x) nsize
+xdepth   (x) add (xtype    x) nsize
+xsize    ( )      xdepth      nsize
+
+ocaret   (o) add (         o) nsize
+otype    (o) add (ocaret   o) ksize
+odepth   (o) add (otype    o) nsize
+oisdef   (o) add (odepth   o) nsize
+oisvar   (o) add (oisdef   o) nsize
+osize    ( )      oisvar      nsize
+
+targ     (t) add (         t) nsize
+tcaret   (t) add (targ     t) nsize
+tkind    (t) add (tcaret   t) ksize
+tsize    ( )      tkind       nsize
+
+# accounting #
+
+fpushpop (x size ins sign (a b))
+and size
+do  put_string xout x ins
+do  put_number xout x shl 3 size
+do  put_string xout x ",%rsp\n"
+    store xdepth x sign size load xdepth x
+
+pushpop  (x reg  ins sign (a b))
+do  mnem1 xout x ins reg
+    store xdepth x sign 1 load xdepth x
+
+fpop  (x size)
+fpushpop x size "add $" add
+
+fpush (x size)
+fpushpop x size "add $-" sub
+
+# nametable #
+
+book_var (x o isvar)
+do store otype   o load xtype   x
+do store ocaret  o load xcaret  x
+do store klength ocaret o load klength xcaret x
+   store oisvar o isvar
+
+book_fn (x t o)
+book_var x o 0
+
+book_let (x t o)
+do book_var x o 1
+   store odepth o load xdepth x
+
+book_param (x t o)
+do store otype   o t
+do store odepth  o load xdepth  x
+do store ocaret  o load tcaret  t
+do store klength ocaret o load klength tcaret t
+   store oisvar o 1
+
+push_book (p (x t o) x t)
+let alloc xbrk x osize o
+do  store o load x
+do  p x t o
+do  store oisdef o 0
+do  store x o
+    o
+
+pop_book (x)
+store x load load x
+
+try_lookup (x)
+let 0 o
+let load x head
+do  and head
+    for head s
+    if  cmp_token xcaret x ocaret s
+        load s
+        do  store addr o s
+            0
+o
+
+lookup (x)
+or  try_lookup x
+    # lookup failed #
+    exit 1
+
+# types #
+
+new_type (x kind)
+let alloc xbrk x tsize t
+do  store t 0
+do  store tcaret t xcaret x
+do  store tkind t kind
+    t
+
+type_arity (t)
+let 0 d
+do  and t
+    for t u
+    do store addr d add 1 d
+       load u
+    d
+
+type_equal (a b)
+and a
+and b
+or  cmpe a b
+let load tkind a ka
+let load tkind b kb
+and cmpe ka kb
+do  store addr a load targ a
+do  store addr b load targ b
+do  for 1 _
+    and type_equal a b
+    do  store addr a load a
+    do  store addr b load b
+        1
+    cmpe a b
+
+# x86 implementation #
+
+stack_offset (x o)
+sub load xdepth x
+    load odepth o
+
+letvar (p (x t) x t)
+let push_book book_let x 0 o
+do  next xcaret x
+do  p x t
+    pop_book x
+
+logic (p (x t) g (c n) x t)
+let flake xcaret x n
+do  cz xout x
+do  g xout x n
+do  p x t
+do  label xout x n
+    1
+
+pop   (x reg)
+pushpop x reg "pop"  add
+
+push  (x reg)
+pushpop x reg "push" sub
+
+gen_addr (p (x t) x t)
+do  put_string xout x "lea "
+do  put_number xout x shl 3 stack_offset x lookup x
+do  put_string xout x "(%rsp),%rax\n"
+do  store xtype x load xscalar x
+    next xcaret x
+
+gen_do (p (x t) x t)
+do p x 0
+   p x t
+
+gen_let (p (x t) x t)
+do  p x 0
+do  push x "%rax"
+do  letvar p x t 
+    fpop x 1
+
+gen_for (p (x t) x t)
+let flake xcaret x n
+let add 1 n m
+do  p  x t
+do  push  x "%rax"
+do  jmp   xout x m
+do  label xout x n
+do  mnem2 xout x "mov" "%rax" "(%rsp)"
+do  label xout x m
+do  letvar p x t
+do  cz    xout x
+do  jne   xout x n
+    pop   x "%rax"
+
+gen_and (p (x t) x t)
+do  p x 0
+    logic p je x t
+
+gen_or (p (x t) x t)
+do  p x t
+let load xtype x u
+do  logic p jne x t
+    store xtype x u
+
+gen_if (p (x t) x t)
+let flake xcaret x n
+let add 1 n m
+do  p x 0
+do  cz xout x
+do  je xout x n
+do  p x t
+do  jmp xout x m
+do  label xout x n
+let load xtype x u
+do  p x t
+    label xout x m
+
+gen_lit (p (x t) x t)
+do  put_string xout x "mov $"
+do  verbatim xout x xcaret x
+do  put_string xout x ",%rax\n"
+do  next xcaret x
+    store xtype x load xscalar x
+
+gen_str (p (x t) x t)
+do  str_section xout x flake xcaret x xcaret x
+do  str_load    xout x flake xcaret x
+do  next xcaret x
+    store xtype x load xscalar x
+
+gen_id (p (x t) x t)
+let lookup x o
+do  put_string xout x "mov "
+do  if  load oisvar o
+    do  put_number xout x shl 3 stack_offset x o
+        put_string xout x "(%rsp),%rax\n"
+    do  verbatim xout x xcaret x
+        load_rip xout x
+do  store xtype x load otype o
+    next xcaret x
+
+# we still need this for the funcall impl #
+
+argreg (d)
+or and cmpe d 0 "%rdi"
+or and cmpe d 1 "%rsi"
+or and cmpe d 2 "%rdx"
+or and cmpe d 3 "%rcx"
+or and cmpe d 4 "%r8"
+                "%r9"
+
+gen_arg (x i)
+do  put_string xout x "mov %rax,"
+do  put_number xout x shl 3 load i
+do  put_string xout x "(%rsp)\n"
+    store i add 1 load i
+
+# could connect these with a callback #
+
+gen_argreg (x i)
+pop x argreg i
+
+gen_args (parse (x t) x parameters)
+let 1 depth
+and parameters
+for parameters u
+do  parse x u
+do  or  type_equal u load xtype x
+        # asymmetric argument #
+        exit 12
+do  gen_arg x addr depth
+    load u
+
+gen_call (parse (x t) x parameters arity)
+do  fpush x arity
+do  push x "%rax"
+do  gen_args parse x parameters
+    pop x "%rax"
+
+#
+`parse_expr` is the main expression syntax.
+It's just polish notation with a bit
+of type sensitivity. If a `parse_expr` has
+parse_declaration type, the parser expects
+appropriate arguments. We need a
+syntax for referring to a parse_declaration
+without expecting more arguments, for
+passing to HOFs sometimes. `parse_arg` is
+where parens cancel call parsing.
+#
+
+parse_type (x) ?
+
+parse_param (x t)
+do  store t alloc xbrk x tsize
+do  store tcaret load t load xcaret x
+do  store klength tcaret load t load klength xcaret x
+do  next xcaret x
+let parse_type x u
+do  store targ  load t load targ  u
+    store tkind load t load tkind u
+
+parse_type (x)
+if  eat xcaret x "("
+    let new_type x 1 t
+    do  for targ t u
+        and not eat xcaret x ")"
+        do  parse_param x u
+            load u
+        t
+    load xscalar x
+
+parse_nest (parse (x t) x t) ?
+
+kind_expr (c gen (parse (x t) x t) parse (x t) x t)
+and eat xcaret x c gen parse x t
+
+parse_primary (parse (x t) x t)
+or  parse_nest parse x t
+or  kind_expr "addr" gen_addr parse x t
+or  kind_expr "do"   gen_do   parse x t
+or  kind_expr "let"  gen_let  parse x t
+or  kind_expr "for"  gen_for  parse x t
+or  kind_expr "and"  gen_and  parse x t
+or  kind_expr "or"   gen_or   parse x t
+or  kind_expr "if"   gen_if   parse x t
+or  and have_lit xcaret x  gen_lit  parse x t
+or  and have_str xcaret x  gen_str  parse x t
+or  and have_id  xcaret x  gen_id   parse x t
+    # expected expression #
+    exit 11
+
+parse_call (parse (x t) x t)
+or  have xcaret x ")" 
+or  and t type_equal t load xtype x
+for 1 _
+and load tkind load xtype x
+let load xdepth x depth
+let load xtype x function_type
+let load targ function_type parameters
+let type_arity parameters arity
+do  gen_call parse x parameters arity
+do  let if cmpa arity 6 arity 6 regargs
+    for 0 i
+    and cmpa i regargs
+    do  gen_argreg x i
+        add 1 i
+do  mnem1 xout x "call" "*%rax"
+do  fpop x sub load xdepth x depth
+do  store xtype x load xscalar x
+    1
+
+parse_expr (parse (x t) x t)
+do  parse_primary parse x t
+    parse_call    parse x t
+
+parse_nest (parse (x t) x t)
+and eat xcaret x "(" do parse_expr parse x t eat xcaret x ")"
+
+parse_arg  (x t)
+or parse_nest parse_arg x t
+   parse_expr parse_arg x t
+
+params        (next (x t g) x t g) if t next x t g do parse_arg x 0 0
+params_next   (next (x t g) x t g) let params next x load t g h do pop_book x h
+register_then (next (x t g) x t reg g) do push x reg do push_book book_param x t add 1 params_next next x t g
+a_register    (next (x t g) x t reg g) register_then next x t reg add 1 g
+stack     (x t g) do let push_book book_param x t o store odepth o g params_next stack x t add 1 g
+register5 (x t g) register_then stack x t "%r9" 1
+register4 (x t g) a_register register5 x t "%r8" g
+register3 (x t g) a_register register4 x t "%rcx" g
+register2 (x t g) a_register register3 x t "%rdx" g
+register1 (x t g) a_register register2 x t "%rsi" g
+register0 (x t g) a_register register1 x t "%rdi" g
+
+parse_declaration (x)
+and caret_byte xcaret x
+do  let or try_lookup x push_book book_fn x 0 o
+    do  or not load oisdef o exit 13
+    do  parse_param x otype o
+    do  store oisdef o not eat xcaret x "?"
+        and load oisdef o
+        do  put_string xout x ".section .text." 
+        do  verbatim xout x ocaret o
+        do  put_byte xout x '\n
+        do  verbatim xout x ocaret o
+        do  put_string xout x ":\n"
+        do  store xdepth x 0
+        do  fpop x params register0 x load targ load otype o 0
+        mnem0 xout x "ret"
+parse_declaration x
+
+main (x)
+do  mnem0 xout x ".globl _start"
+or  ws xcaret x
+let load kin xcaret x q
+do  or  id xcaret x
+        # invalid token #
+        exit 5
+do  store xcaret x q
+do  store klength xcaret x sub q load kin xcaret x
+    parse_declaration x
+
+initialize (heap inbuf outbuf)
+let initbrk heap x
+do  store x 0
+do  store xbrk x add x xsize
+do  store kin xcaret x alloc xbrk x inbuf
+do  store xout x alloc xbrk x outbuf
+do  store kline_no xcaret x 1
+do  store kcol_no xcaret x 1
+do  poke retry stdin load kin xcaret x add load kin xcaret x inbuf 0
+do  store xscalar x new_type x 0
+let load xout x q
+do  main x 
+do  retry stdout q load xout x
+    exit 0
+
+_start ()
+initialize shl 24 1 shl 20 1 shl 23 1

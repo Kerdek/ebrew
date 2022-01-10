@@ -1,12 +1,20 @@
-
 default: stage5
 
-stage%: .dummy
+bin:
+	mkdir -p bin
+
+bin/ebrew.o: ebrew.s | bin
+	as -o $@ -c $^
+
+bin/ebrew: bin/ebrew.o bin/def.o | bin
+	ld -o $@ $^
+
+bin/def.o: def.s | bin
+	as -o $@ -c $^
+
+stage%: bin/ebrew bin/def.o
 	mkdir -p $@
 	$(MAKE) -f build.mak --no-print-directory STAGE=$@ $@/ebrew
 
-clean: .dummy
-	rm -f stage*/*
-	rmdir stage*
-
-.dummy:
+clean:
+	rm -rf bin stage*

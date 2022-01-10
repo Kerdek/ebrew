@@ -16,7 +16,7 @@ $(STAGE):
 	mkdir -p $(STAGE)
 
 %ebrew: %ebrew.o
-	ld -o $@ $^
+	ld -o $@ $^ bin/def.o
 
 %ebrew.o: %ebrew.s
 	as -o $@ -c $^
