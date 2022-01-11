@@ -2,12 +2,14 @@
 
 Everything is a 64-bit natural number.
 
-current goals:
+Goals:
 - diags
-- generics
+- generic
 - closures
 - lib
 - fast
 - tidy
 - modules
-- type inference
+- user defined operators
+
+See the vscode extension https://github.com/4984/ebrew-vscode.
