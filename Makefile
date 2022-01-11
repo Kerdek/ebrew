@@ -12,7 +12,7 @@ bin/ebrew: bin/ebrew.o bin/def.o | bin
 bin/def.o: def.s | bin
 	as -o $@ -c $^
 
-stage%: bin/ebrew bin/def.o
+stage%: ebrew.eb lib.eh bin/ebrew bin/def.o
 	mkdir -p $@
 	$(MAKE) -f build.mak --no-print-directory STAGE=$@ $@/ebrew
 

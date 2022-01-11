@@ -1,32 +1,3 @@
-# byte output #
-
-put_byte (out c)
-let load out p
-do poke p c
-store out add 1 p
-
-put_digit (out n)
-put_byte out add '0 n
-
-put_digits (out n)
-and n
-do  put_digits out div 10 n
-    put_digit  out mod 10 n
-
-put_number (out n)
-if n put_digits out if n n '0
-   put_byte   out '0
-
-put_string (out s)
-for s p
-and peek p
-do  put_byte out peek p
-    add 1 p
-
-put_string_byte (out s c)
-do put_string out s
-   put_byte   out c
-
 # byte classification #
 
 is_sp (c) cmpe c ' 
@@ -61,11 +32,11 @@ or  is_09 c
 
 # byte input #
 
-klength  (k) add (         k) nsize
-kline_no (x) add (klength  x) nsize
-kcol_no  (x) add (kline_no x) nsize
-kin      (x) add (kcol_no  x) nsize
-ksize    ( )      kin         nsize
+klength  (k) add (         k) usize
+kline_no (x) add (klength  x) usize
+kcol_no  (x) add (kline_no x) usize
+kin      (x) add (kcol_no  x) usize
+ksize    ( )      kin         usize
 
 caret_byte (k)
 peek load kin k
@@ -205,11 +176,15 @@ do  put_byte out peek in
 
 # x86_64 #
 
+ins0 (out s c)
+do put_string out s
+   put_byte   out c
+
 ins1 (out s)
-put_string_byte out s ' 
+ins0 out s ' 
 
 mnem0 (out s)
-put_string_byte out s '\n
+ins0 out s '\n
 
 mnem1 (out s a)
 do  ins1  out s
@@ -217,7 +192,7 @@ do  ins1  out s
 
 mnem2 (out s a b)
 do  ins1  out s
-do  put_string_byte out a ',
+do  ins0 out a ',
     mnem0 out b
 
 cz (out)
@@ -228,14 +203,14 @@ do  put_byte out 'l
 do  put_number out n
     put_byte out '$
 
-jc (out n s)
-do  put_string_byte out s ' 
-do  label_id out n
-    put_byte out '\n
-
 label (out n)
 do  label_id out n 
     put_string out ":\n"
+
+jc (out n s)
+do  ins0 out s ' 
+do  label_id out n
+    put_byte out '\n
 
 jmp (out n)
 jc out n "jmp"
@@ -246,10 +221,10 @@ jc out n "je"
 jne (out n)
 jc out n "jne"
 
-load_rip (out)
+rip (out)
 put_string out "@GOTPCREL(%rip),%rax\n"
 
-str_section (out n k)
+def_str (out n k)
 do  put_string out ".section .text..s"
 do  put_number out n
 do  put_string out "\n.s"
@@ -258,20 +233,20 @@ do  put_string out ":.string "
 do  verbatim   out k
     put_string out "\n.previous\n"
 
-str_load (out n)
+load_str (out n)
 do  put_string out "mov .s" 
 do  put_number out n
-    load_rip out
+    rip out
 
 # accounting #
 
-xbrk     (x) add (         x) nsize
-xout     (x) add (xbrk     x) nsize
-xcaret   (x) add (xout     x) nsize
+xbrk     (x) add (         x) usize
+xout     (x) add (xbrk     x) usize
+xcaret   (x) add (xout     x) usize
 xscalar  (x) add (xcaret   x) ksize
-xtype    (x) add (xscalar  x) nsize
-xdepth   (x) add (xtype    x) nsize
-xsize    ( )      xdepth      nsize
+xtype    (x) add (xscalar  x) usize
+xdepth   (x) add (xtype    x) usize
+xsize    ( )      xdepth      usize
 
 fpushpop (out depth size ins sign (a b))
 and size
@@ -298,17 +273,17 @@ pushpop xout x xdepth x reg "push" sub
 
 # nametable #
 
-ocaret   (o) add (         o) nsize
+ocaret   (o) add (         o) usize
 otype    (o) add (ocaret   o) ksize
-odepth   (o) add (otype    o) nsize
-oisdef   (o) add (odepth   o) nsize
-oisvar   (o) add (oisdef   o) nsize
-osize    ( )      oisvar      nsize
+odepth   (o) add (otype    o) usize
+oisdef   (o) add (odepth   o) usize
+oisvar   (o) add (oisdef   o) usize
+osize    ( )      oisvar      usize
 
-targ     (t) add (         t) nsize
-tcaret   (t) add (targ     t) nsize
+targ     (t) add (         t) usize
+tcaret   (t) add (targ     t) usize
 tkind    (t) add (tcaret   t) ksize
-tsize    ( )      tkind       nsize
+tsize    ( )      tkind       usize
 
 book_var (x o isvar)
 do store otype   o load xtype   x
@@ -472,8 +447,8 @@ do  next xcaret x
     store xtype x load xscalar x
 
 gen_str (p (x t) x t)
-do  str_section xout x flake xcaret x xcaret x
-do  str_load    xout x flake xcaret x
+do  def_str xout x flake xcaret x xcaret x
+do  load_str    xout x flake xcaret x
 do  next xcaret x
     store xtype x load xscalar x
 
@@ -484,7 +459,7 @@ do  if  load oisvar o
     do  put_number xout x shl 3 stack_offset x o
         put_string xout x "(%rsp),%rax\n"
     do  verbatim xout x xcaret x
-        load_rip xout x
+        rip xout x
 do  store xtype x load otype o
     next xcaret x
 

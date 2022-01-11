@@ -15,7 +15,7 @@ neg   (a  ) ?
 not   (a  ) ?
 linux (rdi rsi rdx rcx r8 r9 rax) ?
 
-nsize ( ) 8
+usize ( ) 8
 
 exit    (a) linux a 0 0 0 0 0 60
 initbrk (n) let linux 0 0 0 0 0 0 12 i do linux add n i 0 0 0 0 0 12 i
@@ -70,3 +70,26 @@ alloc (b n)
 let load b r
 do store b add n load b
 r
+
+put_byte (out c)
+let load out p
+do poke p c
+store out add 1 p
+
+put_digit (out n)
+put_byte out add '0 n
+
+put_digits (out n)
+and n
+do  put_digits out div 10 n
+    put_digit  out mod 10 n
+
+put_number (out n)
+if n put_digits out if n n '0
+   put_byte   out '0
+
+put_string (out s)
+for s p
+and peek p
+do  put_byte out peek p
+    add 1 p
