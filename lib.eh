@@ -15,10 +15,15 @@ neg   (a  ) ?
 not   (a  ) ?
 linux (rdi rsi rdx rcx r8 r9 rax) ?
 
-usize ( ) 8
+scalar ( ) 8
+
+copy (a b)
+store a load b
 
 exit    (a) linux a 0 0 0 0 0 60
+
 initbrk (n) let linux 0 0 0 0 0 0 12 i do linux add n i 0 0 0 0 0 12 i
+
 memcpy (a b n)
 and n
 for n m
@@ -30,40 +35,51 @@ sub 1 m
 memcmp (a b n)
 let 1 r
 and n 
-do for n m
- if cmpe peek a peek b
- do store addr a add 1 a
- do store addr b add 1 b
- sub 1 m
- do store addr r 0
-  0
-r
+do  for n m
+    if  cmpe peek a peek b
+		do  store addr a add 1 a
+		do  store addr b add 1 b
+			sub 1 m
+		do  store addr r 0
+			0
+    r
 
 strncmp (a b n)
 let 1 r
 and n
-do for n m
- if cmpe peek a peek b
- and peek a
- do store addr a add 1 a
- do store addr b add 1 b
- sub 1 m
- do store addr r 0
- 0 
-r
+do  for n i
+    if 	cmpe peek a peek b
+        and peek a
+        do  store addr a add 1 a
+        do  store addr b add 1 b
+            sub 1 i
+        do  store addr r 0
+            0 
+    r
+
+substrcmp (a b n)
+and strncmp a b n
+    not peek add a n
+
+streq (a na b nb)
+or  ne na nb
+    not memcmp
+        a
+        b
+        na
 
 stdin  (p n) linux 0 p n 0 0 0 0
 stdout (p n) linux 1 p n 0 0 0 1
 stderr (p n) linux 2 p n 0 0 0 1
 
-retry (s (p n) p q)
+retry (stdio (p n) p q)
 let 0 a
 let for p i
-    let s i sub i q n
+    let stdio i sub i q n
     do and cmpe n neg 1 store addr a neg 1
-    and n add n
-    i
-b
+    and n
+	add n i
+	b
 or a b
 
 alloc (b n)

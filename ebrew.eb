@@ -1,178 +1,210 @@
-# byte classification #
+# lexer #
 
-is_sp (c) cmpe c ' 
-is_tb (c) cmpe c '\t
-is_lf (c) cmpe c '\n
-is_cr (c) cmpe c '\r
-is_us (c) cmpe c '_
-is_sq (c) cmpe c '\'
-is_dq (c) cmpe c '\"
+is_dq (a)
+cmpe a '\"
 
-is_in (c a b) not or cmpa c a cmpa b c
+is_ndq (a)
+not is_dq a
 
-is_AZ (c) is_in c 'A 'Z
-is_az (c) is_in c 'a 'z
-is_09 (c) is_in c '0 '9
+is_09 (a)
+not or  cmpa a '0
+        cmpa '9 a
 
-is_ws (c)
-or  is_sp c
-or  is_tb c
-or  is_lf c
-    is_cr c
+is_ws (a)
+or  cmpe a ' 
+or  cmpe a '\t
+or  cmpe a '\n
+    cmpe a '\r
 
-is_id (c)
-or  is_AZ c
-or  is_az c
-or  is_09 c
-    is_us c
+is_id (a) not
+and or  cmpa a 'A cmpa 'Z a
+and or  cmpa a 'a cmpa 'z a
+    not or  is_09 a
+            cmpe a '_
 
-is_lit (c)
-or  is_09 c
-    is_sq c
+is_lit (a)
+or  is_09 a
+    cmpe a '\'
 
-# byte input #
+# caret #
 
-klength  (k) add (         k) usize
-kline_no (x) add (klength  x) usize
-kcol_no  (x) add (kline_no x) usize
-kin      (x) add (kcol_no  x) usize
-ksize    ( )      kin         usize
+struct_caret_ptr  (c)                        c
+struct_caret_line (c) add (struct_caret_ptr  c) scalar
+struct_caret_col  (c) add (struct_caret_line c) scalar
+struct_caret      ( )      struct_caret_col     scalar
 
-caret_byte (k)
-peek load kin k
+caret_init (c ptr line col)
+do  store struct_caret_ptr  c ptr
+do  store struct_caret_line c line
+    store struct_caret_col  c col
 
-caret_is (is (c) k)
-is peek load k
+caret_peek (c)
+peek load struct_caret_ptr c
 
-check_eof (k)
-or  caret_byte k
-	# unexpected eof #
-	exit 2
+caret_skip (c)
+do  or  caret_peek c
+    # unexpected eof #
+    exit 2
+do  store struct_caret_ptr c add 1 load struct_caret_ptr c
+    if  cmpe caret_peek c '\n
+    do  store struct_caret_col  c  1
+        store struct_caret_line c add 1 load struct_caret_line c
+        store struct_caret_col  c add 1 load struct_caret_col  c
 
-caret_next_is (k c)
-do  check_eof k
-    cmpe c peek add 1 load kin k
+caret_eat (c a)
+and cmpe a caret_peek c
+    caret_skip c
 
-caret_advance (k)
-do  check_eof k
-do  store kin k add 1 load kin k
-    if  cmpe caret_byte k '\n
-    do  store kcol_no k  1
-        store kline_no k add 1 load kline_no k
-        store kcol_no k add 1 load kcol_no k
+caret_eat_by (is (a) c)
+and is caret_peek c
+    caret_skip c
 
-caret_eat (k a)
-and cmpe a caret_byte k
-do  caret_advance k
+caret_eat_for (is (a) c)
+and is caret_peek c
+for 1 _
+    caret_eat_by is c
+
+caret_ptr  (c)
+load struct_caret_ptr  c
+
+caret_line (c)
+load struct_caret_line c
+
+caret_col (c)
+load struct_caret_col  c
+
+# tokenizer  #
+
+ws (c)
+for 1 _
+or  and caret_eat c '#
+        for 1 _
+        and not caret_eat c '#
+            caret_skip c
+        caret_eat_by is_ws c
+
+id (c)
+caret_eat_for is_id c
+
+number (c)
+caret_eat_for is_09 c
+
+string (c)
+and caret_eat c '"
+    do  for 1 _
+        do  for 1 _
+            and caret_eat c '\\
+                caret_skip c
+        caret_eat_by is_ndq c
+        caret_skip c
+
+char (c)
+and caret_eat  c '\'
+do  caret_eat  c '\\
+do  caret_skip c
+do  caret_eat  c '\'
     1
 
-caret_eat_by (is (c) k)
-and is caret_byte k
-do  caret_advance k
-    1
-
-caret_eat_for (is (c) k)
-and is caret_byte k
-    for 1 _ caret_eat_by is k
+punct (c)
+or  caret_eat c '(
+or  caret_eat c ')
+    caret_eat c '?
 
 # token #
 
-ws (k)
-do  for 1 _
-    or  and caret_eat k '#
-            for 1 _
-            and not caret_eat k '#
-                caret_advance k
-            caret_eat_by is_ws k
-    and not caret_byte k
-        do  store k 0
-        1
+struct_token_start (k)                           k
+struct_token_end   (k) add (struct_token_start   k) scalar
+struct_token_caret (k) add (struct_token_end     k) scalar
+struct_token       ( )      struct_token_caret      struct_caret
 
-id (k)
-caret_eat_for is_id k
+token_copy (a b)
+memcpy a b struct_token
 
-number (k)
-caret_eat_for is_09 k
-
-string (k)
-and caret_eat k '"
-    do  for 1 _
-        do  for 1 _
-            and caret_eat k '\\
-                caret_advance k
-        and not cmpe caret_byte k '"
-            caret_advance k
-        caret_advance k
-
-char (k)
-and caret_eat k '\'
-    do  caret_eat k '\\
-    do  caret_advance k
-    do  caret_eat k '\'
-        1
-
-punct (k)
-or  caret_eat k '(
-or  caret_eat k ')
-    caret_eat k '?
-
-
-# token api #
+init_token (k in)
+do  caret_init struct_token_caret k in 1 1
+do  ws struct_token_caret k
+or  and not caret_peek struct_token_caret k
+        do  store struct_token_start  k 0
+        do  store struct_token_end    k 0
+            1
+let caret_ptr struct_token_caret k start
+do  or  id struct_token_caret k
+        # invalid token #
+        exit 5
+do  store struct_token_start  k start
+    store struct_token_end    k caret_ptr struct_token_caret k
 
 next (k)
-do  or load k
+do  or load struct_token_start k
     # no more tokens #
-    exit 6
-or  ws k
-let load kin k q
-do  or number k
-    or string k
-    or char   k
-    or id     k
-    or punct  k
+    exit 5
+do  ws struct_token_caret k
+or	and not caret_peek struct_token_caret k
+        do  store struct_token_start  k 0
+        do  store struct_token_end    k 0
+            1
+let caret_ptr struct_token_caret k start
+do  or number struct_token_caret k
+    or string struct_token_caret k
+    or char   struct_token_caret k
+    or id     struct_token_caret k
+    or punct struct_token_caret  k
        # invalid token #
-       exit 5
-do  store k q
-    store klength k sub q load kin k
+       exit 6
+do  store struct_token_start  k start
+    store struct_token_end    k caret_ptr struct_token_caret k
 
-have (k c)
-and load k
-and memcmp c load k load klength k
-    not peek add c load klength k
+have (k literal)
+let load struct_token_start  k start
+let load struct_token_end    k end
+let sub start end length
+and start
+    substrcmp literal start length
+
+token_is (is (c) k)
+is peek load struct_token_start k
 
 have_lit (k)
-caret_is is_lit k
+token_is is_lit k
 
 have_str (k)
-caret_is is_dq k
+token_is is_dq k
 
 have_id (k)
-caret_is is_id k
+token_is is_id k
 
 eat (k c)
 let have k c r
 do  and r
     next k r
 
-flake (k)
-mul  100 
-add  load kcol_no k
-mul  1000000
-load kline_no k
+token_equal (ka kb)
+let load struct_token_start ka starta
+let load struct_token_start kb startb
+    streq starta sub starta load struct_token_end ka startb sub startb load struct_token_end kb
 
-cmp_token (ka kb)
-or  ne load klength ka load klength kb
-    not strncmp
-        load ka
-        load kb
-        load klength ka
-
-verbatim (out k)
-let add load k load klength k end
-for load k in
+put_token (out k)
+let load struct_token_start  k start
+let load struct_token_end    k end
+let sub start end length
+for start in
 and cmpa in end
 do  put_byte out peek in
     add 1 in
+
+more_tokens (k)
+caret_peek struct_token_caret k
+
+# stack accounting #
+
+pushpop (impl (out depth arg) out depth arg sign (a b) size)
+do  impl out depth arg
+    store depth sign size load depth
+
+fpop  (impl (out depth size) out depth size) pushpop impl out depth size add size
+fpush (impl (out depth size) out depth size) pushpop impl out depth size sub size
+pop   (impl (out depth reg ) out depth reg ) pushpop impl out depth reg  add 1
+push  (impl (out depth reg ) out depth reg ) pushpop impl out depth reg  sub 1
 
 # x86_64 #
 
@@ -212,258 +244,343 @@ do  ins0 out s '
 do  label_id out n
     put_byte out '\n
 
-jmp (out n)
-jc out n "jmp"
+jcn (out n s)
+jc out n s
 
-je (out n)
-jc out n "je"
+czjc (out n s)
+do  cz out
+    jcn out n s
 
-jne (out n)
-jc out n "jne"
+x86_64_je  (out n) czjc out n "je"
+x86_64_jne (out n) czjc out n "jne"
+x86_64_jmp (out n) jcn  out n "jmp"
 
-rip (out)
+x86_64_rip (out)
 put_string out "@GOTPCREL(%rip),%rax\n"
 
-def_str (out n k)
+x86_64_load_rel (out then now)
+do  put_number out shl 3 sub now then
+    put_string out "(%rsp),%rax\n"
+
+x86_64_if (j (out n) out)
+let load out n
+do  j out n
+    n
+
+x86_64_fpushpop (out depth size ins)
+and size
+do  put_string out ins
+do  put_number out shl 3 size
+    put_string out ",%rsp\n"
+
+x86_64_fpop (out depth size)
+x86_64_fpushpop out depth size "add $"
+
+x86_64_fpush (out depth size)
+x86_64_fpushpop out depth size "add $-"
+
+x86_64_pop  (out depth reg)
+mnem1 out "pop" reg
+
+x86_64_push (out depth reg)
+mnem1 out "push" reg
+
+# implementation #
+
+impl_x86_64_preamble (out)
+mnem0 out ".globl _start"
+
+impl_x86_64_id (out k then now)
+do  put_string out "mov "
+if  then
+    x86_64_load_rel out then now
+    do  put_token out k
+        x86_64_rip out
+
+impl_x86_64_addr (out k then now)
+do  put_string out "lea "
+    x86_64_load_rel out then now
+
+impl_x86_64_lit (out k)
+do  put_string out "mov $"
+do  put_token  out k
+    put_string out ",%rax\n"
+
+impl_x86_64_str (out k)
+let load out n
 do  put_string out ".section .text..s"
 do  put_number out n
 do  put_string out "\n.s"
 do  put_number out n
 do  put_string out ":.string "
-do  verbatim   out k
-    put_string out "\n.previous\n"
-
-load_str (out n)
+do  put_token  out k
+do  put_string out "\n.previous\n"
 do  put_string out "mov .s" 
 do  put_number out n
-    rip out
+    x86_64_rip out
 
-# accounting #
+impl_x86_64_and  (out) x86_64_if x86_64_je  out
+impl_x86_64_or   (out) x86_64_if x86_64_jne out
+impl_x86_64_else (out) x86_64_if x86_64_jmp out
 
-xbrk     (x) add (         x) usize
-xout     (x) add (xbrk     x) usize
-xcaret   (x) add (xout     x) usize
-xscalar  (x) add (xcaret   x) ksize
-xtype    (x) add (xscalar  x) usize
-xdepth   (x) add (xtype    x) usize
-xsize    ( )      xdepth      usize
+impl_x86_64_loop (out n)
+x86_64_jne out n
 
-fpushpop (out depth size ins sign (a b))
-and size
-do  put_string out ins
-do  put_number out shl 3 size
-do  put_string out ",%rsp\n"
-    store depth sign size load depth
+impl_x86_64_let (out depth)
+let load out n
+do  push x86_64_push out depth "%rax"
+    n
 
-pushpop  (out depth reg  ins sign (a b))
-do  mnem1 out ins reg
-    store depth sign 1 load depth
+impl_x86_64_unlet (out depth)
+fpop x86_64_fpop out depth 1
 
-fpop  (x size)
-fpushpop xout x xdepth x size "add $" add
+impl_x86_64_for (out)
+mnem2 out "mov" "%rax" "(%rsp)"
 
-fpush (x size)
-fpushpop xout x xdepth x size "add $-" sub
+impl_x86_64_unfor (out depth)
+pop x86_64_pop out depth "%rax"
 
-pop   (x reg)
-pushpop xout x xdepth x reg "pop"  add
-
-push  (x reg)
-pushpop xout x xdepth x reg "push" sub
-
-# nametable #
-
-ocaret   (o) add (         o) usize
-otype    (o) add (ocaret   o) ksize
-odepth   (o) add (otype    o) usize
-oisdef   (o) add (odepth   o) usize
-oisvar   (o) add (oisdef   o) usize
-osize    ( )      oisvar      usize
-
-targ     (t) add (         t) usize
-tcaret   (t) add (targ     t) usize
-tkind    (t) add (tcaret   t) ksize
-tsize    ( )      tkind       usize
-
-book_var (x o isvar)
-do store otype   o load xtype   x
-do store ocaret  o load xcaret  x
-do store klength ocaret o load klength xcaret x
-   store oisvar o isvar
-
-book_fn (x t o)
-book_var x o 0
-
-book_let (x t o)
-do book_var x o 1
-   store odepth o load xdepth x
-
-book_param (x t o)
-do store otype   o t
-do store odepth  o load xdepth  x
-do store ocaret  o load tcaret  t
-do store klength ocaret o load klength tcaret t
-   store oisvar o 1
-
-push_book (p (x t o) x t)
-let alloc xbrk x osize o
-do  store o load x
-do  p x t o
-do  store oisdef o 0
-do  store x o
-    o
-
-pop_book (x)
-store x load load x
-
-try_lookup (x)
-let 0 o
-let load x head
-do  and head
-    for head s
-    if  cmp_token xcaret x ocaret s
-        load s
-        do  store addr o s
-            0
-o
-
-lookup (x)
-or  try_lookup x
-    # lookup failed #
-    exit 1
+impl_x86_64_label (out n)
+label out n
 
 # types #
 
-new_type (x kind)
-let alloc xbrk x tsize t
-do  store t 0
-do  store tcaret t xcaret x
-do  store tkind t kind
+struct_type_next  (t)                        t
+struct_type_arg   (t) add (struct_type_next  t) scalar
+struct_type_token (t) add (struct_type_arg   t) scalar
+struct_type_kind  (t) add (struct_type_token t) struct_token
+struct_type       ( )      struct_type_kind     scalar
+
+new_type (brk token kind)
+let alloc brk struct_type t
+do  store struct_type_next t 0
+do  token_copy struct_type_token t token
+do  store struct_type_kind t kind
     t
 
 type_arity (t)
 let 0 d
-do  and t
-    for t u
-    do store addr d add 1 d
-       load u
+do  and struct_type_next t
+    for struct_type_next t u
+    do  store addr d add 1 d
+        load struct_type_next u
     d
 
 type_equal (a b)
 and a
 and b
 or  cmpe a b
-let load tkind a ka
-let load tkind b kb
-and cmpe ka kb
-do  store addr a load targ a
-do  store addr b load targ b
+and cmpe load struct_type_kind a
+         load struct_type_kind b
+do  copy addr a struct_type_arg a
+do  copy addr b struct_type_arg b
 do  for 1 _
     and type_equal a b
-    do  store addr a load a
-    do  store addr b load b
+    do  copy addr a struct_type_next a
+    do  copy addr b struct_type_next b
         1
     cmpe a b
 
-# x86 implementation #
+# semantics #
 
-stack_offset (x o)
-sub load xdepth x
-    load odepth o
+struct_arnica_book   (x)                           x
+struct_arnica_brk    (x) add (struct_arnica_book   x) scalar
+struct_arnica_out    (x) add (struct_arnica_brk    x) scalar
+struct_arnica_token  (x) add (struct_arnica_out    x) scalar
+struct_arnica_scalar (x) add (struct_arnica_token  x) struct_token
+struct_arnica_type   (x) add (struct_arnica_scalar x) scalar
+struct_arnica_impl   (x) add (struct_arnica_type   x) scalar
+struct_arnica        ( )      struct_arnica_impl      scalar
 
-letvar (p (x t) x t)
-let push_book book_let x 0 o
-do  next xcaret x
+arnica_constant (impl (out k) x t)
+do  impl struct_arnica_out x struct_arnica_token x
+do  next struct_arnica_token x
+    copy struct_arnica_type x struct_arnica_scalar x
+
+arnica_variable (impl (out k then now) x t then)
+do  impl struct_arnica_out x struct_arnica_token x then load struct_arnica_impl x
+do  next struct_arnica_token x
+    store struct_arnica_type x t
+
+sem_arnica_lit  (x t) arnica_constant impl_x86_64_lit x t
+sem_arnica_str  (x t) arnica_constant impl_x86_64_str x t
+
+sem_arnica_addr (x t then) arnica_variable impl_x86_64_addr x t then
+sem_arnica_id   (x t then) arnica_variable impl_x86_64_id   x t then
+
+sem_arnica_and   (x) impl_x86_64_and  struct_arnica_out x 
+sem_arnica_or    (x) impl_x86_64_or   struct_arnica_out x 
+sem_arnica_else  (x) impl_x86_64_else struct_arnica_out x
+
+sem_arnica_label (x n) impl_x86_64_label struct_arnica_out x n
+
+sem_arnica_let   (x  ) impl_x86_64_let   struct_arnica_out x struct_arnica_impl x
+sem_arnica_unlet (x n) impl_x86_64_unlet struct_arnica_out x struct_arnica_impl x
+
+sem_arnica_for (x)
+let impl_x86_64_let   struct_arnica_out x struct_arnica_impl x n
+let impl_x86_64_else  struct_arnica_out x m
+do  impl_x86_64_label struct_arnica_out x n
+do  impl_x86_64_for   struct_arnica_out x
+do  impl_x86_64_label struct_arnica_out x m
+    n
+
+sem_arnica_unfor (x n)
+do  impl_x86_64_loop  struct_arnica_out x n
+    impl_x86_64_unfor struct_arnica_out x struct_arnica_impl x
+
+# bookkeeping #
+
+struct_decl_type  (o)                          o
+struct_decl_impl  (o) add (struct_decl_type    o) scalar
+struct_decl_isdef (o) add (struct_decl_impl    o) scalar
+struct_decl       ( )      struct_decl_isdef      scalar
+
+struct_name_token (o)                          o
+struct_name_decl  (o) add (struct_name_token   o) struct_token
+struct_name       ( )      struct_name_decl       struct_decl
+
+struct_book_next  (o)                       o
+struct_book_name  (o) add (struct_book_next o) scalar
+struct_book       ( )      struct_book_name    struct_name
+
+push_book (brk book token type impl)
+let alloc brk struct_book next
+do        copy struct_book_next  next book
+let struct_book_name next name
+do  token_copy struct_name_token name token
+let struct_name_decl name decl
+do        copy struct_decl_type  decl type
+do        copy struct_decl_impl  decl impl
+do       store struct_decl_isdef decl 0
+do  store book next
+    name
+
+pop_book (book)
+copy book load struct_book_next book
+
+try_lookup (book token)
+let 0 r
+do  for load book i
+    if  token_equal token struct_name_token struct_book_name i
+        load struct_book_next i
+        do  store addr r struct_book_name i
+            0
+    r
+
+lookup (book token)
+or  try_lookup book token
+    # lookup failed #
+    exit 1
+
+# syntax #
+
+syn_and_or (sem (x) p (x t) x t)
 do  p x t
-    pop_book x
-
-logic (p (x t) g (c n) x t)
-let flake xcaret x n
-do  cz xout x
-do  g xout x n
+let sem x n
 do  p x t
-do  label xout x n
-    1
+    sem_arnica_label x n
 
-gen_addr (p (x t) x t)
-do  put_string xout x "lea "
-do  put_number xout x shl 3 stack_offset x lookup x
-do  put_string xout x "(%rsp),%rax\n"
-do  store xtype x load xscalar x
-    next xcaret x
+syn_let_for (sem (x) sem_un (x n) p (x t) x t u)
+do  p x u
+let sem x n
+do  push_book
+        struct_arnica_brk   x
+        struct_arnica_book  x
+        struct_arnica_token x
+        struct_arnica_type  x
+        struct_arnica_impl  x
+do  next struct_arnica_token x
+do  p x t
+do  pop_book struct_arnica_book x
+    sem_un x n
 
-gen_do (p (x t) x t)
+syn_literal (p (x t) x t) sem_arnica_lit  x t
+syn_string  (p (x t) x t) sem_arnica_str  x t
+
+syn_addr    (p (x t) x t)
+let lookup struct_arnica_book x struct_arnica_token x o
+    sem_arnica_addr x load struct_arnica_scalar x load struct_decl_impl struct_name_decl o
+
+syn_id      (p (x t) x t)
+let lookup struct_arnica_book x struct_arnica_token x o
+    sem_arnica_id x load struct_decl_type struct_name_decl o load struct_decl_impl struct_name_decl o
+
+syn_and (p (x t) x t) syn_and_or sem_arnica_and p x t
+syn_or  (p (x t) x t) syn_and_or sem_arnica_or  p x t
+
+syn_let (p (x t) x t)
+syn_let_for sem_arnica_let sem_arnica_unlet p x t 0
+
+syn_for (p (x t) x t)
+syn_let_for sem_arnica_for sem_arnica_unfor p x t t
+
+syn_if (p (x t) x t)
+do  p x 0
+let sem_arnica_and   x n
+do  p x t
+let sem_arnica_else  x m
+do  sem_arnica_label x n
+do  p x t
+    sem_arnica_label x m
+
+syn_do  (p (x t) x t)
 do p x 0
    p x t
 
-gen_let (p (x t) x t)
-do  p x 0
-do  push x "%rax"
-do  letvar p x t 
-    fpop x 1
+#
+`parse_expr` is the main expression syntax.
+It's just polish notation with a bit
+of type sensitivity. If a `parse_expr` has
+parse_rest_decls type, the parser expects
+appropriate arguments. We need a
+syntax for referring to a parse_rest_decls
+without expecting more arguments, for
+passing to HOFs sometimes. `parse_arg` is
+where parens cancel call parsing.
+#
 
-gen_for (p (x t) x t)
-let flake xcaret x n
-let add 1 n m
-do  p  x t
-do  push  x "%rax"
-do  jmp   xout x m
-do  label xout x n
-do  mnem2 xout x "mov" "%rax" "(%rsp)"
-do  label xout x m
-do  letvar p x t
-do  cz    xout x
-do  jne   xout x n
-    pop   x "%rax"
+parse_type (x) ?
 
-gen_and (p (x t) x t)
-do  p x 0
-    logic p je x t
+parse_param (x t)
+do  store t alloc struct_arnica_brk x struct_type
+do  token_copy struct_type_token load t struct_arnica_token x
+do  next struct_arnica_token x
+let parse_type x u
+do  copy struct_type_arg  load t struct_type_arg  u
+    copy struct_type_kind load t struct_type_kind u
 
-gen_or (p (x t) x t)
-do  p x t
-let load xtype x u
-do  logic p jne x t
-    store xtype x u
+parse_type (x)
+if  eat struct_arnica_token x "("
+    let new_type struct_arnica_brk x struct_arnica_token x 1 t
+    do  for struct_type_arg t u
+        and not eat struct_arnica_token x ")"
+        do  parse_param x u
+            load u
+        t
+    load struct_arnica_scalar x
 
-gen_if (p (x t) x t)
-let flake xcaret x n
-let add 1 n m
-do  p x 0
-do  cz xout x
-do  je xout x n
-do  p x t
-do  jmp xout x m
-do  label xout x n
-let load xtype x u
-do  p x t
-    label xout x m
+parse_nest (x t) ?
 
-gen_lit (p (x t) x t)
-do  put_string xout x "mov $"
-do  verbatim xout x xcaret x
-do  put_string xout x ",%rax\n"
-do  next xcaret x
-    store xtype x load xscalar x
+kind_expr (c gen (parse (x t) x t) parse (x t) x t)
+and eat struct_arnica_token x c gen parse x t
 
-gen_str (p (x t) x t)
-do  def_str xout x flake xcaret x xcaret x
-do  load_str    xout x flake xcaret x
-do  next xcaret x
-    store xtype x load xscalar x
+parse_arg (x t) ?
 
-gen_id (p (x t) x t)
-let lookup x o
-do  put_string xout x "mov "
-do  if  load oisvar o
-    do  put_number xout x shl 3 stack_offset x o
-        put_string xout x "(%rsp),%rax\n"
-    do  verbatim xout x xcaret x
-        rip xout x
-do  store xtype x load otype o
-    next xcaret x
-
-# we still need this for the funcall impl #
+parse_primary (x t)
+or  parse_nest x t
+or  kind_expr "do"   syn_do   parse_arg x t
+or  kind_expr "or"   syn_or   parse_arg x t
+or  kind_expr "if"   syn_if   parse_arg x t
+or  kind_expr "and"  syn_and  parse_arg x t
+or  kind_expr "let"  syn_let  parse_arg x t
+or  kind_expr "for"  syn_for  parse_arg x t
+or  kind_expr "addr" syn_addr parse_arg x t
+or  and have_lit struct_arnica_token x syn_literal parse_arg x t
+or  and have_str struct_arnica_token x syn_string parse_arg x t
+or  and have_id  struct_arnica_token x syn_id  parse_arg x t
+    # expected expression #
+    exit 11
 
 argreg (d)
 or and cmpe d 0 "%rdi"
@@ -473,175 +590,155 @@ or and cmpe d 3 "%rcx"
 or and cmpe d 4 "%r8"
                 "%r9"
 
-gen_arg (x i)
-do  put_string xout x "mov %rax,"
-do  put_number xout x shl 3 load i
-do  put_string xout x "(%rsp)\n"
+syn_arg (x i)
+do  put_string struct_arnica_out x "mov %rax,"
+do  put_number struct_arnica_out x shl 3 load i
+do  put_string struct_arnica_out x "(%rsp)\n"
     store i add 1 load i
 
-# could connect these with a callback #
-
-gen_argreg (x i)
-pop x argreg i
-
-gen_args (parse (x t) x parameters)
+syn_args (parse (x t) x parameters)
 let 1 depth
 and parameters
 for parameters u
 do  parse x u
-do  or  type_equal u load xtype x
+do  or  type_equal u load struct_arnica_type x
         # asymmetric argument #
         exit 12
-do  gen_arg x addr depth
+do  syn_arg x addr depth
     load u
 
-gen_call (parse (x t) x parameters arity)
-do  fpush x arity
-do  push x "%rax"
-do  gen_args parse x parameters
-    pop x "%rax"
+syn_call (parse (x t) x parameters arity)
+do  fpush x86_64_fpush struct_arnica_out x struct_arnica_impl x arity
+do  push  x86_64_push  struct_arnica_out x struct_arnica_impl x "%rax"
+do  syn_args parse x parameters
+    pop x86_64_pop   struct_arnica_out x struct_arnica_impl x "%rax"
 
-#
-`parse_expr` is the main expression syntax.
-It's just polish notation with a bit
-of type sensitivity. If a `parse_expr` has
-parse_declaration type, the parser expects
-appropriate arguments. We need a
-syntax for referring to a parse_declaration
-without expecting more arguments, for
-passing to HOFs sometimes. `parse_arg` is
-where parens cancel call parsing.
-#
+syn_argreg (x i)
+pop x86_64_pop struct_arnica_out x struct_arnica_impl x argreg i
 
-parse_type (x) ?
-
-parse_param (x t)
-do  store t alloc xbrk x tsize
-do  store tcaret load t load xcaret x
-do  store klength tcaret load t load klength xcaret x
-do  next xcaret x
-let parse_type x u
-do  store targ  load t load targ  u
-    store tkind load t load tkind u
-
-parse_type (x)
-if  eat xcaret x "("
-    let new_type x 1 t
-    do  for targ t u
-        and not eat xcaret x ")"
-        do  parse_param x u
-            load u
-        t
-    load xscalar x
-
-parse_nest (parse (x t) x t) ?
-
-kind_expr (c gen (parse (x t) x t) parse (x t) x t)
-and eat xcaret x c gen parse x t
-
-parse_primary (parse (x t) x t)
-or  parse_nest parse x t
-or  kind_expr "addr" gen_addr parse x t
-or  kind_expr "do"   gen_do   parse x t
-or  kind_expr "let"  gen_let  parse x t
-or  kind_expr "for"  gen_for  parse x t
-or  kind_expr "and"  gen_and  parse x t
-or  kind_expr "or"   gen_or   parse x t
-or  kind_expr "if"   gen_if   parse x t
-or  and have_lit xcaret x  gen_lit  parse x t
-or  and have_str xcaret x  gen_str  parse x t
-or  and have_id  xcaret x  gen_id   parse x t
-    # expected expression #
-    exit 11
-
-parse_call (parse (x t) x t)
-or  have xcaret x ")" 
-or  and t type_equal t load xtype x
+parse_call (x t)
+or  have struct_arnica_token x ")" 
+or  and t
+        type_equal t
+                   load struct_arnica_type x
 for 1 _
-and load tkind load xtype x
-let load xdepth x depth
-let load xtype x function_type
-let load targ function_type parameters
+and load struct_type_kind load struct_arnica_type x
+let load struct_arnica_impl x depth
+let load struct_arnica_type x function_type
+let load struct_type_arg function_type parameters
 let type_arity parameters arity
-do  gen_call parse x parameters arity
+do  syn_call parse_arg x parameters arity
 do  let if cmpa arity 6 arity 6 regargs
     for 0 i
     and cmpa i regargs
-    do  gen_argreg x i
+    do  syn_argreg x i
         add 1 i
-do  mnem1 xout x "call" "*%rax"
-do  fpop x sub load xdepth x depth
-do  store xtype x load xscalar x
+do  mnem1 struct_arnica_out x "call" "*%rax"
+do  fpop x86_64_fpop struct_arnica_out x struct_arnica_impl x sub load struct_arnica_impl x depth
+do  copy struct_arnica_type x struct_arnica_scalar x
     1
 
-parse_expr (parse (x t) x t)
-do  parse_primary parse x t
-    parse_call    parse x t
+parse_expr (x t)
+do  parse_primary x t
+    parse_call x t
 
-parse_nest (parse (x t) x t)
-and eat xcaret x "(" do parse_expr parse x t eat xcaret x ")"
+parse_nest (x t)
+and eat struct_arnica_token x "("
+do  parse_expr x t
+    eat struct_arnica_token x ")"
 
-parse_arg  (x t)
-or parse_nest parse_arg x t
-   parse_expr parse_arg x t
+parse_arg (x t)
+or parse_nest x t
+   parse_expr x t
 
-params        (next (x t g) x t g) if t next x t g do parse_arg x 0 0
-params_next   (next (x t g) x t g) let params next x load t g h do pop_book x h
-register_then (next (x t g) x t reg g) do push x reg do push_book book_param x t add 1 params_next next x t g
-a_register    (next (x t g) x t reg g) register_then next x t reg add 1 g
-stack     (x t g) do let push_book book_param x t o store odepth o g params_next stack x t add 1 g
-register5 (x t g) register_then stack x t "%r9" 1
-register4 (x t g) a_register register5 x t "%r8" g
-register3 (x t g) a_register register4 x t "%rcx" g
-register2 (x t g) a_register register3 x t "%rdx" g
-register1 (x t g) a_register register2 x t "%rsi" g
-register0 (x t g) a_register register1 x t "%rdi" g
+params (next (x t g) x t g)
+if  t
+    next x t g
+    do  parse_arg x 0
+        0
 
-parse_declaration (x)
-and caret_byte xcaret x
-do  let or try_lookup x push_book book_fn x 0 o
-    do  or 	not load oisdef o
-			# remention #
-	       	exit 13
-    do  parse_param x otype o
-    do  store oisdef o not eat xcaret x "?"
-        and load oisdef o
-        do  put_string xout x ".section .text." 
-        do  verbatim xout x ocaret o
-        do  put_byte xout x '\n
-        do  verbatim xout x ocaret o
-        do  put_string xout x ":\n"
-        do  store xdepth x 0
-        do  fpop x params register0 x load targ load otype o 0
-        mnem0 xout x "ret"
-parse_declaration x
+param_push_book (x t)
+push_book struct_arnica_brk x struct_arnica_book x struct_type_token t struct_arnica_type x struct_arnica_impl x
 
-main (x)
-do  mnem0 xout x ".globl _start"
-or  ws xcaret x
-let load kin xcaret x q
-do  or  id xcaret x
-        # invalid token #
-        exit 5
-do  store xcaret x q
-do  store klength xcaret x sub q load kin xcaret x
-    parse_declaration x
+params_next (next (x t g) x t g)
+let params next x load t g h
+do  pop_book struct_arnica_book x
+    h
+
+register (next (x t g) x t reg g)
+do  push x86_64_push struct_arnica_out x struct_arnica_impl x reg
+do  store struct_arnica_type x t
+do  param_push_book x t
+    add 1 params_next next x t g
+
+stack (x t g)
+do  store struct_arnica_type x t
+do  let param_push_book x t o
+        store struct_decl_impl struct_name_decl o g
+    params_next stack x t add 1 g
+
+register_seq (next (x t g) reg x t g)
+register next x t reg add 1 g
+
+register5 (x t g) register_seq     stack "%r9"  x t 0
+register4 (x t g) register_seq register5 "%r8"  x t g
+register3 (x t g) register_seq register4 "%rcx" x t g
+register2 (x t g) register_seq register3 "%rdx" x t g
+register1 (x t g) register_seq register2 "%rsi" x t g
+register0 (x t g) register_seq register1 "%rdi" x t g
+
+parse_decl (whether_lookup (x) x)
+and more_tokens struct_arnica_token x
+let whether_lookup x o
+do  or 	not load struct_decl_isdef struct_name_decl o
+        # remention #
+        exit 13
+do  parse_param x struct_decl_type struct_name_decl o
+do  store struct_decl_isdef struct_name_decl o not eat struct_arnica_token x "?"
+do  and load struct_decl_isdef struct_name_decl o
+    do  put_string struct_arnica_out x ".section .text." 
+    do  put_token struct_arnica_out x struct_name_token o
+    do  put_byte  struct_arnica_out x '\n
+    do  put_token struct_arnica_out x struct_name_token o
+    do  put_string struct_arnica_out x ":\n"
+    do  store struct_arnica_impl x shl 63 1
+    do  fpop x86_64_fpop struct_arnica_out x struct_arnica_impl x params register0 x load struct_type_arg load struct_decl_type struct_name_decl o 0
+        mnem0 struct_arnica_out x "ret"
+    1
+
+decl_nolookup (x)
+do  store struct_arnica_impl x 0
+    push_book struct_arnica_brk x struct_arnica_book x struct_arnica_token x struct_arnica_type x struct_arnica_impl x
+
+decl_lookup (x)
+or 	try_lookup struct_arnica_book x struct_arnica_token x
+    decl_nolookup x
+
+parse_rest_decls (x)
+and parse_decl decl_lookup x
+    parse_rest_decls x
+
+parse_first_decl (x)
+and parse_decl decl_nolookup x
+    parse_rest_decls x
 
 runtime (heap inbuf outbuf)
 let initbrk heap x
 do  store x 0
-do  store xbrk x add x xsize
-do  store kin xcaret x alloc xbrk x inbuf
-do  store xout x alloc xbrk x outbuf
-do  store kline_no xcaret x 1
-do  store kcol_no xcaret x 1
-do  poke retry stdin load kin xcaret x add load kin xcaret x inbuf 0
-do  store xscalar x new_type x 0
-let load xout x q
-do  main x 
-do  retry stdout q load xout x
-	# OK #
+do  store struct_arnica_brk x add x struct_arnica
+let alloc struct_arnica_brk x inbuf  in
+let alloc struct_arnica_brk x outbuf out
+do  store struct_arnica_out x out
+do  poke retry stdin in add in inbuf 0
+do  store struct_arnica_scalar x new_type struct_arnica_brk x struct_arnica_token x 0
+do  init_token struct_arnica_token x in
+do  impl_x86_64_preamble struct_arnica_out x
+do  parse_first_decl x
+do  retry stdout out load struct_arnica_out x
+    # OK #
     exit 0
 
 _start ()
-runtime shl 24 1 shl 20 1 shl 23 1
+runtime shl 24 1
+        shl 20 1
+        shl 23 1
