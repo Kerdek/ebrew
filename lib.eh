@@ -15,30 +15,39 @@ neg   (a  ) ?
 not   (a  ) ?
 linux (rdi rsi rdx rcx r8 r9 rax) ?
 
-scalar ( ) 8
+struct ( ) 8
 
-copy (a b)
-store a load b
+copy (a b) store a load b
 
-exit    (a) linux a 0 0 0 0 0 60
+member-copy (copy (a b) member (x) a b) copy member a member b
 
-initbrk (n) let linux 0 0 0 0 0 0 12 i do linux add n i 0 0 0 0 0 12 i
+pair-copy (copy-a (a b) member-a (x) copy-b (a b) member-b (x) a b)
+do  member-copy copy-a member-a a b
+    member-copy copy-b member-b a b
 
-memcpy (a b n)
-and n
-for n m
-do poke a peek b
-do store addr a add 1 a
-do store addr b add 1 b
-sub 1 m
+inc (a) store a add 1 load a
+
+exit (a) linux a 0 0 0 0 0 60
+
+brk (a) linux a 0 0 0 0 0 12
+
+initbrk (n)
+let brk 0 i
+do  brk add n i
+    i
+
+alloc (brk n)
+let load brk r
+do  store brk add n load brk
+    r
 
 memcmp (a b n)
 let 1 r
 and n 
 do  for n m
     if  cmpe peek a peek b
-		do  store addr a add 1 a
-		do  store addr b add 1 b
+		do  inc addr a
+		do  inc addr b
 			sub 1 m
 		do  store addr r 0
 			0
@@ -50,8 +59,8 @@ and n
 do  for n i
     if 	cmpe peek a peek b
         and peek a
-        do  store addr a add 1 a
-        do  store addr b add 1 b
+        do  inc addr a
+        do  inc addr b
             sub 1 i
         do  store addr r 0
             0 
@@ -60,6 +69,9 @@ do  for n i
 substrcmp (a b n)
 and strncmp a b n
     not peek add a n
+
+substrcmpab (a b c)
+substrcmp a b sub b c
 
 streq (a na b nb)
 or  ne na nb
@@ -82,30 +94,54 @@ let for p i
 	b
 or a b
 
-alloc (b n)
-let load b r
-do store b add n load b
-r
-
-put_byte (out c)
+put-byte (out c)
 let load out p
-do poke p c
-store out add 1 p
+do  poke p c
+    store out add 1 p
 
-put_digit (out n)
-put_byte out add '0 n
+put-higit (out n) put-byte out add if cmpa n 10 '0 '7 n
 
-put_digits (out n)
+put-bhex (out n)
+do  put-higit out div 16 n
+    put-higit out mod 16 n
+
+put-digit (out n) put-byte out add '0 n
+
+put-digits (out n)
 and n
-do  put_digits out div 10 n
-    put_digit  out mod 10 n
+do  put-digits out div 10 n
+    put-digit  out mod 10 n
 
-put_number (out n)
-if n put_digits out if n n '0
-   put_byte   out '0
+put-number (out n)
+if  n put-digits out if n n '0
+    put-byte out '0
 
-put_string (out s)
+put-string (out s)
 for s p
 and peek p
-do  put_byte out peek p
+do  put-byte out peek p
     add 1 p
+
+put-cm (out) put-byte out ',
+put-sp (out) put-byte out ' 
+put-lf (out) put-byte out '\n
+
+put-delim (delim (out) out s)
+do  put-string out s
+    delim out
+
+put-seq (out s)
+put-delim put-sp out s
+
+put-list (out s)
+put-delim put-cm out s
+
+put-line (out s)
+put-delim put-lf out s
+
+rep (iterate (a) a)
+for 1 - iterate a
+
+repif (by (c) c)
+and by c
+    rep by c
