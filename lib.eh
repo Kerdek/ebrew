@@ -94,18 +94,18 @@ let for p i
 	b
 or a b
 
-put-byte (out c)
+put (out c)
 let load out p
 do  poke p c
     store out add 1 p
 
-put-higit (out n) put-byte out add if cmpa n 10 '0 '7 n
+put-higit (out n) put out add if cmpa n 10 '0 '7 n
 
 put-bhex (out n)
 do  put-higit out div 16 n
     put-higit out mod 16 n
 
-put-digit (out n) put-byte out add '0 n
+put-digit (out n) put out add '0 n
 
 put-digits (out n)
 and n
@@ -114,30 +114,34 @@ do  put-digits out div 10 n
 
 put-number (out n)
 if  n put-digits out if n n '0
-    put-byte out '0
+    put out '0
 
-put-string (out s)
+put-cm (out) put out ',
+put-sp (out) put out ' 
+put-lf (out) put out '\n
+
+vput-mem (vput (out a) out a b)
+for a i
+and cmpa i b
+do  vput out (peek i)
+    add 1 i
+
+vput-string (vput (out a) out s)
 for s p
-and peek p
-do  put-byte out peek p
+let (peek p) a
+and a
+do  vput out a
     add 1 p
 
-put-cm (out) put-byte out ',
-put-sp (out) put-byte out ' 
-put-lf (out) put-byte out '\n
+put-string (out s) vput-string put out s
 
 put-delim (delim (out) out s)
 do  put-string out s
     delim out
 
-put-seq (out s)
-put-delim put-sp out s
-
-put-list (out s)
-put-delim put-cm out s
-
-put-line (out s)
-put-delim put-lf out s
+put-seq  (out s) put-delim put-sp out s
+put-list (out s) put-delim put-cm out s
+put-line (out s) put-delim put-lf out s
 
 rep (iterate (a) a)
 for 1 - iterate a
