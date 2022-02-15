@@ -66,13 +66,6 @@ do  for n i
             0 
     r
 
-substrcmp (a b n)
-and strncmp a b n
-    not peek add a n
-
-substrcmpab (a b c)
-substrcmp a b sub b c
-
 streq (a na b nb)
 or  ne na nb
     not memcmp
@@ -118,6 +111,8 @@ if  n put-digits out if n n '0
 
 put-cm (out) put out ',
 put-sp (out) put out ' 
+put-ds (out) put out '$
+put-cr (out) put out '\r
 put-lf (out) put out '\n
 
 vput-mem (vput (out a) out a b)
@@ -142,10 +137,3 @@ do  put-string out s
 put-seq  (out s) put-delim put-sp out s
 put-list (out s) put-delim put-cm out s
 put-line (out s) put-delim put-lf out s
-
-rep (iterate (a) a)
-for 1 - iterate a
-
-repif (by (c) c)
-and by c
-    rep by c

@@ -8,7 +8,7 @@ endif
 ifeq ($(BOOTSTRAP),bin)
 bin/ebrew:
 else
-$(BOOTSTRAP)/ebrew: ebrew.eb lib.eh bin/ebrew bin/def.o
+$(BOOTSTRAP)/ebrew: ebrew.eb lib.eh bin/ebrew
 	@$(MAKE) -f build.mak --no-print-directory STAGE=$(BOOTSTRAP) $(BOOTSTRAP)/ebrew
 endif
 
@@ -16,7 +16,7 @@ $(STAGE):
 	mkdir -p $(STAGE)
 
 %ebrew: %ebrew.o
-	ld -o $@ $^ bin/def.o
+	ld -o $@ $^
 
 %ebrew.o: %ebrew.s
 	as -o $@ -c $^

@@ -1,11 +1,5 @@
 # span #
 
-#
-  a span for us is just a couple of pointers
-  we're gonna use that for a couple things but the
-  important one is to locate a token in the input
-#
-
 span--start (s)                  s
 span--end   (s) add (span--start s) struct
 struct-span ( )      span--end      struct
@@ -26,14 +20,328 @@ span-init (s start end)
 do  store (span--start s) start
     store (span--end   s) end
 
-span-is (s lit)
+span-strcmp (s lit)
 let span-start s start
 let span-end   s end
-    substrcmpab lit start end
+let sub start end n
+and strncmp lit start n
+    not peek add lit n
 
 vput-span (vput (out a) out s) vput-mem vput out (span-start s) (span-end s)
 
-span-put-mem (out s) vput-span put out s
+put-span (out s) vput-span put out s
+
+# stack accounting #
+
+pushpop (out y op (a b) size) store y (op size (load y))
+
+fpop  (out y size) pushpop out y add size
+fpush (out y size) pushpop out y sub size
+pop   (out y     ) pushpop out y add 1
+push  (out y     ) pushpop out y sub 1
+
+# x86_64 implementation #
+
+x86_64-string-mov              () "mov"
+x86_64-string-lea              () "lea"
+x86_64-string-add              () "add"
+x86_64-string-test             () "test"
+x86_64-string-je               () "je"
+x86_64-string-jne              () "jne"
+x86_64-string-jmp              () "jmp"
+x86_64-string-push             () "push"
+x86_64-string-pop              () "pop"
+x86_64-string-call             () "call"
+x86_64-string-ret              () "ret"
+x86_64-string-entry            () "_start"
+x86_64-string-stack-top        () "(%rsp)"
+x86_64-string-pcrel-rip        () "@GOTPCREL(%rip)"
+x86_64-string-str-label-prefix () ".s"
+x86_64-string-globl            () ".globl"
+x86_64-string-equ              () ".equ"
+x86_64-string-section-text     () ".section .text."
+x86_64-string-string           () ".string"
+x86_64-string-previous         () ".previous"
+x86_64-string-rax              () "%rax"
+x86_64-string-rsp              () "%rsp"
+x86_64-string-rdi              () "%rdi"
+x86_64-string-rsi              () "%rsi"
+x86_64-string-rdx              () "%rdx"
+x86_64-string-rcx              () "%rcx"
+x86_64-string-r8               () "%r8"
+x86_64-string-r9               () "%r9"
+
+x86_64-mangle (vput (put (out a) out s) out s)
+do  put out 'f
+    vput put-bhex out s
+
+x86_64-mangle-span   (out s) x86_64-mangle vput-span   out s
+x86_64-mangle-string (out s) x86_64-mangle vput-string out s
+
+x86_64-cz (out)
+do  put-seq  out x86_64-string-test
+do  put-list out x86_64-string-rax
+    put-line out x86_64-string-rax
+
+x86_64-label-id (out n)
+do  put out '.
+do  put-number out n
+    put out '$
+
+x86_64-jc (out n s)
+do  put-seq out s
+do  x86_64-label-id out n
+    put-lf out
+
+x86_64-jcn (out n s) x86_64-jc out n s
+
+x86_64-czjc (out n s)
+do  x86_64-cz out
+    x86_64-jcn out n s
+
+x86_64-je  (out n) x86_64-czjc out n x86_64-string-je
+x86_64-jne (out n) x86_64-czjc out n x86_64-string-jne
+x86_64-jmp (out n) x86_64-jcn  out n x86_64-string-jmp
+
+x86_64-rip (out)
+do  put-list out x86_64-string-pcrel-rip
+    put-line out x86_64-string-rax
+
+x86_64-load-rel (out y z)
+do  put-number out (shl 3 (sub z y))
+do  put-list out x86_64-string-stack-top
+    put-line out x86_64-string-rax
+
+x86_64-if (j (out n) out)
+let (load out) n
+do  j out n
+    n
+
+x86_64-str-label (out n)
+do  put-string out x86_64-string-str-label-prefix
+    put-number out n
+
+x86_64-label-suf (out)
+do  put out ':
+    put-lf out
+
+x86_64-str-label-with (suf (out) out n)
+do  x86_64-str-label out n
+    suf out
+
+x86_64-builtin-label (out s)
+do  put-seq  out x86_64-string-globl
+do  put-line out s
+do  put-string out x86_64-string-section-text
+do  put-line out s
+do  put-string out s
+    x86_64-label-suf out
+
+x86_64-pre (out)
+do  put-seq     out x86_64-string-globl
+do  put-line    out x86_64-string-entry
+do  put-seq     out x86_64-string-equ
+do  put-list    out x86_64-string-entry
+do  x86_64-mangle-string out x86_64-string-entry
+do  put-lf out
+do  x86_64-builtin-label out "f6C6F6164"
+do  put-line out "mov (%rdi),%rax"
+do  put-line out x86_64-string-ret
+do  x86_64-builtin-label out "f73746F7265"
+do  put-line out "mov %rsi,(%rdi)"
+do  put-line out x86_64-string-ret
+do  x86_64-builtin-label out "f7065656B"
+do  put-line out "movzb (%rdi),%eax"
+do  put-line out x86_64-string-ret
+do  x86_64-builtin-label out "f706F6B65"
+do  put-line out "movb %sil,(%rdi)"
+do  put-line out x86_64-string-ret
+do  x86_64-builtin-label out "f616464"
+do  put-line out "mov %rsi,%rax"
+do  put-line out "add %rdi,%rax"
+do  put-line out x86_64-string-ret
+do  x86_64-builtin-label out "f737562"
+do  put-line out "mov %rsi,%rax"
+do  put-line out "sub %rdi,%rax"
+do  put-line out x86_64-string-ret
+do  x86_64-builtin-label out "f6D756C"
+do  put-line out "mov %rsi,%rax"
+do  put-line out "mul %rdi"
+do  put-line out x86_64-string-ret
+do  x86_64-builtin-label out "f646976"
+do  put-line out "xor %edx,%edx"
+do  put-line out "mov %rsi,%rax"
+do  put-line out "div %rdi"
+do  put-line out x86_64-string-ret
+do  x86_64-builtin-label out "f6D6F64"
+do  put-line out "xor %edx,%edx"
+do  put-line out "mov %rsi,%rax"
+do  put-line out "div %rdi"
+do  put-line out "mov %rdx,%rax"
+do  put-line out x86_64-string-ret
+do  x86_64-builtin-label out "f73686C"
+do  put-line out "mov %rsi,%rax"
+do  put-line out "mov %rdi,%rcx"
+do  put-line out "shl %cl,%rax"
+do  put-line out x86_64-string-ret
+do  x86_64-builtin-label out "f636D7061"
+do  put-line out "cmp %rdi,%rsi"
+do  put-line out "seta %al"
+do  put-line out "movzbl %al,%eax"
+do  put-line out x86_64-string-ret
+do  x86_64-builtin-label out "f636D7065"
+do  put-line out "cmp %rsi,%rdi"
+do  put-line out "sete %al"
+do  put-line out "movzbl %al,%eax"
+do  put-line out x86_64-string-ret
+do  x86_64-builtin-label out "f6E65"
+do  put-line out "cmp %rsi,%rdi"
+do  put-line out "setne %al"
+do  put-line out "movzbl %al,%eax"
+do  put-line out x86_64-string-ret
+do  x86_64-builtin-label out "f6E6567"
+do  put-line out "mov %rdi,%rax"
+do  put-line out "neg %rax"
+do  put-line out x86_64-string-ret
+do  x86_64-builtin-label out "f6E6F74"
+do  put-line out "test %rdi,%rdi"
+do  put-line out "sete %al"
+do  put-line out "movzbl %al,%eax"
+do  put-line out x86_64-string-ret
+do  x86_64-builtin-label out "f6C696E7578"
+do  put-line out "mov 8(%rsp),%rax"
+do  put-line out "syscall"
+    put-line out x86_64-string-ret
+
+x86_64-id (out s then now)
+do  put-seq out x86_64-string-mov
+if  then
+    x86_64-load-rel out then now
+    do  x86_64-mangle-span out s
+        x86_64-rip out
+
+x86_64-addr (out s then now)
+do  put-seq out x86_64-string-lea
+    x86_64-load-rel out then now
+
+x86_64-lit (out s)
+do  put-seq  out x86_64-string-mov
+do  put-ds   out
+do  put-span out s
+do  put-cm   out
+    put-line out x86_64-string-rax
+
+x86_64-str (out s)
+let (load out) n
+do  put-string out x86_64-string-section-text
+do  x86_64-str-label-with put-lf out n
+do  x86_64-str-label-with x86_64-label-suf out n
+do  put-list out x86_64-string-string
+do  put-span out s
+do  put-lf   out
+do  put-line out x86_64-string-previous
+do  put-seq  out x86_64-string-mov
+    x86_64-str-label-with x86_64-rip out n
+
+x86_64-and  (out  ) x86_64-if x86_64-je  out
+x86_64-or   (out  ) x86_64-if x86_64-jne out
+x86_64-else (out  ) x86_64-if x86_64-jmp out
+x86_64-rep  (out n)           x86_64-jne out n
+
+x86_64-label (out n)
+do  x86_64-label-id out n 
+    x86_64-label-suf out
+
+x86_64-fpushpop (fpushpop (out y size) out y size sign)
+and size
+do  put-seq    out x86_64-string-add
+do  put        out '$
+do  (and sign put out '-)
+do  put-number out (shl 3 size)
+do  put-cm     out
+do  put-line   out x86_64-string-rsp
+    fpushpop   out y size
+
+x86_64-pushpop (pushpop (out y) out y reg sign)
+do  put-seq  out if sign x86_64-string-push x86_64-string-pop
+do  put-line out reg
+    pushpop  out y
+
+x86_64-fpop  (out y size) x86_64-fpushpop fpop  out y size 0
+x86_64-fpush (out y size) x86_64-fpushpop fpush out y size 1
+x86_64-pop   (out y reg ) x86_64-pushpop  pop   out y reg  0
+x86_64-push  (out y reg ) x86_64-pushpop  push  out y reg  1
+
+x86_64-let (out y)
+let (load out) n
+do  x86_64-push out y x86_64-string-rax
+    n
+
+x86_64-for (out y)
+let x86_64-let   out y n
+let x86_64-else  out m
+do  x86_64-label out n
+do  put-seq      out x86_64-string-mov
+do  put-list     out x86_64-string-rax
+do  put-line     out x86_64-string-stack-top
+do  x86_64-label out m
+    n
+
+x86_64-unlet (out y n) x86_64-fpop out y 1
+
+x86_64-unfor (out y n) 
+do  x86_64-rep out n
+    x86_64-pop out y x86_64-string-rax
+
+x86_64-uncall (out y z arity)
+do  x86_64-pop   out y x86_64-string-rax
+do  and cmpa 0 arity do  x86_64-pop out y x86_64-string-rdi
+    and cmpa 1 arity do  x86_64-pop out y x86_64-string-rsi
+    and cmpa 2 arity do  x86_64-pop out y x86_64-string-rdx
+    and cmpa 3 arity do  x86_64-pop out y x86_64-string-rcx
+    and cmpa 4 arity do  x86_64-pop out y x86_64-string-r8
+    and cmpa 5 arity     x86_64-pop out y x86_64-string-r9
+do  put-seq  out x86_64-string-call
+do  put out '*
+do  put-line out x86_64-string-rax
+    x86_64-fpop out y (sub (load y) z)
+
+# ebrew's typing system #
+
+type--next  (t)                  t
+type--arg   (t) add (type--next  t) struct
+type--token (t) add (type--arg   t) struct
+type--kind  (t) add (type--token t) struct
+struct-type ( )      type--kind     struct
+
+type--alloc (brk kind)
+let alloc brk struct-type t
+do  store (type--next t) 0
+do  store (type--arg  t) 0
+do  store (type--kind t) kind
+    t
+
+type-new-unit     (brk) type--alloc brk 0
+type-new-function (brk) type--alloc brk 1
+
+type-kind (t) load (type--kind t)
+
+type-arity (t)
+and t
+    add 1 (type-arity (load (type--next t)))
+
+type--kind-equal (a b) cmpe (type-kind a) (type-kind b)
+
+type-list-equal (equal (a b) a b)
+or  cmpe a b
+and a
+and b
+and type-list-equal equal (load (type--next a)) (load (type--next b))
+    equal a b
+
+type-equal (a b) 
+and type--kind-equal a b
+    type-list-equal type-equal (load (type--arg a)) (load (type--arg b))
 
 # location #
 
@@ -79,23 +387,23 @@ cmpin (a b c)
 not or  cmpa a b
         cmpa c a
 
-range-sq (a) cmpe  a '\'
-range-dq (a) cmpe  a '\"
-range-bs (a) cmpe  a '\\
-range-hm (a) cmpe  a '#
-range-qm (a) cmpe  a '?
-range-lp (a) cmpe  a '(
-range-rp (a) cmpe  a ')
-range-us (a) cmpe  a '_
-range-en (a) cmpe  a '-
-range-sp (a) cmpe  a ' 
-range-tb (a) cmpe  a '\t
-range-lf (a) cmpe  a '\n
-range-cr (a) cmpe  a '\r
+char-range-sq (a) cmpe  a '\'
+char-range-dq (a) cmpe  a '\"
+char-range-bs (a) cmpe  a '\\
+char-range-hm (a) cmpe  a '#
+char-range-qm (a) cmpe  a '?
+char-range-lp (a) cmpe  a '(
+char-range-rp (a) cmpe  a ')
+char-range-us (a) cmpe  a '_
+char-range-en (a) cmpe  a '-
+char-range-sp (a) cmpe  a ' 
+char-range-tb (a) cmpe  a '\t
+char-range-lf (a) cmpe  a '\n
+char-range-cr (a) cmpe  a '\r
 
-range-09 (a) cmpin a '0 '9
-range-AZ (a) cmpin a 'A 'Z
-range-az (a) cmpin a 'a 'z
+char-range-09 (a) cmpin a '0 '9
+char-range-AZ (a) cmpin a 'A 'Z
+char-range-az (a) cmpin a 'a 'z
 
 # caret #
 
@@ -121,218 +429,9 @@ do  store (caret--ptr c) ptr
 
 caret-peek (c) peek (caret-ptr c)
 
-caret-adv (lf (a) c)
-do  loc-adv (lf caret-peek c) (caret--loc c)
+caret-adv (c)
+do  loc-adv (char-range-lf caret-peek c) (caret--loc c)
     inc (caret--ptr c)
-
-line-caret-adv (c) caret-adv range-lf c
-
-# stack accounting #
-
-pushpop (out y op (a b) size) store y (op size (load y))
-
-fpop  (out y size) pushpop out y add size
-fpush (out y size) pushpop out y sub size
-pop   (out y     ) pushpop out y add 1
-push  (out y     ) pushpop out y sub 1
-
-# x86_64 implementation #
-
-x86_64-mangle (vput (put (out a) out s) out s)
-do  put out 'f
-    vput put-bhex out s
-
-x86_64-mangle-span   (out s) x86_64-mangle vput-span   out s
-x86_64-mangle-string (out s) x86_64-mangle vput-string out s
-
-x86_64-cz (out)
-do  put-seq  out "test"
-do  put-list out "%rax"
-    put-line out "%rax"
-
-x86_64-label-id (out n)
-do  put out '.
-do  put-number out n
-    put out '$
-
-x86_64-jc (out n s)
-do  put-seq out s
-do  x86_64-label-id out n
-    put-lf out
-
-x86_64-jcn (out n s) x86_64-jc out n s
-
-x86_64-czjc (out n s)
-do  x86_64-cz out
-    x86_64-jcn out n s
-
-x86_64-je  (out n) x86_64-czjc out n "je"
-x86_64-jne (out n) x86_64-czjc out n "jne"
-x86_64-jmp (out n) x86_64-jcn  out n "jmp"
-
-x86_64-rip (out)
-do  put-list out "@GOTPCREL(%rip)"
-    put-line out "%rax"
-
-x86_64-load-rel (out y z)
-do  put-number out (shl 3 (sub z y))
-do  put-list out "(%rsp)"
-    put-line out "%rax"
-
-x86_64-if (j (out n) out)
-let (load out) n
-do  j out n
-    n
-
-x86_64-str-label (out n)
-do  put-string out ".s"
-    put-number out n
-
-x86_64-label-suf (out) put-line out ":"
-
-x86_64-str-label-with (suf (out) out n)
-do  x86_64-str-label out n
-    suf out
-
-x86_64-mov (out) put-seq out "mov"
-
-x86_64-entry () "_start"
-
-x86_64-pre (out)
-do  put-seq     out ".globl "
-do  put-line    out x86_64-entry
-do  put-seq     out ".equ"
-do  put-list    out x86_64-entry
-do  x86_64-mangle-string out x86_64-entry
-    put-lf out
-
-x86_64-id (out s then now)
-do  x86_64-mov out
-if  then
-    x86_64-load-rel out then now
-    do  x86_64-mangle-span out s
-        x86_64-rip out
-
-x86_64-addr (out s then now)
-do  put-seq out "lea"
-    x86_64-load-rel out then now
-
-x86_64-lit (out s)
-do  x86_64-mov out
-do  put-string out "$"
-do  span-put-mem  out s
-do  put-cm out
-    put-line out "%rax"
-
-x86_64-str (out s)
-let (load out) n
-do  put-string out ".section .text."
-do  x86_64-str-label-with put-lf out n
-do  x86_64-str-label-with x86_64-label-suf out n
-do  put-list out ".string"
-do  span-put-mem out s
-do  put-lf out
-do  put-line out ".previous"
-do  x86_64-mov out
-    x86_64-str-label-with x86_64-rip out n
-
-x86_64-and  (out  ) x86_64-if x86_64-je  out
-x86_64-or   (out  ) x86_64-if x86_64-jne out
-x86_64-else (out  ) x86_64-if x86_64-jmp out
-x86_64-rep  (out n)           x86_64-jne out n
-
-x86_64-label (out n)
-do  x86_64-label-id out n 
-    x86_64-label-suf out
-
-x86_64-fpushpop (fpushpop (out y size) out y size sign)
-and size
-do  put-string out "add $"
-do  (and sign put out '-)
-do  put-number out (shl 3 size)
-do  put-cm out
-do  put-line out "%rsp"
-    fpushpop out y size
-
-x86_64-pushpop (pushpop (out y) out y reg sign)
-do  put-seq  out (if sign "push" "pop")
-do  put-line out reg
-    pushpop out y
-
-x86_64-fpop  (out y size) x86_64-fpushpop fpop  out y size 0
-x86_64-fpush (out y size) x86_64-fpushpop fpush out y size 1
-x86_64-pop   (out y reg ) x86_64-pushpop  pop   out y reg  0
-x86_64-push  (out y reg ) x86_64-pushpop  push  out y reg  1
-
-x86_64-let (out y)
-let (load out) n
-do  x86_64-push out y "%rax"
-    n
-
-x86_64-for (out y)
-let x86_64-let   out y n
-let x86_64-else  out m
-do  x86_64-label out n
-do  x86_64-mov out
-do  put-list out "%rax"
-do  put-line out "(%rsp)"
-do  x86_64-label out m
-    n
-
-x86_64-unlet (out y n) x86_64-fpop out y 1
-
-x86_64-unfor (out y n) 
-do  x86_64-rep out n
-    x86_64-pop out y "%rax"
-
-x86_64-uncall (out y z arity)
-do  x86_64-pop   out y "%rax"
-do  and cmpa 0 arity do  x86_64-pop out y "%rdi"
-    and cmpa 1 arity do  x86_64-pop out y "%rsi"
-    and cmpa 2 arity do  x86_64-pop out y "%rdx"
-    and cmpa 3 arity do  x86_64-pop out y "%rcx"
-    and cmpa 4 arity do  x86_64-pop out y "%r8"
-    and cmpa 5 arity     x86_64-pop out y "%r9"
-do  put-seq  out "call"
-do  put-line out "*%rax"
-    x86_64-fpop out y (sub (load y) z)
-
-# ebrew's typing system #
-
-type--next  (t)                  t
-type--arg   (t) add (type--next  t) struct
-type--token (t) add (type--arg   t) struct
-type--kind  (t) add (type--token t) struct
-struct-type ( )      type--kind     struct
-
-type--alloc (brk kind)
-let alloc brk struct-type t
-do  store (type--next t) 0
-do  store (type--arg  t) 0
-do  store (type--kind t) kind
-    t
-
-type-new-unit     (brk) type--alloc brk 0
-type-new-function (brk) type--alloc brk 1
-
-type-kind (t) load (type--kind t)
-
-type-arity (t)
-and t
-    add 1 (type-arity (load (type--next t)))
-
-type--kind-equal (a b) cmpe (type-kind a) (type-kind b)
-
-type-list-equal (equal (a b) a b)
-or  cmpe a b
-and a
-and b
-and type-list-equal equal (load (type--next a)) (load (type--next b))
-    equal a b
-
-type-equal (a b) 
-and type--kind-equal a b
-    type-list-equal type-equal (load (type--arg a)) (load (type--arg b))
 
 # tokenizer state #
 
@@ -378,7 +477,7 @@ or  token-try-adv read k
 
 token-match (lex (c) k) lex (peek (span-start (token--span k)))
 
-token-is (lit k) span-is (token--span k) lit
+token-is (lit k) span-strcmp (token--span k) lit
 
 token-eat-lit (adv (k) k c)
 and token-is c k
@@ -466,9 +565,17 @@ ebrew-sem-id   (impl (out s y z) x d) ebrew-sem-addr-id impl x d load struct-dec
 ebrew-sem-preamble (impl (out) x) impl sem--out x
 ebrew-sem-and      (impl (out) x) impl sem--out x 
 ebrew-sem-or       (impl (out) x) impl sem--out x 
-ebrew-sem-else     (impl (out) x) impl sem--out x
 
-ebrew-sem-label (impl (out impl) x n) impl sem--out x n
+ebrew-sem-if-then (impl-and (out) x) impl-and sem--out x 
+
+ebrew-sem-if-else (impl-jmp (out) impl-label (out n) x n)
+let impl-jmp   sem--out x m
+do  impl-label sem--out x n
+    m
+
+ebrew-sem-if-end (impl-label (out n) x n) impl-label sem--out x n
+
+ebrew-sem-label (impl (out n) x n) impl sem--out x n
 
 ebrew-sem-decl (brk type impl)
 let alloc brk struct-decl d
@@ -491,7 +598,13 @@ let impl sem--out x sem--impl x n
 do  ebrew-sem-vardecl x (sem--token x)
     n
 
-ebrew-sem-unvar (impl (out y n) x n) impl sem--out x sem--impl x n
+ebrew-sem-unvar (impl (out y n) x n)
+do  impl sem--out x sem--impl x n
+    pop-book (sem--book x)
+
+ebrew-sem-uncall (impl (out y z arity) x z arity)
+do  impl (sem--out x) (sem--impl x) z arity
+    sem-set-type x (type-new-unit (sem--brk x))
 
 # another shit table #
 
@@ -504,91 +617,85 @@ sem-unlet (x n) ebrew-sem-unvar x86_64-unlet x n
 sem-unfor (x n) ebrew-sem-unvar x86_64-unfor x n
 sem-and   (x  ) ebrew-sem-and   x86_64-and   x
 sem-or    (x  ) ebrew-sem-or    x86_64-or    x
-sem-else  (x  ) ebrew-sem-else  x86_64-else  x
+sem-if    (x  ) ebrew-sem-if-then    x86_64-and   x
+sem-else  (x n) ebrew-sem-if-else  x86_64-else
+                                x86_64-label x n
+sem-endif (x n) ebrew-sem-label x86_64-label x n
 sem-lit   (x  ) ebrew-sem-lit   x86_64-lit   x
 sem-str   (x  ) ebrew-sem-str   x86_64-str   x
 
+sem-uncall (x z arity) ebrew-sem-uncall x86_64-uncall x z arity
+
 # ebrew's character classes #
 
-ebrew-char-class-lf (a)     range-lf a
-ebrew-char-class-hm (a)     range-hm a
-ebrew-char-class-bs (a)     range-bs a
-ebrew-char-class-sq (a)     range-sq a
-ebrew-char-class-dq (a)     range-dq a
-ebrew-char-class-09 (a)     range-09 a
+ebrew-char-class-nz (a) a
 
-ebrew-char-class-ws (a) or  range-sp a
-                        or  range-tb a
-                        or  range-lf a
-                            range-cr a
-ebrew-char-class-id (a) or  range-AZ a
-                        or  range-az a
-                        or  range-09 a
-                        or  range-en a
-                            range-us a
-ebrew-char-class-im (a) or  range-09 a
-                            range-sq a
-ebrew-char-class-pt (a) or  range-lp a
-                        or  range-rp a
-                            range-qm a
+ebrew-char-class-lf (a)     char-range-lf a
+ebrew-char-class-hm (a)     char-range-hm a
+ebrew-char-class-bs (a)     char-range-bs a
+ebrew-char-class-sq (a)     char-range-sq a
+ebrew-char-class-dq (a)     char-range-dq a
+ebrew-char-class-09 (a)     char-range-09 a
+
+ebrew-char-class-ws (a) or  char-range-sp a
+                        or  char-range-tb a
+                        or  char-range-lf a
+                            char-range-cr a
+ebrew-char-class-id (a) or  char-range-AZ a
+                        or  char-range-az a
+                        or  char-range-09 a
+                        or  char-range-en a
+                            char-range-us a
+ebrew-char-class-im (a) or  char-range-09 a
+                            char-range-sq a
+ebrew-char-class-pt (a) or  char-range-lp a
+                        or  char-range-rp a
+                            char-range-qm a
 
 # ebrew's lexer #
 
-ebrew-caret-class-hm (c) ebrew-char-class-hm caret-peek c
-ebrew-caret-class-bs (c) ebrew-char-class-bs caret-peek c
-ebrew-caret-class-dq (c) ebrew-char-class-dq caret-peek c
-ebrew-caret-class-sq (c) ebrew-char-class-sq caret-peek c
-ebrew-caret-class-09 (c) ebrew-char-class-09 caret-peek c
-ebrew-caret-class-pt (c) ebrew-char-class-pt caret-peek c
-ebrew-caret-class-ws (c) ebrew-char-class-ws caret-peek c
-ebrew-caret-class-id (c) ebrew-char-class-id caret-peek c
+ebrew-lex-normal (char-class (a) c)
+and char-class caret-peek c
+    caret-adv c
 
-ebrew-lex-any (c) 
-if  caret-peek c
-    line-caret-adv c
-    # unexpected end of file #
-    exit 4
+ebrew-lex-escape (char-class (a) c)
+if  ebrew-lex-normal ebrew-char-class-bs c
+    or  ebrew-lex-normal ebrew-char-class-nz c
+        # unexpected end of file #
+        exit 4
+    ebrew-lex-normal char-class c
 
-ebrew-lex-eat (by (a) c)
-and by c
-    line-caret-adv c
-
-ebrew-lex-hm  (c) ebrew-lex-eat ebrew-caret-class-hm c
-ebrew-lex-bs  (c) ebrew-lex-eat ebrew-caret-class-bs c
-ebrew-lex-dq  (c) ebrew-lex-eat ebrew-caret-class-dq c
-ebrew-lex-sq  (c) ebrew-lex-eat ebrew-caret-class-sq c
-ebrew-lex-09  (c) ebrew-lex-eat ebrew-caret-class-09 c
-ebrew-lex-pt  (c) ebrew-lex-eat ebrew-caret-class-pt c
-ebrew-lex-ws  (c) ebrew-lex-eat ebrew-caret-class-ws c
-ebrew-lex-id2 (c) ebrew-lex-eat ebrew-caret-class-id c
-
-ebrew-lex-escape (lex (c) c)
-if  ebrew-lex-bs   c
-    ebrew-lex-any c
-    lex  c
-
-ebrew-lex-id (c) ebrew-lex-escape ebrew-lex-id2 c
-ebrew-lex-es (c) ebrew-lex-escape ebrew-lex-any c
+ebrew-lex-hm (c) ebrew-lex-normal ebrew-char-class-hm c
+ebrew-lex-dq (c) ebrew-lex-normal ebrew-char-class-dq c
+ebrew-lex-sq (c) ebrew-lex-normal ebrew-char-class-sq c
+ebrew-lex-09 (c) ebrew-lex-normal ebrew-char-class-09 c
+ebrew-lex-pt (c) ebrew-lex-normal ebrew-char-class-pt c
+ebrew-lex-ws (c) ebrew-lex-normal ebrew-char-class-ws c
+ebrew-lex-id (c) ebrew-lex-escape ebrew-char-class-id c
+ebrew-lex-sb (c) ebrew-lex-escape ebrew-char-class-nz c
 
 # tokenizer helpers #
 
-eat-bunch (lex (c) c) repif lex c
+eat-bunch (lex (c) c) 
+and lex c
+for 1 _
+    lex c
 
-eat-chunk (lex (c) escape (c) c)
+eat-pchar (lex (c) escape (c) c)
 and lex c
     escape c
 
 eat-group (lex (c) escape (c) c)
 and lex c
-for 1 -
+for 1 _
 and not (lex c)
     escape c
 
 # ebrew's token helpers #
 
 ebrew-eat-bunch (lex (c) c) eat-bunch lex              c
-ebrew-eat-chunk (lex (c) c) eat-chunk lex ebrew-lex-es c
-ebrew-eat-group (lex (c) c) eat-group lex ebrew-lex-es c
+ebrew-eat-pchar (lex (c) c) eat-pchar lex ebrew-lex-sb c
+ebrew-eat-group (lex (c) c) eat-group lex ebrew-lex-sb c
 
 # ebrew's tokens #
 
@@ -596,7 +703,7 @@ ebrew-eat-pt (c)                 ebrew-lex-pt c
 ebrew-eat-id (c) ebrew-eat-bunch ebrew-lex-id c
 ebrew-eat-09 (c) ebrew-eat-bunch ebrew-lex-09 c
 ebrew-eat-ws (c) ebrew-eat-bunch ebrew-lex-ws c
-ebrew-eat-sq (c) ebrew-eat-chunk ebrew-lex-sq c
+ebrew-eat-sq (c) ebrew-eat-pchar ebrew-lex-sq c
 ebrew-eat-dq (c) ebrew-eat-group ebrew-lex-dq c
 ebrew-eat-nt (c) ebrew-eat-group ebrew-lex-hm c
 
@@ -634,61 +741,63 @@ ebrew-token-match-lit (k) token-match ebrew-char-class-im k
 ebrew-token-match-str (k) token-match ebrew-char-class-dq k
 ebrew-token-match-id  (k) token-match ebrew-char-class-id k
 
-# ebrew's parsers #
+# ebrew's expression parsers #
 
-ebrew-syn-lit-str (sem (x) x)
+# these here parse everying besides
+  the usual function call.
+#
+
+ebrew-parse-lit-str (sem (x) x)
 do  sem x
     ebrew-token-adv (sem--token x)
 
-ebrew-syn-do (expr (x t) x t)
+ebrew-parse-do (expr (x t) x t)
 do  expr x (type-new-unit (sem--brk x))
     expr x t
 
-ebrew-syn-and-or (sem (x) expr (x t) x t)
+ebrew-parse-and-or (sem (x) expr (x t) x t)
 do  expr x t
 let (sem x) n
 do  expr x t
     sem-label x n
 
-ebrew-syn-addr-id (sem (x d) x)
+ebrew-parse-addr-id (sem (x d) x)
 let (lookup sem--book x (sem--token x)) o
 do  sem x (load (struct-name-decl o))
 do  ebrew-token-adv (sem--token x)
     o
 
-ebrew-syn-let-for (sem-start (x) sem-end (x n) expr (x t) x t u)
-do  expr x u
-let (sem-start x) n
+ebrew-parse-let-for (in (x) end (x n) expr (x t) x t)
+do  expr x (type-new-unit (sem--brk x))
+let in   x n
 do  ebrew-token-adv (sem--token x)
 do  expr x t
-do  pop-book (sem--book x)
-    sem-end x n
+    end  x n
 
-ebrew-syn-if (sem-and (x) sem-else (x) sem-label (x n) expr (x t) x t)
+ebrew-parse-if (then (x) else (x n) end (x n) expr (x t) x t)
 do  expr x (type-new-unit (sem--brk x))
-let (sem-and   x) n
+let then x   n
 do  expr x t
-let (sem-else  x) m
-do  sem-label x n
+let else x n m
 do  expr x t
-    sem-label x m
+    end  x m
 
 # ebrew's term syntaxes #
 
-ebrew-syn-sem-lit  (expr (x t) x t) ebrew-syn-lit-str sem-lit                 x
-ebrew-syn-sem-str  (expr (x t) x t) ebrew-syn-lit-str sem-str                 x
-ebrew-syn-sem-addr (expr (x t) x t) ebrew-syn-addr-id sem-addr                x
-ebrew-syn-sem-id   (expr (x t) x t) ebrew-syn-addr-id sem-id                  x
-ebrew-syn-sem-do   (expr (x t) x t) ebrew-syn-do                         expr x t
-ebrew-syn-sem-if   (expr (x t) x t) ebrew-syn-if      sem-and
-                                                      sem-else
-                                                      sem-label          expr x t
-ebrew-syn-sem-and  (expr (x t) x t) ebrew-syn-and-or  sem-and            expr x t
-ebrew-syn-sem-or   (expr (x t) x t) ebrew-syn-and-or  sem-or             expr x t
-ebrew-syn-sem-let  (expr (x t) x t) ebrew-syn-let-for sem-let
-                                                      sem-unlet          expr x t type-new-unit sem--brk x
-ebrew-syn-sem-for  (expr (x t) x t) ebrew-syn-let-for sem-for
-                                                      sem-unfor          expr x t t
+ebrew-syn-sem-lit  (expr (x t) x t) ebrew-parse-lit-str sem-lit        x
+ebrew-syn-sem-str  (expr (x t) x t) ebrew-parse-lit-str sem-str        x
+ebrew-syn-sem-addr (expr (x t) x t) ebrew-parse-addr-id sem-addr       x
+ebrew-syn-sem-id   (expr (x t) x t) ebrew-parse-addr-id sem-id         x
+ebrew-syn-sem-do   (expr (x t) x t) ebrew-parse-do                expr x t
+ebrew-syn-sem-if   (expr (x t) x t) ebrew-parse-if      sem-if
+                                                        sem-else
+                                                        sem-endif expr x t
+ebrew-syn-sem-and  (expr (x t) x t) ebrew-parse-and-or  sem-and   expr x t
+ebrew-syn-sem-or   (expr (x t) x t) ebrew-parse-and-or  sem-or    expr x t
+ebrew-syn-sem-let  (expr (x t) x t) ebrew-parse-let-for sem-let
+                                                        sem-unlet expr x t
+ebrew-syn-sem-for  (expr (x t) x t) ebrew-parse-let-for sem-for
+                                                        sem-unfor expr x t
 
 ebrew-match-prefix (is (k) syn (expr (x t) x t) expr (x t) x t)
 and is (sem--token x)
@@ -713,10 +822,21 @@ or  ebrew-match-token  ebrew-token-match-id   ebrew-syn-sem-id   expr x t
     # expected expression #
     exit 5
 
-# sorta fuck #
+# call syntax #
 
-ebrew-syn-call (expr (x t) x t)
-or  token-is ")" (sem--token x)
+# this is fancy part.
+  first, we parse a term.
+  if it matches the expected
+  type, or if there's a `)`, or if
+  the type just isn't a function,
+  this can't be a call, so that's
+  the end of the expression.
+  otherwise, this is a call, so
+  parse the expected number of
+  argument terms.
+#
+
+ebrew-syn-args (expr (x t) x t)
 or  type-equal t (sem-type x)
 for 1 _
 and type-kind (sem-type x)
@@ -725,7 +845,7 @@ let (sem-type x) function-type
 let (load (type--arg function-type)) parameters
 let (type-arity parameters) arity
 do  x86_64-fpush (sem--out x) (sem--impl x) arity
-do  x86_64-push  (sem--out x) (sem--impl x) "%rax"
+do  x86_64-push  (sem--out x) (sem--impl x) x86_64-string-rax
 do  let 1 i
     and parameters
     for parameters u
@@ -733,28 +853,34 @@ do  let 1 i
     do  or  type-equal u (sem-type x)
             # asymmetric argument #
             exit 6
-    do  x86_64-mov (sem--out x)
-    do  put-list (sem--out x) "%rax"
+    do  put-seq (sem--out x) x86_64-string-mov
+    do  put-list (sem--out x) x86_64-string-rax
     do  put-number (sem--out x) (shl 3 i)
-    do  put-line (sem--out x) "(%rsp)"
+    do  put-line (sem--out x) x86_64-string-stack-top
     do  inc addr i
         load u
-do  x86_64-uncall (sem--out x) (sem--impl x) y arity
-do  sem-set-type x (type-new-unit (sem--brk x))
-    1
+    sem-uncall x y arity
 
-ebrew-syn-nonnest (expr (x t) x t)
+ebrew-syn-maybe-args (expr (x t) x t)
+or  token-is ")" (sem--token x)
+    ebrew-syn-args expr x t
+
+ebrew-syn-call (expr (x t) x t)
 do  ebrew-syn-term expr x t
-    ebrew-syn-call expr x t
+    ebrew-syn-args expr x t
+
+ebrew-syn-maybe-call (expr (x t) x t)
+do  ebrew-syn-term expr x t
+    ebrew-syn-maybe-args expr x t
 
 ebrew-syn-nest (expr (x t) x t)
 and token-eat-lit ebrew-token-adv (sem--token x) "("
-do  ebrew-syn-nonnest expr x t
+do  ebrew-syn-maybe-call expr x t
     token-eat-lit ebrew-token-adv (sem--token x) ")"
 
 ebrew-syn-expr (x t)
-or ebrew-syn-nest    ebrew-syn-expr x t
-   ebrew-syn-nonnest ebrew-syn-expr x t
+or ebrew-syn-nest ebrew-syn-expr x t
+   ebrew-syn-call ebrew-syn-expr x t
 
 # ebrew's type syntax #
 
@@ -771,12 +897,12 @@ do  copy type--arg  load t type--arg  u
 ebrew-syn-type (x)
 if  token-eat-lit ebrew-token-adv (sem--token x) "("
     let (type-new-function (sem--brk x)) t
-    do  for type--arg t u
-        and not token-eat-lit ebrew-token-adv (sem--token x) ")"
+    do  for (type--arg t) u
+        and not (token-eat-lit ebrew-token-adv (sem--token x) ")")
         do  ebrew-syn-param ebrew-syn-type x u
-            type--next load u
+            type--next (load u)
         t
-    type-new-unit sem--brk x
+    type-new-unit (sem--brk x)
 
 # ebrew's declaration syntax #
 
@@ -788,22 +914,22 @@ if  token-eat-lit ebrew-token-adv (sem--token x) "("
 params (ebrew-token-adv (x t g) x t g)
 if  t
     ebrew-token-adv x t g
-    do  ebrew-syn-expr x type-new-unit sem--brk x
+    do  ebrew-syn-expr x type-new-unit (sem--brk x)
         0
 
 param-push-book (x t)
 ebrew-sem-vardecl x (load (type--token t))
 
 params-next (ebrew-token-adv (x t g) x t g)
-let params ebrew-token-adv x load t g h
-do  pop-book sem--book x
+let params ebrew-token-adv x (load t) g h
+do  pop-book (sem--book x)
     h
 
 register (ebrew-token-adv (x t g) x t reg g)
-do  x86_64-push sem--out x sem--impl x reg
+do  x86_64-push (sem--out x) (sem--impl x) reg
 do  sem-set-type x t
 do  param-push-book x t
-    add 1 params-next ebrew-token-adv x t g
+    add 1 (params-next ebrew-token-adv x t g)
 
 stack (x t g)
 do  sem-set-type x t
@@ -830,20 +956,20 @@ do  and	try-lookup sem--book x sem--token x
     decl-first x
 
 parse-decls (which (x) x)
-and token-caret-peek sem--token x
-do  store sem--impl x 0
-let which x o
+and token-caret-peek (sem--token x)
+do  store (sem--impl x) 0
+let (which x) o
 do  ebrew-syn-param ebrew-syn-type x struct-decl-type load struct-name-decl o
 do  store struct-decl-isdef load struct-name-decl o not token-eat-lit ebrew-token-adv sem--token x "?"
-do  and load struct-decl-isdef load struct-name-decl o
-    do  put-string sem--out x ".section .text."
-    do  x86_64-mangle-span  sem--out x  (token--span struct-name-token o)
-    do  put-string sem--out x "\n"
-    do  x86_64-mangle-span  sem--out x  (token--span struct-name-token o)
-    do  put-string sem--out x ":\n"
-    do  store sem--impl x shl 63 1
-    do  x86_64-fpop sem--out x sem--impl x params register0 x load type--arg load struct-decl-type load struct-name-decl o 0
-        put-line sem--out x "ret"
+do  and load (struct-decl-isdef (load (struct-name-decl o)))
+    do  put-string (sem--out x) x86_64-string-section-text
+    do  x86_64-mangle-span  (sem--out x)  (token--span (struct-name-token o))
+    do  put-lf (sem--out x)
+    do  x86_64-mangle-span  (sem--out x)  (token--span (struct-name-token o))
+    do  x86_64-label-suf (sem--out x)
+    do  store (sem--impl x) (shl 63 1)
+    do  x86_64-fpop (sem--out x) (sem--impl x) (params register0 x (load (type--arg (load (struct-decl-type (load (struct-name-decl o)))))) 0)
+        put-line (sem--out x) "ret"
     parse-decls decl-rest x
 
 parse-ebrew (x)
