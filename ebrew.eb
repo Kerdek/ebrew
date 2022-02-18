@@ -379,9 +379,9 @@ loc--crlr (l) loc--crlx loc--lr l
 loc-init (l) loc--crlr l
 
 loc-adv (a l)
-if a (loc--crlf)
-     (loc--cf  ) l
-
+if a loc--crlf l
+     loc--cf   l
+     
 # character ranges #
 
 cmpin (a b c)
