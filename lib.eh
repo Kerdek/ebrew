@@ -10,7 +10,6 @@ mod   (a b) ?
 shl   (a b) ?
 cmpa  (a b) ?
 cmpe  (a b) ?
-ne    (a b) ?
 neg   (a  ) ?
 not   (a  ) ?
 linux (rdi rsi rdx rcx r8 r9 rax) ?
@@ -73,7 +72,7 @@ do  for n i
     r
 
 streq (a na b nb)
-or  ne na nb
+or  not cmpe na nb
     not memcmp
         a
         b
