@@ -10,7 +10,7 @@ mod   (a b) ?
 shl   (a b) ?
 cmpa  (a b) ?
 cmpe  (a b) ?
-ne    (a b) ?
+cmpne (a b) ?
 neg   (a  ) ?
 not   (a  ) ?
 linux (rdi rsi rdx rcx r8 r9 rax) ?
@@ -25,59 +25,65 @@ pair-copy (copy-a (a b) member-a (x) copy-b (a b) member-b (x) a b)
 do  member-copy copy-a member-a a b
     member-copy copy-b member-b a b
 
-inc (a) store a add 1 load a
+cmpin (a b c)
+not or  cmpa a b
+        cmpa c a
 
-exit (a) linux a 0 0 0 0 0 60
+suc (a) add 1 a
+prd (a) sub 1 a
 
-brk (a) linux a 0 0 0 0 0 12
+post (op (a) -a)
+let (load -a) a
+do  store -a (op a)
+    a
+
+inc (-a) post suc -a
+dec (-a) post prd -a
+
+pow2 (n) shl n 1
+
+exit   (a  ) linux a 0 0 0 0 0 60
+brk    (a  ) linux a 0 0 0 0 0 12
+stdin  (p n) linux 0 p n 0 0 0 0
+stdout (p n) linux 1 p n 0 0 0 1
+stderr (p n) linux 2 p n 0 0 0 1
 
 initbrk (n)
 let brk 0 i
 do  brk add n i
     i
 
-alloc (brk n)
-let load brk r
-do  store brk add n load brk
+alloc (mem n)
+let load mem r
+do  store mem add n load mem
     r
+
+retry (stdio (p n) a b)
+let (neg 1) err
+for a i
+and not cmpe i err
+let stdio i sub i b n
+if  cmpe n err
+	err
+and n
+	add n i
+
+runtime (main (in out brk) heap inbuf outbuf)
+let initbrk heap   in
+let add in  inbuf  out
+let add out outbuf brk
+do  poke retry stdin in add in inbuf 0
+do  retry stdout out main in out brk
+    exit 0
 
 strlen (s)
-for 0 n
 and peek s
-do  inc addr s
-    add 1 n
-
-memcmp (a b n)
-let 1 r
-and n 
-do  for n m
-    if  cmpe peek a peek b
-		do  inc addr a
-		do  inc addr b
-			sub 1 m
-		do  store addr r 0
-			0
-    r
+	suc strlen suc s
 
 strncmp (a b n)
-let 1 r
-and n
-do  for n i
-    if 	cmpe peek a peek b
-        and peek a
-        do  inc addr a
-        do  inc addr b
-            sub 1 i
-        do  store addr r 0
-            0 
-    r
-
-streq (a na b nb)
-or  ne na nb
-    not memcmp
-        a
-        b
-        na
+or  not n
+and cmpe (peek a) (peek b)
+    strncmp (suc a) (suc b) (prd n)
 
 put (out c)
 let load out p
@@ -107,18 +113,22 @@ put-ds (out) put out '$
 put-cr (out) put out '\r
 put-lf (out) put out '\n
 
+# write the bytes in [a, b) to `out` using `vput` #
+
 vput-mem (vput (out a) out a b)
 for a i
 and cmpa i b
 do  vput out (peek i)
-    add 1 i
+    suc i
+
+# write the bytes in string `s` to `out` using `vput` #
 
 vput-string (vput (out a) out s)
 for s p
 let (peek p) a
 and a
 do  vput out a
-    add 1 p
+    suc p
 
 put-string (out s) vput-string put out s
 
@@ -130,27 +140,6 @@ put-seq  (out s) put-delim put-sp out s
 put-list (out s) put-delim put-cm out s
 put-line (out s) put-delim put-lf out s
 
-stdin  (p n) linux 0 p n 0 0 0 0
-stdout (p n) linux 1 p n 0 0 0 1
-stderr (p n) linux 2 p n 0 0 0 1
-
-retry (stdio (p n) p q)
-let 0 a
-let for p i
-    let stdio i sub i q n
-    do and cmpe n neg 1 store addr a neg 1
-    and n
-	add n i
-	b
-or a b
-
-runtime (main (in out brk) heap inbuf outbuf)
-let initbrk heap brk
-let alloc addr brk inbuf  in
-let alloc addr brk outbuf out
-do  poke retry stdin in add in inbuf 0
-do  retry stdout out main in out brk
-    # OK #
-    exit 0
+println (s) do retry stderr s add s strlen s stderr "\n" 1
 
 err (code s) do retry stderr s add s strlen s do stderr "\n" 1 exit code
