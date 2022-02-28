@@ -25,5 +25,5 @@ stage%: ebrew.eb bin/ebrew
 	done
 
 clean:
-	@: rm -r bin
-	@: rm -r stage*
+	rm -rf bin
+	rm -rf stage*
