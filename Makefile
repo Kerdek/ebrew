@@ -18,9 +18,9 @@ stage%: ebrew.eb bin/ebrew
 	for i in $$(seq 1 $(@:stage%=%)); do \
 		NEXT=stage$$i/ebrew; \
 			mkdir -p stage$$i; \
-			echo "$(STAGE.s)"; $(STAGE.s); \
-			echo "$(STAGE.o)"; $(STAGE.o); \
-			echo "$(STAGE)"; $(STAGE); \
+			echo "$(STAGE.s)"; $(STAGE.s) || exit 1; \
+			echo "$(STAGE.o)"; $(STAGE.o) || exit 1; \
+			echo "$(STAGE)"; $(STAGE) || exit 1; \
 		 LAST=$$NEXT; \
 	done
 
