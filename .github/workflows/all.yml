@@ -1,0 +1,14 @@
+name: Builds
+on: [push]
+jobs:
+  linux-opt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - run: make stage10
+      - uses: actions/upload-artifact@v2
+        with:
+          name: ebrew
+          path: stage10/ebrew
