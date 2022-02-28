@@ -9,7 +9,7 @@ bin/ebrew.o: ebrew.s | bin
 bin/ebrew: bin/ebrew.o | bin
 	ld -o $@ $^
 
-stage%: ebrew.eb lib.eh bin/ebrew
+stage%: ebrew.eb bin/ebrew
 	mkdir -p $@
 	$(MAKE) -f build.mak --no-print-directory STAGE=$@ $@/ebrew
 
