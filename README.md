@@ -12,4 +12,4 @@ Goals:
 - modules
 - user defined operators
 
-See the vscode extension https://github.com/4984/ebrew-vscode.
+See the vscode extension https://github.com/ShawSumma/ebrew-vscode.
