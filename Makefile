@@ -9,15 +9,6 @@ bin/ebrew.o: ebrew.s | bin
 bin/ebrew: bin/ebrew.o | bin
 	ld -o $@ $^
 
-# stage1: stage1/ebrew
-# stage1/ebrew.s: ebrew.eb bin/ebrew
-# 	mkdir -p $(dir $@)
-# 	cat ebrew.eb | ./bin/ebrew > $@
-# stage1/ebrew.o: stage1/ebrew.s
-# 	as -o $@ -c $^
-# stage1/ebrew: stage1/ebrew.o
-# 	ld -o $@ $^ 
-
 STAGE.s = cat ebrew.eb | $$LAST > $$NEXT.s
 STAGE.o = as -o $$NEXT.o -c $$NEXT.s
 STAGE = ld -o $$NEXT $$NEXT.o
