@@ -22,38 +22,11 @@ cmpe  (a b) ?
 
 linux (rdi rsi rdx rcx r8 r9 rax) ?
 
-#  #
+# basic data #
 
-exit   (exit-code) linux exit-code 0 0 0 0 0 60
+copy (a b) store a (load b)
 
-brk    (address) linux address 0 0 0 0 0 12
-
-initbrk (size)
-let address brk 0
-do  brk add size address
-    address
-
-stdin  (buffer size) linux 0 buffer size 0 0 0 0
-stdout (buffer size) linux 1 buffer size 0 0 0 1
-stderr (buffer size) linux 2 buffer size 0 0 0 1
-
-io-retry (io (buffer size) a b)
-let err (neg 1)
-for i a
-and not (cmpe i err)
-let n (io i (sub i b))
-if  cmpe n err
-	err
-and n
-	add n i
-
-runtime (main (-in -out -brk) heap inbuf outbuf)
-let -in  (initbrk heap   )
-let -out (add -in  inbuf )
-let -brk (add -out outbuf)
-do  poke (io-retry stdin -in (add -in inbuf)) 0
-do  io-retry stdout -out (main -in -out -brk)
-    exit 0
+# basic math #
 
 cmpin (a b c) not or (cmpa a b) (cmpa c a)
 
@@ -62,27 +35,60 @@ prd (a) sub 1 a
 
 pow2 (n) shl n 1
 
-post (op (a) -a)
-let a (load -a)
-do  store -a (op a)
-    a
-
-inc (-a) post suc -a
-dec (-a) post prd -a
-
 to (-b op (a b) a)
 let b (load -b)
 do  store -b (op a b)
     b
 
+inc (-a) to -a add 1
+dec (-a) to -a sub 1
+
+# basic io #
+
+stdin  (buffer size) linux 0 buffer size 0 0 0 0
+stdout (buffer size) linux 1 buffer size 0 0 0 1
+stderr (buffer size) linux 2 buffer size 0 0 0 1
+
+io-retry (io (buffer size) a b)
+let error-string (neg 1)
+for i a
+and not (cmpe i error-string)
+let n (io i (sub i b))
+if  cmpe n error-string
+    error-string
+and n
+    add n i
+
+# string functions #
+
 strlen (s)
 and peek s
-	suc (strlen (suc s))
+    suc (strlen (suc s))
 
 strncmp (a b n)
 or  not n
 and cmpe (peek a) (peek b)
     strncmp (suc a) (suc b) (prd n)
+
+# runtime #
+
+exit   (code   ) linux code    0 0 0 0 0 60
+brk    (address) linux address 0 0 0 0 0 12
+
+runtime (main (-in -out -mem) inbuf outbuf membuf)
+let -in  (brk 0)
+let -out (add -in  inbuf )
+let -mem (add -out outbuf)
+do  brk  (add -mem membuf)
+do  poke (io-retry stdin -in (add -in inbuf)) 0
+do  io-retry stdout -out (main -in -out -mem)
+    0
+
+error-mem (code a b) exit (do (stderr (do io-retry stderr a b "\n") 1) code)
+
+error-string (code s) error-mem code s (add s (strlen s))
+
+# basic formatting #
 
 put (c out)
 let p load out
@@ -93,37 +99,27 @@ do  store out (add 1 p)
 put-digit-16  (n out) put (add n (if (cmpa n 10) '0 '7)) out
 put-digit-10  (n out) put (add n                 '0    ) out
 
-put-digits-nonzero (put-digits (put-digit (n out) base n out) put-digit (n out) base n out)
-    put-digit                 (mod base n)
-	put-digits put-digit base (div base n)
-	out
-
-put-digits-zero (put-digits (put-digit (n out) base n out) put-digit (n out) base n out)
-	out
-
 put-digits (put-digit (n out) base n out)
-if  n (put-digits-nonzero) (put-digits-zero) put-digits put-digit base n out
-
-put-number-nonzero (put-digit (n out) base n out)
+if  n
     put-digit                 (mod base n)
-	put-digits put-digit base (div base n)
-	out
-
-put-number-zero (put-digit (n out) base n out)
-	out
+    put-digits put-digit base (div base n)
+    out
+    out
 
 put-number (put-digit (n out) base n out)
-if  n (put-number-nonzero) (put-number-zero) put-digit base n out
+if  n 
+    put-digits put-digit base n out
+    put '0 out
 
-put-number-10 (n out) put-number put-digit-10 10 n out
-put-number-16 (n out) put-number put-digit-16 16 n out
+put-dec (n out) put-number put-digit-10 10 n out
+put-hex (n out) put-number put-digit-16 16 n out
 
 vput-mem (put (a out) a b out)
 do  for i a
     and cmpa i b
     do  put (peek i) out
         suc i
-	out
+    out
 
 vput-string (put (a out) s out)
 do  for p s
@@ -131,14 +127,9 @@ do  for p s
     and a
     do  put a out
         suc p
-	out
+    out
 
 put-string (s out) vput-string put s out
-
-err (code s) exit
-do  io-retry stderr s (add s (strlen s))
-do  stderr "\n" 1
-    code
 
 # data functions #
 
@@ -163,7 +154,9 @@ let -pair (to -mem add 16)
 do  pair-set -pair a b
     -pair
 
-pair-copy (a b) pair-set a (pair-get-a b) (pair-get-b b)
+pair-copy (copy-a (a b) copy-b (a b) a b)
+do  copy-a (pair--a a) (pair--a b)
+    copy-b (pair--b a) (pair--b b)
 
 pair-equal (equal-a (a b) equal-b (a b) a b)
 and equal-a (pair-get-a a) (pair-get-b a)
@@ -348,9 +341,9 @@ x86_64-string-r8               () "%r8"
 x86_64-string-r9               () "%r9"
 
 x86_64-mangle (vput (put (a out) s out) s out)
-    vput put-number-16 s
+    vput put-hex s
     put 'f
-	out
+    out
 
 x86_64-mangle-span   (s out) x86_64-mangle vput-span   s out
 x86_64-mangle-string (s out) x86_64-mangle vput-string s out
@@ -359,7 +352,7 @@ x86_64-label-suf (out)
     put '
 
     put ':
-	out
+    out
 
 x86_64-section-header (vput (s out) s out)
     x86_64-label-suf
@@ -368,22 +361,22 @@ x86_64-section-header (vput (s out) s out)
 
     vput s
     put-string x86_64-string-section-text
-	out
+    out
 
 x86_64-predef (string body out)
-	put '
+    put '
 
     put-string            x86_64-string-ret
-	put '
+    put '
 
     put-string            body
     x86_64-section-header
     x86_64-mangle-string  string
-	put '\n
+    put '\n
     put-string            string
-	put ' 
+    put ' 
     put-string            x86_64-string-globl
-	out
+    out
 
 x86_64-pre (out)
     x86_64-predef "linux" "mov 8(%rsp),%rax\nsyscall"
@@ -403,37 +396,37 @@ x86_64-pre (out)
     x86_64-predef "load"  "mov (%rdi),%rax"
     put '\n
     x86_64-mangle-string  x86_64-string-entry
-	put ',
+    put ',
     put-string            x86_64-string-entry
-	put ' 
+    put ' 
     put-string            x86_64-string-equ
-	put '\n
+    put '\n
     put-string            x86_64-string-entry
-	put ' 
+    put ' 
     put-string            x86_64-string-globl
-	out
+    out
 
 x86_64-fpushpop (op (y size) y size sign out)
 if  size
 do  put        '$
-	put ' 
+    put ' 
     put-string x86_64-string-add
-	out
+    out
 do  and sign
         put '- out
 do  put '\n
     put-string   x86_64-string-rsp
     put ',
-    put-number-10 (shl 3 size)
+    put-dec (shl 3 size)
     out
 do  to y op size
-	out
+    out
     out
 
 x86_64-pushpop (op (y) y reg sign out)
 do  put '\n
     put-string reg
-	put ' 
+    put ' 
     put-string (if sign x86_64-string-push x86_64-string-pop)
     out
 do  op y
@@ -446,30 +439,30 @@ x86_64-push  (y reg  out) x86_64-pushpop  dec y reg  1 out
 
 x86_64-label-id (n out)
     put           '$
-    put-number-10 n 
+    put-dec n 
     put           '.
-	out
+    out
 
 x86_64-cz (out)
-	put '\n
+    put '\n
     put-string x86_64-string-rax
-	put ',
+    put ',
     put-string x86_64-string-rax
-	put ' 
+    put ' 
     put-string x86_64-string-test
-	out
+    out
 
 x86_64-jc (n s out)
     put '\n
     x86_64-label-id n
-	put ' 
+    put ' 
     put-string      s
-	out
+    out
 
 x86_64-czjc (n s out)
     x86_64-jc n s
     x86_64-cz
-	out
+    out
 
 x86_64-je  (n out) x86_64-czjc n x86_64-string-je  out
 x86_64-jne (n out) x86_64-czjc n x86_64-string-jne out
@@ -477,54 +470,54 @@ x86_64-jmp (n out) x86_64-jc   n x86_64-string-jmp out
 
 x86_64-id (s y z out)
 do  put ' 
-	put-string x86_64-string-mov out
+    put-string x86_64-string-mov out
     put '\n
-	put-string x86_64-string-rax
+    put-string x86_64-string-rax
     if  y
-		put ',
-		put-string x86_64-string-stack-top
-	    put-number-10 (shl 3 (sub z y))
-	    out
-		put ',
-		put-string x86_64-string-gotpcrel-rip
-	    x86_64-mangle-span s
-	    out
+        put ',
+        put-string x86_64-string-stack-top
+        put-dec (shl 3 (sub z y))
+        out
+        put ',
+        put-string x86_64-string-gotpcrel-rip
+        x86_64-mangle-span s
+        out
 
 x86_64-lit (s out)
     put '\n
-	put-string x86_64-string-rax
+    put-string x86_64-string-rax
     put ',
     put-span s
     put '$
-	put ' 
+    put ' 
     put-string x86_64-string-mov
-	out
+    out
 
 x86_64-str-label (n out)
-    put-number-10 n
+    put-dec n
     put-string x86_64-string-str-label-prefix
-	out
+    out
 
 x86_64-str (s a out)
     put '\n
-	put-string       x86_64-string-rax
-	put ',
+    put-string       x86_64-string-rax
+    put ',
     put-string       x86_64-string-gotpcrel-rip
     x86_64-str-label a
-	put ' 
+    put ' 
     put-string       x86_64-string-mov
     put '\n
-	put-string       x86_64-string-previous
+    put-string       x86_64-string-previous
     put '\n
     put-span         s
-	put ',
+    put ',
     put-string       x86_64-string-string
     x86_64-label-suf
     x86_64-str-label a
     put '\n
     x86_64-str-label a
     put-string       x86_64-string-section-data
-	out
+    out
 
 x86_64-do    (a out) 1
 
@@ -540,14 +533,14 @@ do x86_64-fpush -detail 1 -out
 x86_64-let-end (y a out) x86_64-fpop y 1 out
 
 x86_64-var-in (a out)
-	put '\n
+    put '\n
     put-string    x86_64-string-stack-top
-	put ',
+    put ',
     put-string    x86_64-string-rax
-	put ' 
+    put ' 
     put-string    x86_64-string-mov
     x86_64-label    a
-	out
+    out
 
 x86_64-for-end (y a out)
     x86_64-pop y x86_64-string-rax
@@ -562,27 +555,27 @@ do  x86_64-push  y x86_64-string-rax
     z
 
 x86_64-call-arg (i out)
-	put '\n
+    put '\n
     put-string    x86_64-string-stack-top
-    put-number-10 (shl 3 i)
-	put ',
+    put-dec (shl 3 i)
+    put ',
     put-string    x86_64-string-rax
-	put ' 
+    put ' 
     put-string    x86_64-string-mov
-	out
+    out
 
 x86_64-call-end-pop (i n y s out)
 if  cmpa i n
     x86_64-pop y s out
-	out
+    out
 
 x86_64-call-end (y z n out)
 do  put '\n
     put-string x86_64-string-rax
     put '*
-	put ' 
+    put ' 
     put-string x86_64-string-call
-	x86_64-call-end-pop 5 n y x86_64-string-r9
+    x86_64-call-end-pop 5 n y x86_64-string-r9
     x86_64-call-end-pop 4 n y x86_64-string-r8
     x86_64-call-end-pop 3 n y x86_64-string-rcx
     x86_64-call-end-pop 2 n y x86_64-string-rdx
@@ -591,14 +584,14 @@ do  put '\n
     x86_64-pop   y x86_64-string-rax
     out
     x86_64-fpop y (sub (load y) z)
-	out
+    out
 
 x86_64-decl-in (y span out)
 do  x86_64-section-header x86_64-mangle-span span out
     store y shl 63 1
 
 x86_64-decl-end (y z out)
-	put '\n
+    put '\n
     put-string x86_64-string-ret
     x86_64-fpop y z
     out
@@ -717,9 +710,9 @@ sem-impl-ref (impl (span detail-old detail-new -out) -type book span detail -out
 let var try-var-lookup book span
 if  var
     store -type pair-get-a 
-		do  impl span (pair-get-b var) detail -out
-			var
-    err 2 "undefined identifier"
+        do  impl span (pair-get-b var) detail -out
+            var
+    error-string 2 "undefined identifier"
 
 sem-impl-var (impl (-detail flake -out) -flake -mem -book -detail span type -out)
 let flake sem-impl-flake -flake
@@ -733,7 +726,7 @@ do  impl -detail flake -out
 sem-impl-call-arg  (impl (index -out) type-param type-arg index -out)
 if  type-equal type-param type-arg
     impl index -out
-    err 3 "illegal argument type"
+    error-string 3 "illegal argument type"
 
 sem-impl-call-end  (impl (detail-old detail-new arity -out) -mem -type detail-old detail-new arity -out)
 do  impl detail-old detail-new arity -out
@@ -792,15 +785,6 @@ let a sem      x
     sem-end  x a
 
 syn-sem-var (sem (x) sem-in (x a) sem-end (x a) syn (x t) syn-id (x) x t)
-let a
-    sem      x
-do  syn      x 0
-do  sem-in   x a
-do  syn-id   x
-do  syn      x t
-    sem-end  x a
-
-syn-sem-war (sem (x) sem-in (x a) sem-end (x a) syn (x t) syn-id (x) x t)
 let a
     sem      x
 do  syn-id   x
@@ -882,16 +866,16 @@ syn-expr-lit  (syn (x t) x t) syn-sem-unit sem-expr-lit           x
 syn-expr-str  (syn (x t) x t) syn-sem-str  sem-expr-str
                                            sem-expr-str-end       x
 syn-expr-id   (syn (x t) x t) syn-sem-unit sem-expr-id            x
-syn-expr-let  (syn (x t) x t) syn-sem-war  sem-expr-let
+syn-expr-let  (syn (x t) x t) syn-sem-var  sem-expr-let
                                            sem-expr-let-in
                                            sem-expr-let-end
-										   syn
-										   parse-id               x t
-syn-expr-for  (syn (x t) x t) syn-sem-war  sem-expr-for
+                                           syn
+                                           parse-id               x t
+syn-expr-for  (syn (x t) x t) syn-sem-var  sem-expr-for
                                            sem-expr-for-in
                                            sem-expr-for-end
-										   syn
-										   parse-id               x t
+                                           syn
+                                           parse-id               x t
 syn-expr-do   (syn (x t) x t) syn-sem-seq  sem-expr-do
                                            sem-expr-do-then
                                            sem-expr-do-end    syn x t
@@ -914,8 +898,8 @@ or  parse-builtin token-class-do  syn-expr-do  syn x t
 or  parse-builtin token-class-if  syn-expr-if  syn x t
 or  parse-builtin token-class-or  syn-expr-or  syn x t
 or  parse-builtin token-class-and syn-expr-and syn x t
-or  parse-builtin token-class-for syn-expr-for syn x t
 or  parse-builtin token-class-let syn-expr-let syn x t
+or  parse-builtin token-class-for syn-expr-for syn x t
 or  parse-atom    token-class-lit syn-expr-lit syn x t
 or  parse-atom    token-class-str syn-expr-str syn x t
     parse-atom    token-class-id  syn-expr-id  syn x t
@@ -932,10 +916,10 @@ do  syn-expr-term syn x t
 or  parse-rp x
 do  syn-expr-juxt syn x t
 or  parse-rp x
-    err 4 "expected `)`"
+    error-string 4 "expected `)`"
 if  syn-expr-term syn x t
     syn-expr-juxt syn x t
-    err 5 "expected expression"
+    error-string 5 "expected expression"
 
 syn-expr (x t) syn-expr-nest syn-expr x t
 
@@ -945,7 +929,7 @@ params (next (x o y) x o y)
 if  o
     next x o y
 do  syn-expr x (type-new-unit (sem--mem x))
-	0
+    0
 
 params-next (next (x o y) x o y)
 let h params next x (pair-get-a o) y
@@ -976,26 +960,26 @@ register0 (x o y) register-seq register1 "%rdi" x o y
 
 syn-body (x d)
 if  try-name-lookup (sem-get-book x) (pair-get-a pair-get-a d)
-    err 6 "redefinition"
+    error-string 6 "redefinition"
 do  var-push (sem--mem x) (sem--book x) (pair-get-a pair-get-a d) (pair-get-b d) 0
 do  pair-get-b sem-get-book x
 or  parse-qm x
 do  x86_64-decl-in  (sem--impl x) (pair-get-a pair-get-a d) (sem--out x)
 let y (params register0 x (pair-get-a pair-get-b d) 0)
-	x86_64-decl-end (sem--impl x) y (sem--out x)
+    x86_64-decl-end (sem--impl x) y (sem--out x)
 
 syn-decl-seq (syn (x) x)
 and token-class-id (sem-get-token x)
 let d (             syn x)
 let o (syn-decl-seq syn x)
-	pair-new (sem--mem x) o d
+    pair-new (sem--mem x) o d
 
 syn-decl-type (syn (x) x)
 if  parse-lp x
 let o (syn-decl-seq syn x)
 if  parse-rp x
     type-new-function (sem--mem x) o
-    err 7 "expected `)`"
+    error-string 7 "expected `)`"
     type-new-unit     (sem--mem x)
 
 syn-decl (x)
@@ -1007,19 +991,21 @@ syn-def (x) syn-body x (syn-decl x)
 
 syn-defs (x) for _ 0 parse-decl token-class-id syn-def x
 
-syn (x) do syn-pre x syn-defs x
+syn (x)
+do  syn-pre x
+    syn-defs x
 
 main (in out x)
 do  store (sem--mem x) add x struct-sem
 do  store (sem--out x) out
-do  store (pair--a  sem-get-token x) pair-new (sem--mem x) 0 0
+do  store (pair--a sem-get-token x) pair-new (sem--mem x) 0 0
 do  store (pair--b sem-get-token x) in
 do  eat (pair--b sem-get-token x) (pair-get-a sem-get-token x)
 do  syn x
-    (sem-get-out x)
+    sem-get-out x
 
 _start ()
-runtime main
-    pow2 24
+exit runtime main
     pow2 20
-    pow2 23
+    pow2 20
+    pow2 20
