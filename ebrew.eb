@@ -721,7 +721,7 @@ if  var
 			var
     err 2 "undefined identifier"
 
-sem-impl-war (impl (-detail flake -out) -flake -mem -book -detail span type -out)
+sem-impl-var (impl (-detail flake -out) -flake -mem -book -detail span type -out)
 let flake sem-impl-flake -flake
 do  var-push -mem -book span type (impl -detail flake -out)
     flake
@@ -792,7 +792,8 @@ let a sem      x
     sem-end  x a
 
 syn-sem-var (sem (x) sem-in (x a) sem-end (x a) syn (x t) syn-id (x) x t)
-let a sem      x
+let a
+    sem      x
 do  syn      x 0
 do  sem-in   x a
 do  syn-id   x
@@ -800,7 +801,8 @@ do  syn      x t
     sem-end  x a
 
 syn-sem-war (sem (x) sem-in (x a) sem-end (x a) syn (x t) syn-id (x) x t)
-let a sem      x
+let a
+    sem      x
 do  syn-id   x
 do  syn      x 0
 do  sem-in   x a
@@ -808,7 +810,8 @@ do  syn      x t
     sem-end  x a
 
 syn-sem-seq (sem (x) sem-then (x a) sem-end (x a) syn (x t) x t)
-let a sem      x
+let a
+    sem      x
 do  syn      x t
 do  sem-then x a
 do  syn      x t
@@ -848,10 +851,10 @@ sem-expr-lit       (x    ) sem-impl-lit       x86_64-lit        (sem--mem   x) (
 sem-expr-str       (x    ) sem-impl-flake                       (sem--flake x)
 sem-expr-str-end   (x a  ) sem-impl-str       x86_64-str        (sem--mem   x) (sem--type x) (pair-get-a sem-get-token x) a (sem--out  x)
 sem-expr-id        (x    ) sem-impl-ref       x86_64-id         (sem--type  x) (sem-get-book x) (pair-get-a sem-get-token x) (sem-get-impl x) (sem--out   x)
-sem-expr-let       (x    ) sem-impl-war       x86_64-var        (sem--flake x) (sem--mem   x) (sem--book x) (sem--impl x) (pair-get-a sem-get-token x) (sem-get-type x) (sem--out x)
+sem-expr-let       (x    ) sem-impl-var       x86_64-var        (sem--flake x) (sem--mem   x) (sem--book x) (sem--impl x) (pair-get-a sem-get-token x) (sem-get-type x) (sem--out x)
 sem-expr-let-in    (x a  )                    x86_64-var-in     a (sem--out   x)
 sem-expr-let-end   (x a  ) sem-impl-var-end   x86_64-let-end    (sem--mem   x) (sem--book x) (sem--impl x) a (sem--out  x)
-sem-expr-for       (x    ) sem-impl-war       x86_64-var        (sem--flake x) (sem--mem   x) (sem--book x) (sem--impl x) (pair-get-a sem-get-token x) (sem-get-type x) (sem--out x)
+sem-expr-for       (x    ) sem-impl-var       x86_64-var        (sem--flake x) (sem--mem   x) (sem--book x) (sem--impl x) (pair-get-a sem-get-token x) (sem-get-type x) (sem--out x)
 sem-expr-for-in    (x a  )                    x86_64-var-in     a (sem--out  x)
 sem-expr-for-end   (x a  ) sem-impl-var-end   x86_64-for-end    (sem--mem   x) (sem--book x) (sem--impl x) a (sem--out  x)
 sem-expr-do        (x    ) sem-impl-flake                       (sem--flake x)
