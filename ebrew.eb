@@ -716,7 +716,7 @@ if  var
 
 sem-impl-var (impl (-detail flake -out) -flake -mem -book -detail span type -out)
 let flake sem-impl-flake -flake
-do  var-push -mem -book span type (impl -detail flake -out)
+do  var-push -mem -book span (type-new-unit -mem) (impl -detail flake -out)
     flake
 
 sem-impl-var-end (impl (-detail flake -out) -mem -book -detail flake -out)
