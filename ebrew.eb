@@ -28,31 +28,27 @@
 
 # basic math #
 
-(cmpin n a b) not or (cmpa n a) (cmpa b n)
+(cmpex n a b) or (cmpa n a) (cmpa b n)
+(cmpin n a b) not (cmpex n a b)
 
 (suc n) add 1 n
 (prd n) sub 1 n
 
 (pow2 n) shl n 1
 
-(to -b (op a b) a)
-let b (load -b)
-do  store -b (op a b)
-    b
+(to -b (op a b) a) let b (load -b) (do (store -b (op a b)) b)
 
 (inc -n) to -n add 1
 (dec -n) to -n sub 1
 
 # strings #
 
-(strlen s)
-and peek s
-    suc (strlen (suc s))
+(strlen s) and (peek s) (suc (strlen (suc s)))
 
-(strncmp a b n)
+(memcmp a b n)
 or  not n
-and cmpe (peek a) (peek b)
-    strncmp (suc a) (suc b) (prd n)
+and cmpe peek a peek b
+    memcmp (suc a) (suc b) (prd n)
 
 # basic io #
 
@@ -192,27 +188,27 @@ if  lex-normal class           -caret
     lex-normal class-alternate -caret
     lex-normal class-normal    -caret
 
+# character classification #
+
+(char-negclass (except byte) (class byte) byte)
+and except byte
+not class  byte
+
 # spans #
 
-(span-equal-rest a b n)
-or  not n
-and cmpe peek a peek b
-    span-equal-rest (suc a) (suc b) (prd n)
-
 (span-equal a b)
-let ap get-a a
-let bp get-a b
-let an sub ap get-b a
-let bn sub bp get-b b
+let ap (get-a a)
+let bp (get-a b)
+let an (sub ap (get-b a))
+let bn (sub bp (get-b b))
 and cmpe an bn
-    span-equal-rest ap bp bn
+    memcmp ap bp bn
 
 (span-strcmp s lit)
-let start get-a s
-let end get-b s
-let n sub start end
-and strncmp lit start n
-    not peek add lit n
+let start (get-a s)
+let n (sub start (get-b s))
+and memcmp lit start n
+    not (peek (add lit n))
 
 (span-set span a b) set span a b
 (span-new -mem a b) pair-new -mem a b
@@ -222,44 +218,21 @@ and strncmp lit start n
 
 # bookkeeping #
 
-(book-count book)
+(book-lookup (line-match hay needle) book needle)
 and book
-    suc (book-count (get-b book))
-
-(book-lookup (match hay needle) book needle)
-and book
-let line get-a book
-and line
-if  match get-a line needle
+let line (get-a book)
+if  line-match (get-a line) needle
     get-b line
-    book-lookup match (get-b book) needle
+    book-lookup line-match (get-b book) needle
 
 (book-equal (line-equal a b) a b)
 or  cmpe a b
 and line-equal (get-b get-a a) (get-b get-a b)
     book-equal line-equal (get-b a) (get-b b)
 
-(book-new -mem book line) pair-new -mem line book
-(book-push -mem -book line) store -book book-new -mem (load -book) line
+(book-new -mem next line) pair-new -mem line next
+(book-count book) and book (suc (book-count (get-b book)))
 (book-pop -book) store -book (get-b (load -book))
-
-# decls #
-
-(decl-equal (param-equal a b) a b)
-and cmpe                   (get-b a) (get-b b)
-    book-equal param-equal (get-a a) (get-a b)
-
-# typing #
-
-(type-equal a b) 
-or  cmpe a b
-and a
-and b 
-    decl-equal type-equal a b
-
-(type-new -mem book kind) pair-new -mem book kind
-(type-unit-new -mem) type-new -mem 0 0
-(type-func-new -mem book) type-new -mem book 1
 
 # tokens #
 
@@ -274,8 +247,15 @@ and b
 # names #
 
 (name-new -mem span var) pair-new -mem (pair-new -mem (get-a span) (get-b span)) var 
-(name-push -mem -book span type detail) book-push -mem -book (name-new -mem span (var-new -mem type detail))
+(name-push -mem -book span type detail) store -book book-new -mem (load -book) (name-new -mem span (var-new -mem type detail))
 (name-lookup book span) book-lookup span-equal book span
+
+# typing #
+
+(type-equal a b) or (cmpe a b) (and (and a b) (and (cmpe (get-b a) (get-b b)) (book-equal type-equal (get-a a) (get-a b))))
+(type-new -mem book kind) pair-new -mem book kind
+(type-unit-new -mem) type-new -mem 0 0
+(type-func-new -mem book) type-new -mem book 1
 
 # x86_64 implementation #
 
@@ -439,7 +419,7 @@ do  put-string x86_64-string-mov -out
     x86_64-label-id  flake
     -out
 
-(x86_64-var -detail -flake -out) load
+(x86_64-var -detail -out) load
 do x86_64-fpush -detail -out 1
    -detail
 
@@ -508,7 +488,6 @@ do  x86_64-section-header x86_64-mangle-span span -out
 (char-range-dq byte) cmpe  byte '\"
 (char-range-bs byte) cmpe  byte '\\
 (char-range-hm byte) cmpe  byte '#
-(char-range-ds byte) cmpe  byte '$
 (char-range-qm byte) cmpe  byte '?
 (char-range-lp byte) cmpe  byte '(
 (char-range-rp byte) cmpe  byte ')
@@ -527,10 +506,6 @@ do  x86_64-section-header x86_64-mangle-span span -out
 
 (char-class-nz byte)     char-range-nz byte
 
-(char-negclass (char-class byte) byte)
-and char-class-nz byte
-not char-class    byte
-
 (char-class-lf byte)     char-range-lf byte
 (char-class-hm byte)     char-range-hm byte
 (char-class-bs byte)     char-range-bs byte
@@ -538,7 +513,6 @@ not char-class    byte
 (char-class-dq byte)     char-range-dq byte
 (char-class-09 byte)     char-range-09 byte
 (char-class-qm byte)     char-range-qm byte
-(char-class-ds byte)     char-range-ds byte
 (char-class-lp byte)     char-range-lp byte
 (char-class-rp byte)     char-range-rp byte
 
@@ -553,38 +527,28 @@ not char-class    byte
                          char-range-us byte
 (char-class-im byte) or  char-range-09 byte
                          char-range-sq byte
-(char-class-un byte) or  char-range-09 byte
-                     or  char-range-sq byte
-                     or  char-range-AZ byte
-                     or  char-range-az byte
-                     or  char-range-09 byte
-                     or  char-range-en byte
-                     or  char-range-us byte
-                         char-range-dq byte
 (char-class-pt byte) or  char-range-lp byte
                      or  char-range-rp byte
-                     or  char-range-ds byte
                          char-range-qm byte
 
-(char-class-sb byte) char-negclass char-class-dq byte
-(char-class-cb byte) char-negclass char-class-hm byte
+(char-class-sb byte) char-negclass char-class-nz char-class-dq byte
+(char-class-cb byte) char-negclass char-class-nz char-class-hm byte
 
 # token classes #
 
-(token-class-do   token) token-is "do"  token
-(token-class-if   token) token-is "if"  token
-(token-class-or   token) token-is "or"  token
-(token-class-and  token) token-is "and" token
-(token-class-for  token) token-is "for" token
-(token-class-let  token) token-is "let" token
+(token-class-do   -token) token-is "do"  -token
+(token-class-if   -token) token-is "if"  -token
+(token-class-or   -token) token-is "or"  -token
+(token-class-and  -token) token-is "and" -token
+(token-class-for  -token) token-is "for" -token
+(token-class-let  -token) token-is "let" -token
 
-(token-class-lp   token) token-match char-class-lp token
-(token-class-rp   token) token-match char-class-rp token
-(token-class-ds   token) token-match char-class-ds token
-(token-class-qm   token) token-match char-class-qm token
-(token-class-str  token) token-match char-class-dq token
-(token-class-lit  token) token-match char-class-im token
-(token-class-id   token) token-match char-class-id token
+(token-class-lp   -token) token-match char-class-lp -token
+(token-class-rp   -token) token-match char-class-rp -token
+(token-class-qm   -token) token-match char-class-qm -token
+(token-class-str  -token) token-match char-class-dq -token
+(token-class-lit  -token) token-match char-class-im -token
+(token-class-id   -token) token-match char-class-id -token
 
 # lexical units #
 
@@ -612,10 +576,10 @@ or  eat-grou  lex-sq lex-sb -caret
 or  eat-group lex-dq lex-sb -caret
     eat-bunch lex-09        -caret
 
-(eat -caret span)
+(eat -caret -span)
 do  eat-user -caret
 let old-caret (load -caret)
-    span-set span old-caret (if eat-text -caret (load -caret) old-caret)
+    span-set -span old-caret (if eat-text -caret (load -caret) old-caret)
 
 # semantics #
 
@@ -633,16 +597,16 @@ do  impl span -out
 do  impl span flake -out
     type-unit-new -mem
 
-(sem-ref (impl span detail-old detail-new -out) -type book span detail -out) store -type
+(sem-ref (impl span offset -depth -out) -type book span -depth -out) store -type
 let var name-lookup book span
 if  var
-do  impl span (get-b var) detail -out
+do  impl span (get-b var) -depth -out
     get-a var
     error 2 "undefined identifier"
 
-(sem-var (impl -detail flake -out) -flake -mem -book -detail span type -out)
+(sem-var (impl -detail -out) -flake -mem -book -detail span type -out)
 let flake x86_64-flake -flake
-do  name-push -mem -book span (type-unit-new -mem) (impl -detail flake -out)
+do  name-push -mem -book span (type-unit-new -mem) (impl -detail -out)
     flake
 
 (sem-var-end (impl -detail flake -out) -mem -book -detail flake -out)
@@ -708,7 +672,6 @@ do  syn syn-syn x t
 (parse-lp x) parse-skip token-class-lp x
 (parse-rp x) parse-skip token-class-rp x
 (parse-qm x) parse-skip token-class-qm x
-(parse-ds x) parse-skip token-class-ds x
 
 # term syntax #
 
@@ -828,7 +791,7 @@ do  parse-args sem-arg syn x (get-a type) 1
                                     impl-call-arg
                                     impl-call-end  syn x t
 
-(syn-term (syn x t) x t)
+(parse-term (syn x t) x t)
 or  parse-builtin token-class-do  syn-do  syn x t
 or  parse-builtin token-class-if  syn-if  syn x t
 or  parse-builtin token-class-or  syn-or  syn x t
@@ -837,7 +800,8 @@ or  parse-builtin token-class-let syn-let syn x t
 or  parse-builtin token-class-for syn-for syn x t
 or  parse-atom    token-class-lit syn-lit syn x t
 or  parse-atom    token-class-str syn-str syn x t
-    parse-atom    token-class-id  syn-ref syn x t
+or  parse-atom    token-class-id  syn-ref syn x t
+    error 4 "expected term"
 
 (syn-juxt (syn x t) x t)
 let u (sem-get-type x)   
@@ -847,44 +811,38 @@ and get-b       u
 
 (syn-nest (syn x t) x t)
 if  parse-lp x
-do  syn-term syn x t
+do  parse-term syn x t
 or  parse-rp x
 do  syn-juxt syn x t
 or  parse-rp x
-    error 4 "expected `)`"
-if  syn-term syn x t
+    error 5 "expected `)`"
+do  parse-term syn x t
     syn-juxt syn x t
-    error 5 "expected expression"
 
 (syn-expr x t) syn-nest syn-expr x t
 
 # declaration syntax #
 
-(params (next x o y) x o y)
+(params (impl x o y) x o y)
 if  o
-    next x o y
+    impl x o y
 do  syn-expr x (type-unit-new (sem--mem x))
     0
 
-(params-next (next x o y) x o y)
-let h params next x (get-b o) y
+(params-next (impl x o -depth) x o -depth offset)
+let d (get-a o)
+do  name-push (sem--mem x) (sem--book x) (get-a get-a d) (get-b d) offset
+let h params impl x (get-b o) -depth
 do  book-pop (sem--book x)
     h
 
-(param-name-push x o y)
-let d (get-a o)
-    name-push (sem--mem x) (sem--book x) (get-a get-a d) (get-b d) y
-
-(register (next x o y) x o reg y)
+(register (impl x o y) x o reg y)
 do  x86_64-push (sem--impl x) (sem--out x) reg 
-do  param-name-push x o (sem-get-impl x)
-    suc (params-next next x o y)
+    suc (params-next impl x o y (sem-get-impl x))
 
-(stack x o y)
-do  param-name-push   x o y
-    params-next stack x o (suc y)
+(stack x o y) params-next stack x o (suc y) y
 
-(register-seq (next x o y) reg x o y) register next x o reg (suc y)
+(register-seq (impl x o y) reg x o y) register impl x o reg (suc y)
 
 (register5 x o y) register-seq     stack "%r9"  x o 0
 (register4 x o y) register-seq register5 "%r8"  x o y
@@ -907,7 +865,7 @@ let y (params register0 x (get-a get-b d) 0)
 (syn-decl (syn x) x)
 let token token-clone (sem--mem x) (sem-get-token x)
 do  parse-id x
-    pair-new (sem--mem x) token syn x
+    pair-new (sem--mem x) token (syn x)
 
 (syn-param (syn x) x) syn-decl (if parse-lp x syn syn-unit) x
 
@@ -921,7 +879,7 @@ let decl (syn-param syn x)
 (syn-defs x)
 for _ 0
 and parse-lp x
-    syn-body x syn-decl syn-func x
+    syn-body x (syn-decl syn-func x)
 
 (syn x)
 do  syn-pre x
