@@ -811,18 +811,18 @@ do  x86_64-decl-in  (impl--impl x) (get-a get-a d) (impl--out x)
 let y (sem-param x86_64-register0 x (get-a get-b d) 0)
     load x86_64-decl-end (impl--impl x) y (impl--out x)
 
-(syn-params (syn x) x)
+(syn-params (syn-type x) x)
 and not (parse-rp x)
-let decl (syn x)
-    book-new (impl--mem x) (syn-params syn x) decl
+let decl (syn-type x)
+    book-new (impl--mem x) (syn-params syn-type x) decl
 
-(syn-type-unit (syn x) x) type-unit-new (impl--mem x)
-(syn-type-func (syn x) x) type-func-new (impl--mem x) (syn-params syn x)
+(syn-type-unit (syn-type x) x) type-unit-new (impl--mem x)
+(syn-type-func (syn-type x) x) type-func-new (impl--mem x) (syn-params syn-type x)
 
-(syn-decl (syn-type (syn x) x) (syn x) x)
+(syn-decl (syn-type-which (syn-type x) x) (syn-type x) x)
 let token (token-clone (impl--mem x) (impl-get-token x))
 do  parse-id x
-    pair-new (impl--mem x) token syn-type syn x
+    pair-new (impl--mem x) token syn-type-which syn-type x
 
 (syn-type x) syn-decl (if (parse-lp x) syn-type-func syn-type-unit) syn-type x
 
