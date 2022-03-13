@@ -1,43 +1,23 @@
-# external data functions #
+# external functions #
 
 (word) ?
+(peek -a) ? (poke -a a) ?
+(load -a) ? (store -a a) ?
 
-(peek -byte) ?
-(load -word) ?
-
-(poke  -byte byte) ?
-(store -word word) ?
-
-# external arithmetic functions #
-
-(neg n) ?
-(not n) ?
-
-(add  a b) ?
-(sub  a b) ?
-(mul  a b) ?
-(div  a b) ?
-(mod  a b) ?
-(shl  a b) ?
-(cmpa a b) ?
-(cmpe a b) ?
-
-# external io #
+(neg n) ? (not n) ?
+(add a b) ? (mul a b) ? (mod a b) ? (cmpe a b) ?
+(sub a b) ? (div a b) ? (shl a b) ? (cmpa a b) ?
 
 (linux rdi rsi rdx rcx r8 r9 rax) ?
 
-# basic math #
+# math #
 
 (cmpex n a b) or (cmpa n a) (cmpa b n)
 (cmpin n a b) not (cmpex n a b)
-
+(to -b (op a b) a) let b (load -b) (do (store -b (op a b)) b)
+(pow2 n) shl n 1
 (suc n) add 1 n
 (prd n) sub 1 n
-
-(pow2 n) shl n 1
-
-(to -b (op a b) a) let b (load -b) (do (store -b (op a b)) b)
-
 (inc -n) to -n add 1
 (dec -n) to -n sub 1
 
@@ -50,11 +30,25 @@ or  not n
 and cmpe (peek a) (peek b)
     memcmp (suc a) (suc b) (prd n)
 
-# basic io #
+(strncmp a b an bn)
+and cmpe an bn
+    memcmp a b bn
+
+(vcmp aa ab ba bb)
+    strncmp aa ba (sub aa ab) (sub ba bb)
+
+# io #
 
 (stdin  buffer size) linux 0 buffer size 0 0 0 0
 (stdout buffer size) linux 1 buffer size 0 0 0 1
 (stderr buffer size) linux 2 buffer size 0 0 0 1
+
+(nanosleep -mem sec nsec)
+let rqtp (to -mem add 16)
+do  store rqtp sec
+do  store add 8 rqtp nsec
+do  linux rqtp 0 0 0 0 0 35
+    (to -mem sub 16)
 
 (retry-mem (io buffer size) begin end)
 let error-key (neg 1)
@@ -76,396 +70,413 @@ if  cmpe byte-count error-key
 
 (runtime-exit code out end) do (retry-mem stdout out end) (exit code)
 
-(runtime (main (exit code out end) in out mem top) inbuf outbuf membuf)
+(runtime (main (exit code out end) in out mem) inbuf outbuf membuf)
 let in  (brk 0)
 let out (add in  inbuf )
 let mem (add out outbuf)
-let top (brk add mem membuf)
+do  brk (add mem membuf)
+do  store mem (add mem word)
 do  retry-string-read stdin in out
-    main runtime-exit in out mem top
+    main runtime-exit in out mem
 
 (error code message)
 do  retry-string-write stderr message
 do  retry-string-write stderr "\n"
     exit code
 
-# basic data #
+# data #
 
-(dword) add word word
+(Node) add word word
 
-(pair--a pair)     pair
-(pair--b pair) add pair word
-(set-a pair a) do (store (pair--a pair) a) pair
-(set-b pair b) do (store (pair--b pair) b) pair
-(get-a pair) load (pair--a pair)
-(get-b pair) load (pair--b pair)
-(set-pair pair a b) set-b (set-a pair a) b
-(pair-new -mem a b) set-pair (to -mem add dword) a b
-(pair-clone -mem span) pair-new -mem (get-a span) (get-b span)
+(-A node)     node
+(-B node) add node word
+(A node) load (-A node)
+(B node) load (-B node)
+(node -mem a b)
+let x (to -mem add Node)
+do  store (-A x) a
+do  store (-B x) b
+    x
 
-# basic formatting #
+# lexing #
 
-(put c out)
-let p load out
-do  poke p c
-do  store out (add 1 p)
-    out
+(lex-one (class byte) -in)
+and class (peek (load -in))
+    inc -in
 
-(put-digit-16 n out) put (add n (if (cmpa n 10) '0 '7)) out
-(put-digit-10 n out) put (add n                 '0    ) out
+(lex-esc (class byte) (class-lex byte) (class-esc byte) -in)
+if  lex-one class     -in
+    lex-one class-esc -in
+    lex-one class-lex -in
 
-(put-digits (put-digit n out) base n out)
-if  n
-    put-digit                 (mod base n)
-    put-digits put-digit base (div base n)
-    out
-    out
+(vlex-bunch (body -in) -in) 
+for _ 0 body -in
 
-(put-number (put-digit n out) base n out)
-if  n 
-    put-digits put-digit base n out
-    put '0 out
+(vlex-lgroup  (delim -in) (body -in) -in)
+and delim -in
+    body  -in
 
-(put-dec n out) put-number put-digit-10 10 n out
-(put-hex n out) put-number put-digit-16 16 n out
+(vlex-group (delim -in) (body -in) -in)
+and delim -in
+do  vlex-bunch body -in
+    delim -in
 
-(vput-mem (put a out) a b out)
+# putting #
+
+(vput-mem (put a -out) a b -out)
 do  for i a
     and cmpa i b
-    do  put (peek i) out
+    do  put (peek i) -out
         suc i
-    out
+    -out
 
-(vput-string (put a out) s out)
+(vput-string (put a -out) s -out)
 do  for p s
     let a (peek p)
     and a
-    do  put a out
+    do  put a -out
         suc p
-    out
+    -out
 
-(put-string s out) vput-string put s out
+(put byte -out)
+do  poke (load -out) byte
+do  inc -out
+    -out
 
-# basic scanning #
+(putlf -out) put '\n -out
 
-(eat-bunch (body -caret) -caret) 
-for _ 0 body -caret
+(put-digits (put-digit a -out) base a -out)
+if  a
+    put-digit                 (mod base a)
+    put-digits put-digit base (div base a)
+    -out
+    -out
 
-(eat-grou  (delim -caret) (body -caret) -caret)
-and delim -caret
-    body  -caret
+(put-number (put-digit a -out) base a -out)
+if  a 
+    put-digits put-digit base a -out
+    put '0 -out
 
-(eat-group (delim -caret) (body -caret) -caret)
-and delim -caret
-do  eat-bunch body -caret
-    delim -caret
+(put-digit-16 a -out) put (add a (if (cmpa a 10) '0 '7)) -out
+(put-digit-10 a -out) put (add a                 '0    ) -out
 
-# basic lexing #
+(put-dec a -out) put-number put-digit-10 10 a -out
+(put-hex a -out) put-number put-digit-16 16 a -out
 
-(lex-normal (char-class byte) -caret)
-and char-class (peek (load -caret))
-    store -caret (suc (load -caret))
-
-(lex-escape (class byte) (class-normal byte) (class-alternate byte) -caret)
-if  lex-normal class           -caret
-    lex-normal class-alternate -caret
-    lex-normal class-normal    -caret
-
-# character classification #
-
-(char-negclass (class byte) (except byte) byte)
-and except byte
-not class  byte
+(put-string s -out) vput-string put s -out
+(put-mem a b -out) vput-mem put a b -out
 
 # spans #
 
 (span-equal a b)
-let ap (get-a a)
-let bp (get-a b)
-let an (sub ap (get-b a))
-let bn (sub bp (get-b b))
-and cmpe an bn
-    memcmp ap bp bn
+let aa (A a)
+let ba (A b)
+let an (sub aa (B a))
+let bn (sub ba (B b))
+    strncmp aa ba an bn
 
-(span-strcmp s lit)
-let start (get-a s)
-let n (sub start (get-b s))
+(span-strcmp span lit)
+let start (A span)
+let n (sub start (B span))
 and memcmp lit start n
     not (peek (add lit n))
 
-(span-set span a b) set-pair span a b
-(span-new -mem a b) pair-new -mem a b
-(span-clone -mem span) pair-clone -mem span
-(vput-span (vput a out) s out) vput-mem vput (get-a s) (get-b s) out
-(put-span s out) vput-span put s out
+(span-set span a b)
+do  store (-A span) a
+    store (-B span) b
+(vput-span (vput a out) span out) vput-mem vput (A span) (B span) out
+(put-span span out) vput-span put span out
 
-# bookkeeping #
+# weird formalities #
 
-(book-lookup (line-match hay needle) book needle)
-and book
-let line (get-a book)
-if  line-match (get-a line) needle
-    get-b line
-    book-lookup line-match (get-b book) needle
+(stack-lookup (hay-match hay needle) stack needle)
+and stack
+let hay (A stack)
+if  hay-match (A hay) needle
+    B hay
+    stack-lookup hay-match (B stack) needle
 
-(book-equal (line-equal a b) a b)
+(stack-equal (hay-equal a b) a b)
 or  cmpe a b
-and line-equal (get-b get-a a) (get-b get-a b)
-    book-equal line-equal (get-b a) (get-b b)
+and hay-equal (B A a) (B A b)
+    stack-equal hay-equal (B a) (B b)
 
-(book-new -mem next line) pair-new -mem line next
-(book-count book) and book (suc (book-count (get-b book)))
-(book-pop -book) store -book (get-b (load -book))
+(stack-count stack) and stack (suc (stack-count (B stack)))
+(stack-pop -stack) store -stack (B (load -stack))
 
-# tokens #
+(name-lookup stack a b)
+and stack
+let hay (A stack)
+if  vcmp (A A hay) (B A hay) a b
+    B hay
+    name-lookup (B stack) a b
 
-(token-take (token-class k) (eat -caret span) -mem token)
-and token-class token
-let span (span-clone -mem (get-a token))
-do  eat (pair--b token) (get-a token)
-    span
+(token-init (eat -in span) -mem in -in -span)
+do  store -span node -mem 0 0
+do  store -in in
+    eat -in (load -span)
 
-(token-eat (eat -caret span) token) eat (pair--b token) (get-a token)
+(token-match (lex-class c) span) lex-class (peek (A span))
+(token-is s span) span-strcmp span s
+(token-read (text -in) -in span) let caret (load -in) (span-set span caret (if text -in (load -in) caret))
 
-(token-init (eat -caret span) -mem -in -token)
-let token (to -mem add dword)
-do  set-pair token pair-new -mem 0 0 -in
-do  token-eat eat token
-    store -token token
-
-(token-skip (token-class k) (eat -caret span) token) and (token-class token) token-eat eat token
-(token-clone -mem token) pair-new -mem (span-clone -mem (get-a token)) (get-b token)
-(token-match (lex c) token) lex (peek (get-a (get-a token)))
-(token-is s token) span-strcmp (get-a token) s
-(token-read (text -caret) -caret span) let caret (load -caret) (span-set span caret (if text -caret (load -caret) caret))
-
-# vars #
-
-(var-new -mem type detail) pair-new -mem type detail
-
-# names #
-
-(name-new -mem span var) pair-new -mem (pair-new -mem (get-a span) (get-b span)) var 
-(name-push -mem -book span type detail) store -book (book-new -mem (load -book) (name-new -mem span (var-new -mem type detail)))
-(name-lookup book span) book-lookup span-equal book span
-
-# typing #
-
-(type-equal a b) or (cmpe a b) (and (and a b) (and (cmpe (get-b a) (get-b b)) (book-equal type-equal (get-a a) (get-a b))))
-(type-new -mem book kind) pair-new -mem book kind
-(type-unit-new -mem) type-new -mem 0 0
-(type-func-new -mem book) type-new -mem book 1
+(type-equal a b) or (cmpe a b) (and (and a b) (and (cmpe (B a) (B b)) (stack-equal type-equal (A a) (A b))))
 
 # x86_64 implementation #
 
-(x86_64--out   -x86_64)                    -x86_64
-(x86_64--depth -x86_64) add (x86_64--out   -x86_64) word
-(x86_64--flake -x86_64) add (x86_64--depth -x86_64) word
-(struct-x86_64        )      x86_64--flake          word
-
-(x86_64-str-mov         ) "mov "
-(x86_64-str-add         ) "add "
-(x86_64-str-test        ) "test "
-(x86_64-str-je          ) "je "
-(x86_64-str-jne         ) "jne "
-(x86_64-str-jmp         ) "jmp "
-(x86_64-str-push        ) "push "
-(x86_64-str-pop         ) "pop "
-(x86_64-str-call        ) "call "
-(x86_64-str-ret         ) "ret\n"
-(x86_64-str-entry       ) "_start"
-(x86_64-str-str-pre     ) ".s"
-(x86_64-str-globl       ) ".globl "
-(x86_64-str-equ         ) "\n.equ "
-(x86_64-str-section-text) ".section .text."
-(x86_64-str-section-data) ".section .data."
-(x86_64-str-string      ) ".string,"
-(x86_64-str-previous    ) ".previous\n"
-(x86_64-str-rip-relative) "@GOTPCREL(%rip)"
-(x86_64-str-stack-top   ) "(%rsp)"
-(x86_64-str-stack-ptr   ) ",%rsp\n"
-(x86_64-str-rax         ) "%rax"
-(x86_64-str-rdi         ) "%rdi"
-(x86_64-str-rsi         ) "%rsi"
-(x86_64-str-rdx         ) "%rdx"
-(x86_64-str-rcx         ) "%rcx"
-(x86_64-str-r8          ) "%r8"
-(x86_64-str-r9          ) "%r9"
+(x86_64-str-mov  ) "mov "
+(x86_64-str-ret  ) "ret\n"
+(x86_64-str-entry) "_start"
+(x86_64-str-rip  ) "@GOTPCREL(%rip)"
+(x86_64-str-rsp  ) "(%rsp)"
+(x86_64-str-rax  ) "%rax"
+(x86_64-str-rdi  ) "%rdi"
+(x86_64-str-rsi  ) "%rsi"
+(x86_64-str-rdx  ) "%rdx"
+(x86_64-str-rcx  ) "%rcx"
+(x86_64-str-r8   ) "%r8"
+(x86_64-str-r9   ) "%r9"
 
 (x86_64-mangle (vput (put a -out) s -out) s -out) vput put-hex s put 'f -out
+(x86_64-mangle-mem a b -out) vput-mem put-hex a b put 'f -out
 (x86_64-mangle-span   s -out) x86_64-mangle vput-span   s -out
 (x86_64-mangle-string s -out) x86_64-mangle vput-string s -out
 
-(x86_64-label-suf -out) put '\n put ': -out
+(x86_64-label-suf -out) putlf put ': -out
 
-(x86_64-section-header (vput name -out) name -out)
-    x86_64-label-suf vput name put '\n vput name put-string x86_64-str-section-text -out
+(x86_64-section-header (vput a b -out) a b -out)
+    x86_64-label-suf vput a b putlf vput a b put-string ".section .text." -out
 
-(x86_64-predef name body -out)
+(gen-initdef name body -out)
     put-string x86_64-str-ret
-    put '\n
+    putlf
     put-string body
-    x86_64-section-header x86_64-mangle-string name
+    x86_64-section-header x86_64-mangle-mem name (add name strlen name)
     -out
 
 (x86_64-fpushpop (op -depth size) -depth -out size sign)
 and size
-do  put '$ put '  put-string x86_64-str-add -out
+do  put-string "add $" -out
 do  and sign (put '- -out)
-do  put-string x86_64-str-stack-ptr put-dec (shl 3 size) -out
+do  put-string ",%rsp\n" put-dec (shl 3 size) -out
     to -depth op size
 
 (x86_64-pushpop (op -depth) -depth -out reg sign)
-do  put '\n put-string reg put-string sign -out
+do  putlf put-string reg put-string sign -out
     op -depth
 
 (x86_64-fpop  -depth -out size) x86_64-fpushpop add -depth -out size 0
 (x86_64-fpush -depth -out size) x86_64-fpushpop sub -depth -out size 1
-(x86_64-pop   -depth -out reg ) x86_64-pushpop  inc -depth -out reg  x86_64-str-pop
-(x86_64-push  -depth -out reg ) x86_64-pushpop  dec -depth -out reg  x86_64-str-push
+(x86_64-pop   -depth -out reg ) x86_64-pushpop  inc -depth -out reg  "pop "
+(x86_64-push  -depth -out reg ) x86_64-pushpop  dec -depth -out reg  "push "
 
 (x86_64-label-id flake -out) put '$ put-dec flake put '. -out
-(x86_64-str-label flake -out) put-dec flake put-string x86_64-str-str-pre -out
-(x86_64-to-rax -out) put '\n put-string x86_64-str-rax put ', -out
+(x86_64-str-label flake -out) put-dec flake put-string ".s" -out
+(x86_64-to-rax -out) putlf put-string x86_64-str-rax put ', -out
 (x86_64-from-rax -out) put ', put-string x86_64-str-rax -out
-(x86_64-cz -out) x86_64-to-rax put-string x86_64-str-rax put-string x86_64-str-test -out
-(x86_64-jc flake s -out) put '\n x86_64-label-id flake put-string s -out
-(x86_64-czjc flake s -out) x86_64-jc flake s x86_64-cz -out
+(x86_64-jc flake s -out) putlf x86_64-label-id flake put-string s -out
+(x86_64-czjc flake s -out) x86_64-jc flake s x86_64-to-rax put-string x86_64-str-rax put-string "test " -out
 
-(x86_64-pre -mem x86_64 out)
-do  store (x86_64--out   x86_64) out
-do  store (x86_64--flake x86_64) 0
-    x86_64-predef "linux" "mov 8(%rsp),%rax\nsyscall"
-    x86_64-predef "not"   "test %rdi,%rdi\nsete %al\nmovzbl %al,%eax"
-    x86_64-predef "neg"   "mov %rdi,%rax\nneg %rax"
-    x86_64-predef "cmpe"  "cmp %rsi,%rdi\nsete %al\nmovzbl %al,%eax"
-    x86_64-predef "cmpa"  "cmp %rdi,%rsi\nseta %al\nmovzbl %al,%eax"
-    x86_64-predef "shl"   "mov %rsi,%rax\nmov %rdi,%rcx\nshl %cl,%rax"
-    x86_64-predef "mod"   "xor %edx,%edx\nmov %rsi,%rax\ndiv %rdi\nmov %rdx,%rax"
-    x86_64-predef "div"   "xor %edx,%edx\nmov %rsi,%rax\ndiv %rdi"
-    x86_64-predef "mul"   "mov %rsi,%rax\nmul %rdi"
-    x86_64-predef "sub"   "mov %rsi,%rax\nsub %rdi,%rax"
-    x86_64-predef "add"   "mov %rsi,%rax\nadd %rdi,%rax"
-    x86_64-predef "poke"  "movb %sil,(%rdi)"
-    x86_64-predef "peek"  "movzb (%rdi),%eax"
-    x86_64-predef "store" "mov %rsi,(%rdi)\nmov %rdi,%rax"
-    x86_64-predef "load"  "mov (%rdi),%rax"
-    x86_64-predef "word"  "mov $8,%rax"
-    put '\n
-    x86_64-mangle-string  x86_64-str-entry
-    put ',
-    put-string x86_64-str-entry
-    put-string x86_64-str-equ
-    put-string x86_64-str-entry
-    put-string x86_64-str-globl
-    x86_64--out x86_64
+(x86_64-argreg index)
+if  cmpe index 0 x86_64-str-rdi
+if  cmpe index 1 x86_64-str-rsi
+if  cmpe index 2 x86_64-str-rdx
+if  cmpe index 3 x86_64-str-rcx
+if  cmpe index 4 x86_64-str-r8
+                 x86_64-str-r9
 
-(x86_64-flake x86_64) inc x86_64--flake x86_64
-
-(x86_64-je  x86_64 flake) x86_64-czjc flake x86_64-str-je  x86_64--out x86_64
-(x86_64-jne x86_64 flake) x86_64-czjc flake x86_64-str-jne x86_64--out x86_64
-(x86_64-jmp x86_64 flake) x86_64-jc   flake x86_64-str-jmp x86_64--out x86_64
-
-(x86_64-ref x86_64 text offset)
-do  put-string x86_64-str-mov x86_64--out x86_64
-    x86_64-to-rax
-    if  offset
-        put-string x86_64-str-stack-top
-        put-dec (shl 3 (sub load x86_64--depth x86_64 offset))
-        x86_64--out x86_64
-        put-string x86_64-str-rip-relative
-        x86_64-mangle-span text
-        x86_64--out x86_64
-
-(x86_64-lit x86_64 text)
-    x86_64-to-rax
-    put-span text
-    put '$
-    put-string x86_64-str-mov
-    x86_64--out x86_64
-
-(x86_64-str x86_64 text)
-let flake (x86_64-flake x86_64)
-    x86_64-to-rax
-    put-string x86_64-str-rip-relative
-    x86_64-str-label flake
-    put-string x86_64-str-mov
-    put-string x86_64-str-previous
-    put '\n
-    put-span text
-    put-string x86_64-str-string
-    x86_64-label-suf
-    x86_64-str-label flake
-    put '\n
-    x86_64-str-label flake
-    put-string x86_64-str-section-data
-    x86_64--out x86_64
-
-(x86_64-do x86_64 flake) 0
-
-(x86_64-label x86_64 flake)
-    x86_64-label-suf
-    x86_64-label-id  flake
-    x86_64--out x86_64
-
-(x86_64-var-is x86_64 flake)
-do  x86_64-fpush x86_64--depth x86_64 x86_64--out x86_64 1
-    load x86_64--depth x86_64
-
-(x86_64-var-in x86_64 flake)
-do  x86_64-label x86_64 flake
-    put '\n
-    put-string x86_64-str-stack-top
-    x86_64-from-rax
-    put-string x86_64-str-mov
-    x86_64--out x86_64
-
-(x86_64-let-end x86_64 flake) x86_64-fpop x86_64--depth x86_64 x86_64--out x86_64 1
-
-(x86_64-for-end x86_64 flake)
-do  x86_64-jne x86_64 flake
-    x86_64-pop x86_64--depth x86_64 x86_64--out x86_64 x86_64-str-rax
-
-(x86_64-call-with x86_64 arity)
-do  x86_64-fpush x86_64--depth x86_64 x86_64--out x86_64 arity
-    x86_64-push  x86_64--depth x86_64 x86_64--out x86_64 x86_64-str-rax
-
-(x86_64-call-arg x86_64 index)
-    put '\n
-    put-string x86_64-str-stack-top
-    put-dec (shl 3 index)
-    x86_64-from-rax
-    put-string x86_64-str-mov
-    x86_64--out x86_64
-
-(x86_64-call-end-pop index arity -depth reg -out)
+(x86_64-argpop index arity -depth reg -out)
 do  and cmpa index arity
     x86_64-pop -depth -out reg
     -out
 
-(x86_64-call-end x86_64 arity)
-do  x86_64-pop x86_64--depth x86_64 x86_64--out x86_64 x86_64-str-rax
-do  put '\n
+(x86_64-init -out -depth -flake out)
+do  store -out out
+do  store -depth (shl (sub 1 (shl 3 word)) 1)
+do  store -flake 0
+    gen-initdef "linux" "mov 8(%rsp),%rax\nsyscall"
+    gen-initdef "not"   "test %rdi,%rdi\nsete %al\nmovzbl %al,%eax"
+    gen-initdef "neg"   "mov %rdi,%rax\nneg %rax"
+    gen-initdef "cmpe"  "cmp %rsi,%rdi\nsete %al\nmovzbl %al,%eax"
+    gen-initdef "cmpa"  "cmp %rdi,%rsi\nseta %al\nmovzbl %al,%eax"
+    gen-initdef "shl"   "mov %rsi,%rax\nmov %rdi,%rcx\nshl %cl,%rax"
+    gen-initdef "mod"   "xor %edx,%edx\nmov %rsi,%rax\ndiv %rdi\nmov %rdx,%rax"
+    gen-initdef "div"   "xor %edx,%edx\nmov %rsi,%rax\ndiv %rdi"
+    gen-initdef "mul"   "mov %rsi,%rax\nmul %rdi"
+    gen-initdef "sub"   "mov %rsi,%rax\nsub %rdi,%rax"
+    gen-initdef "add"   "mov %rsi,%rax\nadd %rdi,%rax"
+    gen-initdef "poke"  "movb %sil,(%rdi)"
+    gen-initdef "peek"  "movzb (%rdi),%eax"
+    gen-initdef "store" "mov %rsi,(%rdi)\nmov %rdi,%rax"
+    gen-initdef "load"  "mov (%rdi),%rax"
+    gen-initdef "word"  "mov $8,%rax"
+    putlf
+    x86_64-mangle-string  x86_64-str-entry
+    put ',
+    put-string x86_64-str-entry
+    put-string "\n.equ "
+    put-string x86_64-str-entry
+    put-string ".globl "
+    -out
+
+(x86_64-flake -flake) inc -flake
+
+(x86_64-je  -out flake) x86_64-czjc flake "je "  -out
+(x86_64-jne -out flake) x86_64-czjc flake "jne " -out
+(x86_64-jmp -out flake) x86_64-jc   flake "jmp " -out
+
+(x86_64-ref -out -depth a b offset)
+do  put-string x86_64-str-mov -out
+    x86_64-to-rax
+    if  offset
+        put-string x86_64-str-rsp
+        put-dec (shl 3 (sub load -depth offset))
+        -out
+        put-string x86_64-str-rip
+        x86_64-mangle-mem a b
+        -out
+
+(x86_64-lit -out a b)
+    x86_64-to-rax
+    put-mem a b
+    put '$
+    put-string x86_64-str-mov
+    -out
+
+(x86_64-str -out -flake a b)
+let flake (x86_64-flake -flake)
+    x86_64-to-rax
+    put-string x86_64-str-rip
+    x86_64-str-label flake
+    put-string x86_64-str-mov
+    put-string ".previous\n"
+    putlf
+    put-mem a b
+    put-string ".string,"
+    x86_64-label-suf
+    x86_64-str-label flake
+    putlf
+    x86_64-str-label flake
+    put-string ".section .data."
+    -out
+
+(x86_64-label -out flake)
+    x86_64-label-suf
+    x86_64-label-id  flake
+    -out
+
+(x86_64-var-is -out -depth flake)
+do  x86_64-fpush -depth -out 1
+    load -depth
+
+(x86_64-var-in -out flake)
+do  x86_64-label -out flake
+    putlf
+    put-string x86_64-str-rsp
+    x86_64-from-rax
+    put-string x86_64-str-mov
+    -out
+
+(x86_64-let-end -out -depth flake) x86_64-fpop -depth -out 1
+
+(x86_64-for-end -out -depth flake)
+do  x86_64-jne -out flake
+    x86_64-pop -depth -out x86_64-str-rax
+
+(x86_64-call-with -out -depth arity)
+do  x86_64-fpush -depth -out arity
+    x86_64-push  -depth -out x86_64-str-rax
+
+(x86_64-call-arg -out index)
+    putlf
+    put-string x86_64-str-rsp
+    put-dec (shl 3 index)
+    x86_64-from-rax
+    put-string x86_64-str-mov
+    -out
+
+(x86_64-call-end -out -depth arity)
+do  x86_64-pop -depth -out x86_64-str-rax
+do  putlf
     put-string x86_64-str-rax
     put '*
-    put-string x86_64-str-call
-    x86_64-call-end-pop 5 arity x86_64--depth x86_64 x86_64-str-r9
-    x86_64-call-end-pop 4 arity x86_64--depth x86_64 x86_64-str-r8
-    x86_64-call-end-pop 3 arity x86_64--depth x86_64 x86_64-str-rcx
-    x86_64-call-end-pop 2 arity x86_64--depth x86_64 x86_64-str-rdx
-    x86_64-call-end-pop 1 arity x86_64--depth x86_64 x86_64-str-rsi
-    x86_64-call-end-pop 0 arity x86_64--depth x86_64 x86_64-str-rdi
-	x86_64--out x86_64
-and (cmpa 6 arity)
-    x86_64-fpop x86_64--depth x86_64 x86_64--out x86_64 (sub 6 arity)
+    put-string "call "
+    x86_64-argpop 5 arity -depth x86_64-str-r9
+    x86_64-argpop 4 arity -depth x86_64-str-r8
+    x86_64-argpop 3 arity -depth x86_64-str-rcx
+    x86_64-argpop 2 arity -depth x86_64-str-rdx
+    x86_64-argpop 1 arity -depth x86_64-str-rsi
+    x86_64-argpop 0 arity -depth x86_64-str-rdi
+	-out
+and cmpa 6 arity
+    x86_64-fpop -depth -out (sub 6 arity)
 
-(x86_64-decl-in -detail span -out)
-do  x86_64-section-header x86_64-mangle-span span -out
-    store -detail (shl (sub 1 (shl 3 word)) 1)
+(x86_64-decl-in -out -depth a b)
+    x86_64-section-header x86_64-mangle-mem a b -out
+    
 
-(x86_64-decl-end -detail arity -out)
-do  x86_64-fpop -detail -out arity
+(x86_64-decl-param -out -depth index)
+if  cmpa index 6
+do  x86_64-push -depth -out (x86_64-argreg index)
+    load -depth
+    sub 5 index
+
+(x86_64-decl-end -out -depth arity)
+do  x86_64-fpop -depth -out (if cmpa arity 6 arity 6)
     put-string x86_64-str-ret -out
+
+(x86_64-end -out) load -out
+
+# standard semantics #
+
+(asem-init (gen -mem out) -mem -stack -impl out)
+do  store -stack 0
+    store -impl (gen -mem out)
+
+(asem-unit (gen impl a b) -impl a b)
+do  gen (load -impl) a b
+    0
+
+(asem-ref (gen impl a b offset) -stack -impl a b)
+let var (name-lookup (load -stack) a b)
+if  not var
+    error 1 "unknown reference"
+do  gen (load -impl) a b (B var)
+    A var
+
+(asem-var-def (gen impl flake) -mem -stack -impl a b result flake)
+if  name-lookup (load -stack) a b
+    error 2 "redefinition" 
+    store -stack (node -mem (node -mem (node -mem a b) (node -mem result (gen (load -impl) flake))) (load -stack))
+
+(asem-var-end (gen impl flake) -stack -impl flake)
+do  gen (load -impl) flake
+    stack-pop -stack
+
+(asem-call-with (gen impl arity) -impl result)
+let arity (stack-count (A result))
+do  gen (load -impl) arity
+    arity
+
+(asem-call-arg (gen impl index) -impl expect result index)
+if  type-equal expect result
+    gen (load -impl) index
+    error 3 "illegal argument"
+
+(asem-call-end (gen impl arity) -impl arity)
+do  gen (load -impl) arity
+    0
+
+(asem-decl (gen impl flake) -mem -impl a b type)
+do  gen (load -impl) 0
+    node -mem node -mem a b type
+
+(asem-param (gen impl flake) -mem -impl decl stack)
+do  gen (load -impl) 0
+    node -mem decl stack
+
+(asem-end (gen impl) -impl)
+    gen (load -impl)
 
 # character ranges #
 
@@ -490,6 +501,10 @@ do  x86_64-fpop -detail -out arity
 (char-range-az byte) cmpin byte 'a 'z
 
 # character classes #
+
+(char-negclass (class byte) (except byte) byte)
+and except byte
+not class  byte
 
 (char-class-nz byte)     char-range-nz byte
 (char-class-hm byte)     char-range-hm byte
@@ -519,311 +534,313 @@ do  x86_64-fpop -detail -out arity
 (char-class-sb byte) char-negclass char-class-dq char-class-nz byte
 (char-class-cb byte) char-negclass char-class-hm char-class-nz byte
 
-# token classes #
-
-(token-class-do  -token) token-is "do"  -token
-(token-class-if  -token) token-is "if"  -token
-(token-class-or  -token) token-is "or"  -token
-(token-class-and -token) token-is "and" -token
-(token-class-let -token) token-is "let" -token
-(token-class-for -token) token-is "for" -token
-
-(token-class-lp  -token) token-match char-class-lp -token
-(token-class-rp  -token) token-match char-class-rp -token
-(token-class-qm  -token) token-match char-class-qm -token
-(token-class-str -token) token-match char-class-dq -token
-(token-class-lit -token) token-match char-class-im -token
-(token-class-id  -token) token-match char-class-id -token
-
 # lexical units #
 
-(lex-hm -caret) lex-normal char-class-hm -caret
-(lex-dq -caret) lex-normal char-class-dq -caret
-(lex-sq -caret) lex-normal char-class-sq -caret
-(lex-09 -caret) lex-normal char-class-09 -caret
-(lex-pt -caret) lex-normal char-class-pt -caret
-(lex-ws -caret) lex-normal char-class-ws -caret
-(lex-id -caret) lex-escape char-class-bs char-class-id char-class-nz -caret
-(lex-sb -caret) lex-escape char-class-bs char-class-sb char-class-nz -caret
-(lex-cb -caret) lex-escape char-class-bs char-class-cb char-class-nz -caret
+(lex-bs-esc (char-class c) -in) lex-esc char-class-bs char-class char-class-nz -in
+
+(lex-hm -in) lex-one    char-class-hm -in
+(lex-dq -in) lex-one    char-class-dq -in
+(lex-sq -in) lex-one    char-class-sq -in
+(lex-09 -in) lex-one    char-class-09 -in
+(lex-pt -in) lex-one    char-class-pt -in
+(lex-ws -in) lex-one    char-class-ws -in
+(lex-id -in) lex-bs-esc char-class-id -in
+(lex-sb -in) lex-bs-esc char-class-sb -in
+(lex-cb -in) lex-bs-esc char-class-cb -in
+
+(lex-user -in)
+for _ 0
+or  vlex-bunch lex-ws        -in
+    vlex-group lex-hm lex-cb -in
+
+(lex-text -in)
+or  vlex-bunch  lex-id        -in
+or              lex-pt        -in
+or  vlex-lgroup lex-sq lex-sb -in
+or  vlex-group  lex-dq lex-sb -in
+    vlex-bunch  lex-09        -in
 
 # tokenizer #
 
-(eat-user -caret)
-for _ 0
-or  eat-bunch lex-ws        -caret
-    eat-group lex-hm lex-cb -caret
+(eat -in -span)
+do  lex-user -in
+    token-read lex-text -in -span
 
-(eat-text -caret)
-or  eat-bunch lex-id        -caret
-or            lex-pt        -caret
-or  eat-grou  lex-sq lex-sb -caret
-or  eat-group lex-dq lex-sb -caret
-    eat-bunch lex-09        -caret
+# parsers #
 
-(eat -caret -span)
-do  eat-user -caret
-    token-read eat-text -caret -span
+(Sem    syn)             syn
+(In     syn) add (Sem    syn) word
+(Span   syn) add (In     syn) word
+(Result syn) add (Span   syn) word
+(struct-Syn)      Result      word
 
-# semantics #
+(parse-with (syn-with (syn-expr syn expect) syn expect) (syn-expr syn expect) lit syn expect)
+and token-is lit (load Span syn)
+do  eat (In syn) (load Span syn)
+do  syn-with syn-expr syn expect
+    1
 
-(impl-pre (impl -mem x86_64 out) -mem -book x86_64 out)
-do  store -book 0
-    load impl -mem x86_64 out
+(parse-term (char-class byte) (sem syn a b) syn)
+and token-match char-class (load Span syn)
+let a (A load Span syn)
+let b (B load Span syn)
+do  eat (In syn) (load Span syn)
+do  store (Result syn) sem load Sem syn a b
+    1
 
-(impl-lit (impl x86_64 span) -mem -type x86_64 span)
-do  impl x86_64 span
-    type-unit-new -mem
+(parse-exact syn (char-class byte))
+and token-match char-class (load Span syn)
+    eat (In syn) (load Span syn)
 
-(impl-str (impl x86_64 span) -mem -type x86_64 span)
-do  impl x86_64 span
-    type-unit-new -mem
+# abstract syntax #
 
-(impl-ref (impl x86_64 span offset) -type -book x86_64 span)
-let var name-lookup load -book span
-if  var
-do  impl x86_64 span (get-b var)
-    get-a var
-    error 2 "undefined identifier"
+(asyn-init (sem -mem -out) -mem -in -span -impl in -out)
+do  token-init eat -mem in -in -span
+    store -impl sem -mem -out
+(asyn-end (sem sem) -sem) sem (load -sem)
 
-(impl-var (impl x86_64) x86_64) impl x86_64
+(asyn-var (sem syn) (sem-is syn flake a b) (sem-in syn flake) (sem-end syn flake) (syn-expr syn expect) syn expect)
+let flake (sem load Sem syn)
+do  sem-is load Sem syn flake (A load Span syn) (B load Span syn)
+do  parse-exact syn char-class-id
+do  syn-expr syn 0
+do  sem-in load Sem syn flake
+let result (syn-expr syn expect)
+do  sem-end load Sem syn flake
+    result
 
-(impl-var-is (impl x86_64 flake) -mem -book span x86_64 flake)
-    name-push -mem -book span (type-unit-new -mem) (impl x86_64 flake)
+(asyn-seq (sem syn) (sem-then syn flake) (sem-end syn flake) (syn-expr syn expect) syn expect)
+let flake (sem load Sem syn)
+let result-a (syn-expr syn expect)
+do  sem-then load Sem syn flake
+let result-b (syn-expr syn expect)
+do  sem-end load Sem syn flake
+    result-b
 
-(impl-var-end (impl x86_64 flake) -mem -book x86_64 flake)
-do  impl x86_64 flake
-    book-pop -book
+(asyn-cond (sem syn) (sem-then syn flake) (sem-else syn flake) (sem-end syn flake) (syn-expr syn expect) syn expect)
+let flake-a (sem load Sem syn)
+let result-a (syn-expr syn 0)
+do  sem-then load Sem syn flake-a
+let result-b (syn-expr syn expect)
+let flake-b (sem load Sem syn)
+do  sem-else load Sem syn flake-b
+do  sem-end  load Sem syn flake-a
+let result-c (syn-expr syn expect)
+do  sem-end  load Sem syn flake-b
+    result-c
 
-(impl-call-arg  (impl x86_64 index) type-param x86_64 type-arg index)
-if  type-equal load type-param type-arg
-    impl x86_64 index
-    error 3 "illegal argument"
+(asyn-term
+(syn-do  (syn-expr syn expect) syn expect)
+(syn-if  (syn-expr syn expect) syn expect)
+(syn-or  (syn-expr syn expect) syn expect)
+(syn-and (syn-expr syn expect) syn expect)
+(syn-let (syn-expr syn expect) syn expect)
+(syn-for (syn-expr syn expect) syn expect)
+(syn-lit (syn-expr syn expect) syn expect)
+(syn-str (syn-expr syn expect) syn expect)
+(syn-id  (syn-expr syn expect) syn expect)
+(syn-expr syn expect) syn expect)
+or  syn-do  syn-expr syn expect
+or  syn-if  syn-expr syn expect
+or  syn-or  syn-expr syn expect
+or  syn-and syn-expr syn expect
+or  syn-let syn-expr syn expect
+or  syn-for syn-expr syn expect
+or  syn-lit syn-expr syn expect
+or  syn-str syn-expr syn expect
+or  syn-id  syn-expr syn expect
+    error 5 "expected term"
 
-(impl-call-end  (impl x86_64 arity) -mem -type x86_64 arity) store -type
-do  impl x86_64 arity
-    (type-unit-new -mem)
+(asyn-do  (syn-do  (syn-expr syn expect) syn expect)  (syn-expr syn expect) syn expect) parse-with syn-do  syn-expr "do"  syn expect
+(asyn-if  (syn-if  (syn-expr syn expect) syn expect)  (syn-expr syn expect) syn expect) parse-with syn-if  syn-expr "if"  syn expect
+(asyn-or  (syn-or  (syn-expr syn expect) syn expect)  (syn-expr syn expect) syn expect) parse-with syn-or  syn-expr "or"  syn expect
+(asyn-and (syn-and (syn-expr syn expect) syn expect)  (syn-expr syn expect) syn expect) parse-with syn-and syn-expr "and" syn expect
+(asyn-let (syn-let (syn-expr syn expect) syn expect)  (syn-expr syn expect) syn expect) parse-with syn-let syn-expr "let" syn expect
+(asyn-for (syn-for (syn-expr syn expect) syn expect)  (syn-expr syn expect) syn expect) parse-with syn-for syn-expr "for" syn expect
 
-# sem type #
+(asyn-lit (sem syn a b) syn) parse-term char-class-im sem syn
+(asyn-str (sem syn a b) syn) parse-term char-class-dq sem syn
+(asyn-id  (sem syn a b) syn) parse-term char-class-id sem syn
 
-(impl--mem    impl)                   impl
-(impl--book   impl) add (impl--mem    impl) word
-(impl--token  impl) add (impl--book   impl) word
-(impl--type   impl) add (impl--token  impl) word
-(impl--val    impl) add (impl--type   impl) word
-(impl--fixed  impl) add (impl--val    impl) word
-(impl--x86_64 impl) add (impl--fixed  impl) word
-(struct-impl     )       impl--x86_64       word
+(asyn-arg (sem syn expect result index) (syn-expr syn expect) syn expect index)
+do  syn-expr syn expect
+    sem load Sem syn expect (load Result syn) index
 
-# expression parsers #
+(asyn-args (sem syn expect result index) (syn-expr syn expect) syn stack index)
+and stack
+do  asyn-arg  sem syn-expr syn (B A stack)      index
+    asyn-args sem syn-expr syn (  B stack) (suc index)
 
-(parse-builtin (token-class k) (syn (syn x t) x t) (syn-syn x t) x t)
-and token-skip token-class eat (load impl--token x)
-    syn syn-syn x t
+(asyn-call (sem syn type) (sem-arg syn expect result index) (sem-end syn arity) (syn-expr syn expect) syn result)
+and B result
+let arity (sem load Sem syn result)
+do  asyn-args sem-arg syn-expr syn (A result) 1
+    store (Result syn) sem-end load Sem syn arity
 
-# instead of allocating a span here we could call back with two sem-param #
-(parse-term (token-class k) (syn-term (syn x t) x span) (syn x t) x)
-let span (token-take token-class eat (impl--mem x) (load impl--token x))
-and span
-    syn-term syn x span
+(asyn-juxt (syn-call (syn-expr syn expect) syn result) (syn-expr syn expect) syn expect result)
+and not (type-equal expect result)
+    syn-call syn-expr syn result
 
-(parse-id x) token-skip token-class-id eat (load impl--token x)
-(parse-lp x) token-skip token-class-lp eat (load impl--token x)
-(parse-rp x) token-skip token-class-rp eat (load impl--token x)
-(parse-qm x) token-skip token-class-qm eat (load impl--token x)
+(asyn-expr (syn-term (syn-expr syn type) syn expect) (syn-juxt (syn-expr syn type) syn expect result) (syn-call (syn-expr syn expect) syn type) (syn-expr syn expect) syn expect)
+if  parse-exact syn char-class-lp
+do  syn-term syn-expr syn expect
+or  parse-exact syn char-class-rp
+if  syn-juxt syn-expr syn expect (load Result syn)
+    parse-exact syn char-class-rp
+    error 4 "expected )"
+do  syn-term syn-expr syn expect
+    syn-juxt syn-expr syn expect (load Result syn)
 
-# term syntax #
+(asyn-body (sem syn) (sem-is syn flake decl) (sem-in syn flake decl) (sem-end syn flake decl) (syn-param (syn-expr syn type) syn haystack index) (syn-expr syn type) syn decl)
+and decl
+let flake (sem load Sem syn)
+do  sem-is load Sem syn flake decl
+or  parse-exact syn char-class-qm
+do  sem-in load Sem syn flake decl
+do  syn-param syn-expr syn (A B decl) 0
+    sem-end load Sem syn flake decl
 
-(parse-init (impl x -out) x -mem in -out -token)
-do  store -mem (add -mem struct-impl)
-do  token-init eat -mem in -token
-    impl x -out
+(asyn-param (sem syn decl index) (sem-end syn flake) (syn-expr syn type) syn stack index)
+if  stack
+let decl (A stack)
+let offset (sem (load Sem syn) decl index)
+do  asyn-param sem sem-end syn-expr syn (B stack) (suc index)
+    sem-end load Sem syn offset
+    syn-expr syn 0
 
-(asyn-unit (impl x span) x span) store (impl--type x) impl x span
+(asyn-decl (sem sem a b type) (syn-type-which (syn-type syn) syn) (syn-type syn) syn)
+let a (A load Span syn)
+let b (B load Span syn)
+and parse-exact syn char-class-id
+    sem (load Sem syn) a b (syn-type-which syn-type syn)
 
-(asyn-var (impl x) (impl-eq x a) (impl-in x a) (impl-end x a) (syn x t) x t)
-let a
-    impl x
-do  impl-eq x a
-do  parse-id x
-do  syn x 0
-do  impl-in x a
-do  syn x t
-    impl-end x a
+(asyn-type-params (sem sem decl type) (syn-type-params (syn-type syn) syn) (syn-type syn) syn)
+and not (parse-exact syn char-class-rp)
+let decl (syn-type syn)
+    sem (load Sem syn) decl (syn-type-params syn-type syn)
 
-(asyn-seq (impl x) (impl-then x a) (impl-end x a) (syn x t) x t)
-let a
-    impl x
-do  syn x t
-do  impl-then x a
-do  syn x t
-    impl-end x a
+(asyn-type (sem sem a b type) (syn-decl (sem sem a b type) (syn-type-which (syn-type syn) syn) (syn-type syn) syn) (syn-type-func (syn-type syn) syn) (syn-type-unit (syn-type syn) syn) (syn-type syn) syn)
+    syn-decl sem (if (parse-exact syn char-class-lp) syn-type-func syn-type-unit) syn-type syn
 
-(asyn-if (impl x) (impl-then x a) (impl-else x a) (impl-end x a) (syn x t) x t)
-let a
-    impl x
-do  syn x 0
-do  impl-then x a
-do  syn x t
-let b
-    impl x
-do  impl-else x b
-do  impl-end  x a
-do  syn x t
-    impl-end  x b
+# tables #
 
-(asyn-arg (impl x t i) (syn x t) x t i)
-do  syn x t
-    impl x t i
+(Out   impl)            impl
+(Depth impl) add (Out   impl) word
+(Flake impl) add (Depth impl) word
+(X86_64    )      Flake       word
 
-(asyn-args (impl x t i) (syn x t) x book i)
-and book
-do  asyn-arg  impl syn x (get-b get-a book)      i
-    asyn-args impl syn x (      get-b book) (suc i)
+(gen-init -mem out) let impl (to -mem add X86_64) do (x86_64-init (Out impl) (Depth impl) (Flake impl) out) impl
+(gen-end impl) x86_64-end (Out impl)
 
-(asyn-call (impl x arity) (impl-arg x book index) (impl-end x arity) (syn x type) x type)
-let arity (book-count (get-a type))
-do  impl x arity
-do  asyn-args impl-arg syn x (get-a type) 1
-    impl-end x arity
+(gen-flake      impl            ) x86_64-flake                              (Flake impl)
+(gen-label      impl flake      ) x86_64-label      (Out impl)                           flake
+(gen-ref        impl a b offset ) x86_64-ref        (Out impl) (Depth impl)              a b offset
+(gen-lit        impl a b        ) x86_64-lit        (Out impl)                           a b
+(gen-str        impl a b        ) x86_64-str        (Out impl)              (Flake impl) a b
+(gen-do         impl flake      ) 0
+(gen-je         impl flake      ) x86_64-je         (Out impl)                           flake
+(gen-jne        impl flake      ) x86_64-jne        (Out impl)                           flake
+(gen-jmp        impl flake      ) x86_64-jmp        (Out impl)                           flake
+(gen-var-is     impl flake      ) x86_64-var-is     (Out impl) (Depth impl)              flake
+(gen-var-in     impl flake      ) x86_64-var-in     (Out impl)                           flake
+(gen-let-end    impl flake      ) x86_64-let-end    (Out impl) (Depth impl)              flake
+(gen-for-end    impl flake      ) x86_64-for-end    (Out impl) (Depth impl)              flake
+(gen-call-with  impl arity      ) x86_64-call-with  (Out impl) (Depth impl)              arity
+(gen-call-arg   impl index      ) x86_64-call-arg   (Out impl)                           index
+(gen-call-end   impl arity      ) x86_64-call-end   (Out impl) (Depth impl)              arity
+(gen-decl       impl flake      ) 0
+(gen-decl-in    impl a b        ) x86_64-decl-in    (Out impl) (Depth impl)              a b
+(gen-decl-param impl index      ) x86_64-decl-param (Out impl) (Depth impl)              index
+(gen-decl-end   impl arity      ) x86_64-decl-end   (Out impl) (Depth impl)              arity
 
-# here we say what implementation to use #
+(asem-type-func --mem stack) node --mem stack 1
+(asem-type-unit            ) 0
 
-(sem-pre       x out        )
-do  store (impl--x86_64 x) (to (impl--mem x) add struct-x86_64)
-    impl-pre x86_64-pre (impl--mem x) (impl--book x) (load impl--x86_64 x) out
+(Mem  sem)           sem
+(Book sem) add (Mem  sem) word
+(Impl sem) add (Book sem) word
+(struct-Sem)    Impl      word
 
-(sem-lit       x span       ) impl-lit       x86_64-lit        (impl--mem x) (impl--type x)                            (load impl--x86_64 x) span
-(sem-str       x span       ) impl-str       x86_64-str        (impl--mem x) (impl--type x)                            (load impl--x86_64 x) span
-(sem-ref       x span       ) impl-ref       x86_64-ref                      (impl--type x) (impl--book x)             (load impl--x86_64 x) span
-(sem-let       x            )                x86_64-flake                                                              (load impl--x86_64 x) 
-(sem-let-is    x flake      ) impl-var-is    x86_64-var-is     (impl--mem x) (impl--book x) (get-a load impl--token x) (load impl--x86_64 x) flake
-(sem-let-in    x flake      )                x86_64-var-in                                                             (load impl--x86_64 x) flake
-(sem-let-end   x flake      ) impl-var-end   x86_64-let-end    (impl--mem x) (impl--book x)                            (load impl--x86_64 x) flake
-(sem-for       x            )                x86_64-flake                                                              (load impl--x86_64 x)
-(sem-for-is    x flake      ) impl-var-is    x86_64-var-is     (impl--mem x) (impl--book x) (get-a load impl--token x) (load impl--x86_64 x) flake
-(sem-for-in    x flake      )                x86_64-var-in                                                             (load impl--x86_64 x) flake
-(sem-for-end   x flake      ) impl-var-end   x86_64-for-end    (impl--mem x) (impl--book x)                            (load impl--x86_64 x) flake
-(sem-do        x            )                x86_64-flake                                                              (load impl--x86_64 x)
-(sem-do-then   x flake      )                x86_64-do                                                                 (load impl--x86_64 x) flake
-(sem-do-end    x flake      )                x86_64-label                                                              (load impl--x86_64 x) flake
-(sem-and       x            )                x86_64-flake                                                              (load impl--x86_64 x)
-(sem-and-then  x flake      )                x86_64-je                                                                 (load impl--x86_64 x) flake
-(sem-and-end   x flake      )                x86_64-label                                                              (load impl--x86_64 x) flake
-(sem-or        x            )                x86_64-flake                                                              (load impl--x86_64 x)
-(sem-or-else   x flake      )                x86_64-jne                                                                (load impl--x86_64 x) flake
-(sem-or-end    x flake      )                x86_64-label                                                              (load impl--x86_64 x) flake
-(sem-if        x            )                x86_64-flake                                                              (load impl--x86_64 x)
-(sem-if-then   x flake      )                x86_64-je                                                                 (load impl--x86_64 x) flake
-(sem-if-else   x flake      )                x86_64-jmp                                                                (load impl--x86_64 x) flake
-(sem-if-end    x flake      )                x86_64-label                                                              (load impl--x86_64 x) flake
-(sem-call-with x arity      )                x86_64-call-with                                                          (load impl--x86_64 x) arity
-(sem-call-arg  x type  index) impl-call-arg  x86_64-call-arg                  (impl--type x)                           (load impl--x86_64 x) type index
-(sem-call-end  x arity      ) impl-call-end  x86_64-call-end    (impl--mem x) (impl--type x)                           (load impl--x86_64 x) arity
+(sem-init -mem out)
+let sem (to -mem add struct-Sem)
+do  store (Mem sem) (load -mem)
+do  asem-init gen-init (Mem sem) (Book sem) (Impl sem) out
+    sem
+(sem-end sem) asem-end gen-end (Impl sem)
 
-# expression syntax #
+(sem-lit        sem a b                ) asem-unit      gen-lit                              (     Impl sem) a b
+(sem-str        sem a b                ) asem-unit      gen-str                              (     Impl sem) a b
+(sem-ref        sem a b                ) asem-ref       gen-ref                   (Book sem) (     Impl sem) a b
+(sem-do         sem                    )                gen-flake                            (load Impl sem)
+(sem-do-then    sem flake              )                gen-do                               (load Impl sem) flake
+(sem-do-end     sem flake              )                gen-label                            (load Impl sem) flake
+(sem-if         sem                    )                gen-flake                            (load Impl sem)
+(sem-if-then    sem flake              )                gen-je                               (load Impl sem) flake
+(sem-if-else    sem flake              )                gen-jmp                              (load Impl sem) flake
+(sem-if-end     sem flake              )                gen-label                            (load Impl sem) flake
+(sem-or         sem                    )                gen-flake                            (load Impl sem)
+(sem-or-else    sem flake              )                gen-jne                              (load Impl sem) flake
+(sem-or-end     sem flake              )                gen-label                            (load Impl sem) flake
+(sem-and        sem                    )                gen-flake                            (load Impl sem)
+(sem-and-then   sem flake              )                gen-je                               (load Impl sem) flake
+(sem-and-end    sem flake              )                gen-label                            (load Impl sem) flake
+(sem-let        sem                    )                gen-flake                            (load Impl sem) 
+(sem-let-is     sem flake a b          ) asem-var-def   gen-var-is      (Mem sem) (Book sem) (     Impl sem) a b 0 flake
+(sem-let-in     sem flake              )                gen-var-in                           (load Impl sem) flake
+(sem-let-end    sem flake              ) asem-var-end   gen-let-end               (Book sem) (     Impl sem) flake
+(sem-for        sem                    )                gen-flake                            (load Impl sem)
+(sem-for-is     sem flake a b          ) asem-var-def   gen-var-is      (Mem sem) (Book sem) (     Impl sem) a b 0 flake
+(sem-for-in     sem flake              )                gen-var-in                           (load Impl sem) flake
+(sem-for-end    sem flake              ) asem-var-end   gen-for-end               (Book sem) (     Impl sem) flake
+(sem-call-with  sem type               ) asem-call-with gen-call-with                        (     Impl sem) type
+(sem-call-arg   sem expect result index) asem-call-arg  gen-call-arg                         (     Impl sem) expect result index
+(sem-call-end   sem arity              ) asem-call-end  gen-call-end                         (     Impl sem) arity
+(sem-param      sem decl index         ) asem-var-def   gen-decl-param  (Mem sem) (Book sem) (     Impl sem) (A A decl) (B A decl) (B decl) index
+(sem-param-end  sem flake              ) asem-var-end   gen-do                    (Book sem) (     Impl sem) flake
+(sem-decl       sem a b type           ) asem-decl      gen-do          (Mem sem)            (     Impl sem) a b type
+(sem-type-func  sem stack              ) asem-type-func                 (Mem sem)                            stack
+(sem-type-unit  sem                    ) asem-type-unit
+(sem-type-param sem decl stack         ) asem-param     gen-do          (Mem sem) (Impl sem)                 decl stack
+(sem-body       sem                    )                gen-flake                            (load Impl sem) 
+(sem-body-is    sem flake decl         ) asem-var-def   gen-decl        (Mem sem) (Book sem) (     Impl sem) (A A decl)  (B A decl) (B decl) flake
+(sem-body-in    sem flake decl         )                gen-decl-in                          (load Impl sem)             (A A decl) (B A decl)
+(sem-body-end   sem flake decl         )                gen-decl-end                         (load Impl sem) stack-count (A B decl)
 
-(syn-init x -in -out) parse-init sem-pre x (impl--mem x) -in -out (impl--token x)
+(syn-init -mem -in -out) let syn (to -mem add struct-Syn) do (asyn-init sem-init -mem (In syn) (Span syn) (Sem syn) -in -out) syn
+(syn-end syn) asyn-end sem-end (Sem syn)
 
-(syn-lit  (syn x type) x span) asyn-unit sem-lit x span
-(syn-str  (syn x type) x span) asyn-unit sem-str x span
-(syn-ref  (syn x type) x span) asyn-unit sem-ref x span
-(syn-let  (syn x type) x type) asyn-var  sem-let sem-let-is sem-let-in sem-let-end syn x type
-(syn-for  (syn x type) x type) asyn-var  sem-for sem-for-is sem-for-in sem-for-end syn x type
-(syn-do   (syn x type) x type) asyn-seq  sem-do sem-do-then sem-do-end syn x type
-(syn-and  (syn x type) x type) asyn-seq  sem-and sem-and-then sem-and-end syn x type
-(syn-or   (syn x type) x type) asyn-seq  sem-or sem-or-else sem-or-end syn x type
-(syn-if   (syn x type) x type) asyn-if   sem-if sem-if-then sem-if-else sem-if-end syn x type
-(syn-call (syn x type) x type) asyn-call sem-call-with sem-call-arg sem-call-end syn x type
+(syn-do   (syn-expr syn expect) syn expect) asyn-seq  sem-do sem-do-then sem-do-end syn-expr syn expect
+(syn-if   (syn-expr syn expect) syn expect) asyn-cond sem-if sem-if-then sem-if-else sem-if-end syn-expr syn expect
+(syn-or   (syn-expr syn expect) syn expect) asyn-seq  sem-or sem-or-else sem-or-end syn-expr syn expect
+(syn-let  (syn-expr syn expect) syn expect) asyn-var  sem-let sem-let-is sem-let-in sem-let-end syn-expr syn expect
+(syn-for  (syn-expr syn expect) syn expect) asyn-var  sem-for sem-for-is sem-for-in sem-for-end syn-expr syn expect
+(syn-and  (syn-expr syn expect) syn expect) asyn-seq  sem-and sem-and-then sem-and-end syn-expr syn expect
+(syn-call (syn-expr syn expect) syn expect) asyn-call sem-call-with sem-call-arg sem-call-end syn-expr syn expect
 
-(parse-terms (syn x type) x type)
-or  parse-builtin token-class-do  syn-do  syn x type
-or  parse-builtin token-class-if  syn-if  syn x type
-or  parse-builtin token-class-or  syn-or  syn x type
-or  parse-builtin token-class-and syn-and syn x type
-or  parse-builtin token-class-let syn-let syn x type
-or  parse-builtin token-class-for syn-for syn x type
-or  parse-term    token-class-lit syn-lit syn x
-or  parse-term    token-class-str syn-str syn x
-or  parse-term    token-class-id  syn-ref syn x
-    error 4 "expected term"
+(syn-term-do  (syn-expr syn expect) syn expect) asyn-do  syn-do  syn-expr syn expect
+(syn-term-if  (syn-expr syn expect) syn expect) asyn-if  syn-if  syn-expr syn expect
+(syn-term-or  (syn-expr syn expect) syn expect) asyn-or  syn-or  syn-expr syn expect
+(syn-term-and (syn-expr syn expect) syn expect) asyn-and syn-and syn-expr syn expect
+(syn-term-let (syn-expr syn expect) syn expect) asyn-let syn-let syn-expr syn expect
+(syn-term-for (syn-expr syn expect) syn expect) asyn-for syn-for syn-expr syn expect
+(syn-term-lit (syn-expr syn expect) syn expect) asyn-lit sem-lit syn
+(syn-term-str (syn-expr syn expect) syn expect) asyn-str sem-str syn
+(syn-term-id  (syn-expr syn expect) syn expect) asyn-id  sem-ref syn
 
-(syn-juxt (syn x t) x t)
-let u (load impl--type x)   
-and not type-equal t u
-and get-b u
-    syn-call syn x u
+(syn-type-params (syn-type syn) syn) asyn-type-params sem-type-param syn-type-params syn-type syn
+(syn-type-func (syn-type syn) syn) sem-type-func (load Sem syn) (syn-type-params syn-type syn)
+(syn-type-unit (syn-type syn) syn) sem-type-unit (load Sem syn)
 
-(syn-nest (syn x t) x t)
-if  parse-lp x
-do  parse-terms syn x t
-or  parse-rp x
-do  syn-juxt syn x t
-or  parse-rp x
-    error 5 "expected `)`"
-do  parse-terms syn x t
-    syn-juxt syn x t
+(syn-term (syn-expr syn expect) syn expect) asyn-term syn-term-do syn-term-if syn-term-or syn-term-and syn-term-let syn-term-for syn-term-lit syn-term-str syn-term-id syn-expr syn expect
+(syn-juxt (syn-expr syn expect) syn expect result) asyn-juxt syn-call syn-expr syn expect result
+(syn-param (syn-expr syn expect) syn haystack index) asyn-param sem-param sem-param-end syn-expr syn haystack index
+(syn-body (syn-expr syn expect) syn decl) asyn-body sem-body sem-body-is sem-body-in sem-body-end syn-param syn-expr syn decl
+(syn-expr syn expect) asyn-expr syn-term syn-juxt syn-call syn-expr syn expect
+(syn-type syn) asyn-type sem-decl asyn-decl syn-type-func syn-type-unit syn-type syn
 
-(syn-expr x t) syn-nest syn-expr x t
+(main (return code out end) in out -mem)
+let syn (syn-init -mem in out)
+do  for _ 0 syn-body syn-expr syn (syn-type syn)
+    return 0 out (syn-end syn)
 
-# declaration syntax #
-
-(sem-param (impl x o y) x o y)
-if  o
-    impl x o y
-do  syn-expr x (type-unit-new (impl--mem x))
-    0
-
-(sem-param-next (impl x o y) x o y offset)
-let d (get-a o)
-do  name-push (impl--mem x) (impl--book x) (get-a get-a d) (get-b d) offset
-let h (sem-param impl x (get-b o) y)
-do  book-pop (impl--book x)
-    h
-
-(x86_64-param-reg (impl x o y) reg x o y) 
-do  x86_64-push (x86_64--depth load impl--x86_64 x) (x86_64--out load impl--x86_64 x) reg 
-    suc (sem-param-next impl x o (suc y) (load x86_64--depth load impl--x86_64 x))
-
-(x86_64-stack     x o y) sem-param-next   x86_64-stack                    x o (suc y) y
-(x86_64-register5 x o y) x86_64-param-reg x86_64-stack     x86_64-str-r9  x o 0
-(x86_64-register4 x o y) x86_64-param-reg x86_64-register5 x86_64-str-r8  x o y
-(x86_64-register3 x o y) x86_64-param-reg x86_64-register4 x86_64-str-rcx x o y
-(x86_64-register2 x o y) x86_64-param-reg x86_64-register3 x86_64-str-rdx x o y
-(x86_64-register1 x o y) x86_64-param-reg x86_64-register2 x86_64-str-rsi x o y
-(x86_64-register0 x o y) x86_64-param-reg x86_64-register1 x86_64-str-rdi x o y
-
-(syn-body x d)
-if  name-lookup (load impl--book x) (get-a get-a d)
-    error 6 "redefinition"
-do  name-push (impl--mem x) (impl--book x) (get-a get-a d) (get-b d) 0
-or  parse-qm x
-do  x86_64-decl-in  (x86_64--depth load impl--x86_64 x) (get-a get-a d) (x86_64--out load impl--x86_64 x)
-let y (sem-param x86_64-register0 x (get-a get-b d) 0)
-    load x86_64-decl-end (x86_64--depth load impl--x86_64 x) y (x86_64--out load impl--x86_64 x)
-
-(syn-params (syn-type x) x)
-and not (parse-rp x)
-let decl (syn-type x)
-    book-new (impl--mem x) (syn-params syn-type x) decl
-
-(syn-type-new-unit (syn-type x) x) type-unit-new (impl--mem x)
-(syn-type-new-func (syn-type x) x) type-func-new (impl--mem x) (syn-params syn-type x)
-
-(syn-decl (syn-type-which (syn-type x) x) (syn-type x) x)
-let token (token-clone (impl--mem x) (load impl--token x))
-and parse-id x
-    pair-new (impl--mem x) token (syn-type-which syn-type x)
-
-(syn-type x) syn-decl (if (parse-lp x) syn-type-new-func syn-type-new-unit) syn-type x
-
-(syn x in out)
-do  syn-init x in out
-for _ 0
-and parse-lp x
-let t (syn-decl syn-type-new-func syn-type x)
-and t
-    syn-body x t
-
-(main (return code out end) in out mem top) return 0 out (syn mem in out)
-(_start) runtime main (pow2 20) (pow2 20) (pow2 20)
+(_start) runtime main (pow2 15) (pow2 18) (pow2 18)
