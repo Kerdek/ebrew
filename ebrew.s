@@ -55,14 +55,14 @@ mov %rsi,%rax
 mov %rdi,%rcx
 shl %cl,%rax
 ret
-.section .text.f636D7061
-f636D7061:
+.section .text.f61626F7665
+f61626F7665:
 cmp %rdi,%rsi
 seta %al
 movzbl %al,%eax
 ret
-.section .text.f636D7065
-f636D7065:
+.section .text.f657175616C
+f657175616C:
 cmp %rsi,%rdi
 sete %al
 movzbl %al,%eax
@@ -88,7 +88,7 @@ f636D706578:
 push %rdi
 push %rsi
 push %rdx
-mov f636D7061@GOTPCREL(%rip),%rax
+mov f61626F7665@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
 mov 40(%rsp),%rax
@@ -101,7 +101,7 @@ pop %rsi
 call *%rax
 test %rax,%rax
 jne .17$
-mov f636D7061@GOTPCREL(%rip),%rax
+mov f61626F7665@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
 mov 24(%rsp),%rax
@@ -309,168 +309,6 @@ call *%rax
 .28$:
 add $8,%rsp
 ret
-.section .text.f6D656D636D70
-f6D656D636D70:
-push %rdi
-push %rsi
-push %rdx
-mov f6E6F74@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 16(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-test %rax,%rax
-jne .30$
-mov f636D7065@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f7065656B@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov f7065656B@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-test %rax,%rax
-je .31$
-mov f6D656D636D70@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov f737563@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov f737563@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-mov f707264@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-.31$:
-.30$:
-add $24,%rsp
-ret
-.section .text.f7374726E636D70
-f7374726E636D70:
-push %rdi
-push %rsi
-push %rdx
-push %rcx
-mov f636D7065@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 32(%rsp),%rax
-mov %rax,8(%rsp)
-mov 24(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-test %rax,%rax
-je .33$
-mov f6D656D636D70@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-mov 48(%rsp),%rax
-mov %rax,16(%rsp)
-mov 32(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-.33$:
-add $32,%rsp
-ret
-.section .text.f76636D70
-f76636D70:
-push %rdi
-push %rsi
-push %rdx
-push %rcx
-mov f7374726E636D70@GOTPCREL(%rip),%rax
-add $-32,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-mov 48(%rsp),%rax
-mov %rax,16(%rsp)
-mov f737562@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 88(%rsp),%rax
-mov %rax,8(%rsp)
-mov 80(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov %rax,24(%rsp)
-mov f737562@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 72(%rsp),%rax
-mov %rax,8(%rsp)
-mov 64(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov %rax,32(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-call *%rax
-add $32,%rsp
-ret
 .section .text.f737464696E
 f737464696E:
 push %rdi
@@ -567,106 +405,6 @@ call *%rax
 add $8,%rsp
 add $16,%rsp
 ret
-.section .text.f6E616E6F736C656570
-f6E616E6F736C656570:
-push %rdi
-push %rsi
-push %rdx
-add $-8,%rsp
-mov f746F@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-mov f616464@GOTPCREL(%rip),%rax
-mov %rax,16(%rsp)
-mov $16,%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-.39$:
-mov %rax,(%rsp)
-mov f73746F7265@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 24(%rsp),%rax
-mov %rax,8(%rsp)
-mov 40(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov f73746F7265@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f616464@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov $8,%rax
-mov %rax,8(%rsp)
-mov 48(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov %rax,8(%rsp)
-mov 32(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov f6C696E7578@GOTPCREL(%rip),%rax
-add $-56,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-mov $0,%rax
-mov %rax,16(%rsp)
-mov $0,%rax
-mov %rax,24(%rsp)
-mov $0,%rax
-mov %rax,32(%rsp)
-mov $0,%rax
-mov %rax,40(%rsp)
-mov $0,%rax
-mov %rax,48(%rsp)
-mov $35,%rax
-mov %rax,56(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-pop %r8
-pop %r9
-call *%rax
-add $8,%rsp
-mov f746F@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-mov f737562@GOTPCREL(%rip),%rax
-mov %rax,16(%rsp)
-mov $16,%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-.42$:
-.41$:
-.40$:
-add $8,%rsp
-add $24,%rsp
-ret
 .section .text.f72657472792D6D656D
 f72657472792D6D656D:
 push %rdi
@@ -681,16 +419,16 @@ mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-.44$:
+.33$:
 mov %rax,(%rsp)
 add $-8,%rsp
 mov 24(%rsp),%rax
-.45$:
+.34$:
 mov %rax,(%rsp)
 mov f6E6F74@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
-mov f636D7065@GOTPCREL(%rip),%rax
+mov f657175616C@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
 mov 40(%rsp),%rax
@@ -706,54 +444,58 @@ pop %rax
 pop %rdi
 call *%rax
 test %rax,%rax
-je .46$
+je .35$
 add $-8,%rsp
-mov 40(%rsp),%rax
-add $-16,%rsp
-push %rax
-mov 32(%rsp),%rax
-mov %rax,8(%rsp)
 mov f737562@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
-mov 56(%rsp),%rax
+mov 32(%rsp),%rax
 mov %rax,8(%rsp)
-mov 72(%rsp),%rax
+mov 48(%rsp),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
 pop %rsi
 call *%rax
+.36$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov 48(%rsp),%rax
+add $-16,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+mov 32(%rsp),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
 pop %rsi
 call *%rax
-.47$:
+.37$:
 mov %rax,(%rsp)
 mov 0(%rsp),%rax
 test %rax,%rax
-je .48$
-mov f636D7065@GOTPCREL(%rip),%rax
+je .38$
+mov f657175616C@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
 mov 24(%rsp),%rax
 mov %rax,8(%rsp)
-mov 40(%rsp),%rax
+mov 48(%rsp),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-je .49$
+je .39$
 mov 0(%rsp),%rax
-jmp .50$
-.49$:
+jmp .40$
+.39$:
 mov f616464@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
-mov 32(%rsp),%rax
+mov 40(%rsp),%rax
 mov %rax,8(%rsp)
 mov 24(%rsp),%rax
 mov %rax,16(%rsp)
@@ -761,12 +503,13 @@ pop %rax
 pop %rdi
 pop %rsi
 call *%rax
-.50$:
-.48$:
+.40$:
+.38$:
 add $8,%rsp
-.46$:
+add $8,%rsp
+.35$:
 test %rax,%rax
-jne .45$
+jne .34$
 pop %rax
 add $8,%rsp
 add $24,%rsp
@@ -928,7 +671,7 @@ mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-.56$:
+.46$:
 add $24,%rsp
 ret
 .section .text.f72756E74696D65
@@ -946,7 +689,7 @@ mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-.58$:
+.48$:
 mov %rax,(%rsp)
 add $-8,%rsp
 mov f616464@GOTPCREL(%rip),%rax
@@ -960,7 +703,7 @@ pop %rax
 pop %rdi
 pop %rsi
 call *%rax
-.59$:
+.49$:
 mov %rax,(%rsp)
 add $-8,%rsp
 mov f616464@GOTPCREL(%rip),%rax
@@ -974,7 +717,7 @@ pop %rax
 pop %rdi
 pop %rsi
 call *%rax
-.60$:
+.50$:
 mov %rax,(%rsp)
 mov f62726B@GOTPCREL(%rip),%rax
 add $-8,%rsp
@@ -1049,9 +792,9 @@ pop %rsi
 pop %rdx
 pop %rcx
 call *%rax
-.63$:
-.62$:
-.61$:
+.53$:
+.52$:
+.51$:
 add $8,%rsp
 add $8,%rsp
 add $8,%rsp
@@ -1077,11 +820,11 @@ add $-16,%rsp
 push %rax
 mov f737464657272@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
-.section .data..s67
-.s67:
+.section .data..s57
+.s57:
 .string,"\n"
 .previous
-mov .s67@GOTPCREL(%rip),%rax
+mov .s57@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
@@ -1095,331 +838,9 @@ mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-.66$:
-.65$:
+.56$:
+.55$:
 add $16,%rsp
-ret
-.section .text.f4E6F6465
-f4E6F6465:
-mov f616464@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f776F7264@GOTPCREL(%rip),%rax
-push %rax
-pop %rax
-call *%rax
-mov %rax,8(%rsp)
-mov f776F7264@GOTPCREL(%rip),%rax
-push %rax
-pop %rax
-call *%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-ret
-.section .text.f2D41
-f2D41:
-push %rdi
-mov 0(%rsp),%rax
-add $8,%rsp
-ret
-.section .text.f2D42
-f2D42:
-push %rdi
-mov f616464@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 24(%rsp),%rax
-mov %rax,8(%rsp)
-mov f776F7264@GOTPCREL(%rip),%rax
-push %rax
-pop %rax
-call *%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f41
-f41:
-push %rdi
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f2D41@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 32(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f42
-f42:
-push %rdi
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f2D42@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 32(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f6E6F6465
-f6E6F6465:
-push %rdi
-push %rsi
-push %rdx
-add $-8,%rsp
-mov f746F@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-mov f616464@GOTPCREL(%rip),%rax
-mov %rax,16(%rsp)
-mov f4E6F6465@GOTPCREL(%rip),%rax
-push %rax
-pop %rax
-call *%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-.74$:
-mov %rax,(%rsp)
-mov f73746F7265@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f2D41@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 40(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 40(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov f73746F7265@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f2D42@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 40(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 32(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov 0(%rsp),%rax
-.76$:
-.75$:
-add $8,%rsp
-add $24,%rsp
-ret
-.section .text.f6C65782D6F6E65
-f6C65782D6F6E65:
-push %rdi
-push %rsi
-mov 8(%rsp),%rax
-add $-8,%rsp
-push %rax
-mov f7065656B@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-test %rax,%rax
-je .78$
-mov f696E63@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 16(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-.78$:
-add $16,%rsp
-ret
-.section .text.f6C65782D657363
-f6C65782D657363:
-push %rdi
-push %rsi
-push %rdx
-push %rcx
-mov f6C65782D6F6E65@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-mov 24(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-test %rax,%rax
-je .80$
-mov f6C65782D6F6E65@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 32(%rsp),%rax
-mov %rax,8(%rsp)
-mov 24(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-jmp .81$
-.80$:
-mov f6C65782D6F6E65@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 40(%rsp),%rax
-mov %rax,8(%rsp)
-mov 24(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-.81$:
-add $32,%rsp
-ret
-.section .text.f766C65782D62756E6368
-f766C65782D62756E6368:
-push %rdi
-push %rsi
-add $-8,%rsp
-mov $0,%rax
-.83$:
-mov %rax,(%rsp)
-mov 16(%rsp),%rax
-add $-8,%rsp
-push %rax
-mov 24(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-test %rax,%rax
-jne .83$
-pop %rax
-add $16,%rsp
-ret
-.section .text.f766C65782D6C67726F7570
-f766C65782D6C67726F7570:
-push %rdi
-push %rsi
-push %rdx
-mov 16(%rsp),%rax
-add $-8,%rsp
-push %rax
-mov 16(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-test %rax,%rax
-je .85$
-mov 8(%rsp),%rax
-add $-8,%rsp
-push %rax
-mov 16(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-.85$:
-add $24,%rsp
-ret
-.section .text.f766C65782D67726F7570
-f766C65782D67726F7570:
-push %rdi
-push %rsi
-push %rdx
-mov 16(%rsp),%rax
-add $-8,%rsp
-push %rax
-mov 16(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-test %rax,%rax
-je .87$
-mov f766C65782D62756E6368@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 32(%rsp),%rax
-mov %rax,8(%rsp)
-mov 24(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov 16(%rsp),%rax
-add $-8,%rsp
-push %rax
-mov 16(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-.88$:
-.87$:
-add $24,%rsp
 ret
 .section .text.f767075742D6D656D
 f767075742D6D656D:
@@ -1429,9 +850,9 @@ push %rdx
 push %rcx
 add $-8,%rsp
 mov 24(%rsp),%rax
-.91$:
+.60$:
 mov %rax,(%rsp)
-mov f636D7061@GOTPCREL(%rip),%rax
+mov f61626F7665@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
 mov 24(%rsp),%rax
@@ -1443,20 +864,24 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-je .92$
-mov 32(%rsp),%rax
-add $-16,%rsp
-push %rax
+je .61$
+add $-8,%rsp
 mov f7065656B@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
-mov 40(%rsp),%rax
+mov 24(%rsp),%rax
 mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
+.62$:
+mov %rax,(%rsp)
+mov 40(%rsp),%rax
+add $-16,%rsp
+push %rax
+mov 24(%rsp),%rax
 mov %rax,8(%rsp)
-mov 32(%rsp),%rax
+mov 40(%rsp),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
@@ -1465,18 +890,19 @@ call *%rax
 mov f737563@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
-mov 16(%rsp),%rax
+mov 24(%rsp),%rax
 mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-.93$:
-.92$:
+.63$:
+add $8,%rsp
+.61$:
 test %rax,%rax
-jne .91$
+jne .60$
 pop %rax
 mov 0(%rsp),%rax
-.90$:
+.59$:
 add $32,%rsp
 ret
 .section .text.f767075742D737472696E67
@@ -1486,7 +912,7 @@ push %rsi
 push %rdx
 add $-8,%rsp
 mov 16(%rsp),%rax
-.96$:
+.66$:
 mov %rax,(%rsp)
 add $-8,%rsp
 mov f7065656B@GOTPCREL(%rip),%rax
@@ -1497,11 +923,11 @@ mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-.97$:
+.67$:
 mov %rax,(%rsp)
 mov 0(%rsp),%rax
 test %rax,%rax
-je .98$
+je .68$
 mov 32(%rsp),%rax
 add $-16,%rsp
 push %rax
@@ -1521,33 +947,37 @@ mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-.99$:
-.98$:
+.69$:
+.68$:
 add $8,%rsp
 test %rax,%rax
-jne .96$
+jne .66$
 pop %rax
 mov 0(%rsp),%rax
-.95$:
+.65$:
 add $24,%rsp
 ret
 .section .text.f707574
 f707574:
 push %rdi
 push %rsi
-mov f706F6B65@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
+add $-8,%rsp
 mov f6C6F6164@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
-mov 40(%rsp),%rax
+mov 24(%rsp),%rax
 mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
+.71$:
+mov %rax,(%rsp)
+mov f706F6B65@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 24(%rsp),%rax
 mov %rax,8(%rsp)
-mov 32(%rsp),%rax
+mov 40(%rsp),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
@@ -1556,14 +986,15 @@ call *%rax
 mov f696E63@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
-mov 16(%rsp),%rax
+mov 24(%rsp),%rax
 mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-mov 0(%rsp),%rax
-.102$:
-.101$:
+mov 8(%rsp),%rax
+.73$:
+.72$:
+add $8,%rsp
 add $16,%rsp
 ret
 .section .text.f7075746C66
@@ -1590,42 +1021,50 @@ push %rdx
 push %rcx
 mov 8(%rsp),%rax
 test %rax,%rax
-je .105$
-mov 24(%rsp),%rax
-add $-16,%rsp
-push %rax
+je .76$
+add $-8,%rsp
 mov f6D6F64@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
-mov 64(%rsp),%rax
+mov 48(%rsp),%rax
 mov %rax,8(%rsp)
-mov 56(%rsp),%rax
+mov 40(%rsp),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
 pop %rsi
 call *%rax
+.77$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f646976@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+mov 48(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+.78$:
+mov %rax,(%rsp)
+mov 40(%rsp),%rax
+add $-16,%rsp
+push %rax
+mov 32(%rsp),%rax
 mov %rax,8(%rsp)
 mov f7075742D646967697473@GOTPCREL(%rip),%rax
 add $-32,%rsp
-push %rax
-mov 88(%rsp),%rax
-mov %rax,8(%rsp)
-mov 80(%rsp),%rax
-mov %rax,16(%rsp)
-mov f646976@GOTPCREL(%rip),%rax
-add $-16,%rsp
 push %rax
 mov 104(%rsp),%rax
 mov %rax,8(%rsp)
 mov 96(%rsp),%rax
 mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov %rax,24(%rsp)
 mov 64(%rsp),%rax
+mov %rax,24(%rsp)
+mov 80(%rsp),%rax
 mov %rax,32(%rsp)
 pop %rax
 pop %rdi
@@ -1638,10 +1077,12 @@ pop %rax
 pop %rdi
 pop %rsi
 call *%rax
-jmp .106$
-.105$:
+add $8,%rsp
+add $8,%rsp
+jmp .79$
+.76$:
 mov 0(%rsp),%rax
-.106$:
+.79$:
 add $32,%rsp
 ret
 .section .text.f7075742D6E756D626572
@@ -1652,7 +1093,7 @@ push %rdx
 push %rcx
 mov 8(%rsp),%rax
 test %rax,%rax
-je .108$
+je .81$
 mov f7075742D646967697473@GOTPCREL(%rip),%rax
 add $-32,%rsp
 push %rax
@@ -1670,8 +1111,8 @@ pop %rsi
 pop %rdx
 pop %rcx
 call *%rax
-jmp .109$
-.108$:
+jmp .82$
+.81$:
 mov f707574@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -1683,7 +1124,7 @@ pop %rax
 pop %rdi
 pop %rsi
 call *%rax
-.109$:
+.82$:
 add $32,%rsp
 ret
 .section .text.f7075742D64696769742D3136
@@ -1698,7 +1139,7 @@ add $-16,%rsp
 push %rax
 mov 56(%rsp),%rax
 mov %rax,8(%rsp)
-mov f636D7061@GOTPCREL(%rip),%rax
+mov f61626F7665@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
 mov 80(%rsp),%rax
@@ -1710,12 +1151,12 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-je .111$
+je .84$
 mov $'0,%rax
-jmp .112$
-.111$:
+jmp .85$
+.84$:
 mov $'7,%rax
-.112$:
+.85$:
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
@@ -1847,952 +1288,101 @@ pop %rcx
 call *%rax
 add $24,%rsp
 ret
-.section .text.f7370616E2D657175616C
-f7370616E2D657175616C:
-push %rdi
-push %rsi
-add $-8,%rsp
-mov f41@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 32(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-.119$:
-mov %rax,(%rsp)
-add $-8,%rsp
-mov f41@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 32(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-.120$:
-mov %rax,(%rsp)
-add $-8,%rsp
-mov f737562@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 40(%rsp),%rax
-mov %rax,8(%rsp)
-mov f42@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 72(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-.121$:
-mov %rax,(%rsp)
-add $-8,%rsp
-mov f737562@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 40(%rsp),%rax
-mov %rax,8(%rsp)
-mov f42@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 72(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-.122$:
-mov %rax,(%rsp)
-mov f7374726E636D70@GOTPCREL(%rip),%rax
-add $-32,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-mov 56(%rsp),%rax
-mov %rax,16(%rsp)
-mov 48(%rsp),%rax
-mov %rax,24(%rsp)
-mov 40(%rsp),%rax
-mov %rax,32(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-call *%rax
-add $8,%rsp
-add $8,%rsp
-add $8,%rsp
-add $8,%rsp
-add $16,%rsp
-ret
-.section .text.f7370616E2D737472636D70
-f7370616E2D737472636D70:
-push %rdi
-push %rsi
-add $-8,%rsp
-mov f41@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 32(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-.124$:
-mov %rax,(%rsp)
-add $-8,%rsp
-mov f737562@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 32(%rsp),%rax
-mov %rax,8(%rsp)
-mov f42@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-.125$:
-mov %rax,(%rsp)
-mov f6D656D636D70@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-mov 40(%rsp),%rax
-mov %rax,16(%rsp)
-mov 32(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-test %rax,%rax
-je .126$
-mov f6E6F74@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f7065656B@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f616464@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 72(%rsp),%rax
-mov %rax,8(%rsp)
-mov 56(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-.126$:
-add $8,%rsp
-add $8,%rsp
-add $16,%rsp
-ret
-.section .text.f7370616E2D736574
-f7370616E2D736574:
-push %rdi
-push %rsi
-push %rdx
-mov f73746F7265@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f2D41@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 32(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov f73746F7265@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f2D42@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 24(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-.128$:
-add $24,%rsp
-ret
-.section .text.f767075742D7370616E
-f767075742D7370616E:
-push %rdi
-push %rsi
-push %rdx
-mov f767075742D6D656D@GOTPCREL(%rip),%rax
-add $-32,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-mov f41@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-mov f42@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,24(%rsp)
-mov 40(%rsp),%rax
-mov %rax,32(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-call *%rax
-add $24,%rsp
-ret
-.section .text.f7075742D7370616E
-f7075742D7370616E:
-push %rdi
-push %rsi
-mov f767075742D7370616E@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov f707574@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov 40(%rsp),%rax
-mov %rax,16(%rsp)
-mov 32(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-add $16,%rsp
-ret
-.section .text.f737461636B2D6C6F6F6B7570
-f737461636B2D6C6F6F6B7570:
-push %rdi
-push %rsi
-push %rdx
-mov 8(%rsp),%rax
-test %rax,%rax
-je .132$
-add $-8,%rsp
-mov f41@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 32(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-.133$:
-mov %rax,(%rsp)
-mov 24(%rsp),%rax
-add $-16,%rsp
-push %rax
-mov f41@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 40(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 32(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-test %rax,%rax
-je .134$
-mov f42@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 16(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-jmp .135$
-.134$:
-mov f737461636B2D6C6F6F6B7570@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-mov f42@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-mov 40(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-.135$:
-add $8,%rsp
-.132$:
-add $24,%rsp
-ret
-.section .text.f737461636B2D657175616C
-f737461636B2D657175616C:
-push %rdi
-push %rsi
-push %rdx
-mov f636D7065@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 32(%rsp),%rax
-mov %rax,8(%rsp)
-mov 24(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-test %rax,%rax
-jne .137$
-mov 16(%rsp),%rax
-add $-16,%rsp
-push %rax
-mov f42@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f41@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov f42@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f41@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-test %rax,%rax
-je .138$
-mov f737461636B2D657175616C@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-mov f42@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-mov f42@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-.138$:
-.137$:
-add $24,%rsp
-ret
-.section .text.f737461636B2D636F756E74
-f737461636B2D636F756E74:
-push %rdi
-mov 0(%rsp),%rax
-test %rax,%rax
-je .140$
-mov f737563@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f737461636B2D636F756E74@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f42@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-.140$:
-add $8,%rsp
-ret
-.section .text.f737461636B2D706F70
-f737461636B2D706F70:
-push %rdi
-mov f73746F7265@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 24(%rsp),%rax
-mov %rax,8(%rsp)
-mov f42@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f6E616D652D6C6F6F6B7570
-f6E616D652D6C6F6F6B7570:
-push %rdi
-push %rsi
-push %rdx
-mov 16(%rsp),%rax
-test %rax,%rax
-je .143$
-add $-8,%rsp
-mov f41@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 40(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-.144$:
-mov %rax,(%rsp)
-mov f76636D70@GOTPCREL(%rip),%rax
-add $-32,%rsp
-push %rax
-mov f41@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f41@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 72(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov f42@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f41@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 72(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-mov 56(%rsp),%rax
-mov %rax,24(%rsp)
-mov 48(%rsp),%rax
-mov %rax,32(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-call *%rax
-test %rax,%rax
-je .145$
-mov f42@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 16(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-jmp .146$
-.145$:
-mov f6E616D652D6C6F6F6B7570@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov f42@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 72(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 48(%rsp),%rax
-mov %rax,16(%rsp)
-mov 40(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-.146$:
-add $8,%rsp
-.143$:
-add $24,%rsp
-ret
-.section .text.f746F6B656E2D696E6974
-f746F6B656E2D696E6974:
-push %rdi
-push %rsi
-push %rdx
-push %rcx
-push %r8
-mov f73746F7265@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 24(%rsp),%rax
-mov %rax,8(%rsp)
-mov f6E6F6465@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov 80(%rsp),%rax
-mov %rax,8(%rsp)
-mov $0,%rax
-mov %rax,16(%rsp)
-mov $0,%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov f73746F7265@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 32(%rsp),%rax
-mov %rax,8(%rsp)
-mov 40(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov 32(%rsp),%rax
-add $-16,%rsp
-push %rax
-mov 32(%rsp),%rax
-mov %rax,8(%rsp)
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 40(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-.149$:
-.148$:
-add $40,%rsp
-ret
-.section .text.f746F6B656E2D6D61746368
-f746F6B656E2D6D61746368:
-push %rdi
-push %rsi
-mov 8(%rsp),%rax
-add $-8,%rsp
-push %rax
-mov f7065656B@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f41@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-add $16,%rsp
-ret
-.section .text.f746F6B656E2D6973
-f746F6B656E2D6973:
-push %rdi
-push %rsi
-mov f7370616E2D737472636D70@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 24(%rsp),%rax
-mov %rax,8(%rsp)
-mov 32(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $16,%rsp
-ret
-.section .text.f746F6B656E2D72656164
-f746F6B656E2D72656164:
-push %rdi
-push %rsi
-push %rdx
-add $-8,%rsp
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 32(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-.153$:
-mov %rax,(%rsp)
-mov f7370616E2D736574@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov 40(%rsp),%rax
-mov %rax,8(%rsp)
-mov 32(%rsp),%rax
-mov %rax,16(%rsp)
-mov 56(%rsp),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-test %rax,%rax
-je .154$
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-jmp .155$
-.154$:
-mov 32(%rsp),%rax
-.155$:
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-add $8,%rsp
-add $24,%rsp
-ret
-.section .text.f747970652D657175616C
-f747970652D657175616C:
-push %rdi
-push %rsi
-mov f636D7065@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 32(%rsp),%rax
-mov %rax,8(%rsp)
-mov 24(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-test %rax,%rax
-jne .157$
-mov 8(%rsp),%rax
-test %rax,%rax
-je .159$
-mov 0(%rsp),%rax
-.159$:
-test %rax,%rax
-je .158$
-mov f636D7065@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f42@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov f42@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 40(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-test %rax,%rax
-je .160$
-mov f737461636B2D657175616C@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov f747970652D657175616C@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov f41@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-mov f41@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-.160$:
-.158$:
-.157$:
-add $16,%rsp
-ret
 .section .text.f7838365F36342D7374722D6D6F76
 f7838365F36342D7374722D6D6F76:
-.section .data..s162
-.s162:
+.section .data..s92
+.s92:
 .string,"mov "
 .previous
-mov .s162@GOTPCREL(%rip),%rax
+mov .s92@GOTPCREL(%rip),%rax
 ret
 .section .text.f7838365F36342D7374722D726574
 f7838365F36342D7374722D726574:
-.section .data..s164
-.s164:
+.section .data..s94
+.s94:
 .string,"ret\n"
 .previous
-mov .s164@GOTPCREL(%rip),%rax
+mov .s94@GOTPCREL(%rip),%rax
 ret
 .section .text.f7838365F36342D7374722D656E747279
 f7838365F36342D7374722D656E747279:
-.section .data..s166
-.s166:
+.section .data..s96
+.s96:
 .string,"_start"
 .previous
-mov .s166@GOTPCREL(%rip),%rax
+mov .s96@GOTPCREL(%rip),%rax
 ret
 .section .text.f7838365F36342D7374722D726970
 f7838365F36342D7374722D726970:
-.section .data..s168
-.s168:
+.section .data..s98
+.s98:
 .string,"@GOTPCREL(%rip)"
 .previous
-mov .s168@GOTPCREL(%rip),%rax
+mov .s98@GOTPCREL(%rip),%rax
 ret
 .section .text.f7838365F36342D7374722D727370
 f7838365F36342D7374722D727370:
-.section .data..s170
-.s170:
+.section .data..s100
+.s100:
 .string,"(%rsp)"
 .previous
-mov .s170@GOTPCREL(%rip),%rax
+mov .s100@GOTPCREL(%rip),%rax
 ret
 .section .text.f7838365F36342D7374722D726178
 f7838365F36342D7374722D726178:
-.section .data..s172
-.s172:
+.section .data..s102
+.s102:
 .string,"%rax"
 .previous
-mov .s172@GOTPCREL(%rip),%rax
+mov .s102@GOTPCREL(%rip),%rax
 ret
 .section .text.f7838365F36342D7374722D726469
 f7838365F36342D7374722D726469:
-.section .data..s174
-.s174:
+.section .data..s104
+.s104:
 .string,"%rdi"
 .previous
-mov .s174@GOTPCREL(%rip),%rax
+mov .s104@GOTPCREL(%rip),%rax
 ret
 .section .text.f7838365F36342D7374722D727369
 f7838365F36342D7374722D727369:
-.section .data..s176
-.s176:
+.section .data..s106
+.s106:
 .string,"%rsi"
 .previous
-mov .s176@GOTPCREL(%rip),%rax
+mov .s106@GOTPCREL(%rip),%rax
 ret
 .section .text.f7838365F36342D7374722D726478
 f7838365F36342D7374722D726478:
-.section .data..s178
-.s178:
+.section .data..s108
+.s108:
 .string,"%rdx"
 .previous
-mov .s178@GOTPCREL(%rip),%rax
+mov .s108@GOTPCREL(%rip),%rax
 ret
 .section .text.f7838365F36342D7374722D726378
 f7838365F36342D7374722D726378:
-.section .data..s180
-.s180:
+.section .data..s110
+.s110:
 .string,"%rcx"
 .previous
-mov .s180@GOTPCREL(%rip),%rax
+mov .s110@GOTPCREL(%rip),%rax
 ret
 .section .text.f7838365F36342D7374722D7238
 f7838365F36342D7374722D7238:
-.section .data..s182
-.s182:
+.section .data..s112
+.s112:
 .string,"%r8"
 .previous
-mov .s182@GOTPCREL(%rip),%rax
+mov .s112@GOTPCREL(%rip),%rax
 ret
 .section .text.f7838365F36342D7374722D7239
 f7838365F36342D7374722D7239:
-.section .data..s184
-.s184:
+.section .data..s114
+.s114:
 .string,"%r9"
 .previous
-mov .s184@GOTPCREL(%rip),%rax
+mov .s114@GOTPCREL(%rip),%rax
 ret
 .section .text.f7838365F36342D6D616E676C65
 f7838365F36342D6D616E676C65:
@@ -2859,38 +1449,28 @@ pop %rcx
 call *%rax
 add $24,%rsp
 ret
-.section .text.f7838365F36342D6D616E676C652D7370616E
-f7838365F36342D6D616E676C652D7370616E:
-push %rdi
-push %rsi
-mov f7838365F36342D6D616E676C65@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov f767075742D7370616E@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov 40(%rsp),%rax
-mov %rax,16(%rsp)
-mov 32(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-add $16,%rsp
-ret
 .section .text.f7838365F36342D6D616E676C652D737472696E67
 f7838365F36342D6D616E676C652D737472696E67:
 push %rdi
 push %rsi
-mov f7838365F36342D6D616E676C65@GOTPCREL(%rip),%rax
+mov f767075742D737472696E67@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
-mov f767075742D737472696E67@GOTPCREL(%rip),%rax
+mov f7075742D686578@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
 mov 40(%rsp),%rax
 mov %rax,16(%rsp)
-mov 32(%rsp),%rax
+mov f707574@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov $'f,%rax
+mov %rax,8(%rsp)
+mov 56(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
 mov %rax,24(%rsp)
 pop %rax
 pop %rdi
@@ -2951,11 +1531,11 @@ mov %rax,16(%rsp)
 mov f7075742D737472696E67@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
-.section .data..s191
-.s191:
+.section .data..s120
+.s120:
 .string,".section .text."
 .previous
-mov .s191@GOTPCREL(%rip),%rax
+mov .s120@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
 mov 120(%rsp),%rax
 mov %rax,16(%rsp)
@@ -2985,8 +1565,8 @@ pop %rdi
 call *%rax
 add $32,%rsp
 ret
-.section .text.f67656E2D696E6974646566
-f67656E2D696E6974646566:
+.section .text.f7838365F36342D696E6974646566
+f7838365F36342D696E6974646566:
 push %rdi
 push %rsi
 push %rdx
@@ -3065,15 +1645,15 @@ push %rcx
 push %r8
 mov 8(%rsp),%rax
 test %rax,%rax
-je .194$
+je .123$
 mov f7075742D737472696E67@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
-.section .data..s196
-.s196:
+.section .data..s125
+.s125:
 .string,"add $"
 .previous
-mov .s196@GOTPCREL(%rip),%rax
+mov .s125@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
 mov 40(%rsp),%rax
 mov %rax,16(%rsp)
@@ -3083,7 +1663,7 @@ pop %rsi
 call *%rax
 mov 0(%rsp),%rax
 test %rax,%rax
-je .198$
+je .127$
 mov f707574@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -3095,15 +1675,15 @@ pop %rax
 pop %rdi
 pop %rsi
 call *%rax
-.198$:
+.127$:
 mov f7075742D737472696E67@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
-.section .data..s200
-.s200:
+.section .data..s129
+.s129:
 .string,",%rsp\n"
 .previous
-mov .s200@GOTPCREL(%rip),%rax
+mov .s129@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
 mov f7075742D646563@GOTPCREL(%rip),%rax
 add $-16,%rsp
@@ -3145,10 +1725,10 @@ pop %rdi
 pop %rsi
 pop %rdx
 call *%rax
-.199$:
-.197$:
-.195$:
-.194$:
+.128$:
+.126$:
+.124$:
+.123$:
 add $40,%rsp
 ret
 .section .text.f7838365F36342D70757368706F70
@@ -3194,7 +1774,7 @@ mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-.202$:
+.131$:
 add $40,%rsp
 ret
 .section .text.f7838365F36342D66706F70
@@ -3267,11 +1847,11 @@ mov 56(%rsp),%rax
 mov %rax,24(%rsp)
 mov 48(%rsp),%rax
 mov %rax,32(%rsp)
-.section .data..s206
-.s206:
+.section .data..s135
+.s135:
 .string,"pop "
 .previous
-mov .s206@GOTPCREL(%rip),%rax
+mov .s135@GOTPCREL(%rip),%rax
 mov %rax,40(%rsp)
 pop %rax
 pop %rdi
@@ -3298,11 +1878,11 @@ mov 56(%rsp),%rax
 mov %rax,24(%rsp)
 mov 48(%rsp),%rax
 mov %rax,32(%rsp)
-.section .data..s208
-.s208:
+.section .data..s137
+.s137:
 .string,"push "
 .previous
-mov .s208@GOTPCREL(%rip),%rax
+mov .s137@GOTPCREL(%rip),%rax
 mov %rax,40(%rsp)
 pop %rax
 pop %rdi
@@ -3362,11 +1942,11 @@ mov %rax,8(%rsp)
 mov f7075742D737472696E67@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
-.section .data..s211
-.s211:
+.section .data..s140
+.s140:
 .string,".s"
 .previous
-mov .s211@GOTPCREL(%rip),%rax
+mov .s140@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
 mov 48(%rsp),%rax
 mov %rax,16(%rsp)
@@ -3507,11 +2087,11 @@ mov %rax,8(%rsp)
 mov f7075742D737472696E67@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
-.section .data..s216
-.s216:
+.section .data..s145
+.s145:
 .string,"test "
 .previous
-mov .s216@GOTPCREL(%rip),%rax
+mov .s145@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
 mov 96(%rsp),%rax
 mov %rax,16(%rsp)
@@ -3539,7 +2119,7 @@ ret
 .section .text.f7838365F36342D617267726567
 f7838365F36342D617267726567:
 push %rdi
-mov f636D7065@GOTPCREL(%rip),%rax
+mov f657175616C@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
 mov 24(%rsp),%rax
@@ -3551,14 +2131,14 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-je .218$
+je .147$
 mov f7838365F36342D7374722D726469@GOTPCREL(%rip),%rax
 push %rax
 pop %rax
 call *%rax
-jmp .219$
-.218$:
-mov f636D7065@GOTPCREL(%rip),%rax
+jmp .148$
+.147$:
+mov f657175616C@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
 mov 24(%rsp),%rax
@@ -3570,14 +2150,14 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-je .220$
+je .149$
 mov f7838365F36342D7374722D727369@GOTPCREL(%rip),%rax
 push %rax
 pop %rax
 call *%rax
-jmp .221$
-.220$:
-mov f636D7065@GOTPCREL(%rip),%rax
+jmp .150$
+.149$:
+mov f657175616C@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
 mov 24(%rsp),%rax
@@ -3589,14 +2169,14 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-je .222$
+je .151$
 mov f7838365F36342D7374722D726478@GOTPCREL(%rip),%rax
 push %rax
 pop %rax
 call *%rax
-jmp .223$
-.222$:
-mov f636D7065@GOTPCREL(%rip),%rax
+jmp .152$
+.151$:
+mov f657175616C@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
 mov 24(%rsp),%rax
@@ -3608,14 +2188,14 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-je .224$
+je .153$
 mov f7838365F36342D7374722D726378@GOTPCREL(%rip),%rax
 push %rax
 pop %rax
 call *%rax
-jmp .225$
-.224$:
-mov f636D7065@GOTPCREL(%rip),%rax
+jmp .154$
+.153$:
+mov f657175616C@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
 mov 24(%rsp),%rax
@@ -3627,22 +2207,22 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-je .226$
+je .155$
 mov f7838365F36342D7374722D7238@GOTPCREL(%rip),%rax
 push %rax
 pop %rax
 call *%rax
-jmp .227$
-.226$:
+jmp .156$
+.155$:
 mov f7838365F36342D7374722D7239@GOTPCREL(%rip),%rax
 push %rax
 pop %rax
 call *%rax
-.227$:
-.225$:
-.223$:
-.221$:
-.219$:
+.156$:
+.154$:
+.152$:
+.150$:
+.148$:
 add $8,%rsp
 ret
 .section .text.f7838365F36342D617267706F70
@@ -3652,7 +2232,7 @@ push %rsi
 push %rdx
 push %rcx
 push %r8
-mov f636D7061@GOTPCREL(%rip),%rax
+mov f61626F7665@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
 mov 56(%rsp),%rax
@@ -3664,7 +2244,7 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-je .230$
+je .159$
 mov f7838365F36342D706F70@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
@@ -3679,23 +2259,120 @@ pop %rdi
 pop %rsi
 pop %rdx
 call *%rax
-.230$:
+.159$:
 mov 0(%rsp),%rax
-.229$:
+.158$:
 add $40,%rsp
 ret
-.section .text.f7838365F36342D696E6974
-f7838365F36342D696E6974:
+.section .text.f4F7574
+f4F7574:
+push %rdi
+mov 0(%rsp),%rax
+add $8,%rsp
+ret
+.section .text.f4465707468
+f4465707468:
+push %rdi
+mov f616464@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov f4F7574@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+mov f776F7264@GOTPCREL(%rip),%rax
+push %rax
+pop %rax
+call *%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+add $8,%rsp
+ret
+.section .text.f466C616B65
+f466C616B65:
+push %rdi
+mov f616464@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov f4465707468@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+mov f776F7264@GOTPCREL(%rip),%rax
+push %rax
+pop %rax
+call *%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+add $8,%rsp
+ret
+.section .text.f5838365F3634
+f5838365F3634:
+mov f466C616B65@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f776F7264@GOTPCREL(%rip),%rax
+push %rax
+pop %rax
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+ret
+.section .text.f7838365F36342D6E6577
+f7838365F36342D6E6577:
 push %rdi
 push %rsi
-push %rdx
-push %rcx
-mov f73746F7265@GOTPCREL(%rip),%rax
-add $-16,%rsp
+add $-8,%rsp
+mov f746F@GOTPCREL(%rip),%rax
+add $-24,%rsp
 push %rax
 mov 48(%rsp),%rax
 mov %rax,8(%rsp)
-mov 24(%rsp),%rax
+mov f616464@GOTPCREL(%rip),%rax
+mov %rax,16(%rsp)
+mov f5838365F3634@GOTPCREL(%rip),%rax
+push %rax
+pop %rax
+call *%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+.165$:
+mov %rax,(%rsp)
+mov f73746F7265@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov f4F7574@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+mov 32(%rsp),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
@@ -3704,7 +2381,14 @@ call *%rax
 mov f73746F7265@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
+mov f4465707468@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
 mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
 mov %rax,8(%rsp)
 mov f73686C@GOTPCREL(%rip),%rax
 add $-16,%rsp
@@ -3748,7 +2432,14 @@ call *%rax
 mov f73746F7265@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
-mov 32(%rsp),%rax
+mov f466C616B65@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
 mov %rax,8(%rsp)
 mov $0,%rax
 mov %rax,16(%rsp)
@@ -3756,245 +2447,245 @@ pop %rax
 pop %rdi
 pop %rsi
 call *%rax
-mov f67656E2D696E6974646566@GOTPCREL(%rip),%rax
+mov f7838365F36342D696E6974646566@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
-.section .data..s235
-.s235:
+.section .data..s170
+.s170:
 .string,"linux"
 .previous
-mov .s235@GOTPCREL(%rip),%rax
+mov .s170@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
-.section .data..s236
-.s236:
+.section .data..s171
+.s171:
 .string,"mov 8(%rsp),%rax\nsyscall"
 .previous
-mov .s236@GOTPCREL(%rip),%rax
+mov .s171@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
-mov f67656E2D696E6974646566@GOTPCREL(%rip),%rax
+mov f7838365F36342D696E6974646566@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
-.section .data..s237
-.s237:
+.section .data..s172
+.s172:
 .string,"not"
 .previous
-mov .s237@GOTPCREL(%rip),%rax
+mov .s172@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
-.section .data..s238
-.s238:
+.section .data..s173
+.s173:
 .string,"test %rdi,%rdi\nsete %al\nmovzbl %al,%eax"
 .previous
-mov .s238@GOTPCREL(%rip),%rax
+mov .s173@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
-mov f67656E2D696E6974646566@GOTPCREL(%rip),%rax
+mov f7838365F36342D696E6974646566@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
-.section .data..s239
-.s239:
+.section .data..s174
+.s174:
 .string,"neg"
 .previous
-mov .s239@GOTPCREL(%rip),%rax
+mov .s174@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
-.section .data..s240
-.s240:
+.section .data..s175
+.s175:
 .string,"mov %rdi,%rax\nneg %rax"
 .previous
-mov .s240@GOTPCREL(%rip),%rax
+mov .s175@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
-mov f67656E2D696E6974646566@GOTPCREL(%rip),%rax
+mov f7838365F36342D696E6974646566@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
-.section .data..s241
-.s241:
-.string,"cmpe"
+.section .data..s176
+.s176:
+.string,"equal"
 .previous
-mov .s241@GOTPCREL(%rip),%rax
+mov .s176@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
-.section .data..s242
-.s242:
+.section .data..s177
+.s177:
 .string,"cmp %rsi,%rdi\nsete %al\nmovzbl %al,%eax"
 .previous
-mov .s242@GOTPCREL(%rip),%rax
+mov .s177@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
-mov f67656E2D696E6974646566@GOTPCREL(%rip),%rax
+mov f7838365F36342D696E6974646566@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
-.section .data..s243
-.s243:
-.string,"cmpa"
+.section .data..s178
+.s178:
+.string,"above"
 .previous
-mov .s243@GOTPCREL(%rip),%rax
+mov .s178@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
-.section .data..s244
-.s244:
+.section .data..s179
+.s179:
 .string,"cmp %rdi,%rsi\nseta %al\nmovzbl %al,%eax"
 .previous
-mov .s244@GOTPCREL(%rip),%rax
+mov .s179@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
-mov f67656E2D696E6974646566@GOTPCREL(%rip),%rax
+mov f7838365F36342D696E6974646566@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
-.section .data..s245
-.s245:
+.section .data..s180
+.s180:
 .string,"shl"
 .previous
-mov .s245@GOTPCREL(%rip),%rax
+mov .s180@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
-.section .data..s246
-.s246:
+.section .data..s181
+.s181:
 .string,"mov %rsi,%rax\nmov %rdi,%rcx\nshl %cl,%rax"
 .previous
-mov .s246@GOTPCREL(%rip),%rax
+mov .s181@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
-mov f67656E2D696E6974646566@GOTPCREL(%rip),%rax
+mov f7838365F36342D696E6974646566@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
-.section .data..s247
-.s247:
+.section .data..s182
+.s182:
 .string,"mod"
 .previous
-mov .s247@GOTPCREL(%rip),%rax
+mov .s182@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
-.section .data..s248
-.s248:
+.section .data..s183
+.s183:
 .string,"xor %edx,%edx\nmov %rsi,%rax\ndiv %rdi\nmov %rdx,%rax"
 .previous
-mov .s248@GOTPCREL(%rip),%rax
+mov .s183@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
-mov f67656E2D696E6974646566@GOTPCREL(%rip),%rax
+mov f7838365F36342D696E6974646566@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
-.section .data..s249
-.s249:
+.section .data..s184
+.s184:
 .string,"div"
 .previous
-mov .s249@GOTPCREL(%rip),%rax
+mov .s184@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
-.section .data..s250
-.s250:
+.section .data..s185
+.s185:
 .string,"xor %edx,%edx\nmov %rsi,%rax\ndiv %rdi"
 .previous
-mov .s250@GOTPCREL(%rip),%rax
+mov .s185@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
-mov f67656E2D696E6974646566@GOTPCREL(%rip),%rax
+mov f7838365F36342D696E6974646566@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
-.section .data..s251
-.s251:
+.section .data..s186
+.s186:
 .string,"mul"
 .previous
-mov .s251@GOTPCREL(%rip),%rax
+mov .s186@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
-.section .data..s252
-.s252:
+.section .data..s187
+.s187:
 .string,"mov %rsi,%rax\nmul %rdi"
 .previous
-mov .s252@GOTPCREL(%rip),%rax
+mov .s187@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
-mov f67656E2D696E6974646566@GOTPCREL(%rip),%rax
+mov f7838365F36342D696E6974646566@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
-.section .data..s253
-.s253:
+.section .data..s188
+.s188:
 .string,"sub"
 .previous
-mov .s253@GOTPCREL(%rip),%rax
+mov .s188@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
-.section .data..s254
-.s254:
+.section .data..s189
+.s189:
 .string,"mov %rsi,%rax\nsub %rdi,%rax"
 .previous
-mov .s254@GOTPCREL(%rip),%rax
+mov .s189@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
-mov f67656E2D696E6974646566@GOTPCREL(%rip),%rax
+mov f7838365F36342D696E6974646566@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
-.section .data..s255
-.s255:
+.section .data..s190
+.s190:
 .string,"add"
 .previous
-mov .s255@GOTPCREL(%rip),%rax
+mov .s190@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
-.section .data..s256
-.s256:
+.section .data..s191
+.s191:
 .string,"mov %rsi,%rax\nadd %rdi,%rax"
 .previous
-mov .s256@GOTPCREL(%rip),%rax
+mov .s191@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
-mov f67656E2D696E6974646566@GOTPCREL(%rip),%rax
+mov f7838365F36342D696E6974646566@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
-.section .data..s257
-.s257:
+.section .data..s192
+.s192:
 .string,"poke"
 .previous
-mov .s257@GOTPCREL(%rip),%rax
+mov .s192@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
-.section .data..s258
-.s258:
+.section .data..s193
+.s193:
 .string,"movb %sil,(%rdi)"
 .previous
-mov .s258@GOTPCREL(%rip),%rax
+mov .s193@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
-mov f67656E2D696E6974646566@GOTPCREL(%rip),%rax
+mov f7838365F36342D696E6974646566@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
-.section .data..s259
-.s259:
+.section .data..s194
+.s194:
 .string,"peek"
 .previous
-mov .s259@GOTPCREL(%rip),%rax
+mov .s194@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
-.section .data..s260
-.s260:
+.section .data..s195
+.s195:
 .string,"movzb (%rdi),%eax"
 .previous
-mov .s260@GOTPCREL(%rip),%rax
+mov .s195@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
-mov f67656E2D696E6974646566@GOTPCREL(%rip),%rax
+mov f7838365F36342D696E6974646566@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
-.section .data..s261
-.s261:
+.section .data..s196
+.s196:
 .string,"store"
 .previous
-mov .s261@GOTPCREL(%rip),%rax
+mov .s196@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
-.section .data..s262
-.s262:
+.section .data..s197
+.s197:
 .string,"mov %rsi,(%rdi)\nmov %rdi,%rax"
 .previous
-mov .s262@GOTPCREL(%rip),%rax
+mov .s197@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
-mov f67656E2D696E6974646566@GOTPCREL(%rip),%rax
+mov f7838365F36342D696E6974646566@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
-.section .data..s263
-.s263:
+.section .data..s198
+.s198:
 .string,"load"
 .previous
-mov .s263@GOTPCREL(%rip),%rax
+mov .s198@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
-.section .data..s264
-.s264:
+.section .data..s199
+.s199:
 .string,"mov (%rdi),%rax"
 .previous
-mov .s264@GOTPCREL(%rip),%rax
+mov .s199@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
-mov f67656E2D696E6974646566@GOTPCREL(%rip),%rax
+mov f7838365F36342D696E6974646566@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
-.section .data..s265
-.s265:
+.section .data..s200
+.s200:
 .string,"word"
 .previous
-mov .s265@GOTPCREL(%rip),%rax
+mov .s200@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
-.section .data..s266
-.s266:
+.section .data..s201
+.s201:
 .string,"mov $8,%rax"
 .previous
-mov .s266@GOTPCREL(%rip),%rax
+mov .s201@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 mov f7075746C66@GOTPCREL(%rip),%rax
 add $-8,%rsp
@@ -4023,11 +2714,11 @@ mov %rax,8(%rsp)
 mov f7075742D737472696E67@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
-.section .data..s267
-.s267:
+.section .data..s202
+.s202:
 .string,"\n.equ "
 .previous
-mov .s267@GOTPCREL(%rip),%rax
+mov .s202@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
 mov f7075742D737472696E67@GOTPCREL(%rip),%rax
 add $-16,%rsp
@@ -4040,52 +2731,53 @@ mov %rax,8(%rsp)
 mov f7075742D737472696E67@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
-.section .data..s268
-.s268:
+.section .data..s203
+.s203:
 .string,".globl "
 .previous
-mov .s268@GOTPCREL(%rip),%rax
+mov .s203@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
-mov 696(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
+mov f4F7574@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 688(%rsp),%rax
 mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-mov %rax,24(%rsp)
+mov %rax,16(%rsp)
 pop %rax
 pop %rdi
 pop %rsi
-pop %rdx
+call *%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
 call *%rax
 mov %rax,24(%rsp)
 pop %rax
@@ -4177,10 +2869,63 @@ pop %rdi
 pop %rsi
 pop %rdx
 call *%rax
-.234$:
-.233$:
-.232$:
-add $32,%rsp
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+mov 0(%rsp),%rax
+.169$:
+.168$:
+.167$:
+.166$:
+add $8,%rsp
+add $16,%rsp
+ret
+.section .text.f7838365F36342D64656C
+f7838365F36342D64656C:
+push %rdi
+push %rsi
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f4F7574@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.205$:
+mov %rax,(%rsp)
+mov f746F@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov 48(%rsp),%rax
+mov %rax,8(%rsp)
+mov f737562@GOTPCREL(%rip),%rax
+mov %rax,16(%rsp)
+mov f5838365F3634@GOTPCREL(%rip),%rax
+push %rax
+pop %rax
+call *%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+mov 0(%rsp),%rax
+.206$:
+add $8,%rsp
+add $16,%rsp
 ret
 .section .text.f7838365F36342D666C616B65
 f7838365F36342D666C616B65:
@@ -4188,12 +2933,26 @@ push %rdi
 mov f696E63@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
-mov 16(%rsp),%rax
+mov f466C616B65@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 32(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
 mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
 add $8,%rsp
+ret
+.section .text.f7838365F36342D646F
+f7838365F36342D646F:
+push %rdi
+push %rsi
+mov $0,%rax
+add $16,%rsp
 ret
 .section .text.f7838365F36342D6A65
 f7838365F36342D6A65:
@@ -4204,13 +2963,20 @@ add $-24,%rsp
 push %rax
 mov 32(%rsp),%rax
 mov %rax,8(%rsp)
-.section .data..s271
-.s271:
+.section .data..s210
+.s210:
 .string,"je "
 .previous
-mov .s271@GOTPCREL(%rip),%rax
+mov .s210@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
-mov 40(%rsp),%rax
+mov f4F7574@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
 mov %rax,24(%rsp)
 pop %rax
 pop %rdi
@@ -4228,13 +2994,20 @@ add $-24,%rsp
 push %rax
 mov 32(%rsp),%rax
 mov %rax,8(%rsp)
-.section .data..s273
-.s273:
+.section .data..s212
+.s212:
 .string,"jne "
 .previous
-mov .s273@GOTPCREL(%rip),%rax
+mov .s212@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
-mov 40(%rsp),%rax
+mov f4F7574@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
 mov %rax,24(%rsp)
 pop %rax
 pop %rdi
@@ -4252,13 +3025,20 @@ add $-24,%rsp
 push %rax
 mov 32(%rsp),%rax
 mov %rax,8(%rsp)
-.section .data..s275
-.s275:
+.section .data..s214
+.s214:
 .string,"jmp "
 .previous
-mov .s275@GOTPCREL(%rip),%rax
+mov .s214@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
-mov 40(%rsp),%rax
+mov f4F7574@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
 mov %rax,24(%rsp)
 pop %rax
 pop %rdi
@@ -4273,7 +3053,6 @@ push %rdi
 push %rsi
 push %rdx
 push %rcx
-push %r8
 mov f7075742D737472696E67@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -4282,7 +3061,14 @@ push %rax
 pop %rax
 call *%rax
 mov %rax,8(%rsp)
-mov 56(%rsp),%rax
+mov f4F7574@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 64(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
@@ -4293,7 +3079,7 @@ add $-8,%rsp
 push %rax
 mov 16(%rsp),%rax
 test %rax,%rax
-je .278$
+je .217$
 mov f7075742D737472696E67@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -4316,7 +3102,14 @@ push %rax
 mov f6C6F6164@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
-mov 152(%rsp),%rax
+mov f4465707468@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 168(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
 mov %rax,8(%rsp)
 pop %rax
 pop %rdi
@@ -4334,19 +3127,26 @@ pop %rdi
 pop %rsi
 call *%rax
 mov %rax,8(%rsp)
-mov 96(%rsp),%rax
-mov %rax,16(%rsp)
+mov f4F7574@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 104(%rsp),%rax
+mov %rax,8(%rsp)
 pop %rax
 pop %rdi
-pop %rsi
 call *%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
 pop %rsi
 call *%rax
-jmp .279$
-.278$:
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+jmp .218$
+.217$:
 mov f7075742D737472696E67@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -4362,7 +3162,14 @@ mov 88(%rsp),%rax
 mov %rax,8(%rsp)
 mov 80(%rsp),%rax
 mov %rax,16(%rsp)
-mov 104(%rsp),%rax
+mov f4F7574@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 112(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
 mov %rax,24(%rsp)
 pop %rax
 pop %rdi
@@ -4374,13 +3181,13 @@ pop %rax
 pop %rdi
 pop %rsi
 call *%rax
-.279$:
+.218$:
 mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-.277$:
-add $40,%rsp
+.216$:
+add $32,%rsp
 ret
 .section .text.f7838365F36342D6C6974
 f7838365F36342D6C6974:
@@ -4410,7 +3217,14 @@ push %rax
 pop %rax
 call *%rax
 mov %rax,8(%rsp)
-mov 112(%rsp),%rax
+mov f4F7574@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 128(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
@@ -4438,7 +3252,6 @@ f7838365F36342D737472:
 push %rdi
 push %rsi
 push %rdx
-push %rcx
 add $-8,%rsp
 mov f7838365F36342D666C616B65@GOTPCREL(%rip),%rax
 add $-8,%rsp
@@ -4448,7 +3261,7 @@ mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-.282$:
+.221$:
 mov %rax,(%rsp)
 mov f7838365F36342D746F2D726178@GOTPCREL(%rip),%rax
 add $-8,%rsp
@@ -4477,11 +3290,11 @@ mov %rax,8(%rsp)
 mov f7075742D737472696E67@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
-.section .data..s283
-.s283:
+.section .data..s222
+.s222:
 .string,".previous\n"
 .previous
-mov .s283@GOTPCREL(%rip),%rax
+mov .s222@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
 mov f7075746C66@GOTPCREL(%rip),%rax
 add $-8,%rsp
@@ -4496,11 +3309,11 @@ mov %rax,16(%rsp)
 mov f7075742D737472696E67@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
-.section .data..s284
-.s284:
+.section .data..s223
+.s223:
 .string,".string,"
 .previous
-mov .s284@GOTPCREL(%rip),%rax
+mov .s223@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
 mov f7838365F36342D6C6162656C2D737566@GOTPCREL(%rip),%rax
 add $-8,%rsp
@@ -4521,13 +3334,20 @@ mov %rax,8(%rsp)
 mov f7075742D737472696E67@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
-.section .data..s285
-.s285:
+.section .data..s224
+.s224:
 .string,".section .data."
 .previous
-mov .s285@GOTPCREL(%rip),%rax
+mov .s224@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
-mov 320(%rsp),%rax
+mov f4F7574@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 328(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
@@ -4591,7 +3411,7 @@ pop %rax
 pop %rdi
 call *%rax
 add $8,%rsp
-add $32,%rsp
+add $24,%rsp
 ret
 .section .text.f7838365F36342D6C6162656C
 f7838365F36342D6C6162656C:
@@ -4605,7 +3425,14 @@ add $-16,%rsp
 push %rax
 mov 40(%rsp),%rax
 mov %rax,8(%rsp)
-mov 48(%rsp),%rax
+mov f4F7574@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 64(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
@@ -4621,13 +3448,26 @@ ret
 f7838365F36342D7661722D6973:
 push %rdi
 push %rsi
-push %rdx
 mov f7838365F36342D6670757368@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
-mov 40(%rsp),%rax
+mov f4465707468@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
 mov %rax,8(%rsp)
-mov 48(%rsp),%rax
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+mov f4F7574@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
 mov %rax,16(%rsp)
 mov $1,%rax
 mov %rax,24(%rsp)
@@ -4639,13 +3479,20 @@ call *%rax
 mov f6C6F6164@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
-mov 24(%rsp),%rax
+mov f4465707468@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 40(%rsp),%rax
 mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-.288$:
-add $24,%rsp
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.227$:
+add $16,%rsp
 ret
 .section .text.f7838365F36342D7661722D696E
 f7838365F36342D7661722D696E:
@@ -4684,12 +3531,10 @@ push %rax
 pop %rax
 call *%rax
 mov %rax,8(%rsp)
-mov 88(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
+mov f4F7574@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 104(%rsp),%rax
 mov %rax,8(%rsp)
 pop %rax
 pop %rdi
@@ -4703,20 +3548,42 @@ mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-.290$:
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.229$:
 add $16,%rsp
 ret
 .section .text.f7838365F36342D6C65742D656E64
 f7838365F36342D6C65742D656E64:
 push %rdi
 push %rsi
-push %rdx
 mov f7838365F36342D66706F70@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
-mov 40(%rsp),%rax
+mov f4465707468@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
 mov %rax,8(%rsp)
-mov 48(%rsp),%rax
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+mov f4F7574@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
 mov %rax,16(%rsp)
 mov $1,%rax
 mov %rax,24(%rsp)
@@ -4725,17 +3592,16 @@ pop %rdi
 pop %rsi
 pop %rdx
 call *%rax
-add $24,%rsp
+add $16,%rsp
 ret
 .section .text.f7838365F36342D666F722D656E64
 f7838365F36342D666F722D656E64:
 push %rdi
 push %rsi
-push %rdx
 mov f7838365F36342D6A6E65@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
-mov 40(%rsp),%rax
+mov 32(%rsp),%rax
 mov %rax,8(%rsp)
 mov 24(%rsp),%rax
 mov %rax,16(%rsp)
@@ -4746,9 +3612,23 @@ call *%rax
 mov f7838365F36342D706F70@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
-mov 40(%rsp),%rax
+mov f4465707468@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
 mov %rax,8(%rsp)
-mov 48(%rsp),%rax
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+mov f4F7574@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
 mov %rax,16(%rsp)
 mov f7838365F36342D7374722D726178@GOTPCREL(%rip),%rax
 push %rax
@@ -4760,20 +3640,33 @@ pop %rdi
 pop %rsi
 pop %rdx
 call *%rax
-.293$:
-add $24,%rsp
+.232$:
+add $16,%rsp
 ret
 .section .text.f7838365F36342D63616C6C2D77697468
 f7838365F36342D63616C6C2D77697468:
 push %rdi
 push %rsi
-push %rdx
 mov f7838365F36342D6670757368@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
-mov 40(%rsp),%rax
+mov f4465707468@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
 mov %rax,8(%rsp)
-mov 48(%rsp),%rax
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+mov f4F7574@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
 mov %rax,16(%rsp)
 mov 32(%rsp),%rax
 mov %rax,24(%rsp)
@@ -4785,9 +3678,23 @@ call *%rax
 mov f7838365F36342D70757368@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
-mov 40(%rsp),%rax
+mov f4465707468@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
 mov %rax,8(%rsp)
-mov 48(%rsp),%rax
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+mov f4F7574@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
 mov %rax,16(%rsp)
 mov f7838365F36342D7374722D726178@GOTPCREL(%rip),%rax
 push %rax
@@ -4799,8 +3706,8 @@ pop %rdi
 pop %rsi
 pop %rdx
 call *%rax
-.295$:
-add $24,%rsp
+.234$:
+add $16,%rsp
 ret
 .section .text.f7838365F36342D63616C6C2D617267
 f7838365F36342D63616C6C2D617267:
@@ -4843,7 +3750,14 @@ push %rax
 pop %rax
 call *%rax
 mov %rax,8(%rsp)
-mov 112(%rsp),%rax
+mov f4F7574@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 128(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
@@ -4873,13 +3787,26 @@ ret
 f7838365F36342D63616C6C2D656E64:
 push %rdi
 push %rsi
-push %rdx
 mov f7838365F36342D706F70@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
-mov 40(%rsp),%rax
+mov f4465707468@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
 mov %rax,8(%rsp)
-mov 48(%rsp),%rax
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+mov f4F7574@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
 mov %rax,16(%rsp)
 mov f7838365F36342D7374722D726178@GOTPCREL(%rip),%rax
 push %rax
@@ -4910,11 +3837,11 @@ mov %rax,8(%rsp)
 mov f7075742D737472696E67@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
-.section .data..s300
-.s300:
+.section .data..s239
+.s239:
 .string,"call "
 .previous
-mov .s300@GOTPCREL(%rip),%rax
+mov .s239@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
 mov f7838365F36342D617267706F70@GOTPCREL(%rip),%rax
 add $-40,%rsp
@@ -4923,7 +3850,14 @@ mov $5,%rax
 mov %rax,8(%rsp)
 mov 136(%rsp),%rax
 mov %rax,16(%rsp)
-mov 144(%rsp),%rax
+mov f4465707468@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 160(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
 mov %rax,24(%rsp)
 mov f7838365F36342D7374722D7239@GOTPCREL(%rip),%rax
 push %rax
@@ -4937,7 +3871,14 @@ mov $4,%rax
 mov %rax,8(%rsp)
 mov 184(%rsp),%rax
 mov %rax,16(%rsp)
-mov 192(%rsp),%rax
+mov f4465707468@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 208(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
 mov %rax,24(%rsp)
 mov f7838365F36342D7374722D7238@GOTPCREL(%rip),%rax
 push %rax
@@ -4951,7 +3892,14 @@ mov $3,%rax
 mov %rax,8(%rsp)
 mov 232(%rsp),%rax
 mov %rax,16(%rsp)
-mov 240(%rsp),%rax
+mov f4465707468@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 256(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
 mov %rax,24(%rsp)
 mov f7838365F36342D7374722D726378@GOTPCREL(%rip),%rax
 push %rax
@@ -4965,7 +3913,14 @@ mov $2,%rax
 mov %rax,8(%rsp)
 mov 280(%rsp),%rax
 mov %rax,16(%rsp)
-mov 288(%rsp),%rax
+mov f4465707468@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 304(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
 mov %rax,24(%rsp)
 mov f7838365F36342D7374722D726478@GOTPCREL(%rip),%rax
 push %rax
@@ -4979,7 +3934,14 @@ mov $1,%rax
 mov %rax,8(%rsp)
 mov 328(%rsp),%rax
 mov %rax,16(%rsp)
-mov 336(%rsp),%rax
+mov f4465707468@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 352(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
 mov %rax,24(%rsp)
 mov f7838365F36342D7374722D727369@GOTPCREL(%rip),%rax
 push %rax
@@ -4993,14 +3955,28 @@ mov $0,%rax
 mov %rax,8(%rsp)
 mov 376(%rsp),%rax
 mov %rax,16(%rsp)
-mov 384(%rsp),%rax
+mov f4465707468@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 400(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
 mov %rax,24(%rsp)
 mov f7838365F36342D7374722D726469@GOTPCREL(%rip),%rax
 push %rax
 pop %rax
 call *%rax
 mov %rax,32(%rsp)
-mov 392(%rsp),%rax
+mov f4F7574@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 400(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
 mov %rax,40(%rsp)
 pop %rax
 pop %rdi
@@ -5068,7 +4044,7 @@ mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-mov f636D7061@GOTPCREL(%rip),%rax
+mov f61626F7665@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
 mov $6,%rax
@@ -5080,13 +4056,27 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-je .301$
+je .240$
 mov f7838365F36342D66706F70@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
-mov 40(%rsp),%rax
+mov f4465707468@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
 mov %rax,8(%rsp)
-mov 48(%rsp),%rax
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+mov f4F7574@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
 mov %rax,16(%rsp)
 mov f737562@GOTPCREL(%rip),%rax
 add $-16,%rsp
@@ -5105,17 +4095,16 @@ pop %rdi
 pop %rsi
 pop %rdx
 call *%rax
-.301$:
-.299$:
-.298$:
-add $24,%rsp
+.240$:
+.238$:
+.237$:
+add $16,%rsp
 ret
 .section .text.f7838365F36342D6465636C2D696E
 f7838365F36342D6465636C2D696E:
 push %rdi
 push %rsi
 push %rdx
-push %rcx
 mov f7838365F36342D73656374696F6E2D686561646572@GOTPCREL(%rip),%rax
 add $-32,%rsp
 push %rax
@@ -5125,7 +4114,14 @@ mov 48(%rsp),%rax
 mov %rax,16(%rsp)
 mov 40(%rsp),%rax
 mov %rax,24(%rsp)
-mov 64(%rsp),%rax
+mov f4F7574@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 72(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
 mov %rax,32(%rsp)
 pop %rax
 pop %rdi
@@ -5133,14 +4129,20 @@ pop %rsi
 pop %rdx
 pop %rcx
 call *%rax
-add $32,%rsp
+add $24,%rsp
+ret
+.section .text.f7838365F36342D6465636C
+f7838365F36342D6465636C:
+push %rdi
+push %rsi
+mov $0,%rax
+add $16,%rsp
 ret
 .section .text.f7838365F36342D6465636C2D706172616D
 f7838365F36342D6465636C2D706172616D:
 push %rdi
 push %rsi
-push %rdx
-mov f636D7061@GOTPCREL(%rip),%rax
+mov f61626F7665@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
 mov 24(%rsp),%rax
@@ -5152,13 +4154,27 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-je .304$
+je .244$
 mov f7838365F36342D70757368@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
-mov 40(%rsp),%rax
+mov f4465707468@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
 mov %rax,8(%rsp)
-mov 48(%rsp),%rax
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+mov f4F7574@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
 mov %rax,16(%rsp)
 mov f7838365F36342D617267726567@GOTPCREL(%rip),%rax
 add $-8,%rsp
@@ -5177,14 +4193,21 @@ call *%rax
 mov f6C6F6164@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
-mov 24(%rsp),%rax
+mov f4465707468@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 40(%rsp),%rax
 mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-.305$:
-jmp .306$
-.304$:
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.245$:
+jmp .246$
+.244$:
 mov f737562@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
@@ -5196,22 +4219,35 @@ pop %rax
 pop %rdi
 pop %rsi
 call *%rax
-.306$:
-add $24,%rsp
+.246$:
+add $16,%rsp
 ret
 .section .text.f7838365F36342D6465636C2D656E64
 f7838365F36342D6465636C2D656E64:
 push %rdi
 push %rsi
-push %rdx
 mov f7838365F36342D66706F70@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
-mov 40(%rsp),%rax
+mov f4465707468@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
 mov %rax,8(%rsp)
-mov 48(%rsp),%rax
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+mov f4F7574@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
 mov %rax,16(%rsp)
-mov f636D7061@GOTPCREL(%rip),%rax
+mov f61626F7665@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
 mov 56(%rsp),%rax
@@ -5223,12 +4259,12 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-je .309$
+je .249$
 mov 32(%rsp),%rax
-jmp .310$
-.309$:
+jmp .250$
+.249$:
 mov $6,%rax
-.310$:
+.250$:
 mov %rax,24(%rsp)
 pop %rax
 pop %rdi
@@ -5243,55 +4279,129 @@ push %rax
 pop %rax
 call *%rax
 mov %rax,8(%rsp)
-mov 40(%rsp),%rax
+mov f4F7574@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 48(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
 pop %rsi
 call *%rax
-.308$:
-add $24,%rsp
+.248$:
+add $16,%rsp
 ret
-.section .text.f7838365F36342D656E64
-f7838365F36342D656E64:
-push %rdi
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
+.section .text.f4E6F6465
+f4E6F6465:
+mov f616464@GOTPCREL(%rip),%rax
+add $-16,%rsp
 push %rax
-mov 16(%rsp),%rax
+mov f776F7264@GOTPCREL(%rip),%rax
+push %rax
+pop %rax
+call *%rax
 mov %rax,8(%rsp)
+mov f776F7264@GOTPCREL(%rip),%rax
+push %rax
+pop %rax
+call *%rax
+mov %rax,16(%rsp)
 pop %rax
 pop %rdi
+pop %rsi
+call *%rax
+ret
+.section .text.f41
+f41:
+push %rdi
+mov 0(%rsp),%rax
+add $8,%rsp
+ret
+.section .text.f42
+f42:
+push %rdi
+mov f616464@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+mov f776F7264@GOTPCREL(%rip),%rax
+push %rax
+pop %rax
+call *%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
 call *%rax
 add $8,%rsp
 ret
-.section .text.f6173656D2D696E6974
-f6173656D2D696E6974:
+.section .text.f6E6F6465
+f6E6F6465:
 push %rdi
 push %rsi
 push %rdx
-push %rcx
-push %r8
-mov f73746F7265@GOTPCREL(%rip),%rax
-add $-16,%rsp
+add $-8,%rsp
+mov f746F@GOTPCREL(%rip),%rax
+add $-24,%rsp
 push %rax
-mov 40(%rsp),%rax
+mov 56(%rsp),%rax
 mov %rax,8(%rsp)
-mov $0,%rax
+mov f616464@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
+mov f4E6F6465@GOTPCREL(%rip),%rax
+push %rax
+pop %rax
+call *%rax
+mov %rax,24(%rsp)
 pop %rax
 pop %rdi
 pop %rsi
+pop %rdx
 call *%rax
+.255$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f41@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.256$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f42@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 32(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.257$:
+mov %rax,(%rsp)
 mov f73746F7265@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
 mov 32(%rsp),%rax
 mov %rax,8(%rsp)
 mov 56(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+mov f73746F7265@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
-mov 72(%rsp),%rax
+mov 24(%rsp),%rax
 mov %rax,8(%rsp)
 mov 48(%rsp),%rax
 mov %rax,16(%rsp)
@@ -5299,57 +4409,43 @@ pop %rax
 pop %rdi
 pop %rsi
 call *%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-.313$:
-add $40,%rsp
+mov 16(%rsp),%rax
+.259$:
+.258$:
+add $8,%rsp
+add $8,%rsp
+add $8,%rsp
+add $24,%rsp
 ret
-.section .text.f6173656D2D756E6974
-f6173656D2D756E6974:
+.section .text.f626F6F6B2D657175616C
+f626F6F6B2D657175616C:
 push %rdi
 push %rsi
 push %rdx
-push %rcx
-mov 24(%rsp),%rax
-add $-24,%rsp
+mov f657175616C@GOTPCREL(%rip),%rax
+add $-16,%rsp
 push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 40(%rsp),%rax
-mov %rax,16(%rsp)
 mov 32(%rsp),%rax
-mov %rax,24(%rsp)
+mov %rax,8(%rsp)
+mov 24(%rsp),%rax
+mov %rax,16(%rsp)
 pop %rax
 pop %rdi
 pop %rsi
-pop %rdx
 call *%rax
-mov $0,%rax
-.315$:
-add $32,%rsp
-ret
-.section .text.f6173656D2D726566
-f6173656D2D726566:
-push %rdi
-push %rsi
-push %rdx
-push %rcx
-push %r8
+test %rax,%rax
+jne .261$
 add $-8,%rsp
-mov f6E616D652D6C6F6F6B7570@GOTPCREL(%rip),%rax
-add $-24,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f42@GOTPCREL(%rip),%rax
+add $-8,%rsp
 push %rax
 mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f41@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
 mov 80(%rsp),%rax
@@ -5358,6 +4454,841 @@ pop %rax
 pop %rdi
 call *%rax
 mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.262$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f42@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f41@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 80(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.263$:
+mov %rax,(%rsp)
+mov 32(%rsp),%rax
+add $-16,%rsp
+push %rax
+mov 32(%rsp),%rax
+mov %rax,8(%rsp)
+mov 24(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+test %rax,%rax
+je .264$
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f42@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 64(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.265$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f42@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 64(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.266$:
+mov %rax,(%rsp)
+mov f626F6F6B2D657175616C@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov 80(%rsp),%rax
+mov %rax,8(%rsp)
+mov 40(%rsp),%rax
+mov %rax,16(%rsp)
+mov 32(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+add $8,%rsp
+add $8,%rsp
+.264$:
+add $8,%rsp
+add $8,%rsp
+.261$:
+add $24,%rsp
+ret
+.section .text.f747970652D657175616C
+f747970652D657175616C:
+push %rdi
+push %rsi
+mov f657175616C@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 32(%rsp),%rax
+mov %rax,8(%rsp)
+mov 24(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+test %rax,%rax
+jne .268$
+mov 8(%rsp),%rax
+test %rax,%rax
+je .270$
+mov 0(%rsp),%rax
+.270$:
+test %rax,%rax
+je .269$
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f41@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 48(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.271$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f41@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 48(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.272$:
+mov %rax,(%rsp)
+mov f626F6F6B2D657175616C@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov f747970652D657175616C@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 40(%rsp),%rax
+mov %rax,16(%rsp)
+mov 32(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+add $8,%rsp
+add $8,%rsp
+.269$:
+.268$:
+add $16,%rsp
+ret
+.section .text.f636F756E74
+f636F756E74:
+push %rdi
+mov 0(%rsp),%rax
+test %rax,%rax
+je .274$
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f42@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.275$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f636F756E74@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.276$:
+mov %rax,(%rsp)
+mov f737563@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 16(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+add $8,%rsp
+add $8,%rsp
+.274$:
+add $8,%rsp
+ret
+.section .text.f6D656D636D70
+f6D656D636D70:
+push %rdi
+push %rsi
+push %rdx
+mov f6E6F74@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 16(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+test %rax,%rax
+jne .278$
+add $-8,%rsp
+mov f7065656B@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.279$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f7065656B@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.280$:
+mov %rax,(%rsp)
+mov f657175616C@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 32(%rsp),%rax
+mov %rax,8(%rsp)
+mov 24(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+test %rax,%rax
+je .281$
+add $-8,%rsp
+mov f737563@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.282$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f737563@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.283$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f707264@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.284$:
+mov %rax,(%rsp)
+mov f6D656D636D70@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov 48(%rsp),%rax
+mov %rax,8(%rsp)
+mov 40(%rsp),%rax
+mov %rax,16(%rsp)
+mov 32(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+add $8,%rsp
+add $8,%rsp
+add $8,%rsp
+.281$:
+add $8,%rsp
+add $8,%rsp
+.278$:
+add $24,%rsp
+ret
+.section .text.f7374726E636D70
+f7374726E636D70:
+push %rdi
+push %rsi
+push %rdx
+push %rcx
+mov f657175616C@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 32(%rsp),%rax
+mov %rax,8(%rsp)
+mov 24(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+test %rax,%rax
+je .286$
+mov f6D656D636D70@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+mov 48(%rsp),%rax
+mov %rax,16(%rsp)
+mov 32(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+.286$:
+add $32,%rsp
+ret
+.section .text.f6C6F6F6B7570
+f6C6F6F6B7570:
+push %rdi
+push %rsi
+push %rdx
+mov 16(%rsp),%rax
+test %rax,%rax
+je .288$
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f41@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.289$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f41@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.290$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f41@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.291$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f42@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 48(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.292$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f737562@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+mov 32(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+.293$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f737562@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 80(%rsp),%rax
+mov %rax,8(%rsp)
+mov 72(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+.294$:
+mov %rax,(%rsp)
+mov f7374726E636D70@GOTPCREL(%rip),%rax
+add $-32,%rsp
+push %rax
+mov 64(%rsp),%rax
+mov %rax,8(%rsp)
+mov 96(%rsp),%rax
+mov %rax,16(%rsp)
+mov 48(%rsp),%rax
+mov %rax,24(%rsp)
+mov 40(%rsp),%rax
+mov %rax,32(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+pop %rcx
+call *%rax
+test %rax,%rax
+je .295$
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f42@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 72(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+jmp .296$
+.295$:
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f42@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 104(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.297$:
+mov %rax,(%rsp)
+mov f6C6F6F6B7570@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov 32(%rsp),%rax
+mov %rax,8(%rsp)
+mov 96(%rsp),%rax
+mov %rax,16(%rsp)
+mov 88(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+add $8,%rsp
+.296$:
+add $8,%rsp
+add $8,%rsp
+add $8,%rsp
+add $8,%rsp
+add $8,%rsp
+add $8,%rsp
+.288$:
+add $24,%rsp
+ret
+.section .text.f4D656D
+f4D656D:
+push %rdi
+mov 0(%rsp),%rax
+add $8,%rsp
+ret
+.section .text.f426F6F6B
+f426F6F6B:
+push %rdi
+mov f616464@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov f4D656D@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+mov f776F7264@GOTPCREL(%rip),%rax
+push %rax
+pop %rax
+call *%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+add $8,%rsp
+ret
+.section .text.f496D706C
+f496D706C:
+push %rdi
+mov f616464@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov f426F6F6B@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+mov f776F7264@GOTPCREL(%rip),%rax
+push %rax
+pop %rax
+call *%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+add $8,%rsp
+ret
+.section .text.f7374727563742D53656D
+f7374727563742D53656D:
+mov f496D706C@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f776F7264@GOTPCREL(%rip),%rax
+push %rax
+pop %rax
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+ret
+.section .text.f6F702D6E6577
+f6F702D6E6577:
+push %rdi
+push %rsi
+push %rdx
+add $-8,%rsp
+mov 24(%rsp),%rax
+add $-16,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+mov 32(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+.303$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f746F@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+mov f616464@GOTPCREL(%rip),%rax
+mov %rax,16(%rsp)
+mov f7374727563742D53656D@GOTPCREL(%rip),%rax
+push %rax
+pop %rax
+call *%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+.304$:
+mov %rax,(%rsp)
+mov f73746F7265@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov f4D656D@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 64(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+mov f73746F7265@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov f426F6F6B@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+mov $0,%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+mov f73746F7265@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov f496D706C@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+mov 32(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+mov 0(%rsp),%rax
+.307$:
+.306$:
+.305$:
+add $8,%rsp
+add $8,%rsp
+add $24,%rsp
+ret
+.section .text.f6F702D64656C
+f6F702D64656C:
+push %rdi
+push %rsi
+push %rdx
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.309$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov 32(%rsp),%rax
+add $-16,%rsp
+push %rax
+mov 48(%rsp),%rax
+mov %rax,8(%rsp)
+mov 32(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+.310$:
+mov %rax,(%rsp)
+mov f746F@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+mov f737562@GOTPCREL(%rip),%rax
+mov %rax,16(%rsp)
+mov f7374727563742D53656D@GOTPCREL(%rip),%rax
+push %rax
+pop %rax
+call *%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+mov 0(%rsp),%rax
+.311$:
+add $8,%rsp
+add $8,%rsp
+add $24,%rsp
+ret
+.section .text.f6F702D756E6974
+f6F702D756E6974:
+push %rdi
+push %rsi
+push %rdx
+push %rcx
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f496D706C@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.313$:
+mov %rax,(%rsp)
+mov 32(%rsp),%rax
+add $-24,%rsp
+push %rax
+mov 32(%rsp),%rax
+mov %rax,8(%rsp)
 mov 48(%rsp),%rax
 mov %rax,16(%rsp)
 mov 40(%rsp),%rax
@@ -5367,7 +5298,121 @@ pop %rdi
 pop %rsi
 pop %rdx
 call *%rax
-.317$:
+mov $0,%rax
+.314$:
+add $8,%rsp
+add $32,%rsp
+ret
+.section .text.f6F702D666C616B65
+f6F702D666C616B65:
+push %rdi
+push %rsi
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f496D706C@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.316$:
+mov %rax,(%rsp)
+mov 16(%rsp),%rax
+add $-8,%rsp
+push %rax
+mov 16(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+add $8,%rsp
+add $16,%rsp
+ret
+.section .text.f6F702D6C6162656C
+f6F702D6C6162656C:
+push %rdi
+push %rsi
+push %rdx
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f496D706C@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 48(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.318$:
+mov %rax,(%rsp)
+mov 24(%rsp),%rax
+add $-16,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+mov 32(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+add $8,%rsp
+add $24,%rsp
+ret
+.section .text.f6F702D726566
+f6F702D726566:
+push %rdi
+push %rsi
+push %rdx
+push %rcx
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f426F6F6B@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.320$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f6C6F6F6B7570@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+mov 56(%rsp),%rax
+mov %rax,16(%rsp)
+mov 48(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+.321$:
 mov %rax,(%rsp)
 mov f6E6F74@GOTPCREL(%rip),%rax
 add $-8,%rsp
@@ -5378,80 +5423,29 @@ pop %rax
 pop %rdi
 call *%rax
 test %rax,%rax
-je .318$
+je .322$
 mov f6572726F72@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
 mov $1,%rax
 mov %rax,8(%rsp)
-.section .data..s319
-.s319:
+.section .data..s323
+.s323:
 .string,"unknown reference"
 .previous
-mov .s319@GOTPCREL(%rip),%rax
+mov .s323@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
 pop %rsi
 call *%rax
-jmp .320$
-.318$:
-mov 40(%rsp),%rax
-add $-32,%rsp
-push %rax
+jmp .324$
+.322$:
+add $-8,%rsp
 mov f6C6F6164@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
-mov 80(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 56(%rsp),%rax
-mov %rax,16(%rsp)
-mov 48(%rsp),%rax
-mov %rax,24(%rsp)
-mov f42@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,32(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-call *%rax
-mov f41@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 16(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-.321$:
-.320$:
-add $8,%rsp
-add $40,%rsp
-ret
-.section .text.f6173656D2D7661722D646566
-f6173656D2D7661722D646566:
-push %rdi
-push %rsi
-push %rdx
-push %rcx
-push %r8
-push %r9
-mov f6E616D652D6C6F6F6B7570@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
+mov f496D706C@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
 mov 72(%rsp),%rax
@@ -5460,134 +5454,16 @@ pop %rax
 pop %rdi
 call *%rax
 mov %rax,8(%rsp)
-mov 40(%rsp),%rax
-mov %rax,16(%rsp)
-mov 32(%rsp),%rax
-mov %rax,24(%rsp)
 pop %rax
 pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-test %rax,%rax
-je .323$
-mov f6572726F72@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov $2,%rax
-mov %rax,8(%rsp)
-.section .data..s324
-.s324:
-.string,"redefinition"
-.previous
-mov .s324@GOTPCREL(%rip),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-jmp .325$
-.323$:
-mov f73746F7265@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-mov f6E6F6465@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov 88(%rsp),%rax
-mov %rax,8(%rsp)
-mov f6E6F6465@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov 120(%rsp),%rax
-mov %rax,8(%rsp)
-mov f6E6F6465@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov 152(%rsp),%rax
-mov %rax,8(%rsp)
-mov 128(%rsp),%rax
-mov %rax,16(%rsp)
-mov 120(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-mov %rax,16(%rsp)
-mov f6E6F6465@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov 152(%rsp),%rax
-mov %rax,8(%rsp)
-mov 176(%rsp),%rax
-mov %rax,16(%rsp)
-mov 160(%rsp),%rax
-add $-16,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 176(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 208(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-mov %rax,16(%rsp)
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 96(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
 call *%rax
 .325$:
-add $48,%rsp
-ret
-.section .text.f6173656D2D7661722D656E64
-f6173656D2D7661722D656E64:
-push %rdi
-push %rsi
-push %rdx
-push %rcx
-mov 24(%rsp),%rax
-add $-16,%rsp
-push %rax
+mov %rax,(%rsp)
+add $-8,%rsp
 mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f42@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
 mov 48(%rsp),%rax
@@ -5596,36 +5472,67 @@ pop %rax
 pop %rdi
 call *%rax
 mov %rax,8(%rsp)
-mov 24(%rsp),%rax
+pop %rax
+pop %rdi
+call *%rax
+.326$:
+mov %rax,(%rsp)
+mov 56(%rsp),%rax
+add $-32,%rsp
+push %rax
+mov 48(%rsp),%rax
+mov %rax,8(%rsp)
+mov 80(%rsp),%rax
 mov %rax,16(%rsp)
+mov 72(%rsp),%rax
+mov %rax,24(%rsp)
+mov 40(%rsp),%rax
+mov %rax,32(%rsp)
 pop %rax
 pop %rdi
 pop %rsi
+pop %rdx
+pop %rcx
 call *%rax
-mov f737461636B2D706F70@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 32(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-.327$:
-add $32,%rsp
-ret
-.section .text.f6173656D2D63616C6C2D77697468
-f6173656D2D63616C6C2D77697468:
-push %rdi
-push %rsi
-push %rdx
-add $-8,%rsp
-mov f737461636B2D636F756E74@GOTPCREL(%rip),%rax
+mov f6C6F6164@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
 mov f41@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
-mov 40(%rsp),%rax
+mov 48(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.327$:
+add $8,%rsp
+add $8,%rsp
+.324$:
+add $8,%rsp
+add $8,%rsp
+add $32,%rsp
+ret
+.section .text.f6F702D7661722D646566
+f6F702D7661722D646566:
+push %rdi
+push %rsi
+push %rdx
+push %rcx
+push %r8
+push %r9
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f426F6F6B@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 72(%rsp),%rax
 mov %rax,8(%rsp)
 pop %rax
 pop %rdi
@@ -5636,8 +5543,235 @@ pop %rdi
 call *%rax
 .329$:
 mov %rax,(%rsp)
+mov f6C6F6F6B7570@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov 32(%rsp),%rax
+mov %rax,8(%rsp)
+mov 64(%rsp),%rax
+mov %rax,16(%rsp)
+mov 56(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+test %rax,%rax
+je .330$
+mov f6572726F72@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov $2,%rax
+mov %rax,8(%rsp)
+.section .data..s331
+.s331:
+.string,"redefinition"
+.previous
+mov .s331@GOTPCREL(%rip),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+jmp .332$
+.330$:
+add $-8,%rsp
+mov f4D656D@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 64(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.333$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f6E6F6465@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+mov 80(%rsp),%rax
+mov %rax,16(%rsp)
+mov 72(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+.334$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f496D706C@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 96(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.335$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov 80(%rsp),%rax
+add $-16,%rsp
+push %rax
+mov 32(%rsp),%rax
+mov %rax,8(%rsp)
+mov 64(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+.336$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f6E6F6465@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov 64(%rsp),%rax
+mov %rax,8(%rsp)
+mov 88(%rsp),%rax
+mov %rax,16(%rsp)
+mov 40(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+.337$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f6E6F6465@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov 72(%rsp),%rax
+mov %rax,8(%rsp)
+mov 64(%rsp),%rax
+mov %rax,16(%rsp)
+mov 40(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+.338$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f6E6F6465@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov 80(%rsp),%rax
+mov %rax,8(%rsp)
+mov 40(%rsp),%rax
+mov %rax,16(%rsp)
+mov 88(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+.339$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f426F6F6B@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 120(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.340$:
+mov %rax,(%rsp)
+mov f73746F7265@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+mov 32(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+add $8,%rsp
+add $8,%rsp
+add $8,%rsp
+add $8,%rsp
+add $8,%rsp
+add $8,%rsp
+add $8,%rsp
+add $8,%rsp
+.332$:
+add $8,%rsp
+add $48,%rsp
+ret
+.section .text.f6F702D7661722D656E64
+f6F702D7661722D656E64:
+push %rdi
+push %rsi
+push %rdx
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f496D706C@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 48(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.342$:
+mov %rax,(%rsp)
 mov 24(%rsp),%rax
 add $-16,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+mov 32(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+add $-8,%rsp
+mov f426F6F6B@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.344$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f42@GOTPCREL(%rip),%rax
+add $-8,%rsp
 push %rax
 mov f6C6F6164@GOTPCREL(%rip),%rax
 add $-8,%rsp
@@ -5648,19 +5782,104 @@ pop %rax
 pop %rdi
 call *%rax
 mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.345$:
+mov %rax,(%rsp)
+mov f73746F7265@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 32(%rsp),%rax
+mov %rax,8(%rsp)
 mov 24(%rsp),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
 pop %rsi
 call *%rax
-mov 0(%rsp),%rax
-.330$:
+add $8,%rsp
+add $8,%rsp
+.343$:
 add $8,%rsp
 add $24,%rsp
 ret
-.section .text.f6173656D2D63616C6C2D617267
-f6173656D2D63616C6C2D617267:
+.section .text.f6F702D63616C6C2D77697468
+f6F702D63616C6C2D77697468:
+push %rdi
+push %rsi
+push %rdx
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f41@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.347$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f636F756E74@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.348$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f496D706C@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 64(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.349$:
+mov %rax,(%rsp)
+mov 40(%rsp),%rax
+add $-16,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+mov 32(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+mov 8(%rsp),%rax
+.350$:
+add $8,%rsp
+add $8,%rsp
+add $8,%rsp
+add $24,%rsp
+ret
+.section .text.f6F702D63616C6C2D617267
+f6F702D63616C6C2D617267:
 push %rdi
 push %rsi
 push %rdx
@@ -5678,11 +5897,12 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-je .332$
-mov 32(%rsp),%rax
-add $-16,%rsp
-push %rax
+je .352$
+add $-8,%rsp
 mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f496D706C@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
 mov 64(%rsp),%rax
@@ -5691,41 +5911,53 @@ pop %rax
 pop %rdi
 call *%rax
 mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.353$:
+mov %rax,(%rsp)
+mov 40(%rsp),%rax
+add $-16,%rsp
+push %rax
 mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+mov 32(%rsp),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
 pop %rsi
 call *%rax
-jmp .333$
-.332$:
+add $8,%rsp
+jmp .354$
+.352$:
 mov f6572726F72@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
 mov $3,%rax
 mov %rax,8(%rsp)
-.section .data..s334
-.s334:
+.section .data..s355
+.s355:
 .string,"illegal argument"
 .previous
-mov .s334@GOTPCREL(%rip),%rax
+mov .s355@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
 pop %rsi
 call *%rax
-.333$:
+.354$:
 add $40,%rsp
 ret
-.section .text.f6173656D2D63616C6C2D656E64
-f6173656D2D63616C6C2D656E64:
+.section .text.f6F702D63616C6C2D656E64
+f6F702D63616C6C2D656E64:
 push %rdi
 push %rsi
 push %rdx
-mov 16(%rsp),%rax
-add $-16,%rsp
-push %rax
+add $-8,%rsp
 mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f496D706C@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
 mov 48(%rsp),%rax
@@ -5734,101 +5966,355 @@ pop %rax
 pop %rdi
 call *%rax
 mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.357$:
+mov %rax,(%rsp)
+mov 24(%rsp),%rax
+add $-16,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+mov 32(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+mov $0,%rax
+.358$:
+add $8,%rsp
+add $24,%rsp
+ret
+.section .text.f6F702D6465636C
+f6F702D6465636C:
+push %rdi
+push %rsi
+push %rdx
+push %rcx
+push %r8
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f496D706C@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 64(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.360$:
+mov %rax,(%rsp)
+mov 40(%rsp),%rax
+add $-16,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+mov $0,%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+add $-8,%rsp
+mov f4D656D@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.362$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f6E6F6465@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+mov 72(%rsp),%rax
+mov %rax,16(%rsp)
+mov 64(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+.363$:
+mov %rax,(%rsp)
+mov f6E6F6465@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+mov 32(%rsp),%rax
+mov %rax,16(%rsp)
+mov 56(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+add $8,%rsp
+add $8,%rsp
+.361$:
+add $8,%rsp
+add $40,%rsp
+ret
+.section .text.f6F702D706172616D
+f6F702D706172616D:
+push %rdi
+push %rsi
+push %rdx
+push %rcx
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f496D706C@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.365$:
+mov %rax,(%rsp)
+mov 32(%rsp),%rax
+add $-16,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+mov $0,%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+add $-8,%rsp
+mov f4D656D@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 48(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.367$:
+mov %rax,(%rsp)
+mov f6E6F6465@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov 32(%rsp),%rax
+mov %rax,8(%rsp)
+mov 56(%rsp),%rax
+mov %rax,16(%rsp)
+mov 48(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+add $8,%rsp
+.366$:
+add $8,%rsp
+add $32,%rsp
+ret
+.section .text.f6F702D747970652D66756E63
+f6F702D747970652D66756E63:
+push %rdi
+push %rsi
+add $-8,%rsp
+mov f4D656D@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 32(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.369$:
+mov %rax,(%rsp)
+mov f6E6F6465@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov 32(%rsp),%rax
+mov %rax,8(%rsp)
+mov 40(%rsp),%rax
+mov %rax,16(%rsp)
+mov $1,%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+add $8,%rsp
+add $16,%rsp
+ret
+.section .text.f6F702D747970652D756E6974
+f6F702D747970652D756E6974:
+mov $0,%rax
+ret
+.section .text.f64656E2D6E6577
+f64656E2D6E6577:
+push %rdi
+push %rsi
+mov f6F702D6E6577@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov f7838365F36342D6E6577@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 40(%rsp),%rax
+mov %rax,16(%rsp)
+mov 32(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+add $16,%rsp
+ret
+.section .text.f64656E2D64656C
+f64656E2D64656C:
+push %rdi
+push %rsi
+mov f6F702D64656C@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov f7838365F36342D64656C@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 40(%rsp),%rax
+mov %rax,16(%rsp)
+mov f496D706C@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 48(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+add $16,%rsp
+ret
+.section .text.f64656E2D6C6974
+f64656E2D6C6974:
+push %rdi
+push %rsi
+push %rdx
+mov f6F702D756E6974@GOTPCREL(%rip),%rax
+add $-32,%rsp
+push %rax
+mov f7838365F36342D6C6974@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 56(%rsp),%rax
+mov %rax,16(%rsp)
+mov 48(%rsp),%rax
+mov %rax,24(%rsp)
+mov 40(%rsp),%rax
+mov %rax,32(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+pop %rcx
+call *%rax
+add $24,%rsp
+ret
+.section .text.f64656E2D737472
+f64656E2D737472:
+push %rdi
+push %rsi
+push %rdx
+mov f6F702D756E6974@GOTPCREL(%rip),%rax
+add $-32,%rsp
+push %rax
+mov f7838365F36342D737472@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 56(%rsp),%rax
+mov %rax,16(%rsp)
+mov 48(%rsp),%rax
+mov %rax,24(%rsp)
+mov 40(%rsp),%rax
+mov %rax,32(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+pop %rcx
+call *%rax
+add $24,%rsp
+ret
+.section .text.f64656E2D726566
+f64656E2D726566:
+push %rdi
+push %rsi
+push %rdx
+mov f6F702D726566@GOTPCREL(%rip),%rax
+add $-32,%rsp
+push %rax
+mov f7838365F36342D726566@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 56(%rsp),%rax
+mov %rax,16(%rsp)
+mov 48(%rsp),%rax
+mov %rax,24(%rsp)
+mov 40(%rsp),%rax
+mov %rax,32(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+pop %rcx
+call *%rax
+add $24,%rsp
+ret
+.section .text.f64656E2D646F
+f64656E2D646F:
+push %rdi
+mov f6F702D666C616B65@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov f7838365F36342D666C616B65@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
 mov 24(%rsp),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
 pop %rsi
 call *%rax
-mov $0,%rax
-.336$:
-add $24,%rsp
+add $8,%rsp
 ret
-.section .text.f6173656D2D6465636C
-f6173656D2D6465636C:
+.section .text.f64656E2D646F2D7468656E
+f64656E2D646F2D7468656E:
 push %rdi
 push %rsi
-push %rdx
-push %rcx
-push %r8
-push %r9
-mov 40(%rsp),%rax
-add $-16,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov $0,%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov f6E6F6465@GOTPCREL(%rip),%rax
+mov f6F702D6C6162656C@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-mov f6E6F6465@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov 96(%rsp),%rax
-mov %rax,8(%rsp)
-mov 80(%rsp),%rax
-mov %rax,16(%rsp)
-mov 72(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-mov %rax,16(%rsp)
-mov 32(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-.338$:
-add $48,%rsp
-ret
-.section .text.f6173656D2D706172616D
-f6173656D2D706172616D:
-push %rdi
-push %rsi
-push %rdx
-push %rcx
-push %r8
-mov 32(%rsp),%rax
-add $-16,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov $0,%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov f6E6F6465@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov 56(%rsp),%rax
+mov f7838365F36342D646F@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
 mov 40(%rsp),%rax
 mov %rax,16(%rsp)
@@ -5838,89 +6324,974 @@ pop %rax
 pop %rdi
 pop %rsi
 pop %rdx
-call *%rax
-.340$:
-add $40,%rsp
-ret
-.section .text.f6173656D2D656E64
-f6173656D2D656E64:
-push %rdi
-push %rsi
-mov 8(%rsp),%rax
-add $-8,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 32(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
 call *%rax
 add $16,%rsp
 ret
-.section .text.f636861722D72616E67652D6E7A
-f636861722D72616E67652D6E7A:
+.section .text.f64656E2D646F2D656E64
+f64656E2D646F2D656E64:
+push %rdi
+push %rsi
+mov f6F702D6C6162656C@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov f7838365F36342D6C6162656C@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 40(%rsp),%rax
+mov %rax,16(%rsp)
+mov 32(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+add $16,%rsp
+ret
+.section .text.f64656E2D6966
+f64656E2D6966:
+push %rdi
+mov f6F702D666C616B65@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov f7838365F36342D666C616B65@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 24(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+add $8,%rsp
+ret
+.section .text.f64656E2D69662D7468656E
+f64656E2D69662D7468656E:
+push %rdi
+push %rsi
+mov f6F702D6C6162656C@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov f7838365F36342D6A65@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 40(%rsp),%rax
+mov %rax,16(%rsp)
+mov 32(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+add $16,%rsp
+ret
+.section .text.f64656E2D69662D656C7365
+f64656E2D69662D656C7365:
+push %rdi
+push %rsi
+mov f6F702D6C6162656C@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov f7838365F36342D6A6D70@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 40(%rsp),%rax
+mov %rax,16(%rsp)
+mov 32(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+add $16,%rsp
+ret
+.section .text.f64656E2D69662D656E64
+f64656E2D69662D656E64:
+push %rdi
+push %rsi
+mov f6F702D6C6162656C@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov f7838365F36342D6C6162656C@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 40(%rsp),%rax
+mov %rax,16(%rsp)
+mov 32(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+add $16,%rsp
+ret
+.section .text.f64656E2D6F72
+f64656E2D6F72:
+push %rdi
+mov f6F702D666C616B65@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov f7838365F36342D666C616B65@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 24(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+add $8,%rsp
+ret
+.section .text.f64656E2D6F722D656C7365
+f64656E2D6F722D656C7365:
+push %rdi
+push %rsi
+mov f6F702D6C6162656C@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov f7838365F36342D6A6E65@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 40(%rsp),%rax
+mov %rax,16(%rsp)
+mov 32(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+add $16,%rsp
+ret
+.section .text.f64656E2D6F722D656E64
+f64656E2D6F722D656E64:
+push %rdi
+push %rsi
+mov f6F702D6C6162656C@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov f7838365F36342D6C6162656C@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 40(%rsp),%rax
+mov %rax,16(%rsp)
+mov 32(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+add $16,%rsp
+ret
+.section .text.f64656E2D616E64
+f64656E2D616E64:
+push %rdi
+mov f6F702D666C616B65@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov f7838365F36342D666C616B65@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 24(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+add $8,%rsp
+ret
+.section .text.f64656E2D616E642D7468656E
+f64656E2D616E642D7468656E:
+push %rdi
+push %rsi
+mov f6F702D6C6162656C@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov f7838365F36342D6A65@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 40(%rsp),%rax
+mov %rax,16(%rsp)
+mov 32(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+add $16,%rsp
+ret
+.section .text.f64656E2D616E642D656E64
+f64656E2D616E642D656E64:
+push %rdi
+push %rsi
+mov f6F702D6C6162656C@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov f7838365F36342D6C6162656C@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 40(%rsp),%rax
+mov %rax,16(%rsp)
+mov 32(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+add $16,%rsp
+ret
+.section .text.f64656E2D6C6574
+f64656E2D6C6574:
+push %rdi
+mov f6F702D666C616B65@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov f7838365F36342D666C616B65@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 24(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+add $8,%rsp
+ret
+.section .text.f64656E2D6C65742D6973
+f64656E2D6C65742D6973:
+push %rdi
+push %rsi
+push %rdx
+push %rcx
+mov f6F702D7661722D646566@GOTPCREL(%rip),%rax
+add $-48,%rsp
+push %rax
+mov f7838365F36342D7661722D6973@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 80(%rsp),%rax
+mov %rax,16(%rsp)
+mov 64(%rsp),%rax
+mov %rax,24(%rsp)
+mov 56(%rsp),%rax
+mov %rax,32(%rsp)
+mov $0,%rax
+mov %rax,40(%rsp)
+mov 72(%rsp),%rax
+mov %rax,48(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+pop %rcx
+pop %r8
+pop %r9
+call *%rax
+add $32,%rsp
+ret
+.section .text.f64656E2D6C65742D696E
+f64656E2D6C65742D696E:
+push %rdi
+push %rsi
+mov f6F702D6C6162656C@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov f7838365F36342D7661722D696E@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 40(%rsp),%rax
+mov %rax,16(%rsp)
+mov 32(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+add $16,%rsp
+ret
+.section .text.f64656E2D6C65742D656E64
+f64656E2D6C65742D656E64:
+push %rdi
+push %rsi
+mov f6F702D7661722D656E64@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov f7838365F36342D6C65742D656E64@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 40(%rsp),%rax
+mov %rax,16(%rsp)
+mov 32(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+add $16,%rsp
+ret
+.section .text.f64656E2D666F72
+f64656E2D666F72:
+push %rdi
+mov f6F702D666C616B65@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov f7838365F36342D666C616B65@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 24(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+add $8,%rsp
+ret
+.section .text.f64656E2D666F722D6973
+f64656E2D666F722D6973:
+push %rdi
+push %rsi
+push %rdx
+push %rcx
+mov f6F702D7661722D646566@GOTPCREL(%rip),%rax
+add $-48,%rsp
+push %rax
+mov f7838365F36342D7661722D6973@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 80(%rsp),%rax
+mov %rax,16(%rsp)
+mov 64(%rsp),%rax
+mov %rax,24(%rsp)
+mov 56(%rsp),%rax
+mov %rax,32(%rsp)
+mov $0,%rax
+mov %rax,40(%rsp)
+mov 72(%rsp),%rax
+mov %rax,48(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+pop %rcx
+pop %r8
+pop %r9
+call *%rax
+add $32,%rsp
+ret
+.section .text.f64656E2D666F722D696E
+f64656E2D666F722D696E:
+push %rdi
+push %rsi
+mov f6F702D6C6162656C@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov f7838365F36342D7661722D696E@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 40(%rsp),%rax
+mov %rax,16(%rsp)
+mov 32(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+add $16,%rsp
+ret
+.section .text.f64656E2D666F722D656E64
+f64656E2D666F722D656E64:
+push %rdi
+push %rsi
+mov f6F702D7661722D656E64@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov f7838365F36342D666F722D656E64@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 40(%rsp),%rax
+mov %rax,16(%rsp)
+mov 32(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+add $16,%rsp
+ret
+.section .text.f64656E2D63616C6C2D77697468
+f64656E2D63616C6C2D77697468:
+push %rdi
+push %rsi
+mov f6F702D63616C6C2D77697468@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov f7838365F36342D63616C6C2D77697468@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 40(%rsp),%rax
+mov %rax,16(%rsp)
+mov 32(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+add $16,%rsp
+ret
+.section .text.f64656E2D63616C6C2D617267
+f64656E2D63616C6C2D617267:
+push %rdi
+push %rsi
+push %rdx
+push %rcx
+mov f6F702D63616C6C2D617267@GOTPCREL(%rip),%rax
+add $-40,%rsp
+push %rax
+mov f7838365F36342D63616C6C2D617267@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 72(%rsp),%rax
+mov %rax,16(%rsp)
+mov 64(%rsp),%rax
+mov %rax,24(%rsp)
+mov 56(%rsp),%rax
+mov %rax,32(%rsp)
+mov 48(%rsp),%rax
+mov %rax,40(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+pop %rcx
+pop %r8
+call *%rax
+add $32,%rsp
+ret
+.section .text.f64656E2D63616C6C2D656E64
+f64656E2D63616C6C2D656E64:
+push %rdi
+push %rsi
+mov f6F702D63616C6C2D656E64@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov f7838365F36342D63616C6C2D656E64@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 40(%rsp),%rax
+mov %rax,16(%rsp)
+mov 32(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+add $16,%rsp
+ret
+.section .text.f64656E2D706172616D
+f64656E2D706172616D:
+push %rdi
+push %rsi
+push %rdx
+mov f6F702D7661722D646566@GOTPCREL(%rip),%rax
+add $-48,%rsp
+push %rax
+mov f7838365F36342D6465636C2D706172616D@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 72(%rsp),%rax
+mov %rax,16(%rsp)
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f41@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f41@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 128(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,24(%rsp)
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f42@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f41@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 128(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,32(%rsp)
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f42@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 96(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,40(%rsp)
+mov 56(%rsp),%rax
+mov %rax,48(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+pop %rcx
+pop %r8
+pop %r9
+call *%rax
+add $24,%rsp
+ret
+.section .text.f64656E2D706172616D2D656E64
+f64656E2D706172616D2D656E64:
+push %rdi
+push %rsi
+mov f6F702D7661722D656E64@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov f7838365F36342D646F@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 40(%rsp),%rax
+mov %rax,16(%rsp)
+mov 32(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+add $16,%rsp
+ret
+.section .text.f64656E2D6465636C
+f64656E2D6465636C:
+push %rdi
+push %rsi
+push %rdx
+push %rcx
+mov f6F702D6465636C@GOTPCREL(%rip),%rax
+add $-40,%rsp
+push %rax
+mov f7838365F36342D646F@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 72(%rsp),%rax
+mov %rax,16(%rsp)
+mov 64(%rsp),%rax
+mov %rax,24(%rsp)
+mov 56(%rsp),%rax
+mov %rax,32(%rsp)
+mov 48(%rsp),%rax
+mov %rax,40(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+pop %rcx
+pop %r8
+call *%rax
+add $32,%rsp
+ret
+.section .text.f64656E2D747970652D66756E63
+f64656E2D747970652D66756E63:
+push %rdi
+push %rsi
+mov f6F702D747970652D66756E63@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 32(%rsp),%rax
+mov %rax,8(%rsp)
+mov 24(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+add $16,%rsp
+ret
+.section .text.f64656E2D747970652D756E6974
+f64656E2D747970652D756E6974:
+push %rdi
+mov f6F702D747970652D756E6974@GOTPCREL(%rip),%rax
+push %rax
+pop %rax
+call *%rax
+add $8,%rsp
+ret
+.section .text.f64656E2D747970652D706172616D
+f64656E2D747970652D706172616D:
+push %rdi
+push %rsi
+push %rdx
+mov f6F702D706172616D@GOTPCREL(%rip),%rax
+add $-32,%rsp
+push %rax
+mov f7838365F36342D646F@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 56(%rsp),%rax
+mov %rax,16(%rsp)
+mov 48(%rsp),%rax
+mov %rax,24(%rsp)
+mov 40(%rsp),%rax
+mov %rax,32(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+pop %rcx
+call *%rax
+add $24,%rsp
+ret
+.section .text.f64656E2D626F6479
+f64656E2D626F6479:
+push %rdi
+mov f6F702D666C616B65@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov f7838365F36342D666C616B65@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 24(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+add $8,%rsp
+ret
+.section .text.f64656E2D626F64792D6973
+f64656E2D626F64792D6973:
+push %rdi
+push %rsi
+push %rdx
+mov f6F702D7661722D646566@GOTPCREL(%rip),%rax
+add $-48,%rsp
+push %rax
+mov f7838365F36342D6465636C@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 72(%rsp),%rax
+mov %rax,16(%rsp)
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f41@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f41@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 120(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,24(%rsp)
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f42@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f41@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 120(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,32(%rsp)
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f42@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 88(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,40(%rsp)
+mov 64(%rsp),%rax
+mov %rax,48(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+pop %rcx
+pop %r8
+pop %r9
+call *%rax
+add $24,%rsp
+ret
+.section .text.f64656E2D626F64792D696E
+f64656E2D626F64792D696E:
+push %rdi
+push %rsi
+push %rdx
+mov f7838365F36342D6465636C2D696E@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f496D706C@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 80(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f41@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f41@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 96(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,16(%rsp)
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f42@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f41@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 96(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+add $24,%rsp
+ret
+.section .text.f64656E2D626F64792D656E64
+f64656E2D626F64792D656E64:
+push %rdi
+push %rsi
+push %rdx
+mov f7838365F36342D6465636C2D656E64@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f496D706C@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 72(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+mov f636F756E74@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f41@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f42@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 104(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+add $24,%rsp
+ret
+.section .text.f6E6567636C617373
+f6E6567636C617373:
+push %rdi
+push %rsi
+push %rdx
+mov 8(%rsp),%rax
+add $-8,%rsp
+push %rax
+mov 16(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+test %rax,%rax
+je .411$
+mov f6E6F74@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 32(%rsp),%rax
+add $-8,%rsp
+push %rax
+mov 32(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.411$:
+add $24,%rsp
+ret
+.section .text.f636C6173732D6E7A
+f636C6173732D6E7A:
 push %rdi
 mov 0(%rsp),%rax
 add $8,%rsp
 ret
-.section .text.f636861722D72616E67652D7371
-f636861722D72616E67652D7371:
+.section .text.f636C6173732D686D
+f636C6173732D686D:
 push %rdi
-mov f636D7065@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 24(%rsp),%rax
-mov %rax,8(%rsp)
-mov $'\',%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f636861722D72616E67652D6471
-f636861722D72616E67652D6471:
-push %rdi
-mov f636D7065@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 24(%rsp),%rax
-mov %rax,8(%rsp)
-mov $'\",%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f636861722D72616E67652D6273
-f636861722D72616E67652D6273:
-push %rdi
-mov f636D7065@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 24(%rsp),%rax
-mov %rax,8(%rsp)
-mov $'\\,%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f636861722D72616E67652D686D
-f636861722D72616E67652D686D:
-push %rdi
-mov f636D7065@GOTPCREL(%rip),%rax
+mov f657175616C@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
 mov 24(%rsp),%rax
@@ -5933,10 +7304,58 @@ pop %rsi
 call *%rax
 add $8,%rsp
 ret
-.section .text.f636861722D72616E67652D716D
-f636861722D72616E67652D716D:
+.section .text.f636C6173732D6273
+f636C6173732D6273:
 push %rdi
-mov f636D7065@GOTPCREL(%rip),%rax
+mov f657175616C@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+mov $'\\,%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+add $8,%rsp
+ret
+.section .text.f636C6173732D7371
+f636C6173732D7371:
+push %rdi
+mov f657175616C@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+mov $'\',%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+add $8,%rsp
+ret
+.section .text.f636C6173732D6471
+f636C6173732D6471:
+push %rdi
+mov f657175616C@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+mov $'\",%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+add $8,%rsp
+ret
+.section .text.f636C6173732D716D
+f636C6173732D716D:
+push %rdi
+mov f657175616C@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
 mov 24(%rsp),%rax
@@ -5949,10 +7368,10 @@ pop %rsi
 call *%rax
 add $8,%rsp
 ret
-.section .text.f636861722D72616E67652D6C70
-f636861722D72616E67652D6C70:
+.section .text.f636C6173732D6C70
+f636C6173732D6C70:
 push %rdi
-mov f636D7065@GOTPCREL(%rip),%rax
+mov f657175616C@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
 mov 24(%rsp),%rax
@@ -5965,10 +7384,10 @@ pop %rsi
 call *%rax
 add $8,%rsp
 ret
-.section .text.f636861722D72616E67652D7270
-f636861722D72616E67652D7270:
+.section .text.f636C6173732D7270
+f636C6173732D7270:
 push %rdi
-mov f636D7065@GOTPCREL(%rip),%rax
+mov f657175616C@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
 mov 24(%rsp),%rax
@@ -5981,104 +7400,8 @@ pop %rsi
 call *%rax
 add $8,%rsp
 ret
-.section .text.f636861722D72616E67652D7573
-f636861722D72616E67652D7573:
-push %rdi
-mov f636D7065@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 24(%rsp),%rax
-mov %rax,8(%rsp)
-mov $'_,%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f636861722D72616E67652D656E
-f636861722D72616E67652D656E:
-push %rdi
-mov f636D7065@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 24(%rsp),%rax
-mov %rax,8(%rsp)
-mov $'-,%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f636861722D72616E67652D7370
-f636861722D72616E67652D7370:
-push %rdi
-mov f636D7065@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 24(%rsp),%rax
-mov %rax,8(%rsp)
-mov $' ,%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f636861722D72616E67652D7462
-f636861722D72616E67652D7462:
-push %rdi
-mov f636D7065@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 24(%rsp),%rax
-mov %rax,8(%rsp)
-mov $'\t,%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f636861722D72616E67652D6C66
-f636861722D72616E67652D6C66:
-push %rdi
-mov f636D7065@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 24(%rsp),%rax
-mov %rax,8(%rsp)
-mov $'\n,%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f636861722D72616E67652D6372
-f636861722D72616E67652D6372:
-push %rdi
-mov f636D7065@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 24(%rsp),%rax
-mov %rax,8(%rsp)
-mov $'\r,%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f636861722D72616E67652D3039
-f636861722D72616E67652D3039:
+.section .text.f636C6173732D3039
+f636C6173732D3039:
 push %rdi
 mov f636D70696E@GOTPCREL(%rip),%rax
 add $-24,%rsp
@@ -6096,8 +7419,66 @@ pop %rdx
 call *%rax
 add $8,%rsp
 ret
-.section .text.f636861722D72616E67652D415A
-f636861722D72616E67652D415A:
+.section .text.f636C6173732D7773
+f636C6173732D7773:
+push %rdi
+mov f657175616C@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+mov $' ,%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+test %rax,%rax
+jne .422$
+mov f657175616C@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+mov $'\t,%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+test %rax,%rax
+jne .423$
+mov f657175616C@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+mov $'\n,%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+test %rax,%rax
+jne .424$
+mov f657175616C@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+mov $'\r,%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+.424$:
+.423$:
+.422$:
+add $8,%rsp
+ret
+.section .text.f636C6173732D6964
+f636C6173732D6964:
 push %rdi
 mov f636D70696E@GOTPCREL(%rip),%rax
 add $-24,%rsp
@@ -6113,11 +7494,8 @@ pop %rdi
 pop %rsi
 pop %rdx
 call *%rax
-add $8,%rsp
-ret
-.section .text.f636861722D72616E67652D617A
-f636861722D72616E67652D617A:
-push %rdi
+test %rax,%rax
+jne .426$
 mov f636D70696E@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
@@ -6132,348 +7510,140 @@ pop %rdi
 pop %rsi
 pop %rdx
 call *%rax
-add $8,%rsp
-ret
-.section .text.f636861722D6E6567636C617373
-f636861722D6E6567636C617373:
-push %rdi
-push %rsi
-push %rdx
-mov 8(%rsp),%rax
-add $-8,%rsp
-push %rax
-mov 16(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
 test %rax,%rax
-je .360$
-mov f6E6F74@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 32(%rsp),%rax
-add $-8,%rsp
-push %rax
-mov 32(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-.360$:
-add $24,%rsp
-ret
-.section .text.f636861722D636C6173732D6E7A
-f636861722D636C6173732D6E7A:
-push %rdi
-mov f636861722D72616E67652D6E7A@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 16(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f636861722D636C6173732D686D
-f636861722D636C6173732D686D:
-push %rdi
-mov f636861722D72616E67652D686D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 16(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f636861722D636C6173732D6273
-f636861722D636C6173732D6273:
-push %rdi
-mov f636861722D72616E67652D6273@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 16(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f636861722D636C6173732D7371
-f636861722D636C6173732D7371:
-push %rdi
-mov f636861722D72616E67652D7371@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 16(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f636861722D636C6173732D6471
-f636861722D636C6173732D6471:
-push %rdi
-mov f636861722D72616E67652D6471@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 16(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f636861722D636C6173732D3039
-f636861722D636C6173732D3039:
-push %rdi
-mov f636861722D72616E67652D3039@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 16(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f636861722D636C6173732D716D
-f636861722D636C6173732D716D:
-push %rdi
-mov f636861722D72616E67652D716D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 16(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f636861722D636C6173732D6C70
-f636861722D636C6173732D6C70:
-push %rdi
-mov f636861722D72616E67652D6C70@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 16(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f636861722D636C6173732D7270
-f636861722D636C6173732D7270:
-push %rdi
-mov f636861722D72616E67652D7270@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 16(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f636861722D636C6173732D7773
-f636861722D636C6173732D7773:
-push %rdi
-mov f636861722D72616E67652D7370@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 16(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-test %rax,%rax
-jne .371$
-mov f636861722D72616E67652D7462@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 16(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-test %rax,%rax
-jne .372$
-mov f636861722D72616E67652D6C66@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 16(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-test %rax,%rax
-jne .373$
-mov f636861722D72616E67652D6372@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 16(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-.373$:
-.372$:
-.371$:
-add $8,%rsp
-ret
-.section .text.f636861722D636C6173732D6964
-f636861722D636C6173732D6964:
-push %rdi
-mov f636861722D72616E67652D415A@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 16(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-test %rax,%rax
-jne .375$
-mov f636861722D72616E67652D617A@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 16(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-test %rax,%rax
-jne .376$
-mov f636861722D72616E67652D3039@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 16(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-test %rax,%rax
-jne .377$
-mov f636861722D72616E67652D656E@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 16(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-test %rax,%rax
-jne .378$
-mov f636861722D72616E67652D7573@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 16(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-.378$:
-.377$:
-.376$:
-.375$:
-add $8,%rsp
-ret
-.section .text.f636861722D636C6173732D696D
-f636861722D636C6173732D696D:
-push %rdi
-mov f636861722D72616E67652D3039@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 16(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-test %rax,%rax
-jne .380$
-mov f636861722D72616E67652D7371@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 16(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-.380$:
-add $8,%rsp
-ret
-.section .text.f636861722D636C6173732D7074
-f636861722D636C6173732D7074:
-push %rdi
-mov f636861722D72616E67652D6C70@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 16(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-test %rax,%rax
-jne .382$
-mov f636861722D72616E67652D7270@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 16(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-test %rax,%rax
-jne .383$
-mov f636861722D72616E67652D716D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 16(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-.383$:
-.382$:
-add $8,%rsp
-ret
-.section .text.f636861722D636C6173732D7362
-f636861722D636C6173732D7362:
-push %rdi
-mov f636861722D6E6567636C617373@GOTPCREL(%rip),%rax
+jne .427$
+mov f636D70696E@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
-mov f636861722D636C6173732D6471@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov f636861722D636C6173732D6E7A@GOTPCREL(%rip),%rax
-mov %rax,16(%rsp)
 mov 32(%rsp),%rax
+mov %rax,8(%rsp)
+mov $'0,%rax
+mov %rax,16(%rsp)
+mov $'9,%rax
 mov %rax,24(%rsp)
 pop %rax
 pop %rdi
 pop %rsi
 pop %rdx
 call *%rax
+test %rax,%rax
+jne .428$
+mov f657175616C@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+mov $'-,%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+test %rax,%rax
+jne .429$
+mov f657175616C@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+mov $'_,%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+.429$:
+.428$:
+.427$:
+.426$:
 add $8,%rsp
 ret
-.section .text.f636861722D636C6173732D6362
-f636861722D636C6173732D6362:
+.section .text.f636C6173732D696D
+f636C6173732D696D:
 push %rdi
-mov f636861722D6E6567636C617373@GOTPCREL(%rip),%rax
+mov f636D70696E@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
-mov f636861722D636C6173732D686D@GOTPCREL(%rip),%rax
+mov 32(%rsp),%rax
 mov %rax,8(%rsp)
-mov f636861722D636C6173732D6E7A@GOTPCREL(%rip),%rax
+mov $'0,%rax
+mov %rax,16(%rsp)
+mov $'9,%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+test %rax,%rax
+jne .431$
+mov f657175616C@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+mov $'\',%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+.431$:
+add $8,%rsp
+ret
+.section .text.f636C6173732D7074
+f636C6173732D7074:
+push %rdi
+mov f657175616C@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+mov $'(,%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+test %rax,%rax
+jne .433$
+mov f657175616C@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+mov $'),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+test %rax,%rax
+jne .434$
+mov f657175616C@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+mov $'?,%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+.434$:
+.433$:
+add $8,%rsp
+ret
+.section .text.f636C6173732D7362
+f636C6173732D7362:
+push %rdi
+mov f6E6567636C617373@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov f636C6173732D6471@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov f636C6173732D6E7A@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 mov 32(%rsp),%rax
 mov %rax,24(%rsp)
@@ -6484,27 +7654,116 @@ pop %rdx
 call *%rax
 add $8,%rsp
 ret
-.section .text.f6C65782D62732D657363
-f6C65782D62732D657363:
+.section .text.f636C6173732D6362
+f636C6173732D6362:
 push %rdi
-push %rsi
-mov f6C65782D657363@GOTPCREL(%rip),%rax
-add $-32,%rsp
+mov f6E6567636C617373@GOTPCREL(%rip),%rax
+add $-24,%rsp
 push %rax
-mov f636861722D636C6173732D6273@GOTPCREL(%rip),%rax
+mov f636C6173732D686D@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
-mov 48(%rsp),%rax
+mov f636C6173732D6E7A@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
-mov f636861722D636C6173732D6E7A@GOTPCREL(%rip),%rax
+mov 32(%rsp),%rax
 mov %rax,24(%rsp)
-mov 40(%rsp),%rax
-mov %rax,32(%rsp)
 pop %rax
 pop %rdi
 pop %rsi
 pop %rdx
-pop %rcx
 call *%rax
+add $8,%rsp
+ret
+.section .text.f6C65782D6F6E65
+f6C65782D6F6E65:
+push %rdi
+push %rsi
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.438$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f7065656B@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.439$:
+mov %rax,(%rsp)
+mov 24(%rsp),%rax
+add $-8,%rsp
+push %rax
+mov 16(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+test %rax,%rax
+je .440$
+mov f696E63@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 32(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.440$:
+add $8,%rsp
+add $8,%rsp
+add $16,%rsp
+ret
+.section .text.f6C65782D657363
+f6C65782D657363:
+push %rdi
+push %rsi
+mov f6C65782D6F6E65@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov f636C6173732D6273@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 24(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+test %rax,%rax
+je .442$
+mov f6C65782D6F6E65@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov f636C6173732D6E7A@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 24(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+jmp .443$
+.442$:
+mov f6C65782D6F6E65@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 32(%rsp),%rax
+mov %rax,8(%rsp)
+mov 24(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+.443$:
 add $16,%rsp
 ret
 .section .text.f6C65782D686D
@@ -6513,7 +7772,7 @@ push %rdi
 mov f6C65782D6F6E65@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
-mov f636861722D636C6173732D686D@GOTPCREL(%rip),%rax
+mov f636C6173732D686D@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
 mov 24(%rsp),%rax
 mov %rax,16(%rsp)
@@ -6529,7 +7788,7 @@ push %rdi
 mov f6C65782D6F6E65@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
-mov f636861722D636C6173732D6471@GOTPCREL(%rip),%rax
+mov f636C6173732D6471@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
 mov 24(%rsp),%rax
 mov %rax,16(%rsp)
@@ -6545,7 +7804,7 @@ push %rdi
 mov f6C65782D6F6E65@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
-mov f636861722D636C6173732D7371@GOTPCREL(%rip),%rax
+mov f636C6173732D7371@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
 mov 24(%rsp),%rax
 mov %rax,16(%rsp)
@@ -6561,7 +7820,7 @@ push %rdi
 mov f6C65782D6F6E65@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
-mov f636861722D636C6173732D3039@GOTPCREL(%rip),%rax
+mov f636C6173732D3039@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
 mov 24(%rsp),%rax
 mov %rax,16(%rsp)
@@ -6577,7 +7836,7 @@ push %rdi
 mov f6C65782D6F6E65@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
-mov f636861722D636C6173732D7074@GOTPCREL(%rip),%rax
+mov f636C6173732D7074@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
 mov 24(%rsp),%rax
 mov %rax,16(%rsp)
@@ -6593,7 +7852,7 @@ push %rdi
 mov f6C65782D6F6E65@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
-mov f636861722D636C6173732D7773@GOTPCREL(%rip),%rax
+mov f636C6173732D7773@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
 mov 24(%rsp),%rax
 mov %rax,16(%rsp)
@@ -6606,10 +7865,10 @@ ret
 .section .text.f6C65782D6964
 f6C65782D6964:
 push %rdi
-mov f6C65782D62732D657363@GOTPCREL(%rip),%rax
+mov f6C65782D657363@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
-mov f636861722D636C6173732D6964@GOTPCREL(%rip),%rax
+mov f636C6173732D6964@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
 mov 24(%rsp),%rax
 mov %rax,16(%rsp)
@@ -6622,10 +7881,10 @@ ret
 .section .text.f6C65782D7362
 f6C65782D7362:
 push %rdi
-mov f6C65782D62732D657363@GOTPCREL(%rip),%rax
+mov f6C65782D657363@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
-mov f636861722D636C6173732D7362@GOTPCREL(%rip),%rax
+mov f636C6173732D7362@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
 mov 24(%rsp),%rax
 mov %rax,16(%rsp)
@@ -6638,10 +7897,10 @@ ret
 .section .text.f6C65782D6362
 f6C65782D6362:
 push %rdi
-mov f6C65782D62732D657363@GOTPCREL(%rip),%rax
+mov f6C65782D657363@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
-mov f636861722D636C6173732D6362@GOTPCREL(%rip),%rax
+mov f636C6173732D6362@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
 mov 24(%rsp),%rax
 mov %rax,16(%rsp)
@@ -6651,14 +7910,99 @@ pop %rsi
 call *%rax
 add $8,%rsp
 ret
-.section .text.f6C65782D75736572
-f6C65782D75736572:
+.section .text.f746F6B656E2D62756E6368
+f746F6B656E2D62756E6368:
+push %rdi
+push %rsi
+add $-8,%rsp
+mov $0,%rax
+.454$:
+mov %rax,(%rsp)
+mov 16(%rsp),%rax
+add $-8,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+test %rax,%rax
+jne .454$
+pop %rax
+add $16,%rsp
+ret
+.section .text.f746F6B656E2D707265666978
+f746F6B656E2D707265666978:
+push %rdi
+push %rsi
+push %rdx
+mov 16(%rsp),%rax
+add $-8,%rsp
+push %rax
+mov 16(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+test %rax,%rax
+je .456$
+mov 8(%rsp),%rax
+add $-8,%rsp
+push %rax
+mov 16(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.456$:
+add $24,%rsp
+ret
+.section .text.f746F6B656E2D67726F7570
+f746F6B656E2D67726F7570:
+push %rdi
+push %rsi
+push %rdx
+mov 16(%rsp),%rax
+add $-8,%rsp
+push %rax
+mov 16(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+test %rax,%rax
+je .458$
+mov f746F6B656E2D62756E6368@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 32(%rsp),%rax
+mov %rax,8(%rsp)
+mov 24(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+mov 16(%rsp),%rax
+add $-8,%rsp
+push %rax
+mov 16(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.459$:
+.458$:
+add $24,%rsp
+ret
+.section .text.f746F6B656E2D7773
+f746F6B656E2D7773:
 push %rdi
 add $-8,%rsp
 mov $0,%rax
-.397$:
+.461$:
 mov %rax,(%rsp)
-mov f766C65782D62756E6368@GOTPCREL(%rip),%rax
+mov f746F6B656E2D62756E6368@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
 mov f6C65782D7773@GOTPCREL(%rip),%rax
@@ -6670,8 +8014,8 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-jne .398$
-mov f766C65782D67726F7570@GOTPCREL(%rip),%rax
+jne .462$
+mov f746F6B656E2D67726F7570@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
 mov f6C65782D686D@GOTPCREL(%rip),%rax
@@ -6685,16 +8029,16 @@ pop %rdi
 pop %rsi
 pop %rdx
 call *%rax
-.398$:
+.462$:
 test %rax,%rax
-jne .397$
+jne .461$
 pop %rax
 add $8,%rsp
 ret
-.section .text.f6C65782D74657874
-f6C65782D74657874:
+.section .text.f746F6B656E2D74657874
+f746F6B656E2D74657874:
 push %rdi
-mov f766C65782D62756E6368@GOTPCREL(%rip),%rax
+mov f746F6B656E2D62756E6368@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
 mov f6C65782D6964@GOTPCREL(%rip),%rax
@@ -6706,7 +8050,7 @@ pop %rdi
 pop %rsi
 call *%rax
 test %rax,%rax
-jne .400$
+jne .464$
 mov f6C65782D7074@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -6716,8 +8060,8 @@ pop %rax
 pop %rdi
 call *%rax
 test %rax,%rax
-jne .401$
-mov f766C65782D6C67726F7570@GOTPCREL(%rip),%rax
+jne .465$
+mov f746F6B656E2D707265666978@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
 mov f6C65782D7371@GOTPCREL(%rip),%rax
@@ -6732,8 +8076,8 @@ pop %rsi
 pop %rdx
 call *%rax
 test %rax,%rax
-jne .402$
-mov f766C65782D67726F7570@GOTPCREL(%rip),%rax
+jne .466$
+mov f746F6B656E2D67726F7570@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
 mov f6C65782D6471@GOTPCREL(%rip),%rax
@@ -6748,8 +8092,8 @@ pop %rsi
 pop %rdx
 call *%rax
 test %rax,%rax
-jne .403$
-mov f766C65782D62756E6368@GOTPCREL(%rip),%rax
+jne .467$
+mov f746F6B656E2D62756E6368@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
 mov f6C65782D3039@GOTPCREL(%rip),%rax
@@ -6760,40 +8104,11 @@ pop %rax
 pop %rdi
 pop %rsi
 call *%rax
-.403$:
-.402$:
-.401$:
-.400$:
+.467$:
+.466$:
+.465$:
+.464$:
 add $8,%rsp
-ret
-.section .text.f656174
-f656174:
-push %rdi
-push %rsi
-mov f6C65782D75736572@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 24(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov f746F6B656E2D72656164@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov f6C65782D74657874@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov 40(%rsp),%rax
-mov %rax,16(%rsp)
-mov 32(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-.405$:
-add $16,%rsp
 ret
 .section .text.f53656D
 f53656D:
@@ -6893,4682 +8208,103 @@ pop %rax
 pop %rdi
 call *%rax
 ret
-.section .text.f70617273652D77697468
-f70617273652D77697468:
+.section .text.f7061727365
+f7061727365:
 push %rdi
 push %rsi
-push %rdx
-push %rcx
-push %r8
-mov f746F6B656E2D6973@GOTPCREL(%rip),%rax
-add $-16,%rsp
+mov f746F6B656E2D7773@GOTPCREL(%rip),%rax
+add $-8,%rsp
 push %rax
-mov 40(%rsp),%rax
+mov 24(%rsp),%rax
 mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+add $-8,%rsp
 mov f6C6F6164@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
-mov f5370616E@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-test %rax,%rax
-je .412$
-mov f656174@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f496E@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f5370616E@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
 mov 32(%rsp),%rax
-add $-24,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-mov 40(%rsp),%rax
-mov %rax,16(%rsp)
-mov 32(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-mov $1,%rax
-.414$:
-.413$:
-.412$:
-add $40,%rsp
-ret
-.section .text.f70617273652D7465726D
-f70617273652D7465726D:
-push %rdi
-push %rsi
-push %rdx
-mov f746F6B656E2D6D61746368@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 40(%rsp),%rax
-mov %rax,8(%rsp)
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f5370616E@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
 mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-test %rax,%rax
-je .416$
+.475$:
+mov %rax,(%rsp)
 add $-8,%rsp
 mov f41@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f5370616E@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
+mov 32(%rsp),%rax
 mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-.417$:
+.476$:
 mov %rax,(%rsp)
 add $-8,%rsp
 mov f42@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f5370616E@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-.418$:
-mov %rax,(%rsp)
-mov f656174@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f496E@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f5370616E@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 72(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov f73746F7265@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f526573756C74@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 48(%rsp),%rax
-add $-24,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f53656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 104(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 64(%rsp),%rax
-mov %rax,16(%rsp)
-mov 56(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov $1,%rax
-.420$:
-.419$:
-add $8,%rsp
-add $8,%rsp
-.416$:
-add $24,%rsp
-ret
-.section .text.f70617273652D6578616374
-f70617273652D6578616374:
-push %rdi
-push %rsi
-mov f746F6B656E2D6D61746368@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 24(%rsp),%rax
-mov %rax,8(%rsp)
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f5370616E@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-test %rax,%rax
-je .422$
-mov f656174@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f496E@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f5370616E@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-.422$:
-add $16,%rsp
-ret
-.section .text.f6173796E2D696E6974
-f6173796E2D696E6974:
-push %rdi
-push %rsi
-push %rdx
-push %rcx
-push %r8
-push %r9
-mov f746F6B656E2D696E6974@GOTPCREL(%rip),%rax
-add $-40,%rsp
-push %rax
-mov f656174@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov 80(%rsp),%rax
-mov %rax,16(%rsp)
-mov 48(%rsp),%rax
-mov %rax,24(%rsp)
-mov 72(%rsp),%rax
-mov %rax,32(%rsp)
-mov 64(%rsp),%rax
-mov %rax,40(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-pop %r8
-call *%rax
-mov f73746F7265@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 32(%rsp),%rax
-mov %rax,8(%rsp)
-mov 64(%rsp),%rax
-add $-16,%rsp
-push %rax
-mov 80(%rsp),%rax
-mov %rax,8(%rsp)
-mov 104(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-.424$:
-add $48,%rsp
-ret
-.section .text.f6173796E2D656E64
-f6173796E2D656E64:
-push %rdi
-push %rsi
-mov 8(%rsp),%rax
-add $-8,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 32(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-add $16,%rsp
-ret
-.section .text.f6173796E2D766172
-f6173796E2D766172:
-push %rdi
-push %rsi
-push %rdx
-push %rcx
-push %r8
-push %r9
-add $-8,%rsp
-mov 48(%rsp),%rax
-add $-8,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f53656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-.427$:
-mov %rax,(%rsp)
-mov 40(%rsp),%rax
-add $-32,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f53656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 80(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 40(%rsp),%rax
-mov %rax,16(%rsp)
-mov f41@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f5370616E@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 96(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,24(%rsp)
-mov f42@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f5370616E@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 96(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,32(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-call *%rax
-mov f70617273652D6578616374@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 32(%rsp),%rax
-mov %rax,8(%rsp)
-mov f636861722D636C6173732D6964@GOTPCREL(%rip),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov 16(%rsp),%rax
-add $-16,%rsp
-push %rax
-mov 32(%rsp),%rax
-mov %rax,8(%rsp)
-mov $0,%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov 32(%rsp),%rax
-add $-16,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f53656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 24(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $-8,%rsp
-mov 24(%rsp),%rax
-add $-16,%rsp
-push %rax
 mov 40(%rsp),%rax
 mov %rax,8(%rsp)
-mov 96(%rsp),%rax
-mov %rax,16(%rsp)
 pop %rax
 pop %rdi
-pop %rsi
-call *%rax
-.432$:
-mov %rax,(%rsp)
-mov 32(%rsp),%rax
-add $-16,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f53656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 72(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 32(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov 0(%rsp),%rax
-.433$:
-add $8,%rsp
-.431$:
-.430$:
-.429$:
-.428$:
-add $8,%rsp
-add $48,%rsp
-ret
-.section .text.f6173796E2D736571
-f6173796E2D736571:
-push %rdi
-push %rsi
-push %rdx
-push %rcx
-push %r8
-push %r9
-add $-8,%rsp
-mov 48(%rsp),%rax
-add $-8,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f53656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-.435$:
-mov %rax,(%rsp)
-add $-8,%rsp
-mov 32(%rsp),%rax
-add $-16,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-mov 40(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-.436$:
-mov %rax,(%rsp)
-mov 48(%rsp),%rax
-add $-16,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f53656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 80(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 32(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $-8,%rsp
-mov 40(%rsp),%rax
-add $-16,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-mov 48(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-.438$:
-mov %rax,(%rsp)
-mov 48(%rsp),%rax
-add $-16,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f53656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 88(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 40(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov 0(%rsp),%rax
-.439$:
-add $8,%rsp
-.437$:
-add $8,%rsp
-add $8,%rsp
-add $48,%rsp
-ret
-.section .text.f6173796E2D636F6E64
-f6173796E2D636F6E64:
-push %rdi
-push %rsi
-push %rdx
-push %rcx
-push %r8
-push %r9
-add $-8,%rsp
-mov 48(%rsp),%rax
-add $-8,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f53656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-.441$:
-mov %rax,(%rsp)
-add $-8,%rsp
-mov 24(%rsp),%rax
-add $-16,%rsp
-push %rax
-mov 40(%rsp),%rax
-mov %rax,8(%rsp)
-mov $0,%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-.442$:
-mov %rax,(%rsp)
-mov 48(%rsp),%rax
-add $-16,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f53656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 72(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 32(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $-8,%rsp
-mov 32(%rsp),%rax
-add $-16,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-mov 104(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-.444$:
-mov %rax,(%rsp)
-add $-8,%rsp
-mov 72(%rsp),%rax
-add $-8,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f53656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 80(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-.445$:
-mov %rax,(%rsp)
-mov 56(%rsp),%rax
-add $-16,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f53656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 88(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 24(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov 48(%rsp),%rax
-add $-16,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f53656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 88(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 48(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $-8,%rsp
-mov 48(%rsp),%rax
-add $-16,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-mov 120(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-.448$:
-mov %rax,(%rsp)
-mov 56(%rsp),%rax
-add $-16,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f53656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 96(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 32(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov 0(%rsp),%rax
-.449$:
-add $8,%rsp
-.447$:
-.446$:
-add $8,%rsp
-add $8,%rsp
-.443$:
-add $8,%rsp
-add $8,%rsp
-add $48,%rsp
-ret
-.section .text.f6173796E2D7465726D
-f6173796E2D7465726D:
-push %rdi
-push %rsi
-push %rdx
-push %rcx
-push %r8
-push %r9
-mov 40(%rsp),%rax
-add $-24,%rsp
-push %rax
-mov 112(%rsp),%rax
-mov %rax,8(%rsp)
-mov 120(%rsp),%rax
-mov %rax,16(%rsp)
-mov 128(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-test %rax,%rax
-jne .451$
-mov 32(%rsp),%rax
-add $-24,%rsp
-push %rax
-mov 112(%rsp),%rax
-mov %rax,8(%rsp)
-mov 120(%rsp),%rax
-mov %rax,16(%rsp)
-mov 128(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-test %rax,%rax
-jne .452$
-mov 24(%rsp),%rax
-add $-24,%rsp
-push %rax
-mov 112(%rsp),%rax
-mov %rax,8(%rsp)
-mov 120(%rsp),%rax
-mov %rax,16(%rsp)
-mov 128(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-test %rax,%rax
-jne .453$
-mov 16(%rsp),%rax
-add $-24,%rsp
-push %rax
-mov 112(%rsp),%rax
-mov %rax,8(%rsp)
-mov 120(%rsp),%rax
-mov %rax,16(%rsp)
-mov 128(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-test %rax,%rax
-jne .454$
-mov 8(%rsp),%rax
-add $-24,%rsp
-push %rax
-mov 112(%rsp),%rax
-mov %rax,8(%rsp)
-mov 120(%rsp),%rax
-mov %rax,16(%rsp)
-mov 128(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-test %rax,%rax
-jne .455$
-mov 0(%rsp),%rax
-add $-24,%rsp
-push %rax
-mov 112(%rsp),%rax
-mov %rax,8(%rsp)
-mov 120(%rsp),%rax
-mov %rax,16(%rsp)
-mov 128(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-test %rax,%rax
-jne .456$
-mov 56(%rsp),%rax
-add $-24,%rsp
-push %rax
-mov 112(%rsp),%rax
-mov %rax,8(%rsp)
-mov 120(%rsp),%rax
-mov %rax,16(%rsp)
-mov 128(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-test %rax,%rax
-jne .457$
-mov 64(%rsp),%rax
-add $-24,%rsp
-push %rax
-mov 112(%rsp),%rax
-mov %rax,8(%rsp)
-mov 120(%rsp),%rax
-mov %rax,16(%rsp)
-mov 128(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-test %rax,%rax
-jne .458$
-mov 72(%rsp),%rax
-add $-24,%rsp
-push %rax
-mov 112(%rsp),%rax
-mov %rax,8(%rsp)
-mov 120(%rsp),%rax
-mov %rax,16(%rsp)
-mov 128(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-test %rax,%rax
-jne .459$
-mov f6572726F72@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov $5,%rax
-mov %rax,8(%rsp)
-.section .data..s460
-.s460:
-.string,"expected term"
-.previous
-mov .s460@GOTPCREL(%rip),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-.459$:
-.458$:
-.457$:
-.456$:
-.455$:
-.454$:
-.453$:
-.452$:
-.451$:
-add $48,%rsp
-ret
-.section .text.f6173796E2D646F
-f6173796E2D646F:
-push %rdi
-push %rsi
-push %rdx
-push %rcx
-mov f70617273652D77697468@GOTPCREL(%rip),%rax
-add $-40,%rsp
-push %rax
-mov 72(%rsp),%rax
-mov %rax,8(%rsp)
-mov 64(%rsp),%rax
-mov %rax,16(%rsp)
-.section .data..s462
-.s462:
-.string,"do"
-.previous
-mov .s462@GOTPCREL(%rip),%rax
-mov %rax,24(%rsp)
-mov 56(%rsp),%rax
-mov %rax,32(%rsp)
-mov 48(%rsp),%rax
-mov %rax,40(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-pop %r8
-call *%rax
-add $32,%rsp
-ret
-.section .text.f6173796E2D6966
-f6173796E2D6966:
-push %rdi
-push %rsi
-push %rdx
-push %rcx
-mov f70617273652D77697468@GOTPCREL(%rip),%rax
-add $-40,%rsp
-push %rax
-mov 72(%rsp),%rax
-mov %rax,8(%rsp)
-mov 64(%rsp),%rax
-mov %rax,16(%rsp)
-.section .data..s464
-.s464:
-.string,"if"
-.previous
-mov .s464@GOTPCREL(%rip),%rax
-mov %rax,24(%rsp)
-mov 56(%rsp),%rax
-mov %rax,32(%rsp)
-mov 48(%rsp),%rax
-mov %rax,40(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-pop %r8
-call *%rax
-add $32,%rsp
-ret
-.section .text.f6173796E2D6F72
-f6173796E2D6F72:
-push %rdi
-push %rsi
-push %rdx
-push %rcx
-mov f70617273652D77697468@GOTPCREL(%rip),%rax
-add $-40,%rsp
-push %rax
-mov 72(%rsp),%rax
-mov %rax,8(%rsp)
-mov 64(%rsp),%rax
-mov %rax,16(%rsp)
-.section .data..s466
-.s466:
-.string,"or"
-.previous
-mov .s466@GOTPCREL(%rip),%rax
-mov %rax,24(%rsp)
-mov 56(%rsp),%rax
-mov %rax,32(%rsp)
-mov 48(%rsp),%rax
-mov %rax,40(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-pop %r8
-call *%rax
-add $32,%rsp
-ret
-.section .text.f6173796E2D616E64
-f6173796E2D616E64:
-push %rdi
-push %rsi
-push %rdx
-push %rcx
-mov f70617273652D77697468@GOTPCREL(%rip),%rax
-add $-40,%rsp
-push %rax
-mov 72(%rsp),%rax
-mov %rax,8(%rsp)
-mov 64(%rsp),%rax
-mov %rax,16(%rsp)
-.section .data..s468
-.s468:
-.string,"and"
-.previous
-mov .s468@GOTPCREL(%rip),%rax
-mov %rax,24(%rsp)
-mov 56(%rsp),%rax
-mov %rax,32(%rsp)
-mov 48(%rsp),%rax
-mov %rax,40(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-pop %r8
-call *%rax
-add $32,%rsp
-ret
-.section .text.f6173796E2D6C6574
-f6173796E2D6C6574:
-push %rdi
-push %rsi
-push %rdx
-push %rcx
-mov f70617273652D77697468@GOTPCREL(%rip),%rax
-add $-40,%rsp
-push %rax
-mov 72(%rsp),%rax
-mov %rax,8(%rsp)
-mov 64(%rsp),%rax
-mov %rax,16(%rsp)
-.section .data..s470
-.s470:
-.string,"let"
-.previous
-mov .s470@GOTPCREL(%rip),%rax
-mov %rax,24(%rsp)
-mov 56(%rsp),%rax
-mov %rax,32(%rsp)
-mov 48(%rsp),%rax
-mov %rax,40(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-pop %r8
-call *%rax
-add $32,%rsp
-ret
-.section .text.f6173796E2D666F72
-f6173796E2D666F72:
-push %rdi
-push %rsi
-push %rdx
-push %rcx
-mov f70617273652D77697468@GOTPCREL(%rip),%rax
-add $-40,%rsp
-push %rax
-mov 72(%rsp),%rax
-mov %rax,8(%rsp)
-mov 64(%rsp),%rax
-mov %rax,16(%rsp)
-.section .data..s472
-.s472:
-.string,"for"
-.previous
-mov .s472@GOTPCREL(%rip),%rax
-mov %rax,24(%rsp)
-mov 56(%rsp),%rax
-mov %rax,32(%rsp)
-mov 48(%rsp),%rax
-mov %rax,40(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-pop %r8
-call *%rax
-add $32,%rsp
-ret
-.section .text.f6173796E2D6C6974
-f6173796E2D6C6974:
-push %rdi
-push %rsi
-mov f70617273652D7465726D@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov f636861722D636C6173732D696D@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov 40(%rsp),%rax
-mov %rax,16(%rsp)
-mov 32(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-add $16,%rsp
-ret
-.section .text.f6173796E2D737472
-f6173796E2D737472:
-push %rdi
-push %rsi
-mov f70617273652D7465726D@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov f636861722D636C6173732D6471@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov 40(%rsp),%rax
-mov %rax,16(%rsp)
-mov 32(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-add $16,%rsp
-ret
-.section .text.f6173796E2D6964
-f6173796E2D6964:
-push %rdi
-push %rsi
-mov f70617273652D7465726D@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov f636861722D636C6173732D6964@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov 40(%rsp),%rax
-mov %rax,16(%rsp)
-mov 32(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-add $16,%rsp
-ret
-.section .text.f6173796E2D617267
-f6173796E2D617267:
-push %rdi
-push %rsi
-push %rdx
-push %rcx
-push %r8
-mov 24(%rsp),%rax
-add $-16,%rsp
-push %rax
-mov 40(%rsp),%rax
-mov %rax,8(%rsp)
-mov 32(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov 32(%rsp),%rax
-add $-32,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f53656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 88(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 48(%rsp),%rax
-mov %rax,16(%rsp)
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f526573756C74@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 88(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,24(%rsp)
-mov 40(%rsp),%rax
-mov %rax,32(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
 call *%rax
 .477$:
-add $40,%rsp
-ret
-.section .text.f6173796E2D61726773
-f6173796E2D61726773:
-push %rdi
-push %rsi
-push %rdx
-push %rcx
-push %r8
-mov 8(%rsp),%rax
-test %rax,%rax
-je .479$
-mov f6173796E2D617267@GOTPCREL(%rip),%rax
-add $-40,%rsp
-push %rax
-mov 80(%rsp),%rax
-mov %rax,8(%rsp)
-mov 72(%rsp),%rax
-mov %rax,16(%rsp)
-mov 64(%rsp),%rax
-mov %rax,24(%rsp)
-mov f42@GOTPCREL(%rip),%rax
+mov %rax,(%rsp)
+mov f746F6B656E2D74657874@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
-mov f41@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 88(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,32(%rsp)
 mov 48(%rsp),%rax
-mov %rax,40(%rsp)
+mov %rax,8(%rsp)
 pop %rax
 pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-pop %r8
 call *%rax
-mov f6173796E2D61726773@GOTPCREL(%rip),%rax
-add $-40,%rsp
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
 push %rax
-mov 80(%rsp),%rax
+mov 56(%rsp),%rax
 mov %rax,8(%rsp)
-mov 72(%rsp),%rax
+pop %rax
+pop %rdi
+call *%rax
+.479$:
+mov %rax,(%rsp)
+mov f73746F7265@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+mov 48(%rsp),%rax
 mov %rax,16(%rsp)
-mov 64(%rsp),%rax
-mov %rax,24(%rsp)
-mov f42@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 72(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,32(%rsp)
-mov f737563@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,40(%rsp)
 pop %rax
 pop %rdi
 pop %rsi
-pop %rdx
-pop %rcx
-pop %r8
+call *%rax
+mov f73746F7265@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 32(%rsp),%rax
+mov %rax,8(%rsp)
+mov 24(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
 call *%rax
 .480$:
-.479$:
-add $40,%rsp
-ret
-.section .text.f6173796E2D63616C6C
-f6173796E2D63616C6C:
-push %rdi
-push %rsi
-push %rdx
-push %rcx
-push %r8
-push %r9
-mov f42@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 16(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-test %rax,%rax
-je .482$
-add $-8,%rsp
-mov 48(%rsp),%rax
-add $-16,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f53656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 72(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 32(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-.483$:
-mov %rax,(%rsp)
-mov f6173796E2D61726773@GOTPCREL(%rip),%rax
-add $-40,%rsp
-push %rax
-mov 88(%rsp),%rax
-mov %rax,8(%rsp)
-mov 72(%rsp),%rax
-mov %rax,16(%rsp)
-mov 64(%rsp),%rax
-mov %rax,24(%rsp)
-mov f41@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 72(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,32(%rsp)
-mov $1,%rax
-mov %rax,40(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-pop %r8
-call *%rax
-mov f73746F7265@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f526573756C74@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 56(%rsp),%rax
-add $-16,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f53656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 96(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 48(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-.484$:
 add $8,%rsp
-.482$:
-add $48,%rsp
-ret
-.section .text.f6173796E2D6A757874
-f6173796E2D6A757874:
-push %rdi
-push %rsi
-push %rdx
-push %rcx
-push %r8
-mov f6E6F74@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f747970652D657175616C@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-mov 40(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-test %rax,%rax
-je .486$
-mov 32(%rsp),%rax
-add $-24,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-mov 48(%rsp),%rax
-mov %rax,16(%rsp)
-mov 32(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-.486$:
-add $40,%rsp
-ret
-.section .text.f6173796E2D65787072
-f6173796E2D65787072:
-push %rdi
-push %rsi
-push %rdx
-push %rcx
-push %r8
-push %r9
-mov f70617273652D6578616374@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 32(%rsp),%rax
-mov %rax,8(%rsp)
-mov f636861722D636C6173732D6C70@GOTPCREL(%rip),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-test %rax,%rax
-je .488$
-mov 40(%rsp),%rax
-add $-24,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-mov 40(%rsp),%rax
-mov %rax,16(%rsp)
-mov 32(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-mov f70617273652D6578616374@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 32(%rsp),%rax
-mov %rax,8(%rsp)
-mov f636861722D636C6173732D7270@GOTPCREL(%rip),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-test %rax,%rax
-jne .490$
-mov 32(%rsp),%rax
-add $-32,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-mov 48(%rsp),%rax
-mov %rax,16(%rsp)
-mov 40(%rsp),%rax
-mov %rax,24(%rsp)
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f526573756C74@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 80(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,32(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-call *%rax
-test %rax,%rax
-je .491$
-mov f70617273652D6578616374@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 32(%rsp),%rax
-mov %rax,8(%rsp)
-mov f636861722D636C6173732D7270@GOTPCREL(%rip),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-jmp .492$
-.491$:
-mov f6572726F72@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov $4,%rax
-mov %rax,8(%rsp)
-.section .data..s493
-.s493:
-.string,"expected )"
-.previous
-mov .s493@GOTPCREL(%rip),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-.492$:
-.490$:
-.489$:
-jmp .494$
-.488$:
-mov 40(%rsp),%rax
-add $-24,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-mov 40(%rsp),%rax
-mov %rax,16(%rsp)
-mov 32(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-mov 32(%rsp),%rax
-add $-32,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-mov 48(%rsp),%rax
-mov %rax,16(%rsp)
-mov 40(%rsp),%rax
-mov %rax,24(%rsp)
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f526573756C74@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 80(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,32(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-call *%rax
-.495$:
-.494$:
-add $48,%rsp
-ret
-.section .text.f6173796E2D626F6479
-f6173796E2D626F6479:
-push %rdi
-push %rsi
-push %rdx
-push %rcx
-push %r8
-push %r9
-mov 64(%rsp),%rax
-test %rax,%rax
-je .497$
-add $-8,%rsp
-mov 48(%rsp),%rax
-add $-8,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f53656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 112(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-.498$:
-mov %rax,(%rsp)
-mov 40(%rsp),%rax
-add $-24,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f53656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 128(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 32(%rsp),%rax
-mov %rax,16(%rsp)
-mov 104(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-mov f70617273652D6578616374@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 88(%rsp),%rax
-mov %rax,8(%rsp)
-mov f636861722D636C6173732D716D@GOTPCREL(%rip),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-test %rax,%rax
-jne .500$
-mov 32(%rsp),%rax
-add $-24,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f53656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 128(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 32(%rsp),%rax
-mov %rax,16(%rsp)
-mov 104(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-mov 16(%rsp),%rax
-add $-32,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-mov 104(%rsp),%rax
-mov %rax,16(%rsp)
-mov f41@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f42@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 144(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,24(%rsp)
-mov $0,%rax
-mov %rax,32(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-call *%rax
-mov 24(%rsp),%rax
-add $-24,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f53656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 128(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 32(%rsp),%rax
-mov %rax,16(%rsp)
-mov 104(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-.502$:
-.501$:
-.500$:
-.499$:
-add $8,%rsp
-.497$:
-add $48,%rsp
-ret
-.section .text.f6173796E2D706172616D
-f6173796E2D706172616D:
-push %rdi
-push %rsi
-push %rdx
-push %rcx
-push %r8
-push %r9
-mov 8(%rsp),%rax
-test %rax,%rax
-je .504$
-add $-8,%rsp
-mov f41@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 32(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-.505$:
-mov %rax,(%rsp)
-add $-8,%rsp
-mov 56(%rsp),%rax
-add $-24,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f53656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 96(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 40(%rsp),%rax
-mov %rax,16(%rsp)
-mov 48(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-.506$:
-mov %rax,(%rsp)
-mov f6173796E2D706172616D@GOTPCREL(%rip),%rax
-add $-48,%rsp
-push %rax
-mov 112(%rsp),%rax
-mov %rax,8(%rsp)
-mov 104(%rsp),%rax
-mov %rax,16(%rsp)
-mov 96(%rsp),%rax
-mov %rax,24(%rsp)
-mov 88(%rsp),%rax
-mov %rax,32(%rsp)
-mov f42@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 96(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,40(%rsp)
-mov f737563@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 88(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,48(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-pop %r8
-pop %r9
-call *%rax
-mov 48(%rsp),%rax
-add $-16,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f53656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 88(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 24(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-.507$:
+.478$:
 add $8,%rsp
 add $8,%rsp
-jmp .508$
-.504$:
-mov 24(%rsp),%rax
-add $-16,%rsp
-push %rax
-mov 40(%rsp),%rax
-mov %rax,8(%rsp)
-mov $0,%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-.508$:
-add $48,%rsp
-ret
-.section .text.f6173796E2D6465636C
-f6173796E2D6465636C:
-push %rdi
-push %rsi
-push %rdx
-push %rcx
-add $-8,%rsp
-mov f41@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f5370616E@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-.510$:
-mov %rax,(%rsp)
-add $-8,%rsp
-mov f42@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f5370616E@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-.511$:
-mov %rax,(%rsp)
-mov f70617273652D6578616374@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 40(%rsp),%rax
-mov %rax,8(%rsp)
-mov f636861722D636C6173732D6964@GOTPCREL(%rip),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-test %rax,%rax
-je .512$
-mov 40(%rsp),%rax
-add $-32,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f53656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 88(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 48(%rsp),%rax
-mov %rax,16(%rsp)
-mov 40(%rsp),%rax
-mov %rax,24(%rsp)
-mov 72(%rsp),%rax
-add $-16,%rsp
-push %rax
-mov 88(%rsp),%rax
-mov %rax,8(%rsp)
-mov 80(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov %rax,32(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-call *%rax
-.512$:
 add $8,%rsp
-add $8,%rsp
-add $32,%rsp
-ret
-.section .text.f6173796E2D747970652D706172616D73
-f6173796E2D747970652D706172616D73:
-push %rdi
-push %rsi
-push %rdx
-push %rcx
-mov f6E6F74@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f70617273652D6578616374@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 40(%rsp),%rax
-mov %rax,8(%rsp)
-mov f636861722D636C6173732D7270@GOTPCREL(%rip),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-test %rax,%rax
-je .514$
-add $-8,%rsp
-mov 16(%rsp),%rax
-add $-8,%rsp
-push %rax
-mov 24(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-.515$:
-mov %rax,(%rsp)
-mov 32(%rsp),%rax
-add $-24,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f53656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 72(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 32(%rsp),%rax
-mov %rax,16(%rsp)
-mov 56(%rsp),%rax
-add $-16,%rsp
-push %rax
-mov 72(%rsp),%rax
-mov %rax,8(%rsp)
-mov 64(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-add $8,%rsp
-.514$:
-add $32,%rsp
-ret
-.section .text.f6173796E2D74797065
-f6173796E2D74797065:
-push %rdi
-push %rsi
-push %rdx
-push %rcx
-push %r8
-push %r9
-mov 32(%rsp),%rax
-add $-32,%rsp
-push %rax
-mov 80(%rsp),%rax
-mov %rax,8(%rsp)
-mov f70617273652D6578616374@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-mov f636861722D636C6173732D6C70@GOTPCREL(%rip),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-test %rax,%rax
-je .517$
-mov 64(%rsp),%rax
-jmp .518$
-.517$:
-mov 56(%rsp),%rax
-.518$:
-mov %rax,16(%rsp)
-mov 48(%rsp),%rax
-mov %rax,24(%rsp)
-mov 40(%rsp),%rax
-mov %rax,32(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-call *%rax
-add $48,%rsp
-ret
-.section .text.f4F7574
-f4F7574:
-push %rdi
-mov 0(%rsp),%rax
-add $8,%rsp
-ret
-.section .text.f4465707468
-f4465707468:
-push %rdi
-mov f616464@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f4F7574@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 40(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov f776F7264@GOTPCREL(%rip),%rax
-push %rax
-pop %rax
-call *%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f466C616B65
-f466C616B65:
-push %rdi
-mov f616464@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f4465707468@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 40(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov f776F7264@GOTPCREL(%rip),%rax
-push %rax
-pop %rax
-call *%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f5838365F3634
-f5838365F3634:
-mov f466C616B65@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f776F7264@GOTPCREL(%rip),%rax
-push %rax
-pop %rax
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-ret
-.section .text.f67656E2D696E6974
-f67656E2D696E6974:
-push %rdi
-push %rsi
-add $-8,%rsp
-mov f746F@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-mov f616464@GOTPCREL(%rip),%rax
-mov %rax,16(%rsp)
-mov f5838365F3634@GOTPCREL(%rip),%rax
-push %rax
-pop %rax
-call *%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-.524$:
-mov %rax,(%rsp)
-mov f7838365F36342D696E6974@GOTPCREL(%rip),%rax
-add $-32,%rsp
-push %rax
-mov f4F7574@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov f4465707468@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-mov f466C616B65@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,24(%rsp)
-mov 48(%rsp),%rax
-mov %rax,32(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-call *%rax
-mov 0(%rsp),%rax
-.525$:
-add $8,%rsp
+.474$:
 add $16,%rsp
 ret
-.section .text.f67656E2D656E64
-f67656E2D656E64:
-push %rdi
-mov f7838365F36342D656E64@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f4F7574@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 32(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f67656E2D666C616B65
-f67656E2D666C616B65:
-push %rdi
-mov f7838365F36342D666C616B65@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f466C616B65@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 32(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f67656E2D6C6162656C
-f67656E2D6C6162656C:
-push %rdi
-push %rsi
-mov f7838365F36342D6C6162656C@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f4F7574@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 24(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $16,%rsp
-ret
-.section .text.f67656E2D726566
-f67656E2D726566:
-push %rdi
-push %rsi
-push %rdx
-push %rcx
-mov f7838365F36342D726566@GOTPCREL(%rip),%rax
-add $-40,%rsp
-push %rax
-mov f4F7574@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 88(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov f4465707468@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 88(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-mov 64(%rsp),%rax
-mov %rax,24(%rsp)
-mov 56(%rsp),%rax
-mov %rax,32(%rsp)
-mov 48(%rsp),%rax
-mov %rax,40(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-pop %r8
-call *%rax
-add $32,%rsp
-ret
-.section .text.f67656E2D6C6974
-f67656E2D6C6974:
-push %rdi
-push %rsi
-push %rdx
-mov f7838365F36342D6C6974@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov f4F7574@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 40(%rsp),%rax
-mov %rax,16(%rsp)
-mov 32(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-add $24,%rsp
-ret
-.section .text.f67656E2D737472
-f67656E2D737472:
-push %rdi
-push %rsi
-push %rdx
-mov f7838365F36342D737472@GOTPCREL(%rip),%rax
-add $-32,%rsp
-push %rax
-mov f4F7574@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 72(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov f466C616B65@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 72(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-mov 48(%rsp),%rax
-mov %rax,24(%rsp)
-mov 40(%rsp),%rax
-mov %rax,32(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-call *%rax
-add $24,%rsp
-ret
-.section .text.f67656E2D646F
-f67656E2D646F:
-push %rdi
-push %rsi
-mov $0,%rax
-add $16,%rsp
-ret
-.section .text.f67656E2D6A65
-f67656E2D6A65:
-push %rdi
-push %rsi
-mov f7838365F36342D6A65@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f4F7574@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 24(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $16,%rsp
-ret
-.section .text.f67656E2D6A6E65
-f67656E2D6A6E65:
-push %rdi
-push %rsi
-mov f7838365F36342D6A6E65@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f4F7574@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 24(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $16,%rsp
-ret
-.section .text.f67656E2D6A6D70
-f67656E2D6A6D70:
-push %rdi
-push %rsi
-mov f7838365F36342D6A6D70@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f4F7574@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 24(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $16,%rsp
-ret
-.section .text.f67656E2D7661722D6973
-f67656E2D7661722D6973:
-push %rdi
-push %rsi
-mov f7838365F36342D7661722D6973@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov f4F7574@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov f4465707468@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-mov 32(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-add $16,%rsp
-ret
-.section .text.f67656E2D7661722D696E
-f67656E2D7661722D696E:
-push %rdi
-push %rsi
-mov f7838365F36342D7661722D696E@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f4F7574@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 24(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $16,%rsp
-ret
-.section .text.f67656E2D6C65742D656E64
-f67656E2D6C65742D656E64:
-push %rdi
-push %rsi
-mov f7838365F36342D6C65742D656E64@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov f4F7574@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov f4465707468@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-mov 32(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-add $16,%rsp
-ret
-.section .text.f67656E2D666F722D656E64
-f67656E2D666F722D656E64:
-push %rdi
-push %rsi
-mov f7838365F36342D666F722D656E64@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov f4F7574@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov f4465707468@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-mov 32(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-add $16,%rsp
-ret
-.section .text.f67656E2D63616C6C2D77697468
-f67656E2D63616C6C2D77697468:
-push %rdi
-push %rsi
-mov f7838365F36342D63616C6C2D77697468@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov f4F7574@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov f4465707468@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-mov 32(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-add $16,%rsp
-ret
-.section .text.f67656E2D63616C6C2D617267
-f67656E2D63616C6C2D617267:
-push %rdi
-push %rsi
-mov f7838365F36342D63616C6C2D617267@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f4F7574@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 24(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $16,%rsp
-ret
-.section .text.f67656E2D63616C6C2D656E64
-f67656E2D63616C6C2D656E64:
-push %rdi
-push %rsi
-mov f7838365F36342D63616C6C2D656E64@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov f4F7574@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov f4465707468@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-mov 32(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-add $16,%rsp
-ret
-.section .text.f67656E2D6465636C
-f67656E2D6465636C:
-push %rdi
-push %rsi
-mov $0,%rax
-add $16,%rsp
-ret
-.section .text.f67656E2D6465636C2D696E
-f67656E2D6465636C2D696E:
-push %rdi
-push %rsi
-push %rdx
-mov f7838365F36342D6465636C2D696E@GOTPCREL(%rip),%rax
-add $-32,%rsp
-push %rax
-mov f4F7574@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 72(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov f4465707468@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 72(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-mov 48(%rsp),%rax
-mov %rax,24(%rsp)
-mov 40(%rsp),%rax
-mov %rax,32(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-call *%rax
-add $24,%rsp
-ret
-.section .text.f67656E2D6465636C2D706172616D
-f67656E2D6465636C2D706172616D:
-push %rdi
-push %rsi
-mov f7838365F36342D6465636C2D706172616D@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov f4F7574@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov f4465707468@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-mov 32(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-add $16,%rsp
-ret
-.section .text.f67656E2D6465636C2D656E64
-f67656E2D6465636C2D656E64:
-push %rdi
-push %rsi
-mov f7838365F36342D6465636C2D656E64@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov f4F7574@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov f4465707468@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-mov 32(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-add $16,%rsp
-ret
-.section .text.f6173656D2D747970652D66756E63
-f6173656D2D747970652D66756E63:
-push %rdi
-push %rsi
-mov f6E6F6465@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov 40(%rsp),%rax
-mov %rax,8(%rsp)
-mov 32(%rsp),%rax
-mov %rax,16(%rsp)
-mov $1,%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-add $16,%rsp
-ret
-.section .text.f6173656D2D747970652D756E6974
-f6173656D2D747970652D756E6974:
-mov $0,%rax
-ret
-.section .text.f4D656D
-f4D656D:
-push %rdi
-mov 0(%rsp),%rax
-add $8,%rsp
-ret
-.section .text.f426F6F6B
-f426F6F6B:
-push %rdi
-mov f616464@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f4D656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 40(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov f776F7264@GOTPCREL(%rip),%rax
-push %rax
-pop %rax
-call *%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f496D706C
-f496D706C:
-push %rdi
-mov f616464@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f426F6F6B@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 40(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov f776F7264@GOTPCREL(%rip),%rax
-push %rax
-pop %rax
-call *%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f7374727563742D53656D
-f7374727563742D53656D:
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f776F7264@GOTPCREL(%rip),%rax
-push %rax
-pop %rax
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-ret
-.section .text.f73656D2D696E6974
-f73656D2D696E6974:
-push %rdi
-push %rsi
-add $-8,%rsp
-mov f746F@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-mov f616464@GOTPCREL(%rip),%rax
-mov %rax,16(%rsp)
-mov f7374727563742D53656D@GOTPCREL(%rip),%rax
-push %rax
-pop %rax
-call *%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-.554$:
-mov %rax,(%rsp)
-mov f73746F7265@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f4D656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 40(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-mov f6173656D2D696E6974@GOTPCREL(%rip),%rax
-add $-40,%rsp
-push %rax
-mov f67656E2D696E6974@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov f4D656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-mov f426F6F6B@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,24(%rsp)
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,32(%rsp)
-mov 56(%rsp),%rax
-mov %rax,40(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-pop %r8
-call *%rax
-mov 0(%rsp),%rax
-.556$:
-.555$:
-add $8,%rsp
-add $16,%rsp
-ret
-.section .text.f73656D2D656E64
-f73656D2D656E64:
-push %rdi
-mov f6173656D2D656E64@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f67656E2D656E64@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 40(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f73656D2D6C6974
-f73656D2D6C6974:
-push %rdi
-push %rsi
-push %rdx
-mov f6173656D2D756E6974@GOTPCREL(%rip),%rax
-add $-32,%rsp
-push %rax
-mov f67656E2D6C6974@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 72(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-mov 48(%rsp),%rax
-mov %rax,24(%rsp)
-mov 40(%rsp),%rax
-mov %rax,32(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-call *%rax
-add $24,%rsp
-ret
-.section .text.f73656D2D737472
-f73656D2D737472:
-push %rdi
-push %rsi
-push %rdx
-mov f6173656D2D756E6974@GOTPCREL(%rip),%rax
-add $-32,%rsp
-push %rax
-mov f67656E2D737472@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 72(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-mov 48(%rsp),%rax
-mov %rax,24(%rsp)
-mov 40(%rsp),%rax
-mov %rax,32(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-call *%rax
-add $24,%rsp
-ret
-.section .text.f73656D2D726566
-f73656D2D726566:
-push %rdi
-push %rsi
-push %rdx
-mov f6173656D2D726566@GOTPCREL(%rip),%rax
-add $-40,%rsp
-push %rax
-mov f67656E2D726566@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov f426F6F6B@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 80(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 80(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,24(%rsp)
-mov 56(%rsp),%rax
-mov %rax,32(%rsp)
-mov 48(%rsp),%rax
-mov %rax,40(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-pop %r8
-call *%rax
-add $24,%rsp
-ret
-.section .text.f73656D2D646F
-f73656D2D646F:
-push %rdi
-mov f67656E2D666C616B65@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f73656D2D646F2D7468656E
-f73656D2D646F2D7468656E:
-push %rdi
-push %rsi
-mov f67656E2D646F@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 24(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $16,%rsp
-ret
-.section .text.f73656D2D646F2D656E64
-f73656D2D646F2D656E64:
-push %rdi
-push %rsi
-mov f67656E2D6C6162656C@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 24(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $16,%rsp
-ret
-.section .text.f73656D2D6966
-f73656D2D6966:
-push %rdi
-mov f67656E2D666C616B65@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f73656D2D69662D7468656E
-f73656D2D69662D7468656E:
-push %rdi
-push %rsi
-mov f67656E2D6A65@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 24(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $16,%rsp
-ret
-.section .text.f73656D2D69662D656C7365
-f73656D2D69662D656C7365:
-push %rdi
-push %rsi
-mov f67656E2D6A6D70@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 24(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $16,%rsp
-ret
-.section .text.f73656D2D69662D656E64
-f73656D2D69662D656E64:
-push %rdi
-push %rsi
-mov f67656E2D6C6162656C@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 24(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $16,%rsp
-ret
-.section .text.f73656D2D6F72
-f73656D2D6F72:
-push %rdi
-mov f67656E2D666C616B65@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f73656D2D6F722D656C7365
-f73656D2D6F722D656C7365:
-push %rdi
-push %rsi
-mov f67656E2D6A6E65@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 24(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $16,%rsp
-ret
-.section .text.f73656D2D6F722D656E64
-f73656D2D6F722D656E64:
-push %rdi
-push %rsi
-mov f67656E2D6C6162656C@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 24(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $16,%rsp
-ret
-.section .text.f73656D2D616E64
-f73656D2D616E64:
-push %rdi
-mov f67656E2D666C616B65@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f73656D2D616E642D7468656E
-f73656D2D616E642D7468656E:
-push %rdi
-push %rsi
-mov f67656E2D6A65@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 24(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $16,%rsp
-ret
-.section .text.f73656D2D616E642D656E64
-f73656D2D616E642D656E64:
-push %rdi
-push %rsi
-mov f67656E2D6C6162656C@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 24(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $16,%rsp
-ret
-.section .text.f73656D2D6C6574
-f73656D2D6C6574:
-push %rdi
-mov f67656E2D666C616B65@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f73656D2D6C65742D6973
-f73656D2D6C65742D6973:
-push %rdi
-push %rsi
-push %rdx
-push %rcx
-mov f6173656D2D7661722D646566@GOTPCREL(%rip),%rax
-add $-64,%rsp
-push %rax
-mov f67656E2D7661722D6973@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov f4D656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 112(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-mov f426F6F6B@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 112(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,24(%rsp)
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 112(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,32(%rsp)
-mov 80(%rsp),%rax
-mov %rax,40(%rsp)
-mov 72(%rsp),%rax
-mov %rax,48(%rsp)
-mov $0,%rax
-mov %rax,56(%rsp)
-mov 88(%rsp),%rax
-mov %rax,64(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-pop %r8
-pop %r9
-call *%rax
-add $16,%rsp
-add $32,%rsp
-ret
-.section .text.f73656D2D6C65742D696E
-f73656D2D6C65742D696E:
-push %rdi
-push %rsi
-mov f67656E2D7661722D696E@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 24(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $16,%rsp
-ret
-.section .text.f73656D2D6C65742D656E64
-f73656D2D6C65742D656E64:
-push %rdi
-push %rsi
-mov f6173656D2D7661722D656E64@GOTPCREL(%rip),%rax
-add $-32,%rsp
-push %rax
-mov f67656E2D6C65742D656E64@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov f426F6F6B@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,24(%rsp)
-mov 40(%rsp),%rax
-mov %rax,32(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-call *%rax
-add $16,%rsp
-ret
-.section .text.f73656D2D666F72
-f73656D2D666F72:
-push %rdi
-mov f67656E2D666C616B65@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f73656D2D666F722D6973
-f73656D2D666F722D6973:
-push %rdi
-push %rsi
-push %rdx
-push %rcx
-mov f6173656D2D7661722D646566@GOTPCREL(%rip),%rax
-add $-64,%rsp
-push %rax
-mov f67656E2D7661722D6973@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov f4D656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 112(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-mov f426F6F6B@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 112(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,24(%rsp)
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 112(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,32(%rsp)
-mov 80(%rsp),%rax
-mov %rax,40(%rsp)
-mov 72(%rsp),%rax
-mov %rax,48(%rsp)
-mov $0,%rax
-mov %rax,56(%rsp)
-mov 88(%rsp),%rax
-mov %rax,64(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-pop %r8
-pop %r9
-call *%rax
-add $16,%rsp
-add $32,%rsp
-ret
-.section .text.f73656D2D666F722D696E
-f73656D2D666F722D696E:
-push %rdi
-push %rsi
-mov f67656E2D7661722D696E@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 24(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $16,%rsp
-ret
-.section .text.f73656D2D666F722D656E64
-f73656D2D666F722D656E64:
-push %rdi
-push %rsi
-mov f6173656D2D7661722D656E64@GOTPCREL(%rip),%rax
-add $-32,%rsp
-push %rax
-mov f67656E2D666F722D656E64@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov f426F6F6B@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,24(%rsp)
-mov 40(%rsp),%rax
-mov %rax,32(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-call *%rax
-add $16,%rsp
-ret
-.section .text.f73656D2D63616C6C2D77697468
-f73656D2D63616C6C2D77697468:
-push %rdi
-push %rsi
-mov f6173656D2D63616C6C2D77697468@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov f67656E2D63616C6C2D77697468@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-mov 32(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-add $16,%rsp
-ret
-.section .text.f73656D2D63616C6C2D617267
-f73656D2D63616C6C2D617267:
-push %rdi
-push %rsi
-push %rdx
-push %rcx
-mov f6173656D2D63616C6C2D617267@GOTPCREL(%rip),%rax
-add $-40,%rsp
-push %rax
-mov f67656E2D63616C6C2D617267@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 88(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-mov 64(%rsp),%rax
-mov %rax,24(%rsp)
-mov 56(%rsp),%rax
-mov %rax,32(%rsp)
-mov 48(%rsp),%rax
-mov %rax,40(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-pop %r8
-call *%rax
-add $32,%rsp
-ret
-.section .text.f73656D2D63616C6C2D656E64
-f73656D2D63616C6C2D656E64:
-push %rdi
-push %rsi
-mov f6173656D2D63616C6C2D656E64@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov f67656E2D63616C6C2D656E64@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-mov 32(%rsp),%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-add $16,%rsp
-ret
-.section .text.f73656D2D706172616D
-f73656D2D706172616D:
-push %rdi
-push %rsi
-push %rdx
-mov f6173656D2D7661722D646566@GOTPCREL(%rip),%rax
-add $-64,%rsp
-push %rax
-mov f67656E2D6465636C2D706172616D@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov f4D656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 104(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-mov f426F6F6B@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 104(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,24(%rsp)
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 104(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,32(%rsp)
-mov f41@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f41@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 112(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,40(%rsp)
-mov f42@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f41@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 112(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,48(%rsp)
-mov f42@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 96(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,56(%rsp)
-mov 72(%rsp),%rax
-mov %rax,64(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-pop %r8
-pop %r9
-call *%rax
-add $16,%rsp
-add $24,%rsp
-ret
-.section .text.f73656D2D706172616D2D656E64
-f73656D2D706172616D2D656E64:
-push %rdi
-push %rsi
-mov f6173656D2D7661722D656E64@GOTPCREL(%rip),%rax
-add $-32,%rsp
-push %rax
-mov f67656E2D646F@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov f426F6F6B@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,24(%rsp)
-mov 40(%rsp),%rax
-mov %rax,32(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-call *%rax
-add $16,%rsp
-ret
-.section .text.f73656D2D6465636C
-f73656D2D6465636C:
-push %rdi
-push %rsi
-push %rdx
-push %rcx
-mov f6173656D2D6465636C@GOTPCREL(%rip),%rax
-add $-48,%rsp
-push %rax
-mov f67656E2D646F@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov f4D656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 96(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 96(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,24(%rsp)
-mov 72(%rsp),%rax
-mov %rax,32(%rsp)
-mov 64(%rsp),%rax
-mov %rax,40(%rsp)
-mov 56(%rsp),%rax
-mov %rax,48(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-pop %r8
-pop %r9
-call *%rax
-add $32,%rsp
-ret
-.section .text.f73656D2D747970652D66756E63
-f73656D2D747970652D66756E63:
-push %rdi
-push %rsi
-mov f6173656D2D747970652D66756E63@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f4D656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov 24(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $16,%rsp
-ret
-.section .text.f73656D2D747970652D756E6974
-f73656D2D747970652D756E6974:
-push %rdi
-mov f6173656D2D747970652D756E6974@GOTPCREL(%rip),%rax
-push %rax
-pop %rax
-call *%rax
-add $8,%rsp
-ret
-.section .text.f73656D2D747970652D706172616D
-f73656D2D747970652D706172616D:
-push %rdi
-push %rsi
-push %rdx
-mov f6173656D2D706172616D@GOTPCREL(%rip),%rax
-add $-40,%rsp
-push %rax
-mov f67656E2D646F@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov f4D656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 80(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 80(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,24(%rsp)
-mov 56(%rsp),%rax
-mov %rax,32(%rsp)
-mov 48(%rsp),%rax
-mov %rax,40(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-pop %r8
-call *%rax
-add $24,%rsp
-ret
-.section .text.f73656D2D626F6479
-f73656D2D626F6479:
-push %rdi
-mov f67656E2D666C616B65@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-add $8,%rsp
-ret
-.section .text.f73656D2D626F64792D6973
-f73656D2D626F64792D6973:
-push %rdi
-push %rsi
-push %rdx
-mov f6173656D2D7661722D646566@GOTPCREL(%rip),%rax
-add $-64,%rsp
-push %rax
-mov f67656E2D6465636C@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov f4D656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 104(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-mov f426F6F6B@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 104(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,24(%rsp)
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 104(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,32(%rsp)
-mov f41@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f41@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 104(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,40(%rsp)
-mov f42@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f41@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 104(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,48(%rsp)
-mov f42@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 88(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,56(%rsp)
-mov 80(%rsp),%rax
-mov %rax,64(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-pop %r8
-pop %r9
-call *%rax
-add $16,%rsp
-add $24,%rsp
-ret
-.section .text.f73656D2D626F64792D696E
-f73656D2D626F64792D696E:
-push %rdi
-push %rsi
-push %rdx
-mov f67656E2D6465636C2D696E@GOTPCREL(%rip),%rax
-add $-24,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 80(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov f41@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f41@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-mov f42@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f41@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 64(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,24(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-call *%rax
-add $24,%rsp
-ret
-.section .text.f73656D2D626F64792D656E64
-f73656D2D626F64792D656E64:
-push %rdi
-push %rsi
-push %rdx
-mov f67656E2D6465636C2D656E64@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f6C6F6164@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f496D706C@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 72(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-mov f737461636B2D636F756E74@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f41@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov f42@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 72(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $24,%rsp
-ret
-.section .text.f73796E2D696E6974
-f73796E2D696E6974:
+.section .text.f70617273652D696E6974
+f70617273652D696E6974:
 push %rdi
 push %rsi
 push %rdx
@@ -11590,68 +8326,60 @@ pop %rdi
 pop %rsi
 pop %rdx
 call *%rax
-.596$:
+.482$:
 mov %rax,(%rsp)
-mov f6173796E2D696E6974@GOTPCREL(%rip),%rax
-add $-56,%rsp
+mov f73746F7265@GOTPCREL(%rip),%rax
+add $-16,%rsp
 push %rax
-mov f73656D2D696E6974@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov 88(%rsp),%rax
-mov %rax,16(%rsp)
-mov f496E@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 80(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,24(%rsp)
 mov f5370616E@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
-mov 80(%rsp),%rax
+mov 40(%rsp),%rax
 mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
-mov %rax,32(%rsp)
-mov f53656D@GOTPCREL(%rip),%rax
-add $-8,%rsp
+mov %rax,8(%rsp)
+mov f6E6F6465@GOTPCREL(%rip),%rax
+add $-24,%rsp
 push %rax
 mov 80(%rsp),%rax
 mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
-mov %rax,40(%rsp)
-mov 80(%rsp),%rax
-mov %rax,48(%rsp)
-mov 72(%rsp),%rax
-mov %rax,56(%rsp)
+mov $0,%rax
+mov %rax,16(%rsp)
+mov $0,%rax
+mov %rax,24(%rsp)
 pop %rax
 pop %rdi
 pop %rsi
 pop %rdx
-pop %rcx
-pop %r8
-pop %r9
 call *%rax
-add $8,%rsp
-mov 0(%rsp),%rax
-.597$:
-add $8,%rsp
-add $24,%rsp
-ret
-.section .text.f73796E2D656E64
-f73796E2D656E64:
-push %rdi
-mov f6173796E2D656E64@GOTPCREL(%rip),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+mov f73746F7265@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
-mov f73656D2D656E64@GOTPCREL(%rip),%rax
+mov f496E@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 40(%rsp),%rax
 mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+mov 40(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+mov f73746F7265@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
 mov f53656D@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
@@ -11660,26 +8388,1309 @@ mov %rax,8(%rsp)
 pop %rax
 pop %rdi
 call *%rax
+mov %rax,8(%rsp)
+mov f64656E2D6E6577@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 72(%rsp),%rax
+mov %rax,8(%rsp)
+mov 56(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+mov f7061727365@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov f496E@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f5370616E@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+mov 0(%rsp),%rax
+.486$:
+.485$:
+.484$:
+.483$:
+add $8,%rsp
+add $24,%rsp
+ret
+.section .text.f70617273652D64656C
+f70617273652D64656C:
+push %rdi
+push %rsi
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f53656D@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.488$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f64656E2D64656C@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 48(%rsp),%rax
+mov %rax,8(%rsp)
+mov 32(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+.489$:
+mov %rax,(%rsp)
+mov f746F@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+mov f737562@GOTPCREL(%rip),%rax
+mov %rax,16(%rsp)
+mov f7374727563742D53796E@GOTPCREL(%rip),%rax
+push %rax
+pop %rax
+call *%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+mov 0(%rsp),%rax
+.490$:
+add $8,%rsp
+add $8,%rsp
+add $16,%rsp
+ret
+.section .text.f7374656D
+f7374656D:
+push %rdi
+push %rsi
+push %rdx
+push %rcx
+push %r8
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f5370616E@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 48(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.492$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f41@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.493$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f42@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 48(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.494$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f737562@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+mov 32(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+.495$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f7374726C656E@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 88(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.496$:
+mov %rax,(%rsp)
+mov f7374726E636D70@GOTPCREL(%rip),%rax
+add $-32,%rsp
+push %rax
+mov 112(%rsp),%rax
+mov %rax,8(%rsp)
+mov 64(%rsp),%rax
+mov %rax,16(%rsp)
+mov 40(%rsp),%rax
+mov %rax,24(%rsp)
+mov 48(%rsp),%rax
+mov %rax,32(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+pop %rcx
+call *%rax
+test %rax,%rax
+je .497$
+add $-8,%rsp
+mov f496E@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 72(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.498$:
+mov %rax,(%rsp)
+mov f7061727365@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+mov 64(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+mov 72(%rsp),%rax
+add $-24,%rsp
+push %rax
+mov 96(%rsp),%rax
+mov %rax,8(%rsp)
+mov 88(%rsp),%rax
+mov %rax,16(%rsp)
+mov 80(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+mov $1,%rax
+.500$:
+.499$:
+add $8,%rsp
+.497$:
+add $8,%rsp
+add $8,%rsp
+add $8,%rsp
+add $8,%rsp
+add $8,%rsp
+add $40,%rsp
+ret
+.section .text.f6C656166
+f6C656166:
+push %rdi
+push %rsi
+push %rdx
+mov 16(%rsp),%rax
+add $-8,%rsp
+push %rax
+mov f7065656B@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f41@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f5370616E@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 96(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+test %rax,%rax
+je .502$
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f5370616E@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.503$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f41@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.504$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f42@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 48(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.505$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f496E@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 48(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.506$:
+mov %rax,(%rsp)
+mov f7061727365@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+mov 48(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+add $-8,%rsp
+mov f526573756C74@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.508$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f53656D@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 80(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.509$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov 64(%rsp),%rax
+add $-24,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+mov 72(%rsp),%rax
+mov %rax,16(%rsp)
+mov 64(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+.510$:
+mov %rax,(%rsp)
+mov f73746F7265@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+mov 24(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+mov $1,%rax
+.511$:
+add $8,%rsp
+add $8,%rsp
+add $8,%rsp
+.507$:
+add $8,%rsp
+add $8,%rsp
+add $8,%rsp
+add $8,%rsp
+.502$:
+add $24,%rsp
+ret
+.section .text.f70756E6374
+f70756E6374:
+push %rdi
+push %rsi
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f41@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f5370616E@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 80(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.513$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f7065656B@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.514$:
+mov %rax,(%rsp)
+mov 16(%rsp),%rax
+add $-8,%rsp
+push %rax
+mov 16(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+test %rax,%rax
+je .515$
+add $-8,%rsp
+mov f496E@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 48(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.516$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f5370616E@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 72(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.517$:
+mov %rax,(%rsp)
+mov f7061727365@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 32(%rsp),%rax
+mov %rax,8(%rsp)
+mov 24(%rsp),%rax
 mov %rax,16(%rsp)
 pop %rax
 pop %rdi
 pop %rsi
 call *%rax
 add $8,%rsp
+add $8,%rsp
+.515$:
+add $8,%rsp
+add $8,%rsp
+add $16,%rsp
+ret
+.section .text.f73796E2D766172
+f73796E2D766172:
+push %rdi
+push %rsi
+push %rdx
+push %rcx
+push %r8
+push %r9
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f53656D@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.519$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov 56(%rsp),%rax
+add $-8,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.520$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f5370616E@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.521$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f41@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.522$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f42@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 48(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.523$:
+mov %rax,(%rsp)
+mov 72(%rsp),%rax
+add $-32,%rsp
+push %rax
+mov 72(%rsp),%rax
+mov %rax,8(%rsp)
+mov 64(%rsp),%rax
+mov %rax,16(%rsp)
+mov 48(%rsp),%rax
+mov %rax,24(%rsp)
+mov 40(%rsp),%rax
+mov %rax,32(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+pop %rcx
+call *%rax
+mov f70756E6374@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 64(%rsp),%rax
+mov %rax,8(%rsp)
+mov f636C6173732D6964@GOTPCREL(%rip),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+mov 48(%rsp),%rax
+add $-16,%rsp
+push %rax
+mov 64(%rsp),%rax
+mov %rax,8(%rsp)
+mov $0,%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+mov 64(%rsp),%rax
+add $-16,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+mov 48(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+add $-8,%rsp
+mov 56(%rsp),%rax
+add $-16,%rsp
+push %rax
+mov 72(%rsp),%rax
+mov %rax,8(%rsp)
+mov 128(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+.528$:
+mov %rax,(%rsp)
+mov 64(%rsp),%rax
+add $-16,%rsp
+push %rax
+mov 64(%rsp),%rax
+mov %rax,8(%rsp)
+mov 56(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+mov 0(%rsp),%rax
+.529$:
+add $8,%rsp
+.527$:
+.526$:
+.525$:
+.524$:
+add $8,%rsp
+add $8,%rsp
+add $8,%rsp
+add $8,%rsp
+add $8,%rsp
+add $48,%rsp
+ret
+.section .text.f73796E2D736571
+f73796E2D736571:
+push %rdi
+push %rsi
+push %rdx
+push %rcx
+push %r8
+push %r9
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f53656D@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 48(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.531$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov 56(%rsp),%rax
+add $-8,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.532$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov 40(%rsp),%rax
+add $-16,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+mov 48(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+.533$:
+mov %rax,(%rsp)
+mov 56(%rsp),%rax
+add $-16,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+mov 32(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+add $-8,%rsp
+mov 48(%rsp),%rax
+add $-16,%rsp
+push %rax
+mov 64(%rsp),%rax
+mov %rax,8(%rsp)
+mov 56(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+.535$:
+mov %rax,(%rsp)
+mov 56(%rsp),%rax
+add $-16,%rsp
+push %rax
+mov 48(%rsp),%rax
+mov %rax,8(%rsp)
+mov 40(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+mov 0(%rsp),%rax
+.536$:
+add $8,%rsp
+.534$:
+add $8,%rsp
+add $8,%rsp
+add $8,%rsp
+add $48,%rsp
+ret
+.section .text.f73796E2D617267
+f73796E2D617267:
+push %rdi
+push %rsi
+push %rdx
+push %rcx
+mov 24(%rsp),%rax
+add $-16,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+mov 32(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f53656D@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.539$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f526573756C74@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 64(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.540$:
+mov %rax,(%rsp)
+mov f64656E2D63616C6C2D617267@GOTPCREL(%rip),%rax
+add $-32,%rsp
+push %rax
+mov 48(%rsp),%rax
+mov %rax,8(%rsp)
+mov 64(%rsp),%rax
+mov %rax,16(%rsp)
+mov 40(%rsp),%rax
+mov %rax,24(%rsp)
+mov 56(%rsp),%rax
+mov %rax,32(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+pop %rcx
+call *%rax
+add $8,%rsp
+add $8,%rsp
+.538$:
+add $32,%rsp
+ret
+.section .text.f73796E2D61726773
+f73796E2D61726773:
+push %rdi
+push %rsi
+push %rdx
+push %rcx
+mov 8(%rsp),%rax
+test %rax,%rax
+je .542$
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f42@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f41@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 80(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.543$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f42@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.544$:
+mov %rax,(%rsp)
+mov f73796E2D617267@GOTPCREL(%rip),%rax
+add $-32,%rsp
+push %rax
+mov 80(%rsp),%rax
+mov %rax,8(%rsp)
+mov 72(%rsp),%rax
+mov %rax,16(%rsp)
+mov 48(%rsp),%rax
+mov %rax,24(%rsp)
+mov 56(%rsp),%rax
+mov %rax,32(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+pop %rcx
+call *%rax
+add $-8,%rsp
+mov f737563@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.546$:
+mov %rax,(%rsp)
+mov f73796E2D61726773@GOTPCREL(%rip),%rax
+add $-32,%rsp
+push %rax
+mov 88(%rsp),%rax
+mov %rax,8(%rsp)
+mov 80(%rsp),%rax
+mov %rax,16(%rsp)
+mov 48(%rsp),%rax
+mov %rax,24(%rsp)
+mov 40(%rsp),%rax
+mov %rax,32(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+pop %rcx
+call *%rax
+add $8,%rsp
+.545$:
+add $8,%rsp
+add $8,%rsp
+.542$:
+add $32,%rsp
+ret
+.section .text.f73796E2D63616C6C
+f73796E2D63616C6C:
+push %rdi
+push %rsi
+push %rdx
+mov 0(%rsp),%rax
+test %rax,%rax
+je .548$
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f53656D@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 48(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.549$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f64656E2D63616C6C2D77697468@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 32(%rsp),%rax
+mov %rax,8(%rsp)
+mov 40(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+.550$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f41@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.551$:
+mov %rax,(%rsp)
+mov f73796E2D61726773@GOTPCREL(%rip),%rax
+add $-32,%rsp
+push %rax
+mov 80(%rsp),%rax
+mov %rax,8(%rsp)
+mov 72(%rsp),%rax
+mov %rax,16(%rsp)
+mov 40(%rsp),%rax
+mov %rax,24(%rsp)
+mov $1,%rax
+mov %rax,32(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+pop %rcx
+call *%rax
+add $-8,%rsp
+mov f526573756C74@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.553$:
+mov %rax,(%rsp)
+mov f73746F7265@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+mov f64656E2D63616C6C2D656E64@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 72(%rsp),%rax
+mov %rax,8(%rsp)
+mov 64(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+add $8,%rsp
+.552$:
+add $8,%rsp
+add $8,%rsp
+add $8,%rsp
+.548$:
+add $24,%rsp
+ret
+.section .text.f73796E2D6966
+f73796E2D6966:
+push %rdi
+push %rsi
+push %rdx
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f53656D@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 48(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.555$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f64656E2D6966@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.556$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov 40(%rsp),%rax
+add $-16,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+mov $0,%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+.557$:
+mov %rax,(%rsp)
+mov f64656E2D69662D7468656E@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+mov 32(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+add $-8,%rsp
+mov 48(%rsp),%rax
+add $-16,%rsp
+push %rax
+mov 64(%rsp),%rax
+mov %rax,8(%rsp)
+mov 56(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+.559$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f64656E2D6966@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 48(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.560$:
+mov %rax,(%rsp)
+mov f64656E2D69662D656C7365@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+mov 24(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+mov f64656E2D69662D656E64@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+mov 48(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+add $-8,%rsp
+mov 64(%rsp),%rax
+add $-16,%rsp
+push %rax
+mov 80(%rsp),%rax
+mov %rax,8(%rsp)
+mov 72(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+.563$:
+mov %rax,(%rsp)
+mov f64656E2D69662D656E64@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 64(%rsp),%rax
+mov %rax,8(%rsp)
+mov 32(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+mov 0(%rsp),%rax
+.564$:
+add $8,%rsp
+.562$:
+.561$:
+add $8,%rsp
+add $8,%rsp
+.558$:
+add $8,%rsp
+add $8,%rsp
+add $8,%rsp
+add $24,%rsp
 ret
 .section .text.f73796E2D646F
 f73796E2D646F:
 push %rdi
 push %rsi
 push %rdx
-mov f6173796E2D736571@GOTPCREL(%rip),%rax
+mov f73796E2D736571@GOTPCREL(%rip),%rax
 add $-48,%rsp
 push %rax
-mov f73656D2D646F@GOTPCREL(%rip),%rax
+mov f64656E2D646F@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
-mov f73656D2D646F2D7468656E@GOTPCREL(%rip),%rax
+mov f64656E2D646F2D7468656E@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
-mov f73656D2D646F2D656E64@GOTPCREL(%rip),%rax
+mov f64656E2D646F2D656E64@GOTPCREL(%rip),%rax
 mov %rax,24(%rsp)
 mov 72(%rsp),%rax
 mov %rax,32(%rsp)
@@ -11697,28 +9708,26 @@ pop %r9
 call *%rax
 add $24,%rsp
 ret
-.section .text.f73796E2D6966
-f73796E2D6966:
+.section .text.f73796E2D6F72
+f73796E2D6F72:
 push %rdi
 push %rsi
 push %rdx
-mov f6173796E2D636F6E64@GOTPCREL(%rip),%rax
-add $-56,%rsp
+mov f73796E2D736571@GOTPCREL(%rip),%rax
+add $-48,%rsp
 push %rax
-mov f73656D2D6966@GOTPCREL(%rip),%rax
+mov f64656E2D6F72@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
-mov f73656D2D69662D7468656E@GOTPCREL(%rip),%rax
+mov f64656E2D6F722D656C7365@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
-mov f73656D2D69662D656C7365@GOTPCREL(%rip),%rax
+mov f64656E2D6F722D656E64@GOTPCREL(%rip),%rax
 mov %rax,24(%rsp)
-mov f73656D2D69662D656E64@GOTPCREL(%rip),%rax
-mov %rax,32(%rsp)
-mov 80(%rsp),%rax
-mov %rax,40(%rsp)
 mov 72(%rsp),%rax
-mov %rax,48(%rsp)
+mov %rax,32(%rsp)
 mov 64(%rsp),%rax
-mov %rax,56(%rsp)
+mov %rax,40(%rsp)
+mov 56(%rsp),%rax
+mov %rax,48(%rsp)
 pop %rax
 pop %rdi
 pop %rsi
@@ -11727,22 +9736,21 @@ pop %rcx
 pop %r8
 pop %r9
 call *%rax
-add $8,%rsp
 add $24,%rsp
 ret
-.section .text.f73796E2D6F72
-f73796E2D6F72:
+.section .text.f73796E2D616E64
+f73796E2D616E64:
 push %rdi
 push %rsi
 push %rdx
-mov f6173796E2D736571@GOTPCREL(%rip),%rax
+mov f73796E2D736571@GOTPCREL(%rip),%rax
 add $-48,%rsp
 push %rax
-mov f73656D2D6F72@GOTPCREL(%rip),%rax
+mov f64656E2D616E64@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
-mov f73656D2D6F722D656C7365@GOTPCREL(%rip),%rax
+mov f64656E2D616E642D7468656E@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
-mov f73656D2D6F722D656E64@GOTPCREL(%rip),%rax
+mov f64656E2D616E642D656E64@GOTPCREL(%rip),%rax
 mov %rax,24(%rsp)
 mov 72(%rsp),%rax
 mov %rax,32(%rsp)
@@ -11765,16 +9773,16 @@ f73796E2D6C6574:
 push %rdi
 push %rsi
 push %rdx
-mov f6173796E2D766172@GOTPCREL(%rip),%rax
+mov f73796E2D766172@GOTPCREL(%rip),%rax
 add $-56,%rsp
 push %rax
-mov f73656D2D6C6574@GOTPCREL(%rip),%rax
+mov f64656E2D6C6574@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
-mov f73656D2D6C65742D6973@GOTPCREL(%rip),%rax
+mov f64656E2D6C65742D6973@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
-mov f73656D2D6C65742D696E@GOTPCREL(%rip),%rax
+mov f64656E2D6C65742D696E@GOTPCREL(%rip),%rax
 mov %rax,24(%rsp)
-mov f73656D2D6C65742D656E64@GOTPCREL(%rip),%rax
+mov f64656E2D6C65742D656E64@GOTPCREL(%rip),%rax
 mov %rax,32(%rsp)
 mov 80(%rsp),%rax
 mov %rax,40(%rsp)
@@ -11798,16 +9806,16 @@ f73796E2D666F72:
 push %rdi
 push %rsi
 push %rdx
-mov f6173796E2D766172@GOTPCREL(%rip),%rax
+mov f73796E2D766172@GOTPCREL(%rip),%rax
 add $-56,%rsp
 push %rax
-mov f73656D2D666F72@GOTPCREL(%rip),%rax
+mov f64656E2D666F72@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
-mov f73656D2D666F722D6973@GOTPCREL(%rip),%rax
+mov f64656E2D666F722D6973@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
-mov f73656D2D666F722D696E@GOTPCREL(%rip),%rax
+mov f64656E2D666F722D696E@GOTPCREL(%rip),%rax
 mov %rax,24(%rsp)
-mov f73656D2D666F722D656E64@GOTPCREL(%rip),%rax
+mov f64656E2D666F722D656E64@GOTPCREL(%rip),%rax
 mov %rax,32(%rsp)
 mov 80(%rsp),%rax
 mov %rax,40(%rsp)
@@ -11826,292 +9834,103 @@ call *%rax
 add $8,%rsp
 add $24,%rsp
 ret
-.section .text.f73796E2D616E64
-f73796E2D616E64:
-push %rdi
-push %rsi
-push %rdx
-mov f6173796E2D736571@GOTPCREL(%rip),%rax
-add $-48,%rsp
-push %rax
-mov f73656D2D616E64@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov f73656D2D616E642D7468656E@GOTPCREL(%rip),%rax
-mov %rax,16(%rsp)
-mov f73656D2D616E642D656E64@GOTPCREL(%rip),%rax
-mov %rax,24(%rsp)
-mov 72(%rsp),%rax
-mov %rax,32(%rsp)
-mov 64(%rsp),%rax
-mov %rax,40(%rsp)
-mov 56(%rsp),%rax
-mov %rax,48(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-pop %r8
-pop %r9
-call *%rax
-add $24,%rsp
-ret
-.section .text.f73796E2D63616C6C
-f73796E2D63616C6C:
-push %rdi
-push %rsi
-push %rdx
-mov f6173796E2D63616C6C@GOTPCREL(%rip),%rax
-add $-48,%rsp
-push %rax
-mov f73656D2D63616C6C2D77697468@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov f73656D2D63616C6C2D617267@GOTPCREL(%rip),%rax
-mov %rax,16(%rsp)
-mov f73656D2D63616C6C2D656E64@GOTPCREL(%rip),%rax
-mov %rax,24(%rsp)
-mov 72(%rsp),%rax
-mov %rax,32(%rsp)
-mov 64(%rsp),%rax
-mov %rax,40(%rsp)
-mov 56(%rsp),%rax
-mov %rax,48(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-pop %r8
-pop %r9
-call *%rax
-add $24,%rsp
-ret
-.section .text.f73796E2D7465726D2D646F
-f73796E2D7465726D2D646F:
-push %rdi
-push %rsi
-push %rdx
-mov f6173796E2D646F@GOTPCREL(%rip),%rax
-add $-32,%rsp
-push %rax
-mov f73796E2D646F@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov 56(%rsp),%rax
-mov %rax,16(%rsp)
-mov 48(%rsp),%rax
-mov %rax,24(%rsp)
-mov 40(%rsp),%rax
-mov %rax,32(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-call *%rax
-add $24,%rsp
-ret
-.section .text.f73796E2D7465726D2D6966
-f73796E2D7465726D2D6966:
-push %rdi
-push %rsi
-push %rdx
-mov f6173796E2D6966@GOTPCREL(%rip),%rax
-add $-32,%rsp
-push %rax
-mov f73796E2D6966@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov 56(%rsp),%rax
-mov %rax,16(%rsp)
-mov 48(%rsp),%rax
-mov %rax,24(%rsp)
-mov 40(%rsp),%rax
-mov %rax,32(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-call *%rax
-add $24,%rsp
-ret
-.section .text.f73796E2D7465726D2D6F72
-f73796E2D7465726D2D6F72:
-push %rdi
-push %rsi
-push %rdx
-mov f6173796E2D6F72@GOTPCREL(%rip),%rax
-add $-32,%rsp
-push %rax
-mov f73796E2D6F72@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov 56(%rsp),%rax
-mov %rax,16(%rsp)
-mov 48(%rsp),%rax
-mov %rax,24(%rsp)
-mov 40(%rsp),%rax
-mov %rax,32(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-call *%rax
-add $24,%rsp
-ret
-.section .text.f73796E2D7465726D2D616E64
-f73796E2D7465726D2D616E64:
-push %rdi
-push %rsi
-push %rdx
-mov f6173796E2D616E64@GOTPCREL(%rip),%rax
-add $-32,%rsp
-push %rax
-mov f73796E2D616E64@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov 56(%rsp),%rax
-mov %rax,16(%rsp)
-mov 48(%rsp),%rax
-mov %rax,24(%rsp)
-mov 40(%rsp),%rax
-mov %rax,32(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-call *%rax
-add $24,%rsp
-ret
-.section .text.f73796E2D7465726D2D6C6574
-f73796E2D7465726D2D6C6574:
-push %rdi
-push %rsi
-push %rdx
-mov f6173796E2D6C6574@GOTPCREL(%rip),%rax
-add $-32,%rsp
-push %rax
-mov f73796E2D6C6574@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov 56(%rsp),%rax
-mov %rax,16(%rsp)
-mov 48(%rsp),%rax
-mov %rax,24(%rsp)
-mov 40(%rsp),%rax
-mov %rax,32(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-call *%rax
-add $24,%rsp
-ret
-.section .text.f73796E2D7465726D2D666F72
-f73796E2D7465726D2D666F72:
-push %rdi
-push %rsi
-push %rdx
-mov f6173796E2D666F72@GOTPCREL(%rip),%rax
-add $-32,%rsp
-push %rax
-mov f73796E2D666F72@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov 56(%rsp),%rax
-mov %rax,16(%rsp)
-mov 48(%rsp),%rax
-mov %rax,24(%rsp)
-mov 40(%rsp),%rax
-mov %rax,32(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-call *%rax
-add $24,%rsp
-ret
-.section .text.f73796E2D7465726D2D6C6974
-f73796E2D7465726D2D6C6974:
-push %rdi
-push %rsi
-push %rdx
-mov f6173796E2D6C6974@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f73656D2D6C6974@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov 32(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $24,%rsp
-ret
-.section .text.f73796E2D7465726D2D737472
-f73796E2D7465726D2D737472:
-push %rdi
-push %rsi
-push %rdx
-mov f6173796E2D737472@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f73656D2D737472@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov 32(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $24,%rsp
-ret
-.section .text.f73796E2D7465726D2D6964
-f73796E2D7465726D2D6964:
-push %rdi
-push %rsi
-push %rdx
-mov f6173796E2D6964@GOTPCREL(%rip),%rax
-add $-16,%rsp
-push %rax
-mov f73656D2D726566@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov 32(%rsp),%rax
-mov %rax,16(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-call *%rax
-add $24,%rsp
-ret
 .section .text.f73796E2D747970652D706172616D73
 f73796E2D747970652D706172616D73:
 push %rdi
 push %rsi
-mov f6173796E2D747970652D706172616D73@GOTPCREL(%rip),%rax
-add $-32,%rsp
+add $-8,%rsp
+mov f70756E6374@GOTPCREL(%rip),%rax
+add $-16,%rsp
 push %rax
-mov f73656D2D747970652D706172616D@GOTPCREL(%rip),%rax
+mov 32(%rsp),%rax
 mov %rax,8(%rsp)
-mov f73796E2D747970652D706172616D73@GOTPCREL(%rip),%rax
+mov f636C6173732D7270@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
-mov 48(%rsp),%rax
-mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+.571$:
+mov %rax,(%rsp)
+mov f6E6F74@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 16(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+test %rax,%rax
+je .572$
+add $-8,%rsp
+mov 24(%rsp),%rax
+add $-8,%rsp
+push %rax
+mov 32(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.573$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f53656D@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.574$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f73796E2D747970652D706172616D73@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 64(%rsp),%rax
+mov %rax,8(%rsp)
+mov 56(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+.575$:
+mov %rax,(%rsp)
+mov f64656E2D747970652D706172616D@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
 mov 40(%rsp),%rax
-mov %rax,32(%rsp)
+mov %rax,8(%rsp)
+mov 48(%rsp),%rax
+mov %rax,16(%rsp)
+mov 32(%rsp),%rax
+mov %rax,24(%rsp)
 pop %rax
 pop %rdi
 pop %rsi
 pop %rdx
-pop %rcx
 call *%rax
+add $8,%rsp
+add $8,%rsp
+add $8,%rsp
+.572$:
+add $8,%rsp
 add $16,%rsp
 ret
 .section .text.f73796E2D747970652D66756E63
 f73796E2D747970652D66756E63:
 push %rdi
 push %rsi
-mov f73656D2D747970652D66756E63@GOTPCREL(%rip),%rax
+mov f64656E2D747970652D66756E63@GOTPCREL(%rip),%rax
 add $-16,%rsp
 push %rax
 mov f6C6F6164@GOTPCREL(%rip),%rax
@@ -12152,7 +9971,7 @@ ret
 f73796E2D747970652D756E6974:
 push %rdi
 push %rsi
-mov f73656D2D747970652D756E6974@GOTPCREL(%rip),%rax
+mov f64656E2D747970652D756E6974@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
 mov f6C6F6164@GOTPCREL(%rip),%rax
@@ -12181,56 +10000,16 @@ f73796E2D7465726D:
 push %rdi
 push %rsi
 push %rdx
-mov f6173796E2D7465726D@GOTPCREL(%rip),%rax
-add $-96,%rsp
-push %rax
-mov f73796E2D7465726D2D646F@GOTPCREL(%rip),%rax
-mov %rax,8(%rsp)
-mov f73796E2D7465726D2D6966@GOTPCREL(%rip),%rax
-mov %rax,16(%rsp)
-mov f73796E2D7465726D2D6F72@GOTPCREL(%rip),%rax
-mov %rax,24(%rsp)
-mov f73796E2D7465726D2D616E64@GOTPCREL(%rip),%rax
-mov %rax,32(%rsp)
-mov f73796E2D7465726D2D6C6574@GOTPCREL(%rip),%rax
-mov %rax,40(%rsp)
-mov f73796E2D7465726D2D666F72@GOTPCREL(%rip),%rax
-mov %rax,48(%rsp)
-mov f73796E2D7465726D2D6C6974@GOTPCREL(%rip),%rax
-mov %rax,56(%rsp)
-mov f73796E2D7465726D2D737472@GOTPCREL(%rip),%rax
-mov %rax,64(%rsp)
-mov f73796E2D7465726D2D6964@GOTPCREL(%rip),%rax
-mov %rax,72(%rsp)
-mov 120(%rsp),%rax
-mov %rax,80(%rsp)
-mov 112(%rsp),%rax
-mov %rax,88(%rsp)
-mov 104(%rsp),%rax
-mov %rax,96(%rsp)
-pop %rax
-pop %rdi
-pop %rsi
-pop %rdx
-pop %rcx
-pop %r8
-pop %r9
-call *%rax
-add $48,%rsp
-add $24,%rsp
-ret
-.section .text.f73796E2D6A757874
-f73796E2D6A757874:
-push %rdi
-push %rsi
-push %rdx
-push %rcx
-mov f6173796E2D6A757874@GOTPCREL(%rip),%rax
+mov f7374656D@GOTPCREL(%rip),%rax
 add $-40,%rsp
 push %rax
-mov f73796E2D63616C6C@GOTPCREL(%rip),%rax
+.section .data..s580
+.s580:
+.string,"do"
+.previous
+mov .s580@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
-mov 72(%rsp),%rax
+mov f73796E2D646F@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
 mov 64(%rsp),%rax
 mov %rax,24(%rsp)
@@ -12245,6 +10024,258 @@ pop %rdx
 pop %rcx
 pop %r8
 call *%rax
+test %rax,%rax
+jne .579$
+mov f7374656D@GOTPCREL(%rip),%rax
+add $-40,%rsp
+push %rax
+.section .data..s582
+.s582:
+.string,"if"
+.previous
+mov .s582@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov f73796E2D6966@GOTPCREL(%rip),%rax
+mov %rax,16(%rsp)
+mov 64(%rsp),%rax
+mov %rax,24(%rsp)
+mov 56(%rsp),%rax
+mov %rax,32(%rsp)
+mov 48(%rsp),%rax
+mov %rax,40(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+pop %rcx
+pop %r8
+call *%rax
+test %rax,%rax
+jne .581$
+mov f7374656D@GOTPCREL(%rip),%rax
+add $-40,%rsp
+push %rax
+.section .data..s584
+.s584:
+.string,"or"
+.previous
+mov .s584@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov f73796E2D6F72@GOTPCREL(%rip),%rax
+mov %rax,16(%rsp)
+mov 64(%rsp),%rax
+mov %rax,24(%rsp)
+mov 56(%rsp),%rax
+mov %rax,32(%rsp)
+mov 48(%rsp),%rax
+mov %rax,40(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+pop %rcx
+pop %r8
+call *%rax
+test %rax,%rax
+jne .583$
+mov f7374656D@GOTPCREL(%rip),%rax
+add $-40,%rsp
+push %rax
+.section .data..s586
+.s586:
+.string,"and"
+.previous
+mov .s586@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov f73796E2D616E64@GOTPCREL(%rip),%rax
+mov %rax,16(%rsp)
+mov 64(%rsp),%rax
+mov %rax,24(%rsp)
+mov 56(%rsp),%rax
+mov %rax,32(%rsp)
+mov 48(%rsp),%rax
+mov %rax,40(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+pop %rcx
+pop %r8
+call *%rax
+test %rax,%rax
+jne .585$
+mov f7374656D@GOTPCREL(%rip),%rax
+add $-40,%rsp
+push %rax
+.section .data..s588
+.s588:
+.string,"let"
+.previous
+mov .s588@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov f73796E2D6C6574@GOTPCREL(%rip),%rax
+mov %rax,16(%rsp)
+mov 64(%rsp),%rax
+mov %rax,24(%rsp)
+mov 56(%rsp),%rax
+mov %rax,32(%rsp)
+mov 48(%rsp),%rax
+mov %rax,40(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+pop %rcx
+pop %r8
+call *%rax
+test %rax,%rax
+jne .587$
+mov f7374656D@GOTPCREL(%rip),%rax
+add $-40,%rsp
+push %rax
+.section .data..s590
+.s590:
+.string,"for"
+.previous
+mov .s590@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov f73796E2D666F72@GOTPCREL(%rip),%rax
+mov %rax,16(%rsp)
+mov 64(%rsp),%rax
+mov %rax,24(%rsp)
+mov 56(%rsp),%rax
+mov %rax,32(%rsp)
+mov 48(%rsp),%rax
+mov %rax,40(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+pop %rcx
+pop %r8
+call *%rax
+test %rax,%rax
+jne .589$
+mov f6C656166@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov f636C6173732D696D@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov f64656E2D6C6974@GOTPCREL(%rip),%rax
+mov %rax,16(%rsp)
+mov 40(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+test %rax,%rax
+jne .591$
+mov f6C656166@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov f636C6173732D6471@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov f64656E2D737472@GOTPCREL(%rip),%rax
+mov %rax,16(%rsp)
+mov 40(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+test %rax,%rax
+jne .592$
+mov f6C656166@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov f636C6173732D6964@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov f64656E2D726566@GOTPCREL(%rip),%rax
+mov %rax,16(%rsp)
+mov 40(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+test %rax,%rax
+jne .593$
+mov f6572726F72@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov $4,%rax
+mov %rax,8(%rsp)
+.section .data..s594
+.s594:
+.string,"expected term"
+.previous
+mov .s594@GOTPCREL(%rip),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+.593$:
+.592$:
+.591$:
+.589$:
+.587$:
+.585$:
+.583$:
+.581$:
+.579$:
+add $24,%rsp
+ret
+.section .text.f73796E2D6A757874
+f73796E2D6A757874:
+push %rdi
+push %rsi
+push %rdx
+push %rcx
+add $-8,%rsp
+mov f747970652D657175616C@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+mov 32(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+.596$:
+mov %rax,(%rsp)
+mov f6E6F74@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 16(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+test %rax,%rax
+je .597$
+mov f73796E2D63616C6C@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov 64(%rsp),%rax
+mov %rax,8(%rsp)
+mov 56(%rsp),%rax
+mov %rax,16(%rsp)
+mov 40(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+.597$:
+add $8,%rsp
 add $32,%rsp
 ret
 .section .text.f73796E2D706172616D
@@ -12253,29 +10284,139 @@ push %rdi
 push %rsi
 push %rdx
 push %rcx
-mov f6173796E2D706172616D@GOTPCREL(%rip),%rax
-add $-48,%rsp
+mov 8(%rsp),%rax
+test %rax,%rax
+je .599$
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
 push %rax
-mov f73656D2D706172616D@GOTPCREL(%rip),%rax
+mov f41@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 48(%rsp),%rax
 mov %rax,8(%rsp)
-mov f73656D2D706172616D2D656E64@GOTPCREL(%rip),%rax
-mov %rax,16(%rsp)
-mov 80(%rsp),%rax
-mov %rax,24(%rsp)
-mov 72(%rsp),%rax
-mov %rax,32(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.600$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f53656D@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
 mov 64(%rsp),%rax
-mov %rax,40(%rsp)
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.601$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f64656E2D706172616D@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+mov 48(%rsp),%rax
+mov %rax,16(%rsp)
 mov 56(%rsp),%rax
-mov %rax,48(%rsp)
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+.602$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f42@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 72(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.603$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f737563@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.604$:
+mov %rax,(%rsp)
+mov f73796E2D706172616D@GOTPCREL(%rip),%rax
+add $-32,%rsp
+push %rax
+mov 104(%rsp),%rax
+mov %rax,8(%rsp)
+mov 96(%rsp),%rax
+mov %rax,16(%rsp)
+mov 48(%rsp),%rax
+mov %rax,24(%rsp)
+mov 40(%rsp),%rax
+mov %rax,32(%rsp)
 pop %rax
 pop %rdi
 pop %rsi
 pop %rdx
 pop %rcx
-pop %r8
-pop %r9
 call *%rax
+mov f64656E2D706172616D2D656E64@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 48(%rsp),%rax
+mov %rax,8(%rsp)
+mov 40(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+.605$:
+add $8,%rsp
+add $8,%rsp
+add $8,%rsp
+add $8,%rsp
+add $8,%rsp
+jmp .606$
+.599$:
+mov 24(%rsp),%rax
+add $-16,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+mov $0,%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+.606$:
 add $32,%rsp
 ret
 .section .text.f73796E2D626F6479
@@ -12283,90 +10424,433 @@ f73796E2D626F6479:
 push %rdi
 push %rsi
 push %rdx
-mov f6173796E2D626F6479@GOTPCREL(%rip),%rax
-add $-64,%rsp
+mov 0(%rsp),%rax
+test %rax,%rax
+je .608$
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
 push %rax
-mov f73656D2D626F6479@GOTPCREL(%rip),%rax
+mov f53656D@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 48(%rsp),%rax
 mov %rax,8(%rsp)
-mov f73656D2D626F64792D6973@GOTPCREL(%rip),%rax
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.609$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f64656E2D626F6479@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 24(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.610$:
+mov %rax,(%rsp)
+mov f64656E2D626F64792D6973@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+mov 32(%rsp),%rax
 mov %rax,16(%rsp)
-mov f73656D2D626F64792D696E@GOTPCREL(%rip),%rax
+mov 48(%rsp),%rax
 mov %rax,24(%rsp)
-mov f73656D2D626F64792D656E64@GOTPCREL(%rip),%rax
-mov %rax,32(%rsp)
-mov f73796E2D706172616D@GOTPCREL(%rip),%rax
-mov %rax,40(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+mov f70756E6374@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 48(%rsp),%rax
+mov %rax,8(%rsp)
+mov f636C6173732D716D@GOTPCREL(%rip),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+test %rax,%rax
+jne .612$
+mov f64656E2D626F64792D696E@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+mov 32(%rsp),%rax
+mov %rax,16(%rsp)
+mov 48(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f41@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f42@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
 mov 88(%rsp),%rax
-mov %rax,48(%rsp)
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.614$:
+mov %rax,(%rsp)
+mov f73796E2D706172616D@GOTPCREL(%rip),%rax
+add $-32,%rsp
+push %rax
 mov 80(%rsp),%rax
-mov %rax,56(%rsp)
+mov %rax,8(%rsp)
 mov 72(%rsp),%rax
-mov %rax,64(%rsp)
+mov %rax,16(%rsp)
+mov 40(%rsp),%rax
+mov %rax,24(%rsp)
+mov $0,%rax
+mov %rax,32(%rsp)
 pop %rax
 pop %rdi
 pop %rsi
 pop %rdx
 pop %rcx
-pop %r8
-pop %r9
 call *%rax
-add $16,%rsp
+mov f64656E2D626F64792D656E64@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
+mov 48(%rsp),%rax
+mov %rax,8(%rsp)
+mov 40(%rsp),%rax
+mov %rax,16(%rsp)
+mov 56(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+.615$:
+add $8,%rsp
+.613$:
+.612$:
+.611$:
+add $8,%rsp
+add $8,%rsp
+.608$:
 add $24,%rsp
 ret
 .section .text.f73796E2D65787072
 f73796E2D65787072:
 push %rdi
 push %rsi
-mov f6173796E2D65787072@GOTPCREL(%rip),%rax
-add $-48,%rsp
+add $-8,%rsp
+mov f70756E6374@GOTPCREL(%rip),%rax
+add $-16,%rsp
 push %rax
-mov f73796E2D7465726D@GOTPCREL(%rip),%rax
+mov 40(%rsp),%rax
 mov %rax,8(%rsp)
-mov f73796E2D6A757874@GOTPCREL(%rip),%rax
+mov f636C6173732D6C70@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
-mov f73796E2D63616C6C@GOTPCREL(%rip),%rax
-mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+.617$:
+mov %rax,(%rsp)
+mov f73796E2D7465726D@GOTPCREL(%rip),%rax
+add $-24,%rsp
+push %rax
 mov f73796E2D65787072@GOTPCREL(%rip),%rax
-mov %rax,32(%rsp)
-mov 64(%rsp),%rax
-mov %rax,40(%rsp)
+mov %rax,8(%rsp)
+mov 48(%rsp),%rax
+mov %rax,16(%rsp)
+mov 40(%rsp),%rax
+mov %rax,24(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+call *%rax
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f526573756C74@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
 mov 56(%rsp),%rax
-mov %rax,48(%rsp)
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.619$:
+mov %rax,(%rsp)
+mov f73796E2D6A757874@GOTPCREL(%rip),%rax
+add $-32,%rsp
+push %rax
+mov f73796E2D65787072@GOTPCREL(%rip),%rax
+mov %rax,8(%rsp)
+mov 64(%rsp),%rax
+mov %rax,16(%rsp)
+mov 56(%rsp),%rax
+mov %rax,24(%rsp)
+mov 40(%rsp),%rax
+mov %rax,32(%rsp)
 pop %rax
 pop %rdi
 pop %rsi
 pop %rdx
 pop %rcx
-pop %r8
-pop %r9
 call *%rax
+mov 8(%rsp),%rax
+test %rax,%rax
+je .621$
+mov f70756E6374@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 48(%rsp),%rax
+mov %rax,8(%rsp)
+mov f636C6173732D7270@GOTPCREL(%rip),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+test %rax,%rax
+jne .622$
+mov f6572726F72@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov $5,%rax
+mov %rax,8(%rsp)
+.section .data..s623
+.s623:
+.string,"expected )"
+.previous
+mov .s623@GOTPCREL(%rip),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+.622$:
+.621$:
+.620$:
+add $8,%rsp
+.618$:
+add $8,%rsp
 add $16,%rsp
+ret
+.section .text.f73796E2D6465636C
+f73796E2D6465636C:
+push %rdi
+push %rsi
+push %rdx
+push %rcx
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f41@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f5370616E@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 72(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.625$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f42@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f5370616E@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 80(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.626$:
+mov %rax,(%rsp)
+mov f70756E6374@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
+mov f636C6173732D6964@GOTPCREL(%rip),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+test %rax,%rax
+je .627$
+add $-8,%rsp
+mov f6C6F6164@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov f53656D@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 56(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.628$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov 48(%rsp),%rax
+add $-16,%rsp
+push %rax
+mov 64(%rsp),%rax
+mov %rax,8(%rsp)
+mov 56(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+.629$:
+mov %rax,(%rsp)
+mov 56(%rsp),%rax
+add $-32,%rsp
+push %rax
+mov 48(%rsp),%rax
+mov %rax,8(%rsp)
+mov 64(%rsp),%rax
+mov %rax,16(%rsp)
+mov 56(%rsp),%rax
+mov %rax,24(%rsp)
+mov 40(%rsp),%rax
+mov %rax,32(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+pop %rdx
+pop %rcx
+call *%rax
+add $8,%rsp
+add $8,%rsp
+.627$:
+add $8,%rsp
+add $8,%rsp
+add $32,%rsp
 ret
 .section .text.f73796E2D74797065
 f73796E2D74797065:
 push %rdi
-mov f6173796E2D74797065@GOTPCREL(%rip),%rax
-add $-48,%rsp
+mov f73796E2D6465636C@GOTPCREL(%rip),%rax
+add $-32,%rsp
 push %rax
-mov f73656D2D6465636C@GOTPCREL(%rip),%rax
+mov f64656E2D6465636C@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
-mov f6173796E2D6465636C@GOTPCREL(%rip),%rax
+mov f70756E6374@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 64(%rsp),%rax
+mov %rax,8(%rsp)
+mov f636C6173732D6C70@GOTPCREL(%rip),%rax
 mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+test %rax,%rax
+je .631$
 mov f73796E2D747970652D66756E63@GOTPCREL(%rip),%rax
-mov %rax,24(%rsp)
+jmp .632$
+.631$:
 mov f73796E2D747970652D756E6974@GOTPCREL(%rip),%rax
-mov %rax,32(%rsp)
+.632$:
+mov %rax,16(%rsp)
 mov f73796E2D74797065@GOTPCREL(%rip),%rax
-mov %rax,40(%rsp)
-mov 56(%rsp),%rax
-mov %rax,48(%rsp)
+mov %rax,24(%rsp)
+mov 40(%rsp),%rax
+mov %rax,32(%rsp)
 pop %rax
 pop %rdi
 pop %rsi
 pop %rdx
 pop %rcx
-pop %r8
-pop %r9
 call *%rax
 add $8,%rsp
 ret
@@ -12377,7 +10861,7 @@ push %rsi
 push %rdx
 push %rcx
 add $-8,%rsp
-mov f73796E2D696E6974@GOTPCREL(%rip),%rax
+mov f70617273652D696E6974@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
 mov 40(%rsp),%rax
@@ -12391,58 +10875,71 @@ pop %rdi
 pop %rsi
 pop %rdx
 call *%rax
-.625$:
+.634$:
 mov %rax,(%rsp)
 add $-8,%rsp
 mov $0,%rax
-.627$:
+.636$:
+mov %rax,(%rsp)
+add $-8,%rsp
+mov f73796E2D74797065@GOTPCREL(%rip),%rax
+add $-8,%rsp
+push %rax
+mov 32(%rsp),%rax
+mov %rax,8(%rsp)
+pop %rax
+pop %rdi
+call *%rax
+.637$:
 mov %rax,(%rsp)
 mov f73796E2D626F6479@GOTPCREL(%rip),%rax
 add $-24,%rsp
 push %rax
 mov f73796E2D65787072@GOTPCREL(%rip),%rax
 mov %rax,8(%rsp)
-mov 40(%rsp),%rax
+mov 48(%rsp),%rax
 mov %rax,16(%rsp)
-mov f73796E2D74797065@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 56(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
+mov 32(%rsp),%rax
 mov %rax,24(%rsp)
 pop %rax
 pop %rdi
 pop %rsi
 pop %rdx
 call *%rax
+add $8,%rsp
 test %rax,%rax
-jne .627$
+jne .636$
 pop %rax
+add $-8,%rsp
+mov f70617273652D64656C@GOTPCREL(%rip),%rax
+add $-16,%rsp
+push %rax
+mov 40(%rsp),%rax
+mov %rax,8(%rsp)
 mov 32(%rsp),%rax
+mov %rax,16(%rsp)
+pop %rax
+pop %rdi
+pop %rsi
+call *%rax
+.638$:
+mov %rax,(%rsp)
+mov 40(%rsp),%rax
 add $-24,%rsp
 push %rax
 mov $0,%rax
 mov %rax,8(%rsp)
-mov 48(%rsp),%rax
+mov 56(%rsp),%rax
 mov %rax,16(%rsp)
-mov f73796E2D656E64@GOTPCREL(%rip),%rax
-add $-8,%rsp
-push %rax
-mov 48(%rsp),%rax
-mov %rax,8(%rsp)
-pop %rax
-pop %rdi
-call *%rax
+mov 32(%rsp),%rax
 mov %rax,24(%rsp)
 pop %rax
 pop %rdi
 pop %rsi
 pop %rdx
 call *%rax
-.626$:
+add $8,%rsp
+.635$:
 add $8,%rsp
 add $32,%rsp
 ret
@@ -12474,7 +10971,7 @@ mov %rax,24(%rsp)
 mov f706F7732@GOTPCREL(%rip),%rax
 add $-8,%rsp
 push %rax
-mov $18,%rax
+mov $20,%rax
 mov %rax,8(%rsp)
 pop %rax
 pop %rdi
