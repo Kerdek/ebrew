@@ -12,8 +12,7 @@
 
 # math #
 
-(cmpex n a b) or (above n a) (above b n)
-(range n a b) not (cmpex n a b)
+(range n a b) not or (above n a) (above b n)
 (to -b (op a b) a) let b (load -b) (do (store -b (op a b)) b)
 (pow2 n) shl n 1
 (suc n) add 1 n
@@ -35,8 +34,7 @@
 let error-key (neg 1)
 for i begin
 and not (equal i error-key)
-let n-rest (sub i end)
-let n-read (io i n-rest)
+let n-read (io i (sub i end))
 and n-read
 if  equal n-read error-key
     n-read
@@ -87,8 +85,7 @@ do  for p s
     -out
 
 (put byte -out)
-let out (load -out)
-do  poke out byte
+do  poke (load -out) byte
 do  inc -out
     -out
 
@@ -97,10 +94,8 @@ do  inc -out
 
 (put-digits (put-digit a -out) base a -out)
 if  a
-let remainder (mod base a)
-let digit (div base a)
-    put-digit                 remainder
-    put-digits put-digit base digit
+    put-digit                 (mod base a)
+    put-digits put-digit base (div base a)
     -out
     -out
 
@@ -110,7 +105,7 @@ if  a
     put '0 -out
 
 (put-digit-16 a -out) put (add a (if (above a 10) '0 '7)) -out
-(put-digit-10 a -out) put (add a                 '0    ) -out
+(put-digit-10 a -out) put (add a                  '0    ) -out
 
 (put-dec a -out) put-number put-digit-10 10 a -out
 (put-hex a -out) put-number put-digit-16 16 a -out
@@ -271,7 +266,7 @@ do  to -mem sub X86_64
     x86_64-czjc flake "jne " (Out impl)
 
 (x86_64-jmp impl flake)
-    x86_64-jc   flake "jmp " (Out impl)
+    x86_64-jc flake "jmp " (Out impl)
 
 (x86_64-ref impl a b offset)
 do  put-string x86_64-str-mov (Out impl)
@@ -360,10 +355,10 @@ do  putlf
 and above 6 arity
     x86_64-fpop (Depth impl) (Out impl) (sub 6 arity)
 
-(x86_64-decl-in impl a b)
+(x86_64-def-in impl a b)
     x86_64-section-header x86_64-mangle-mem a b (Out impl)
     
-(x86_64-decl impl label) 0
+(x86_64-def impl label) 0
 
 (x86_64-decl-param impl index)
 if  above index 6
@@ -371,7 +366,7 @@ do  x86_64-push (Depth impl) (Out impl) (x86_64-argreg index)
     load (Depth impl)
     sub 5 index
 
-(x86_64-decl-end impl arity)
+(x86_64-def-end impl arity)
 do  x86_64-fpop (Depth impl) (Out impl) (if above arity 6 arity 6)
     put-string x86_64-str-ret (Out impl)
 
@@ -382,75 +377,47 @@ do  x86_64-fpop (Depth impl) (Out impl) (if above arity 6 arity 6)
 (A node)     node
 (B node) add node word
 
-(qual -mem a)
-let x (to -mem add word)
-let -a (A x)
-do  store -a a
-    x
-
 (node -mem a b)
 let x (to -mem add dword)
-let -a (A x)
-let -b (B x)
-do  store -a a
-do  store -b b
+do  store (A x) a
+do  store (B x) b
     x
 
 # operational semantics #
 
 (memcmp a b n)
 or  not n
-let a-byte (peek a)
-let b-byte (peek b)
-and equal a-byte b-byte
-let a-next (suc a)
-let b-next (suc b)
-let n-remaining (prd n)
-    memcmp a-next b-next n-remaining
+and equal (peek a) (peek b)
+    memcmp (suc a) (suc b) (prd n)
 
 (strncmp a b an bn)
 and equal an bn
     memcmp a b bn
 
-(lookup book a b)
-and book
-let decl (load A #decl# book)
-let span (load A #span# decl)
-let src-a (load A #a# span)
-let src-b (load B #b# span)
-let n-src (sub src-a src-b)
-let n (sub a b)
-if  strncmp src-a a n-src n
-    load B #type# decl
-let rest (load B #book# book)
-    lookup rest a b
+(lookup list a b)
+and list
+let decl (load A list)
+let span (load A decl)
+let src-a (load A span)
+if  strncmp src-a a (sub src-a (load B span)) (sub a b)
+    load B decl
+    lookup (load B list) a b
 
-(book-equal (op-check type-a type-b) book-a book-b)
+(book-equal (check type-a type-b) book-a book-b)
 or  equal book-a book-b
-let decl-a (load A #decl# book-a)
-let decl-b (load A #decl# book-b)
-let type-a (load B #type# decl-a)
-let type-b (load B #type# decl-b)
-and op-check type-a type-b
-let rest-a (load B #book# book-a)
-let rest-b (load B #book# book-b)
-    book-equal op-check rest-a rest-b
+and check (load B (load A book-a)) (load B (load A book-b))
+    book-equal check (load B book-a) (load B book-b)
 
-(op-check type-a type-b)
+(check type-a type-b)
 or  equal type-a type-b
 and type-a
 and type-b
-let kind-a (load B #kind# type-a)
-let kind-b (load B #kind# type-b)
-and equal kind-a kind-b
-let book-a (load A #book# type-a)
-let book-b (load A #book# type-b)
-    book-equal op-check book-a book-b
+and equal (load B type-a) (load B type-b)
+    book-equal check (load A type-a) (load A type-b)
 
-(op-count book)
-and book
-let rest (load B #book# book)
-let n-rest (op-count rest)
+(count list)
+and list
+let n-rest (count (load B list))
     suc n-rest
 
 (Mem  sem)           sem
@@ -459,8 +426,8 @@ let n-rest (op-count rest)
 (Type sem) add (Impl sem) word
 (struct-Sem)    Type      word
 
-(op-type-func sem book)
-    node #type# (Mem sem) book 1
+(op-type-func sem list)
+    node (Mem sem) list 1
 
 (op-type-unit) 0
 
@@ -473,137 +440,109 @@ do  store (Impl sem) impl
     sem
 
 (op-del (gen -mem impl) -mem -impl)
-let impl (load -impl)
-let out (gen -mem impl)
 do  to -mem sub struct-Sem
-    out
+    (gen -mem (load -impl))
 
 (op-unit (gen impl a b) sem a b)
-let impl (load Impl sem)
-do  gen impl a b
+do  gen (load Impl sem) a b
 do  store (Type sem) op-type-unit
     0
 
 (op-flake (gen impl) sem)
-let impl (load Impl sem)
-    gen impl
+    gen (load Impl sem)
 
 (op-label (gen impl flake) sem flake)
-let impl (load Impl sem)
-    gen impl flake
+    gen (load Impl sem) flake
 
 (op-ref (gen impl a b offset) sem a b)
-let book (load Book sem)
-let var (lookup book a b)
+let var (lookup (load Book sem) a b)
 if  not var
     error 1 "unknown reference"
-let impl (load Impl sem)
-let offset (load B #offset# var)
-do  gen impl a b offset
-do  store (Type sem) (load A #type# var)
-    load A #type# var
+do  gen (load Impl sem) a b (load B var)
+do  store (Type sem) (load A var)
+    load A var
 
 (op-var (gen impl label) sem label a b result)
-let book (load Book sem)
-if  lookup book a b
+let list (load Book sem)
+if  lookup list a b
     error 2 "redefinition"
 let -mem (Mem sem)
-let span (node #span# -mem a b)
-let impl (load Impl sem)
-let offset (gen impl label)
-let var (node #var# -mem result offset)
-let name (node #name# -mem span var)
-let next (node #book# -mem name book)
-let -book (Book sem)
-    store -book next
+    store (Book sem) (node -mem (node -mem (node -mem a b) (node -mem result (gen (load Impl sem) label))) list)
 
 (op-var-end (gen impl flake) sem flake)
-let impl (load Impl sem)
-do  gen impl flake
-let -book (Book sem)
-let book (load -book)
-let rest (load B #book# book)
-    store -book rest
+do  gen (load Impl sem) flake
+    store (Book sem) (load B (load Book sem))
+
+(op-check sem type)
+    check type (load Type sem)
 
 (op-call (gen impl arity) sem)
-let type (load Type sem)
-let book (load A type)
-let impl (load Impl sem)
-let arity (op-count book)
-do  gen impl arity
-    book
+let list (load A (load Type sem))
+do  gen (load Impl sem) (count list)
+    list
 
-(op-arg sem book)
-let decl (load A book)
-let type (load B decl)
-    type
+(op-arg sem list)
+    load B (load A list)
 
-(op-arg-end (gen impl index) sem index book)
-let impl (load Impl sem)
-do  gen impl index
-let rest (load B book)
-    rest
+(op-arg-end (gen impl index) sem index list)
+do  gen (load Impl sem) index
+    load B list
 
 (op-call-end (gen impl arity) sem arity)
-let impl (load Impl sem)
-do  gen impl arity
-do  store (Type sem) op-type-unit
-    0
+do  gen (load Impl sem) arity
+    store (Type sem) op-type-unit
 
 (op-decl (gen impl flake) sem a b type)
-let impl (load Impl sem)
-do  gen impl 0
-let span (node #span# (Mem sem) a b)
-    node #name# (Mem sem) span type
+do  gen (load Impl sem) 0
+    node (Mem sem) (node (Mem sem) a b) type
 
-(op-param (gen impl flake) sem name book)
-let impl (load Impl sem)
-do  gen impl 0
-    node #book# (Mem sem) name book
+(op-param (gen impl flake) sem name list)
+do  gen (load Impl sem) 0
+    node (Mem sem) name list
 
 # denotational semantics #
 
 (denote-new -mem out) op-new x86_64-new -mem out
 (denote-del -mem sem) op-del x86_64-del -mem (Impl sem)
 
-(denote-lit        sem       a b          ) op-unit      x86_64-lit        sem a b
-(denote-str        sem       a b          ) op-unit      x86_64-str        sem a b
-(denote-ref        sem       a b          ) op-ref       x86_64-ref        sem a b
-(denote-do         sem                    ) op-flake     x86_64-flake      sem
-(denote-do-then    sem label              ) op-label     x86_64-do         sem label
-(denote-do-end     sem label              ) op-label     x86_64-label      sem label
-(denote-if         sem                    ) op-flake     x86_64-flake      sem
-(denote-if-then    sem label              ) op-label     x86_64-je         sem label
-(denote-if-else    sem label              ) op-label     x86_64-jmp        sem label
-(denote-if-end     sem label              ) op-label     x86_64-label      sem label
-(denote-or         sem                    ) op-flake     x86_64-flake      sem
-(denote-or-else    sem label              ) op-label     x86_64-jne        sem label
-(denote-or-end     sem label              ) op-label     x86_64-label      sem label
-(denote-and        sem                    ) op-flake     x86_64-flake      sem
-(denote-and-then   sem label              ) op-label     x86_64-je         sem label
-(denote-and-end    sem label              ) op-label     x86_64-label      sem label
-(denote-let        sem                    ) op-flake     x86_64-flake      sem 
-(denote-let-is     sem label a b expect   ) do op-var       x86_64-var-is     sem label a b 0 op-type-unit
-(denote-let-in     sem label              ) op-label     x86_64-var-in     sem label
-(denote-let-end    sem label              ) op-var-end   x86_64-let-end    sem label
-(denote-for        sem                    ) op-flake     x86_64-flake      sem
-(denote-for-is     sem label a b expect   ) do op-var       x86_64-var-is     sem label a b 0 expect
-(denote-for-in     sem label              ) op-label     x86_64-var-in     sem label
-(denote-for-end    sem label              ) op-var-end   x86_64-for-end    sem label
-(denote-check      sem       expect       ) op-check                           expect (load Type sem)
-(denote-call       sem                    ) op-call      x86_64-call-with  sem
-(denote-call-end   sem arity              ) op-call-end  x86_64-call-end   sem arity
-(denote-arg        sem       book         ) op-arg                         sem book
-(denote-arg-end    sem index book         ) op-arg-end   x86_64-call-arg   sem index book
-(denote-param      sem index a b    result) op-var       x86_64-decl-param sem index a b result
-(denote-param-end  sem label              ) op-var-end   x86_64-do         sem label
-(denote-decl       sem       a b    result) op-decl      x86_64-do         sem a b result
-(denote-type-func  sem       book         ) op-type-func                   sem book
-(denote-type-unit  sem                    ) op-type-unit
-(denote-type-param sem decl  book         ) op-param     x86_64-do         sem decl book
-(denote-body       sem       a b    result) op-var       x86_64-decl       sem 0 a b result
-(denote-body-in    sem       a b    result)              x86_64-decl-in    (load Impl sem) a b
-(denote-body-end   sem       a b    result)              x86_64-decl-end   (load Impl sem) op-count (load result)
+(denote-lit        sem       a b     ) op-unit      x86_64-lit        sem a b
+(denote-str        sem       a b     ) op-unit      x86_64-str        sem a b
+(denote-ref        sem       a b     ) op-ref       x86_64-ref        sem a b
+(denote-do         sem               ) op-flake     x86_64-flake      sem
+(denote-do-then    sem label         ) op-label     x86_64-do         sem label
+(denote-do-end     sem label         ) op-label     x86_64-label      sem label
+(denote-if         sem               ) op-flake     x86_64-flake      sem
+(denote-if-then    sem label         ) op-label     x86_64-je         sem label
+(denote-if-else    sem label         ) op-label     x86_64-jmp        sem label
+(denote-if-end     sem label         ) op-label     x86_64-label      sem label
+(denote-or         sem               ) op-flake     x86_64-flake      sem
+(denote-or-else    sem label         ) op-label     x86_64-jne        sem label
+(denote-or-end     sem label         ) op-label     x86_64-label      sem label
+(denote-and        sem               ) op-flake     x86_64-flake      sem
+(denote-and-then   sem label         ) op-label     x86_64-je         sem label
+(denote-and-end    sem label         ) op-label     x86_64-label      sem label
+(denote-let        sem               ) op-flake     x86_64-flake      sem 
+(denote-let-is     sem label a b     ) op-var       x86_64-var-is     sem label a b 0
+(denote-let-in     sem label         ) op-label     x86_64-var-in     sem label
+(denote-let-end    sem label         ) op-var-end   x86_64-let-end    sem label
+(denote-for        sem               ) op-flake     x86_64-flake      sem
+(denote-for-is     sem label a b     ) op-var       x86_64-var-is     sem label a b 0
+(denote-for-in     sem label         ) op-label     x86_64-var-in     sem label
+(denote-for-end    sem label         ) op-var-end   x86_64-for-end    sem label
+(denote-check      sem           type) op-check                       sem type
+(denote-call       sem               ) op-call      x86_64-call-with  sem
+(denote-call-end   sem arity         ) op-call-end  x86_64-call-end   sem arity
+(denote-arg        sem           list) op-arg                         sem list
+(denote-arg-end    sem index     list) op-arg-end   x86_64-call-arg   sem index list
+(denote-param      sem index a b type) op-var       x86_64-decl-param sem index a b type  
+(denote-param-end  sem label         ) op-var-end   x86_64-do         sem label
+(denote-type-param sem decl      list) op-param     x86_64-do         sem decl list
+(denote-def        sem       a b type) op-var       x86_64-def        sem 0 a b type  
+(denote-def-in     sem       a b     )              x86_64-def-in     (load Impl sem) a b
+(denote-def-end    sem arity a b     )              x86_64-def-end    (load Impl sem) arity
+(denote-decl       sem       a b type) op-decl      x86_64-do         sem a b type  
+(denote-type-func  sem           list) op-type-func                   sem list
+(denote-type-unit                    ) op-type-unit
 
 # character classes #
 
@@ -701,28 +640,22 @@ do  store (A span) a
 
 (parse-init -mem in out)
 let syn (to -mem add struct-Syn)
-do  store (Span syn) node #span# -mem 0 0
+do  store (Span syn) node -mem 0 0
 do  store (In syn) in
 do  store (Sem syn) denote-new -mem out
-let span (load Span syn)
-do  token (In syn) span
+do  token (In syn) (load Span syn)
     syn
 
 (parse-del -mem syn)
-let sem (load Sem syn)
-let end (denote-del -mem sem)
+let end (denote-del -mem (load Sem syn))
 do  to -mem sub struct-Syn
     end
 
 (stem lit (syntax-with (expr syn expect) syn expect) (expr syn expect) syn expect)
 let span (load Span syn)
 let a (load A span)
-let b (load B span)
-let n (sub a b)
-let n-lit (strlen lit)
-and strncmp lit a n-lit n
-let -in (In syn)
-do  token -in span
+and strncmp lit a (strlen lit) (sub a (load B span))
+do  token (In syn) span
 do  syntax-with expr syn expect
     1
 
@@ -730,99 +663,86 @@ do  syntax-with expr syn expect
 let span (load Span syn)
 let a (load A span)
 let b (load B span)
-let byte (peek a)
-and class byte
-let -in (In syn)
-do  token -in span
-let sem (load Sem syn)
-do  op sem a b
+and class (peek a)
+do  token (In syn) span
+do  op (load Sem syn) a b
     1
 
-(punct syn (class byte))
+(punct (class byte) syn)
 let span (load Span syn)
-let a (load A span)
-let byte (peek a)
-and class byte
+and class (peek (load A span))
     token (In syn) span
 
 # expression syntax #
 
-(expr-seq (den syn) (denote-then syn flake) (denote-end syn flake) (expr syn expect) syn expect)
+(expr-seq (den syn) (denote-then syn flake) (denote-end syn flake) (expr syn type) syn type)
 let sem (load Sem syn)
 let flake (den sem)
-do  expr syn expect
+do  expr syn type
 do  denote-then sem flake
-do  expr syn expect
+do  expr syn type
     denote-end sem flake
 
-(expr-do  (expr syn expect) syn expect) expr-seq denote-do  denote-do-then  denote-do-end  expr syn expect
-(expr-or  (expr syn expect) syn expect) expr-seq denote-or  denote-or-else  denote-or-end  expr syn expect
-(expr-and (expr syn expect) syn expect) expr-seq denote-and denote-and-then denote-and-end expr syn expect
+(expr-do  (expr syn type) syn type) expr-seq denote-do  denote-do-then  denote-do-end  expr syn type
+(expr-or  (expr syn type) syn type) expr-seq denote-or  denote-or-else  denote-or-end  expr syn type
+(expr-and (expr syn type) syn type) expr-seq denote-and denote-and-then denote-and-end expr syn type
 
-(expr-var (den syn) (denote-is syn flake a b expect) (denote-in syn flake) (denote-end syn flake) (expr syn expect) syn expect)
+(expr-var (den syn) (denote-is syn flake a b) (denote-in syn flake) (denote-end syn flake) (expr syn type) syn type)
 let sem (load Sem syn)
 let flake (den sem)
 let span (load Span syn)
-let a (load A span)
-let b (load B span)
-do  punct syn class-id
-let expect-in (denote-is sem flake a b expect)
-do  expr syn expect-in
+do  denote-is sem flake (load A span) (load B span)
+do  punct class-id syn
+do  expr syn denote-type-unit
 do  denote-in sem flake
-do  expr syn expect
+do  expr syn type
     denote-end sem flake
 
-(expr-let (expr syn expect) syn expect) expr-var denote-let denote-let-is denote-let-in denote-let-end expr syn expect
-(expr-for (expr syn expect) syn expect) expr-var denote-for denote-for-is denote-for-in denote-for-end expr syn expect
+(expr-let (expr syn type) syn type) expr-var denote-let denote-let-is denote-let-in denote-let-end expr syn type
+(expr-for (expr syn type) syn type) expr-var denote-for denote-for-is denote-for-in denote-for-end expr syn type
 
-(expr-if (expr syn expect) syn expect)
+(expr-if (expr syn type) syn type)
 let sem (load Sem syn)
 let flake-a (denote-if sem)
-let expect-then (denote-type-unit sem)
-do  expr syn expect-then
+do  expr syn denote-type-unit
 do  denote-if-then sem flake-a
-do  expr syn expect
+do  expr syn type
 let flake-b (denote-if sem)
 do  denote-if-else sem flake-b
 do  denote-if-end sem flake-a
-do  expr syn expect
+do  expr syn type
     denote-if-end sem flake-b
 
-(args (expr syn expect) syn book index)
-if  book
+(arg (expr syn type) syn list index)
+if  list
 let sem (load Sem syn)
-let expect (denote-arg sem book)
-do  expr syn expect
-let rest (denote-arg-end sem index book)
-    args expr syn rest (suc index)
+do  expr syn (denote-arg sem list)
+    arg expr syn (denote-arg-end sem index list) (suc index)
     index
 
-(call (expr syn expect) syn expect)
-or  stem "do"  expr-do  expr syn expect
-or  stem "if"  expr-if  expr syn expect
-or  stem "or"  expr-or  expr syn expect
-or  stem "and" expr-and expr syn expect
-or  stem "let" expr-let expr syn expect
-or  stem "for" expr-for expr syn expect
+(call (expr syn type) syn type)
+or  stem "do"  expr-do  expr syn type
+or  stem "if"  expr-if  expr syn type
+or  stem "or"  expr-or  expr syn type
+or  stem "and" expr-and expr syn type
+or  stem "let" expr-let expr syn type
+or  stem "for" expr-for expr syn type
 do  or  leaf class-im denote-lit syn
     or  leaf class-id denote-ref syn
     or  leaf class-dq denote-str syn
         error 3 "expected term"
 let sem (load Sem syn)
-or  denote-check sem expect
-let parameters (denote-call sem)
-# we shouldn't have to keep track of arity #
-let arity (args expr syn parameters 0)
-do  denote-call-end sem arity
-or  denote-check sem expect
+or  denote-check sem type
+do  denote-call-end sem (arg expr syn (denote-call sem) 0)
+or  denote-check sem type
     error 4 "illegal argument"
 
-(expr syn expect)
-if  punct syn class-lp
-do  call expr syn expect
-or  punct syn class-rp
+(expr syn type)
+if  punct class-lp syn
+do  call expr syn type
+or  punct class-rp syn
     error 5 "expected )"
-    call expr syn expect
+    call expr syn type
 
 # type syntax #
 
@@ -830,60 +750,50 @@ or  punct syn class-rp
 let span (load Span syn)
 let a (load A span)
 let b (load B span)
-and punct syn class-id
-let sem (load Sem syn)
-let type (syntax-type-which syntax-type syn)
-    den sem a b type
+and punct class-id syn
+    den (load Sem syn) a b (syntax-type-which syntax-type syn)
 
 (syntax-type-params (syntax-type syn) syn)
-and not punct syn class-rp
-let sem (load Sem syn)
-let decl (syntax-type syn)
-let rest (syntax-type-params syntax-type syn)
-    denote-type-param sem decl rest
+and not punct class-rp syn
+    denote-type-param (load Sem syn) (syntax-type syn) (syntax-type-params syntax-type syn)
 
 (syntax-type-func (syntax-type syn) syn) denote-type-func (load Sem syn) (syntax-type-params syntax-type syn)
-(syntax-type-unit (syntax-type syn) syn) denote-type-unit (load Sem syn)
+(syntax-type-unit (syntax-type syn) syn) denote-type-unit
 
-(syntax-type syn) syntax-decl denote-decl (if (punct syn class-lp) syntax-type-func syntax-type-unit) syntax-type syn
+(syntax-type syn) syntax-decl denote-decl (if (punct class-lp syn) syntax-type-func syntax-type-unit) syntax-type syn
 
 # declaration syntax #
 
-(param syn book index)
-if  book
-let decl (load A #decl# book)
+(param syn list index)
+if  list
+let decl (load A list)
 let sem (load Sem syn)
-let span (load A #span# decl)
-let result (load B #type# decl)
+let span (load A decl)
+let offset (denote-param sem index (load A span) (load B span) (load B decl))
+let arity (param syn (load B list) (suc index))
+do  denote-param-end sem offset
+    arity
+do  expr syn 0
+    index
+
+(def syn)
+let decl (syntax-type syn)
+and decl
+let sem (load Sem syn)
+let span (load A decl)
 let a (load A span)
 let b (load B span)
-let offset (denote-param sem index a b result)
-let rest (load B #book# book)
-let next-index (suc index)
-do  param syn rest next-index
-    denote-param-end sem offset
-    expr syn 0
-
-(body syn)
-let decl (syntax-type syn)
-    and decl
-    let sem (load Sem syn)
-    let span (load A #span# decl)
-    let a (load A span)
-    let b (load B span)
-    let result (load B #result# decl)
-    let book (load result)
-    do  denote-body sem a b result
-    or  punct syn class-qm
-    do  denote-body-in sem a b result
-    do  param syn book 0
-        denote-body-end sem a b result
+let type (load B decl)
+do  denote-def sem a b type
+or  punct class-qm syn
+do  denote-def-in sem a b
+    denote-def-end sem (param syn (load type) 0) a b
 
 # entry #
 
 (main (return code out end) in out -mem)
 let syn (parse-init -mem in out)
-do  for _ 0 body syn
+do  for _ 0 def syn
 let end (parse-del -mem syn)
     return 0 out end
 
