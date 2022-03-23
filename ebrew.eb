@@ -102,9 +102,6 @@ do  poke (load -out) byte
 do  inc -out
     -out
 
-(put-lf -out)
-    put '\n -out
-
 (put-digits (put-digit a -out) base a -out)
 if  a
     put-digit                 (mod base a)
@@ -124,7 +121,7 @@ if  a
 (put-hex a -out) put-number put-digit-16 16 a -out
 
 (put-string s -out) vput-string put s -out
-(put-mem a b -out) vput-mem put a b -out
+(put-mem a b  -out) vput-mem put a b -out
 
 # scanning #
 
@@ -136,67 +133,60 @@ and class (peek load -in)
     X86_64 BACKEND
 #
 
-(x86_64-mangle (vput (put a -out) s -out) s -out) vput put-hex s put 'f -out
-(x86_64-mangle-mem a b -out) vput-mem put-hex a b put 'f -out
-(x86_64-mangle-string s -out) vput-string put-hex s put 'f -out
+(x86_64-lf -out) put '\n -out
+(x86_64-cm -out) put ', -out
+(x86_64-sp -out) put '  -out
 
-(x86_64-label-suf -out) put-lf put ': -out
-(x86_64-section-header (vput a b -out) a b -out) x86_64-label-suf vput a b put-lf vput a b put-string ".section .text." -out
-(x86_64-initdef name body -out) put-string "ret\n" put-lf put-string body x86_64-section-header x86_64-mangle-mem name (add name strlen name) -out
+(x86_64-mangle-prefix -out) put 'F -out
+(x86_64-mangle-mem a b -out) vput-mem put-hex a b x86_64-mangle-prefix -out
+(x86_64-mangle-string s -out) vput-string put-hex s x86_64-mangle-prefix -out
 
-(x86_64-fpushpop (op -depth size) -depth -out size sign)
-and size
-do  put-string "add $" -out
-do  and sign (put '- -out)
-do  put-string ",%rsp\n" put-dec (shl 3 size) -out
-    to -depth op size
+(x86_64-label-prefix -out) put 'L -out
+(x86_64-label-suf -out) x86_64-lf put ': -out
+(x86_64-label-name label -out) put-dec label x86_64-label-prefix -out
+(x86_64-label-stmt label -out) x86_64-label-suf x86_64-label-name label -out
 
-(x86_64-pushpop (op -depth) -depth -out reg sign)
-do  put-lf put-string reg put-string sign -out
-    op -depth
+(x86_64-section-header (vput a b -out) a b -out) x86_64-label-suf vput a b x86_64-lf vput a b put-string ".section .text." -out
 
-(x86_64-fpop  -depth -out size) x86_64-fpushpop add -depth -out size 0
-(x86_64-fpush -depth -out size) x86_64-fpushpop sub -depth -out size 1
-(x86_64-pop   -depth -out reg ) x86_64-pushpop  inc -depth -out reg  "pop "
-(x86_64-push  -depth -out reg ) x86_64-pushpop  dec -depth -out reg  "push "
+(x86_64-pop  -depth -out) do (x86_64-lf put-string "%rbx" x86_64-sp put-string "pop"  -out) (inc -depth)
+(x86_64-push -depth -out) do (x86_64-lf put-string "%rax" x86_64-sp put-string "push" -out) (dec -depth)
 
-(x86_64-put-label  flake -out) put-dec flake put-string "." -out
+(x86_64-jc label s -out) x86_64-lf x86_64-label-name label x86_64-sp put-string s -out
+(x86_64-czjc label s -out) x86_64-jc label s x86_64-lf put-string "%rax" x86_64-cm put-string "%rax" x86_64-sp put-string "test" -out
 
-(x86_64-jc flake s -out) put-lf x86_64-put-label flake put-string s -out
-(x86_64-czjc flake s -out) x86_64-jc flake s put-string "test %rax,%rax\n" -out
+(x86_64-initdef name body -out) x86_64-lf put-string "ret" x86_64-lf put-string body x86_64-section-header x86_64-mangle-mem name (add name strlen name) -out
 
-(X86_64-out   impl)            impl
+# context #
+
+(X86_64-out   impl)                   impl
 (X86_64-depth impl) add (X86_64-out   impl) word
 (X86_64)                 X86_64-depth       word
+
+# api #
 
 (x86_64-new -mem out)
 let impl (to -mem add X86_64)
 do  store (X86_64-out   impl) out
 do  store (X86_64-depth impl) (shl (sub 1 (shl 3 word)) 1)
-do  x86_64-initdef "linux" "mov 56(%rsp),%rdi\nmov 48(%rsp),%rsi\nmov 40(%rsp),%rdx\nmov 32(%rsp),%rcx\nmov 24(%rsp),%r8\nmov 16(%rsp),%r9\nmov 8(%rsp),%rax\nsyscall"
+do  x86_64-initdef "word"  "mov $8,%rax"
     x86_64-initdef "not"   "mov 8(%rsp),%rdi\ntest %rdi,%rdi\nsete %al\nmovzbl %al,%eax"
     x86_64-initdef "neg"   "mov 8(%rsp),%rdi\nmov %rdi,%rax\nneg %rax"
-    x86_64-initdef "equal" "mov 16(%rsp),%rdi\nmov 8(%rsp),%rsi\ncmp %rsi,%rdi\nsete %al\nmovzbl %al,%eax"
-    x86_64-initdef "above" "mov 16(%rsp),%rdi\nmov 8(%rsp),%rsi\ncmp %rdi,%rsi\nseta %al\nmovzbl %al,%eax"
-    x86_64-initdef "shl"   "mov 16(%rsp),%rdi\nmov 8(%rsp),%rsi\nmov %rsi,%rax\nmov %rdi,%rcx\nshl %cl,%rax"
-    x86_64-initdef "mod"   "mov 16(%rsp),%rdi\nmov 8(%rsp),%rsi\nxor %edx,%edx\nmov %rsi,%rax\ndiv %rdi\nmov %rdx,%rax"
-    x86_64-initdef "div"   "mov 16(%rsp),%rdi\nmov 8(%rsp),%rsi\nxor %edx,%edx\nmov %rsi,%rax\ndiv %rdi"
-    x86_64-initdef "mul"   "mov 16(%rsp),%rdi\nmov 8(%rsp),%rsi\nmov %rsi,%rax\nmul %rdi"
-    x86_64-initdef "sub"   "mov 16(%rsp),%rdi\nmov 8(%rsp),%rsi\nmov %rsi,%rax\nsub %rdi,%rax"
-    x86_64-initdef "add"   "mov 16(%rsp),%rdi\nmov 8(%rsp),%rsi\nmov %rsi,%rax\nadd %rdi,%rax"
-    x86_64-initdef "poke"  "mov 16(%rsp),%rdi\nmov 8(%rsp),%rsi\nmovb %sil,(%rdi)"
     x86_64-initdef "peek"  "mov 8(%rsp),%rdi\nmovzb (%rdi),%eax"
-    x86_64-initdef "store" "mov 16(%rsp),%rdi\nmov 8(%rsp),%rsi\nmov %rsi,(%rdi)\nmov %rdi,%rax"
     x86_64-initdef "load"  "mov 8(%rsp),%rdi\nmov (%rdi),%rax"
-    x86_64-initdef "word"  "mov $8,%rax"
-    put-lf
+    x86_64-initdef "equal" "mov 8(%rsp),%rsi\nmov 16(%rsp),%rdi\ncmp %rsi,%rdi\nsete %al\nmovzbl %al,%eax"
+    x86_64-initdef "above" "mov 8(%rsp),%rsi\nmov 16(%rsp),%rdi\ncmp %rdi,%rsi\nseta %al\nmovzbl %al,%eax"
+    x86_64-initdef "shl"   "mov 8(%rsp),%rsi\nmov 16(%rsp),%rdi\nmov %rsi,%rax\nmov %rdi,%rcx\nshl %cl,%rax"
+    x86_64-initdef "mod"   "mov 8(%rsp),%rsi\nmov 16(%rsp),%rdi\nxor %edx,%edx\nmov %rsi,%rax\ndiv %rdi\nmov %rdx,%rax"
+    x86_64-initdef "div"   "mov 8(%rsp),%rsi\nmov 16(%rsp),%rdi\nxor %edx,%edx\nmov %rsi,%rax\ndiv %rdi"
+    x86_64-initdef "mul"   "mov 8(%rsp),%rsi\nmov 16(%rsp),%rdi\nmov %rsi,%rax\nmul %rdi"
+    x86_64-initdef "sub"   "mov 8(%rsp),%rsi\nmov 16(%rsp),%rdi\nmov %rsi,%rax\nsub %rdi,%rax"
+    x86_64-initdef "add"   "mov 8(%rsp),%rsi\nmov 16(%rsp),%rdi\nmov %rsi,%rax\nadd %rdi,%rax"
+    x86_64-initdef "poke"  "mov 8(%rsp),%rsi\nmov 16(%rsp),%rdi\nmovb %sil,(%rdi)"
+    x86_64-initdef "store" "mov 8(%rsp),%rsi\nmov 16(%rsp),%rdi\nmov %rsi,(%rdi)\nmov %rdi,%rax"
+    x86_64-initdef "linux" "mov 8(%rsp),%rax\nmov 16(%rsp),%r9\nmov 24(%rsp),%r8\nmov 32(%rsp),%rcx\nmov 40(%rsp),%rdx\nmov 48(%rsp),%rsi\nmov 56(%rsp),%rdi\nsyscall"
 let entry "_start"
-    x86_64-mangle-string entry
-    put ',
-    put-string entry
-    put-string "\n.equ "
-    put-string entry
-    put-string ".globl "
+    x86_64-lf x86_64-mangle-string entry x86_64-cm put-string entry x86_64-sp put-string ".equ"
+    x86_64-lf put-string entry x86_64-sp put-string ".globl"
     (X86_64-out impl)
     impl
 
@@ -205,110 +195,95 @@ let out (load X86_64-out impl)
 do  to -mem sub X86_64
     out
 
-(x86_64-do  impl flake) 0
+# Opsem needs to know what offset
+denotes a global declaration. #
+(x86_64-decl impl flake) 0
 
-(x86_64-decl  impl flake) 0
+# Opsem needs to know what offset
+to give a function parameter. #
+(x86_64-param impl index) add (load X86_64-depth impl) successive index
 
-(x86_64-and  impl flake) x86_64-czjc flake "je "  (X86_64-out impl)
-(x86_64-or   impl flake) x86_64-czjc flake "jne " (X86_64-out impl)
-(x86_64-else impl flake) x86_64-jc   flake "jmp " (X86_64-out impl)
-
-# We are trying to reference
-a function or variable. First,
-we'll move the stack top into 
-the accumulator.
-#
-
+# Opsem will tell us a lot about
+backreferences. We first copy the
+stack top into the accumulator. #
 (x86_64-ref impl)
-    put-string "mov %rsp,%rax\n" (X86_64-out impl)
-
-# As we encounter
-lambda frames, we'll load
-the capture pointer through
-the accumulator. #
-
-(x86_64-capture impl offset)
-    put-string "(%rax),%rax\n"
-    put-dec (shl 3 (sub (load X86_64-depth impl) offset))
-    put-string "mov "
+    x86_64-lf put-string "%rax" x86_64-cm put-string "%rsp" x86_64-sp put-string "mov"
     (X86_64-out impl)
 
-# If we find a declaration,
+# As opsem encounters lambda frames,
+we'll load the capture pointer
+through the accumulator. #
+(x86_64-capture impl offset)
+    x86_64-lf put-string "%rax" x86_64-cm put-string "(%rax)" put-dec (shl 3 (sub (load X86_64-depth impl) offset)) x86_64-sp put-string "mov"
+    (X86_64-out impl)
+
+# If opsem finds something,
 we'll either load it through
 the accumulator or through
 the program counter depending
 whether it's global. We waste
 any capture loads for a global
 but we'll fix that when it
-matters.#
-
+matters. #
 (x86_64-ref-end impl a b offset)
-do  put-string "mov " (X86_64-out impl)
-    put-string ",%rax\n"
+do  x86_64-sp put-string "mov" (X86_64-out impl)
+    x86_64-lf put-string "%rax" x86_64-cm
     if  offset
-        put-string "(%rax)"
-        put-dec (shl 3 (sub (load X86_64-depth impl) offset))
+        put-string "(%rax)" put-dec (shl 3 (sub (load X86_64-depth impl) offset))
         (X86_64-out impl)
-        put-string "@GOTPCREL(%rip)"
-        x86_64-mangle-mem a b
+        put-string "@GOTPCREL(%rip)" x86_64-mangle-mem a b
         (X86_64-out impl)
 
+# Opsem will tell us about literals.
+We copy the exact text into an
+immediate operand. #
 (x86_64-lit impl a b label)
-    put-string ",%rax\n"
-    put-mem a b
-    put-string "mov $"
+    x86_64-lf put-string "%rax" x86_64-cm put-mem a b put '$ x86_64-sp put-string "mov"
     (X86_64-out impl)
 
+# Opsem will tell us about strings.
+We copy the exact text into its own
+data section. #
 (x86_64-str impl a b label)
-    put-string "@GOTPCREL(%rip),%rax\n"
-    x86_64-put-label label
-    put-string "\n.previous\nmov "
-    put-mem a b
-    put-string ".string,"
-    x86_64-label-suf
-    x86_64-put-label label
-    put-lf
-    x86_64-put-label label
-    put-string ".section .data."
+    x86_64-lf put-string "%rax" x86_64-cm put-string "@GOTPCREL(%rip)" x86_64-label-name label put-string "mov "
+    x86_64-lf put-string ".previous"
+    x86_64-lf put-mem a b x86_64-sp put-string ".string"
+    x86_64-label-stmt label
+    x86_64-lf x86_64-label-name label put-string ".data." x86_64-sp put-string ".section"
     (X86_64-out impl)
 
-(x86_64-label impl label) x86_64-label-suf x86_64-put-label label (X86_64-out impl)
-
-(x86_64-var impl label)
-do  x86_64-fpush (X86_64-depth impl) (X86_64-out impl) 1
-    load (X86_64-depth impl)
-
-(x86_64-var-in impl label)
-do  x86_64-label impl label
-    put-string "mov %rax,(%rsp)\n" (X86_64-out impl)
-
-(x86_64-let-end impl flake)
-    x86_64-fpop (X86_64-depth impl) (X86_64-out impl) 1
-
-(x86_64-for-end impl flake)
-do  x86_64-or impl flake
-    x86_64-pop (X86_64-depth impl) (X86_64-out impl) "%rax"
-
-(x86_64-trunk impl) x86_64-push (X86_64-depth impl) (X86_64-out impl) "%rax"
-
-(x86_64-branch impl) x86_64-push (X86_64-depth impl) (X86_64-out impl) "%rax"
-
+# Opsem will tell us about calls.
+Right now, we copy the destination
+address from its position on the
+stack based on the call arity.
+We'll have to add another step for
+lambdas to work. Pop the stack once
+at the end even though that's not
+actually the ours.#
 (x86_64-call impl arity)
-do  put-string "(%rsp),%rax\ncall *%rax\n" put-dec (shl 3 arity) put-string "mov " (X86_64-out impl)
-    x86_64-fpop (X86_64-depth impl) (X86_64-out impl) 1
+do  x86_64-lf put-string "%rax" put '* x86_64-sp put-string "call"
+    x86_64-lf put-string "%rax" x86_64-cm put-string "(%rsp)" put-dec (shl 3 arity) x86_64-sp put-string "mov"
+    (X86_64-out impl)
+    x86_64-pop (X86_64-depth impl) (X86_64-out impl)
 
+# Opsem will tell us about branches. 
+We pop the function address here to
+pay back the immediately preceding
+kludge. #
+(x86_64-branch     impl) x86_64-push (X86_64-depth impl) (X86_64-out impl)
+(x86_64-branch-end impl) x86_64-pop  (X86_64-depth impl) (X86_64-out impl)
+
+# If you can't make sense of this,
+just look again. #
 (x86_64-def impl a b) x86_64-section-header x86_64-mangle-mem a b (X86_64-out impl)
-(x86_64-def-end impl) put-string "ret\n" (X86_64-out impl)
-
-(x86_64-param impl index) add (load X86_64-depth impl) successive index
-(x86_64-arg impl) x86_64-fpop (X86_64-depth impl) (X86_64-out impl) 1
+(x86_64-def-end impl) x86_64-lf put-string "ret" (X86_64-out impl)
 
 #
 (x86_64-lambda impl label)
 do  x86_64-label-suf
-    x86_64-put-label label
+    x86_64-label-name label
     put-lf
-    x86_64-put-label label
+    x86_64-label-name label
     put-string ".section .text."
     (X86_64-out impl)
     x86_64-push (X86_64-depth impl) (X86_64-out impl) "%rbx"
@@ -321,10 +296,41 @@ do  put-lf
     put-string x86_64-str-ret (X86_64-out impl)
 do  x86_64-to-rax
     put-string x86_64-str-rip
-    x86_64-put-label label
+    x86_64-label-name label
     put-string "mov " (X86_64-out impl)
     x86_64-push (X86_64-depth load impl) (X86_64-out load impl) "%rax"
 #
+
+# lies #
+
+(x86_64-do  impl label) 0
+
+(x86_64-and  impl label) x86_64-czjc label "je"  (X86_64-out impl)
+(x86_64-or   impl label) x86_64-czjc label "jne" (X86_64-out impl)
+(x86_64-else impl label) x86_64-jc   label "jmp" (X86_64-out impl)
+
+# Opsem will occasionally request a label statement. #
+(x86_64-label impl label) x86_64-label-stmt label (X86_64-out impl)
+
+# damn lies #
+
+(x86_64-var impl label)
+do  x86_64-push (X86_64-depth impl) (X86_64-out impl)
+    load (X86_64-depth impl)
+
+(x86_64-var-in impl label)
+do  x86_64-label impl label
+    x86_64-lf put-string "(%rsp)" x86_64-cm put-string "%rax" x86_64-sp put-string "mov"
+    (X86_64-out impl)
+
+(x86_64-let-end impl label)
+    x86_64-pop (X86_64-depth impl) (X86_64-out impl)
+
+(x86_64-for-end impl label)
+do  x86_64-or impl label
+do  x86_64-pop (X86_64-depth impl) (X86_64-out impl)
+    x86_64-lf put-string "%rax" x86_64-cm put-string "%rbx" x86_64-sp put-string "mov"
+    (X86_64-out impl)
 
 #
     OPERATIONAL SEMANTICS
@@ -356,12 +362,10 @@ do  store (List-rest list) rest
 
 (pop list) load List-rest list
 
-(count list)
-and list
-    successive (count (load List-rest list))
+(count list) and list (successive (count (load List-rest list)))
 
 (judge-list (judge-param type-a type-b) params-a params-b)
-or  not or params-a params-b
+or  not (or params-a params-b)
 and judge-param            (load List-elem params-a) (load List-elem params-b)
     judge-list judge-param (load List-rest params-a) (load List-rest params-b)
 
@@ -408,15 +412,13 @@ do  store (Type-kind type) 1
 do  store (Type-params type) list
     type
 
-(type-param sem span type impl)
+(type-param sem a b type impl) 
 let param (to (Sem-mem sem) add Param)
 do  store (Param-kind param) 0
-do  store (Param-span param) span
+do  store (Param-span param) (make-span (Sem-mem sem) a b) 
 do  store (Param-type param) type
 do  store (Param-impl param) impl
     param
-
-(type-param-name sem a b type) type-param sem (make-span (Sem-mem sem) a b) type 0
 
 (book sem list span-a type impl)
 if  list
@@ -429,7 +431,7 @@ or  and span-b
     and strncmp src-a a (sub src-a src-b) (sub a b)
         error 2 "redefinition"
     book sem (pop list) span-a type impl
-    load store (Sem-list sem) (push (Sem-mem sem) type-param sem span-a type impl (load Sem-list sem))
+    load store (Sem-list sem) (push (Sem-mem sem) type-param sem (load Span-begin span-a) (load Span-end span-a) type impl (load Sem-list sem))
 
 (reference impl list a b depth)
 and list
@@ -448,10 +450,10 @@ do  x86_64-capture impl offset
 
 (parameters (gen impl index) sem params)
 and params
-let param (load List-elem params)
 let rest (load List-rest params)
 let index (parameters gen sem rest)
 let list (load Sem-list sem)
+let param (load List-elem params)
 let span (load Param-span param)
 let type (load Param-type param)
 let impl (gen (load Sem-impl sem) index)
@@ -508,6 +510,23 @@ let impl (load Param-impl param)
 do  gen-ref-end (load Sem-impl sem) a b impl
     store (Sem-type sem) type
 
+(op-branch (gen-term impl) (gen-call impl params) (gen-arg impl) sem params rest)
+# call when out of branches #
+do  gen-term (load Sem-impl sem)
+or  (load List-rest rest)
+do  call gen-call gen-arg sem params
+    0
+
+(op-trunk (gen-trunk impl) (gen-call impl params) (gen-arg impl) sem type)
+# call when nullary #
+let param (load Sem-type sem)
+and not judge-type judge-param type param
+let params (load Type-params param)
+do  gen-trunk (load Sem-impl sem)
+or  params
+do  call gen-call gen-arg sem params
+    0
+
 (op-decl (gen-decl impl label) sem param)
 let span (load Param-span param)
     book sem (load Sem-list sem) (make-span (Sem-mem sem) (load Span-begin span) (load Span-end span)) (load Param-type param) (gen-decl (load Sem-impl sem) 0)
@@ -520,23 +539,6 @@ do  gen-def (load Sem-impl sem) (load Span-begin span) (load Span-end span)
 (op-def-end (gen-def-end impl) sem param)
 do  parameters-end sem (load Type-params load Param-type param)
     gen-def-end (load Sem-impl sem)
-
-(op-branch (gen-term impl) (gen-call impl params) (gen-arg impl) sem params rest)
-do  gen-term (load Sem-impl sem)
-or  (load List-rest rest)
-do  call gen-call gen-arg sem params
-    0
-
-(op-trunk (gen-trunk impl) (gen-call impl params) (gen-arg impl) sem type)
-let param (load Sem-type sem)
-and not judge-type judge-param type param
-let params (load Type-params param)
-do  gen-trunk (load Sem-impl sem)
-# we call on the parser's behalf when
-it can't tell between scalar and nullary #
-or  params
-do  call gen-call gen-arg sem params
-    0
 
 # lies #
 
@@ -575,10 +577,10 @@ do  gen (load Sem-impl sem) label
 (denote-type-unit sem) type-unit sem
 (denote-type-func sem params) type-func sem params
 (denote-type-list sem params param) type-list sem params param
-(denote-type-param sem a b type) type-param-name sem a b type
+(denote-type-param sem a b type) type-param sem a b type 0
 
-(denote-trunk sem type ) op-trunk x86_64-trunk x86_64-call x86_64-arg sem type
-(denote-branch sem params rest) op-branch x86_64-branch x86_64-call x86_64-arg sem params rest
+(denote-trunk sem type ) op-trunk x86_64-branch x86_64-call x86_64-branch-end sem type
+(denote-branch sem params rest) op-branch x86_64-branch x86_64-call x86_64-branch-end sem params rest
 
 (denote-lit sem a b label) op-lit x86_64-lit sem a b label
 (denote-str sem a b label) op-lit x86_64-str sem a b label
