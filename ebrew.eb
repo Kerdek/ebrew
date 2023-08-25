@@ -61,18 +61,14 @@ if  equal n-read error-key
 (brk address) linux address 0 0 0 0 0 12
 (exit code) linux code 0 0 0 0 0 60
 
-(runtime-exit code out end)
-do  retry-mem stdout out end
-    exit code
-
-(runtime (main (exit code out end) in out mem) inbuf outbuf membuf)
+(runtime (main (exit code) in out mem) inbuf outbuf membuf)
 let in  (brk 0)
 let out (add in  inbuf )
 let mem (add out outbuf)
 do  brk (add mem membuf)
 do  store mem (add mem word)
-do  retry-string-read stdin in out
-    main runtime-exit in out mem
+do  poke in 255
+    main exit in out mem
 
 (error code message)
 do  retry-string-write stderr message
@@ -98,7 +94,9 @@ do  for p s
     -out
 
 (put byte -out)
-do  poke (load -out) byte
+let outa load -out
+do  poke outa byte
+do  retry-mem stdout outa (successive outa)
 do  inc -out
     -out
 
@@ -110,7 +108,7 @@ if  a
     -out
 
 (put-number (put-digit a -out) base a -out)
-if  a 
+if  a
     put-digits put-digit base a -out
     put '0 -out
 
@@ -126,7 +124,13 @@ if  a
 # scanning #
 
 (lex (class byte) -in)
-and class (peek load -in)
+let ina load -in
+do  and equal 255 peek ina
+    let inb add 1 ina
+    if  retry-mem stdin ina inb
+        poke inb 255
+        poke ina 0
+and class (peek ina)
     inc -in
 
 #
@@ -209,7 +213,7 @@ do  store (Span-end   span) b
 (param-type param) load Param-type param
 (param-impl param) load Param-impl param
 
-(param-init param span type impl) 
+(param-init param span type impl)
 do  store (Param-kind param) 0
 do  store (Param-span param) span
 do  store (Param-type param) type
@@ -236,22 +240,17 @@ or  and span-b
     book -mem -head (list-pop list) span-a type impl
     load store -head (list-push -mem type-param -mem (span-begin span-a) (span-end span-a) type impl (load -head))
 
-(lookup (gen-capture impl offset) impl list a b depth)
+(lookup impl list a b depth)
 and list
 let var list-elem list
 let span param-span var
-if  span #zero in case of lambda token#
 let src-a span-begin span
 let src-b span-end   span
 if  strncmp src-a a (sub src-a src-b) (sub a b)
     var
-    lookup gen-capture impl list-pop list a b depth
-    #do lambda token stuff here#
-let offset param-impl var
-do  gen-capture impl offset
-    lookup gen-capture impl list-pop list a b offset
+    lookup impl list-pop list a b depth
 
-# At the beginning of a function, we have to 
+# At the beginning of a function, we have to
 push all the parameters to the list. #
 (push-parameters (gen impl index) -mem -head impl params)
 and params
@@ -265,7 +264,7 @@ let offset gen impl index
 do  book -mem -head list span type offset
     successive index
 
-# At the end of a function, we have to 
+# At the end of a function, we have to
 pop all the parameters off the list. #
 (pop-parameters list params)
 if  params
@@ -285,9 +284,9 @@ do  gen-lit impl a b label
 do  store -type type-unit
     0
 
-(reference (gen-ref impl) (gen-capture impl offset) (gen-ref-end impl offset a b) -type impl list a b)
+(reference (gen-ref impl) (gen-ref-end impl offset a b) -type impl list a b)
 let depth (gen-ref impl)
-let param (lookup gen-capture impl list a b depth)
+let param (lookup impl list a b depth)
 if  not param
     error 1 "unknown reference"
 let type   param-type param
@@ -341,7 +340,7 @@ do  to -mem sub Sem
 (op-label (gen impl label) sem label) branch-in gen (load Sem-impl sem) label
 (op-lit (gen-lit impl a b label) sem a b label) literal gen-lit (Sem-type sem) (load Sem-impl sem) a b label
 
-(op-ref (gen-ref impl) (gen-capture impl offset) (gen-ref-end impl offset a b) sem a b) reference gen-ref gen-capture gen-ref-end (Sem-type sem) (load Sem-impl sem) (load Sem-list sem) a b
+(op-ref (gen-ref impl) (gen-ref-end impl offset a b) sem a b) reference gen-ref gen-ref-end (Sem-type sem) (load Sem-impl sem) (load Sem-list sem) a b
 
 # Store, then either give the remaining
 branches or call when out. #
@@ -385,6 +384,14 @@ do  gen (load Sem-impl sem) label
 
 #
     X86_64 BACKEND
+#
+
+#
+
+The implementation theory used here is quite simple.
+We push for variables and arguments.
+A call is followed by pop
+
 #
 
 # truth #
@@ -496,19 +503,11 @@ stack top into the accumulator. #
 do  x86_64-lf x86_64-rax x86_64-cm put-string "%rsp" x86_64-sp x86_64-mov -out
     depth
 
-# As opsem encounters lambda frames,
-we'll load the capture pointer
-through the accumulator. #
-(x86_64-capture -out depth offset) x86_64-load-local depth offset -out
-
 # If opsem finds something,
 we'll either load it through
 the accumulator or through
 the program counter depending
-whether it's global. We waste
-any capture loads for a global
-but we'll fix that when it
-matters. #
+whether it's global. #
 (x86_64-ref-end -out depth offset a b) if offset (x86_64-load-local depth offset -out) (x86_64-load-global a b -out)
 
 # Opsem will tell us about branches. #
@@ -574,7 +573,7 @@ and class-nz byte
 (class-rp byte) equal byte ')
 (class-09 byte) range byte '0 '9
 
-(class-ws byte) or  equal byte ' 
+(class-ws byte) or  equal byte (' )
                 or  equal byte '\t
                 or  equal byte '\n
                     equal byte '\r
@@ -672,7 +671,6 @@ do  store Span-begin span a
 (gen-lit     impl a b  label) x86_64-lit     (X86_64-out impl) a b
 (gen-str     impl a b  label) x86_64-str     (X86_64-out impl) a b label
 (gen-ref     impl           ) x86_64-ref     (X86_64-out impl) (load X86_64-depth impl)
-(gen-capture impl offset    ) x86_64-capture (X86_64-out impl) (load X86_64-depth impl) offset
 (gen-ref-end impl offset a b) x86_64-ref-end (X86_64-out impl) (load X86_64-depth impl) offset a b
 (gen-term    impl           ) x86_64-term    (X86_64-out impl) (X86_64-depth impl)
 (gen-branch  impl           ) x86_64-branch  (X86_64-out impl) (X86_64-depth impl)
@@ -715,7 +713,7 @@ do  store Span-begin span a
 # expression semantics #
 
 (denote-term       params     ) op-term                   params
-(denote-trunk  sem type       ) op-trunk  gen-branch 
+(denote-trunk  sem type       ) op-trunk  gen-branch
                                           gen-trunk
                                           gen-term    sem type
 (denote-branch sem params rest) op-branch gen-branch
@@ -724,7 +722,6 @@ do  store Span-begin span a
 (denote-lit    sem a b label  ) op-lit    gen-lit     sem a b label
 (denote-str    sem a b label  ) op-lit    gen-str     sem a b label
 (denote-ref    sem a b label  ) op-ref    gen-ref
-                                          gen-capture
                                           gen-ref-end sem a b
 
 # type semantics #
@@ -757,7 +754,7 @@ let syn (to -mem add Syn)
 do  store (Syn-span syn) make-span -mem 0 0
 do  store (Syn-in   syn) in
 do  store (Syn-sem  syn) denote-new -mem out
-do  token (Syn-in   syn) (load Syn-span syn)
+do  store (Span-begin (load Syn-span syn)) 0
     syn
 
 (parse-del -mem syn)
@@ -769,30 +766,36 @@ do  to -mem sub Syn
 
 (graft lit (stem (tree syn type) syn type label) (tree syn type) syn type)
 let span (load Syn-span syn)
+do  or span-begin span
+       token (Syn-in syn) span
 let a span-begin span
 let b span-end span
 and strncmp lit a (strlen lit) (sub a b)
-do  token (Syn-in syn) span
-let label 
+do  store (Span-begin span) 0
+let label
     denote-flake (load Syn-sem syn)
 do  stem tree syn type label
     1
 
 (leaf (class byte) (denote syn a b label) syn)
 let span (load Syn-span syn)
+do  or span-begin span
+       token (Syn-in syn) span
 let a span-begin span
 let b span-end   span
 and class (peek a)
-do  token (Syn-in syn) span
-let label 
+do  store (Span-begin span) 0
+let label
     denote-flake (load Syn-sem syn)
 do  denote (load Syn-sem syn) a b label
     1
 
 (knot (class byte) syn)
 let span (load Syn-span syn)
+do  or span-begin span
+       token (Syn-in syn) span
 and class (peek span-begin span)
-do  token (Syn-in syn) span
+do  store (Span-begin span) 0
     1
 
 #
@@ -817,10 +820,12 @@ do  tree syn type
 (stem-var (denote-end syn flake) (tree syn type) syn type label)
 let sem (load Syn-sem syn)
 let span (load Syn-span syn)
+do  or span-begin span
+       token (Syn-in syn) span
 let a span-begin span
 let b span-end   span
 if  not knot class-id syn
-    error 3 "missing param-span"
+    error 3 "missing expression"
 do  tree syn (denote-type-unit (load Syn-sem syn))
 do  denote-var sem label a b
 do  denote-var-in sem label
@@ -837,7 +842,7 @@ let sem (load Syn-sem syn)
 do  tree syn (denote-type-unit (load Syn-sem syn))
 do  denote-then sem label
 do  tree syn type
-let label-else 
+let label-else
     denote-flake sem
 do  denote-else sem label-else
 do  denote-endif sem label
@@ -898,6 +903,8 @@ do  stem tree syn type
 
 (typedecl (den sem a b type) (typename-which (parameter syn) syn) (parameter syn) syn)
 let span (load Syn-span syn)
+do  or span-begin span
+       token (Syn-in syn) span
 let a span-begin span
 let b span-end   span
 and knot class-id syn
@@ -906,7 +913,7 @@ and knot class-id syn
 (typename-params (parameter syn) syn)
 and not knot class-rp syn
 let x (parameter syn)
-    denote-type-list (load Syn-sem syn) (typename-params parameter syn) x 
+    denote-type-list (load Syn-sem syn) (typename-params parameter syn) x
 
 (typename-func (parameter syn) syn) denote-type-func (load Syn-sem syn) (typename-params parameter syn)
 (typename-unit (parameter syn) syn) denote-type-unit (load Syn-sem syn)
@@ -932,74 +939,12 @@ and let param parameter syn
 #
 
 # We get input buffer and we need to give output buffer. #
-(main (return code out end) in out -mem)
+(main (return code) in out -mem)
 let syn (parse-init -mem in out) #init with in/out buffers#
 do  decl syn                     #run parser#
 let end (parse-del -mem syn)     #cleanup#
-    return 0 out end             #write out buffer#
+    return 0
 
 # Set fixed memory layout. We request 3MB currently.
                         inbuf     outbuf    heap     #
 (_start) runtime main (pow2 20) (pow2 20) (pow2 20)
-
-#
-    NOTES
-#
-
-#
-if we are expecting a function:
-    push a closure parameter onto the list:
-        the closure parameter says where the
-        capture pointer is in each frame. we
-        use that to a) find the capture pointer
-        in the lambda frame, then b) find
-        closed variables in the captured frame.
-    start a lambda section.
-    compile the lambda
-    .previous
-    pop the closure token
-otherwise:
-    just branch
-#
-
-#if  (and type (load Type-kind type))
-let sem (load Syn-sem syn)
-let label (op-flake sem)
-let capture (x86_64-lambda (load Sem-impl sem) label)
-let var (to (Sem-mem sem) add struct-Var)
-do  store (Param-span var) 0
-do  store (Param-type var) frame
-do  store (Param-impl var) capture
-do  store (Sem-list sem) push (Sem-mem sem) var (load Sem-list sem)
-let params (load Type-params type)
-do  op-parameters tree syn params 0
-do  tree syn 0
-do  x86_64-lambda-end (load Sem-impl sem) label (list-count load Type-params type)
-do  store (Sem-list sem) pop (load Sem-list sem)
-let rest 
-    denote-branch (load Syn-sem syn) params index
-    branches tree syn rest (successive index)#
-
-
-#
-(x86_64-lambda impl label)
-do  x86_64-label-stmt-suf
-    x86_64-label-name label
-    put-lf
-    x86_64-label-name label
-    put-string ".section .text."
-    (X86_64-out impl)
-    x86_64-push (X86_64-depth impl) (X86_64-out impl) "%rbx"
-
-(x86_64-lambda-end impl label arity)
-do  x86_64-fpop (X86_64-depth impl) (X86_64-out impl) 1
-do  x86_64-fpop (X86_64-depth impl) (X86_64-out impl) (if above arity 6 arity 6)
-do  put-lf
-    put-string ".previous"
-    put-string x86_64-str-ret (X86_64-out impl)
-do  x86_64-to-rax
-    put-string x86_64-str-rip
-    x86_64-label-name label
-    put-string "mov " (X86_64-out impl)
-    x86_64-push (X86_64-depth load impl) (X86_64-out load impl) "%rax"
-#
