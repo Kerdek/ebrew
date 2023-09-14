@@ -240,7 +240,7 @@ or  and span-b
     book -mem -head (list-pop list) span-a type impl
     load store -head (list-push -mem type-param -mem (span-begin span-a) (span-end span-a) type impl (load -head))
 
-(lookup impl list a b depth)
+(lookup impl list a b)
 and list
 let var list-elem list
 let span param-span var
@@ -248,7 +248,7 @@ let src-a span-begin span
 let src-b span-end   span
 if  strncmp src-a a (sub src-a src-b) (sub a b)
     var
-    lookup impl list-pop list a b depth
+    lookup impl list-pop list a b
 
 # At the beginning of a function, we have to
 push all the parameters to the list. #
@@ -284,14 +284,13 @@ do  gen-lit impl a b label
 do  store -type type-unit
     0
 
-(reference (gen-ref impl) (gen-ref-end impl offset a b) -type impl list a b)
-let depth (gen-ref impl)
-let param (lookup impl list a b depth)
+(reference (gen-ref impl offset a b) -type impl list a b)
+let param (lookup impl list a b)
 if  not param
     error 1 "unknown reference"
 let type   param-type param
 let offset param-impl param
-do  gen-ref-end impl offset a b
+do  gen-ref impl offset a b
     store -type type
 
 # Store, then either give the remaining
@@ -340,7 +339,7 @@ do  to -mem sub Sem
 (op-label (gen impl label) sem label) branch-in gen (load Sem-impl sem) label
 (op-lit (gen-lit impl a b label) sem a b label) literal gen-lit (Sem-type sem) (load Sem-impl sem) a b label
 
-(op-ref (gen-ref impl) (gen-ref-end impl offset a b) sem a b) reference gen-ref gen-ref-end (Sem-type sem) (load Sem-impl sem) (load Sem-list sem) a b
+(op-ref (gen-ref impl offset a b) sem a b) reference gen-ref (Sem-type sem) (load Sem-impl sem) (load Sem-list sem) a b
 
 # Store, then either give the remaining
 branches or call when out. #
@@ -390,7 +389,7 @@ do  gen (load Sem-impl sem) label
 
 The implementation theory used here is quite simple.
 We push for variables and arguments.
-A call is followed by pop
+A call is followed by adding to rsp.
 
 #
 
@@ -407,6 +406,7 @@ A call is followed by pop
 (x86_64-rbx -out) put-string "%rbx" -out
 
 (x86_64-raxptr -out) put-string "(%rax)" -out
+(x86_64-rspptr -out) put-string "(%rsp)" -out
 (x86_64-ripptr -out) put-string "@GOTPCREL(%rip)" -out
 
 (x86_64-mangle-prefix -out) put 'F -out
@@ -428,7 +428,7 @@ A call is followed by pop
 (x86_64-section-header (vput a b -out) a b -out) x86_64-label-stmt-suf vput a b x86_64-lf vput a b put-string ".section .text." -out
 (x86_64-initdef name body -out) x86_64-lf x86_64-ret x86_64-lf put-string body x86_64-section-header x86_64-mangle-mem name (add name strlen name) -out
 
-(x86_64-load-local  depth offset -out) x86_64-lf x86_64-rax x86_64-cm x86_64-raxptr put-dec (shl 3 (sub depth offset)) x86_64-sp x86_64-mov -out
+(x86_64-load-local  depth offset -out) x86_64-lf x86_64-rax x86_64-cm x86_64-rspptr put-dec (shl 3 (sub depth offset)) x86_64-sp x86_64-mov -out
 (x86_64-load-global a b -out) x86_64-lf x86_64-rax x86_64-cm x86_64-ripptr x86_64-mangle-mem a b x86_64-sp x86_64-mov -out
 
 # lies #
@@ -496,19 +496,12 @@ data section. #
     x86_64-lf x86_64-label-name label put-string ".data." x86_64-sp put-string ".section"
     -out
 
-# Opsem will tell us a lot about
-backreferences. We first copy the
-stack top into the accumulator. #
-(x86_64-ref -out depth)
-do  x86_64-lf x86_64-rax x86_64-cm put-string "%rsp" x86_64-sp x86_64-mov -out
-    depth
-
-# If opsem finds something,
+# If opsem looks up a reference,
 we'll either load it through
 the accumulator or through
 the program counter depending
 whether it's global. #
-(x86_64-ref-end -out depth offset a b) if offset (x86_64-load-local depth offset -out) (x86_64-load-global a b -out)
+(x86_64-ref -out depth offset a b) if offset (x86_64-load-local depth offset -out) (x86_64-load-global a b -out)
 
 # Opsem will tell us about branches. #
 (x86_64-branch -out -depth) x86_64-push -depth -out
@@ -670,8 +663,7 @@ do  store Span-begin span a
 
 (gen-lit     impl a b  label) x86_64-lit     (X86_64-out impl) a b
 (gen-str     impl a b  label) x86_64-str     (X86_64-out impl) a b label
-(gen-ref     impl           ) x86_64-ref     (X86_64-out impl) (load X86_64-depth impl)
-(gen-ref-end impl offset a b) x86_64-ref-end (X86_64-out impl) (load X86_64-depth impl) offset a b
+(gen-ref     impl offset a b) x86_64-ref     (X86_64-out impl) (load X86_64-depth impl) offset a b
 (gen-term    impl           ) x86_64-term    (X86_64-out impl) (X86_64-depth impl)
 (gen-branch  impl           ) x86_64-branch  (X86_64-out impl) (X86_64-depth impl)
 (gen-trunk   impl arity     ) x86_64-trunk   (X86_64-out impl) (X86_64-depth impl) arity
@@ -721,8 +713,7 @@ do  store Span-begin span a
                                           gen-term    sem params rest
 (denote-lit    sem a b label  ) op-lit    gen-lit     sem a b label
 (denote-str    sem a b label  ) op-lit    gen-str     sem a b label
-(denote-ref    sem a b label  ) op-ref    gen-ref
-                                          gen-ref-end sem a b
+(denote-ref    sem a b label  ) op-ref    gen-ref sem a b
 
 # type semantics #
 
@@ -938,7 +929,6 @@ and let param parameter syn
     ENTRY
 #
 
-# We get input buffer and we need to give output buffer. #
 (main (return code) in out -mem)
 let syn (parse-init -mem in out) #init with in/out buffers#
 do  decl syn                     #run parser#
